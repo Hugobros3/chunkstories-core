@@ -1,7 +1,9 @@
 package io.xol.chunkstories.core.entity;
 
-import java.util.HashMap;
-import java.util.Map;
+import org.joml.Vector2d;
+import org.joml.Vector2f;
+import org.joml.Vector3d;
+import org.joml.Vector3dc;
 
 import io.xol.chunkstories.api.Location;
 import io.xol.chunkstories.api.animation.SkeletonAnimator;
@@ -15,19 +17,6 @@ import io.xol.chunkstories.api.entity.components.EntityComponentRotation;
 import io.xol.chunkstories.api.entity.interfaces.EntityControllable;
 import io.xol.chunkstories.api.entity.interfaces.EntityFlying;
 import io.xol.chunkstories.api.events.entity.EntityDamageEvent;
-import org.joml.Matrix4f;
-import org.joml.Matrix4fc;
-import org.joml.Vector2d;
-import org.joml.Vector3d;
-import org.joml.Vector3dc;
-import org.joml.Vector2f;
-import org.joml.Vector3f;
-import org.joml.Vector4f;
-import io.xol.chunkstories.api.physics.CollisionBox;
-import io.xol.chunkstories.api.rendering.Primitive;
-import io.xol.chunkstories.api.rendering.RenderingInterface;
-import io.xol.chunkstories.api.rendering.WorldRenderer.RenderingPass;
-import io.xol.chunkstories.api.rendering.vertex.VertexFormat;
 import io.xol.chunkstories.api.world.VoxelContext;
 import io.xol.chunkstories.api.world.World;
 import io.xol.chunkstories.api.world.WorldClient;
@@ -70,126 +59,6 @@ public abstract class EntityLivingImplementation extends EntityBase implements E
 	{
 		super.setLocation(loc);
 		lastStandingHeight = Double.NaN;
-	}
-	
-	public class HitBoxImpl implements HitBox
-	{
-
-		CollisionBox box;
-		String skeletonPart;
-
-		public HitBoxImpl(CollisionBox box, String skeletonPart)
-		{
-			this.box = box;
-			this.skeletonPart = skeletonPart;
-		}
-
-		public void draw(RenderingInterface context)
-		{
-			if (!context.currentShader().getShaderName().equals("overlay"))
-			{
-				context.useShader("overlay");
-				context.getCamera().setupShader(context.currentShader());
-			}
-
-			context.currentShader().setUniform1i("doTransform", 1);
-
-			Matrix4f boneTransormation = new Matrix4f(EntityLivingImplementation.this.getAnimatedSkeleton().getBoneHierarchyTransformationMatrix(skeletonPart, System.currentTimeMillis() % 1000000));
-			
-			Matrix4f worldPositionTransformation = new Matrix4f();
-			
-			Location loc = EntityLivingImplementation.this.getLocation();
-			Vector3f pos = new Vector3f((float)loc.x, (float)loc.y, (float)loc.z);
-			worldPositionTransformation.translate(pos);
-
-			worldPositionTransformation.mul(boneTransormation, boneTransormation);
-			//boneTransormation.mul(worldPositionTransformation);
-
-			//Scales/moves the identity box to reflect collisionBox shape
-			boneTransormation.translate(new Vector3f((float)box.xpos, (float)box.ypos, (float)box.zpos));
-			boneTransormation.scale(new Vector3f((float)box.xw, (float)box.h, (float)box.zw));
-
-			context.currentShader().setUniformMatrix4f("transform", boneTransormation);
-			context.unbindAttributes();
-			context.bindAttribute("vertexIn", context.meshes().getIdentityCube().asAttributeSource(VertexFormat.FLOAT, 3));
-
-			context.currentShader().setUniform4f("colorIn", 0.0, 1.0, 0.0, 1.0);
-			//Check for intersection with player
-			EntityControllable ec = ((WorldClient)getWorld()).getClient().getPlayer().getControlledEntity();
-
-			if (ec != null)
-			{
-				if (lineIntersection((Vector3d) context.getCamera().getCameraPosition(), ((EntityPlayer) ec).getDirectionLookingAt()) != null)
-					context.currentShader().setUniform4f("colorIn", 1.0, 0.0, 0.0, 1.0);
-			}
-
-			context.draw(Primitive.LINE, 0, 24);
-			context.currentShader().setUniform1i("doTransform", 0);
-		}
-
-		public Vector3dc lineIntersection(Vector3dc lineStart, Vector3dc lineDirection)
-		{
-			Matrix4f fromAABBToWorld = new Matrix4f(EntityLivingImplementation.this.getAnimatedSkeleton().getBoneHierarchyTransformationMatrix(skeletonPart, System.currentTimeMillis() % 1000000));
-
-			Matrix4f worldPositionTransformation = new Matrix4f();
-			
-			Location entityLoc = EntityLivingImplementation.this.getLocation();
-			
-			Vector3f pos = new Vector3f((float)entityLoc.x, (float)entityLoc.y, (float)entityLoc.z);
-			worldPositionTransformation.translate(pos);
-
-			//Creates from AABB space to worldspace
-			
-			worldPositionTransformation.mul(fromAABBToWorld, fromAABBToWorld);
-			//fromAABBToWorld.mul(worldPositionTransformation);
-
-			//Invert it.
-			Matrix4f fromWorldToAABB = new Matrix4f();
-			
-			fromAABBToWorld.invert(fromWorldToAABB);
-			//Matrix4f.invert(fromAABBToWorld, fromWorldToAABB);
-
-			//Transform line start into AABB space
-			Vector4f lineStart4 = new Vector4f((float)lineStart.x(), (float)lineStart.y(), (float)lineStart.z(), 1.0f);
-			Vector4f lineDirection4 = new Vector4f((float)lineDirection.x(), (float)lineDirection.y(), (float)lineDirection.z(), 0.0f);
-
-			//System.out.println(skeletonPart);
-
-			//System.out.println(lineStart4+":"+lineDirection4);
-
-			fromWorldToAABB.transform(lineStart4);
-			//Matrix4f.transform(fromWorldToAABB, lineStart4, lineStart4);
-			fromWorldToAABB.transform(lineDirection4);
-			//Matrix4f.transform(fromWorldToAABB, lineDirection4, lineDirection4);
-
-			//System.out.println(lineStart4+":"+lineDirection4);
-			//System.out.println(fromWorldToAABB);
-
-			Vector3d lineStartTransformed = new Vector3d(lineStart4.x(), lineStart4.y(), lineStart4.z());
-			Vector3d lineDirectionTransformed = new Vector3d(lineDirection4.x(), lineDirection4.y(), lineDirection4.z());
-
-			Vector3dc hitPoint = box.lineIntersection(lineStartTransformed, lineDirectionTransformed);
-
-			//System.out.println(hitPoint);
-
-			if (hitPoint == null)
-				return null;
-
-			//Transform hitPoint back into world
-			Vector4f hitPoint4 = new Vector4f((float)hitPoint.x(), (float)hitPoint.y(), (float)hitPoint.z(), 1.0f);
-			
-			fromAABBToWorld.transform(hitPoint4);
-			//Matrix4f.transform(fromAABBToWorld, hitPoint4, hitPoint4);
-
-			//hitPoint.set((double) (float) hitPoint4.x(), (double) (float) hitPoint4.y(), (double) (float) hitPoint4.z());
-			return new Vector3d((double) (float) hitPoint4.x(), (double) (float) hitPoint4.y(), (double) (float) hitPoint4.z());
-		}
-
-		@Override
-		public String getName()
-		{
-			return skeletonPart;
-		}
 	}
 
 	@Override
@@ -483,101 +352,4 @@ public abstract class EntityLivingImplementation extends EntityBase implements E
 	{
 		return this.getClass().getSimpleName();
 	}
-
-	public class CachedLodSkeletonAnimator implements SkeletonAnimator
-	{
-		Map<String, CachedData> cachedBones = new HashMap<String, CachedData>();
-		SkeletonAnimator dataSource;
-		double lodStart;
-		double lodEnd;
-
-		public CachedLodSkeletonAnimator(SkeletonAnimator dataSource, double lodStart, double lodEnd)
-		{
-			this.dataSource = dataSource;
-			this.lodStart = lodStart;
-			this.lodEnd = lodEnd;
-		}
-
-		public void lodUpdate(RenderingInterface renderingContext)
-		{
-			double distance = getLocation().distance(renderingContext.getCamera().getCameraPosition());
-			double targetFps = renderingContext.renderingConfig().getAnimationCacheFrameRate();//RenderingConfig.animationCacheFrameRate;
-
-			int lodDivisor = 1;
-			if (distance > lodStart)
-			{
-				lodDivisor *= 4;
-				if (distance > lodEnd)
-					lodDivisor *= 4;
-			}
-			if (renderingContext.getWorldRenderer().getCurrentRenderingPass() == RenderingPass.SHADOW)
-				lodDivisor *= 2;
-
-			targetFps /= lodDivisor;
-
-			double maxMsDiff = 1000.0 / targetFps;
-			long time = System.currentTimeMillis();
-
-			//System.out.println("Entity "+distance+" m away, "+targetFps+" target fps, "+maxMsDiff+" ms max diff");
-
-			for (CachedData cachedData : cachedBones.values())
-			{
-				if (time - cachedData.lastUpdate > maxMsDiff)
-					cachedData.needsUpdate = true;
-			}
-		}
-
-		class CachedData
-		{
-
-			Matrix4fc matrix = null;
-			long lastUpdate = -1;
-
-			boolean needsUpdate = false;
-
-			CachedData(Matrix4fc matrix, long lastUpdate)
-			{
-				super();
-				this.matrix = matrix;
-				this.lastUpdate = lastUpdate;
-			}
-		}
-
-		@Override
-		public Matrix4fc getBoneHierarchyTransformationMatrix(String nameOfEndBone, double animationTime)
-		{
-			return dataSource.getBoneHierarchyTransformationMatrix(nameOfEndBone, animationTime);
-		}
-
-		@Override
-		public Matrix4fc getBoneHierarchyTransformationMatrixWithOffset(String nameOfEndBone, double animationTime)
-		{
-			//if(true)
-			//	dataSource.getBoneHierarchyTransformationMatrixWithOffset(nameOfEndBone, animationTime);
-
-			//Don't mess with the client played entity animation, it should NEVER be cached
-			if (getWorld() instanceof WorldClient && ((WorldClient)getWorld()).getClient() != null && ((WorldClient)getWorld()).getClient().getPlayer().getControlledEntity() == EntityLivingImplementation.this)
-				return dataSource.getBoneHierarchyTransformationMatrixWithOffset(nameOfEndBone, animationTime);
-
-			CachedData cachedData = cachedBones.get(nameOfEndBone);
-			//If the matrix exists and doesn't need an update
-			if (cachedData != null && !cachedData.needsUpdate)
-			{
-				cachedData.needsUpdate = false;
-				return cachedData.matrix;
-			}
-
-			//Obtains the matrix and caches it
-			Matrix4fc matrix = dataSource.getBoneHierarchyTransformationMatrixWithOffset(nameOfEndBone, animationTime);
-			cachedBones.put(nameOfEndBone, new CachedData(matrix, System.currentTimeMillis()));
-
-			return matrix;
-		}
-
-		public boolean shouldHideBone(RenderingInterface renderingContext, String boneName)
-		{
-			return dataSource.shouldHideBone(renderingContext, boneName);
-		}
-	}
-
 }

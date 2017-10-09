@@ -2,6 +2,7 @@ bin/
 build/
 .gradle
 .project
+.settings
 .classpath
 *.class
 gradle.properties

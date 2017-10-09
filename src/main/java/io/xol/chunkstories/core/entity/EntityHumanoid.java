@@ -66,7 +66,7 @@ public abstract class EntityHumanoid extends EntityLivingImplementation
 
 		stance = new EntityComponentStance(this);
 		
-		cachedSkeleton = new CachedLodSkeletonAnimator(new EntityHumanoidAnimatedSkeleton(), 25f, 75f);
+		cachedSkeleton = new CachedLodSkeletonAnimator(this, new EntityHumanoidAnimatedSkeleton(), 25f, 75f);
 		animatedSkeleton = cachedSkeleton;
 	}
 
@@ -84,7 +84,6 @@ public abstract class EntityHumanoid extends EntityLivingImplementation
 				{
 					ItemPile selectedItemPile = ((EntityWithSelectedItem) EntityHumanoid.this).getSelectedItemComponent().getSelectedItem();
 
-					//BVHAnimation animation = BVHLibrary.getAnimation("res/animations/human/standstill.bvh");
 					if (selectedItemPile != null)
 					{
 						//TODO refactor BVH subsystem to enable SkeletonAnimator to also take care of additional transforms
@@ -94,11 +93,6 @@ public abstract class EntityHumanoid extends EntityLivingImplementation
 							return world.getGameContext().getContent().getAnimationsLibrary().getAnimation(((ItemCustomHoldingAnimation)item).getCustomAnimationName());
 						else
 							return world.getGameContext().getContent().getAnimationsLibrary().getAnimation("./animations/human/holding-item.bvh");
-						
-						/*if (selectedItemPile.getItem() instanceof ItemFirearm)
-							return world.getGameContext().getContent().getAnimationsLibrary().getAnimation("./animations/human/holding-rifle.bvh");
-						else
-							return world.getGameContext().getContent().getAnimationsLibrary().getAnimation("./animations/human/holding-item.bvh");*/
 					}
 				}
 			}
@@ -486,12 +480,12 @@ public abstract class EntityHumanoid extends EntityLivingImplementation
 		return new CollisionBox[] { new CollisionBox(0.6, stance.get() == EntityHumanoidStance.CROUCHING ? 1.45 : 1.9, 0.6).translate(-0.3, 0.0, -0.3) };
 	}
 
-	HitBoxImpl[] hitboxes = { new HitBoxImpl(new CollisionBox(-0.15, 0.0, -0.25, 0.30, 0.675, 0.5), "boneTorso"), new HitBoxImpl(new CollisionBox(-0.25, 0.0, -0.25, 0.5, 0.5, 0.5), "boneHead"),
-			new HitBoxImpl(new CollisionBox(-0.1, -0.375, -0.1, 0.2, 0.375, 0.2), "boneArmRU"), new HitBoxImpl(new CollisionBox(-0.1, -0.375, -0.1, 0.2, 0.375, 0.2), "boneArmLU"),
-			new HitBoxImpl(new CollisionBox(-0.1, -0.3, -0.1, 0.2, 0.3, 0.2), "boneArmRD"), new HitBoxImpl(new CollisionBox(-0.1, -0.3, -0.1, 0.2, 0.3, 0.2), "boneArmLD"),
-			new HitBoxImpl(new CollisionBox(-0.15, -0.375, -0.125, 0.3, 0.375, 0.25), "boneLegRU"), new HitBoxImpl(new CollisionBox(-0.15, -0.375, -0.125, 0.3, 0.375, 0.25), "boneLegLU"),
-			new HitBoxImpl(new CollisionBox(-0.15, -0.375, -0.125, 0.3, 0.375, 0.25), "boneLegRD"), new HitBoxImpl(new CollisionBox(-0.15, -0.375, -0.125, 0.3, 0.375, 0.25), "boneLegLD"),
-			new HitBoxImpl(new CollisionBox(-0.15, -0.075, -0.125, 0.35, 0.075, 0.25), "boneFootL"), new HitBoxImpl(new CollisionBox(-0.15, -0.075, -0.125, 0.35, 0.075, 0.25), "boneFootR"), };
+	HitBoxImpl[] hitboxes = { new HitBoxImpl(this, new CollisionBox(-0.15, 0.0, -0.25, 0.30, 0.675, 0.5), "boneTorso"), new HitBoxImpl(this, new CollisionBox(-0.25, 0.0, -0.25, 0.5, 0.5, 0.5), "boneHead"),
+			new HitBoxImpl(this, new CollisionBox(-0.1, -0.375, -0.1, 0.2, 0.375, 0.2), "boneArmRU"), new HitBoxImpl(this, new CollisionBox(-0.1, -0.375, -0.1, 0.2, 0.375, 0.2), "boneArmLU"),
+			new HitBoxImpl(this, new CollisionBox(-0.1, -0.3, -0.1, 0.2, 0.3, 0.2), "boneArmRD"), new HitBoxImpl(this, new CollisionBox(-0.1, -0.3, -0.1, 0.2, 0.3, 0.2), "boneArmLD"),
+			new HitBoxImpl(this, new CollisionBox(-0.15, -0.375, -0.125, 0.3, 0.375, 0.25), "boneLegRU"), new HitBoxImpl(this, new CollisionBox(-0.15, -0.375, -0.125, 0.3, 0.375, 0.25), "boneLegLU"),
+			new HitBoxImpl(this, new CollisionBox(-0.15, -0.375, -0.125, 0.3, 0.375, 0.25), "boneLegRD"), new HitBoxImpl(this, new CollisionBox(-0.15, -0.375, -0.125, 0.3, 0.375, 0.25), "boneLegLD"),
+			new HitBoxImpl(this, new CollisionBox(-0.15, -0.075, -0.125, 0.35, 0.075, 0.25), "boneFootL"), new HitBoxImpl(this, new CollisionBox(-0.15, -0.075, -0.125, 0.35, 0.075, 0.25), "boneFootR"), };
 
 	@Override
 	public HitBoxImpl[] getHitBoxes()
