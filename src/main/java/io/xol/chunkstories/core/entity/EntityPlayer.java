@@ -25,6 +25,8 @@ import io.xol.chunkstories.api.item.interfaces.ItemOverlay;
 import io.xol.chunkstories.api.item.interfaces.ItemZoom;
 import io.xol.chunkstories.api.item.inventory.Inventory;
 import io.xol.chunkstories.api.item.inventory.ItemPile;
+import io.xol.chunkstories.api.math.Math2;
+
 import org.joml.Matrix4f;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
@@ -469,18 +471,36 @@ public class EntityPlayer extends EntityHumanoid implements EntityControllable, 
 	}
 
 	@Override
-	public void drawEntityOverlay(RenderingInterface renderingContext)
+	public void drawEntityOverlay(RenderingInterface renderer)
 	{
+		//super.drawEntityOverlay(renderer);
 		if (this.equals(((WorldClient)getWorld()).getClient().getPlayer().getControlledEntity()))
 		{
+			float scale = 2.0f;
+			
+			renderer.textures().getTexture("./textures/gui/hud/hud_survival.png").setLinearFiltering(false);
+			renderer.getGuiRenderer().drawBoxWindowsSpaceWithSize(renderer.getWindow().getWidth() / 2 - 256 * 0.5f * scale, 64 + 64 + 16 - 32 * 0.5f * scale, 256 * scale, 32 * scale, 0, 32f / 256f, 1, 0,
+					renderer.textures().getTexture("./textures/gui/hud/hud_survival.png"), false, true, null);
+
+			//Health bar
+			int horizontalBitsToDraw = (int) (8 + 118 * Math2.clamp(getHealth() / getMaxHealth(), 0.0, 1.0));
+			renderer.getGuiRenderer().drawBoxWindowsSpaceWithSize(renderer.getWindow().getWidth() / 2 - 128 * scale, 64 + 64 + 16 - 32 * 0.5f * scale, horizontalBitsToDraw * scale, 32 * scale, 0, 64f / 256f, horizontalBitsToDraw / 256f,
+					32f / 256f, renderer.textures().getTexture("./textures/gui/hud/hud_survival.png"), false, true, new Vector4f(1.0f, 1.0f, 1.0f, 0.75f));
+
+			//Food bar
+			horizontalBitsToDraw = (int) (0 + 126 * Math2.clamp(getFoodLevel() / 100f, 0.0, 1.0));
+			renderer.getGuiRenderer().drawBoxWindowsSpaceWithSize(
+					renderer.getWindow().getWidth() / 2 + 0 * 128 * scale + 0, 64 + 64 + 16 - 32 * 0.5f * scale, horizontalBitsToDraw * scale, 32 * scale, 0.5f , 64f / 256f, 0.5f + horizontalBitsToDraw / 256f,
+					32f / 256f, renderer.textures().getTexture("./textures/gui/hud/hud_survival.png"), false, true, new Vector4f(1.0f, 1.0f, 1.0f, 0.75f));
+		
 			//If we're using an item that can render an overlay
 			if (this.getSelectedItemComponent().getSelectedItem() != null)
 			{
 				ItemPile pile = this.getSelectedItemComponent().getSelectedItem();
 				if (pile.getItem() instanceof ItemOverlay)
-					((ItemOverlay) pile.getItem()).drawItemOverlay(renderingContext, pile);
+					((ItemOverlay) pile.getItem()).drawItemOverlay(renderer, pile);
 			}
-
+			
 			//We don't want to render our own tag do we ?
 			return;
 		}
@@ -489,21 +509,21 @@ public class EntityPlayer extends EntityHumanoid implements EntityControllable, 
 		Vector3d pos = getLocation();
 
 		//don't render tags too far out
-		if (pos.distance(renderingContext.getCamera().getCameraPosition()) > 32f)
+		if (pos.distance(renderer.getCamera().getCameraPosition()) > 32f)
 			return;
 
 		//Don't render a dead player tag
 		if (this.getHealth() <= 0)
 			return;
 
-		Vector3fc posOnScreen = renderingContext.getCamera().transform3DCoordinate(new Vector3f((float)(double) pos.x(), (float)(double) pos.y() + 2.0f, (float)(double) pos.z()));
+		Vector3fc posOnScreen = renderer.getCamera().transform3DCoordinate(new Vector3f((float)(double) pos.x(), (float)(double) pos.y() + 2.0f, (float)(double) pos.z()));
 
 		float scale = posOnScreen.z();
 		String txt = name.getName();// + rotH;
-		float dekal = renderingContext.getFontRenderer().defaultFont().getWidth(txt) * 16 * scale;
+		float dekal = renderer.getFontRenderer().defaultFont().getWidth(txt) * 16 * scale;
 		//System.out.println("dekal"+dekal);
 		if (scale > 0)
-			renderingContext.getFontRenderer().drawStringWithShadow(renderingContext.getFontRenderer().defaultFont(), posOnScreen.x() - dekal / 2, posOnScreen.y(), txt, 16 * scale, 16 * scale, new Vector4f(1, 1, 1, 1));
+			renderer.getFontRenderer().drawStringWithShadow(renderer.getFontRenderer().defaultFont(), posOnScreen.x() - dekal / 2, posOnScreen.y(), txt, 16 * scale, 16 * scale, new Vector4f(1, 1, 1, 1));
 	}
 
 	class EntityPlayerRenderer<H extends EntityPlayer> extends EntityHumanoidRenderer<H>

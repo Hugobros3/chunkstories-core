@@ -14,7 +14,7 @@ repositories {
 }
 
 description = 'The free base content chunkstories is built on.'
-version = '120'
+version = '121'
 
 ext {
 	apiRevisionBuiltAgainst = '113'
@@ -23,6 +23,8 @@ ext {
 dependencies {
 	compile group: 'io.xol.chunkstories', name: 'api', version: apiRevisionBuiltAgainst
 }
+
+group = 'io.xol.chunkstories'
 
 /** Goes ahead & makes a content distribution */
 task buildContentPack(type: Zip) {

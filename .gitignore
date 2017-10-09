@@ -6,3 +6,4 @@ build/
 .classpath
 *.class
 gradle.properties
+core_content.zip

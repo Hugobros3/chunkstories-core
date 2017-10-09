@@ -231,7 +231,6 @@ public abstract class EntityHumanoid extends EntityLivingImplementation
 
 			renderingContext.textures().getTexture("./models/humanoid_normal.png").setLinearFiltering(false);
 
-			//renderingContext.bindNormalTexture(TexturesHandler.getTexture("./models/humanoid_normal.png"));
 			renderingContext.bindAlbedoTexture(renderingContext.textures().getTexture("./models/humanoid_test.png"));
 			renderingContext.bindNormalTexture(renderingContext.textures().getTexture("./textures/normalnormal.png"));
 			renderingContext.bindMaterialTexture(renderingContext.textures().getTexture("./textures/defaultmaterial.png"));
@@ -265,16 +264,12 @@ public abstract class EntityHumanoid extends EntityLivingImplementation
 				renderingContext.setObjectMatrix(matrix);
 
 				renderingContext.meshes().getRenderableMultiPartAnimatableMeshByName("./models/human.obj").render(renderingContext, entity.getAnimatedSkeleton(), System.currentTimeMillis() % 1000000);
-				//animationsData.add(new AnimatableData(location.castToSinglePrecision(), entity.getAnimatedSkeleton(), System.currentTimeMillis() % 1000000, bl, sl));
-
+				
 				renderingContext.bindAlbedoTexture(renderingContext.textures().getTexture("./textures/armor/isis.png"));
 				renderingContext.textures().getTexture("./textures/armor/isis.png").setLinearFiltering(false);
 				renderingContext.meshes().getRenderableMultiPartAnimatableMeshByName("./models/human_overlay.obj").render(renderingContext, entity.getAnimatedSkeleton(), System.currentTimeMillis() % 1000000);
 			}
-
-			//Instanciate all players
-			//ModelLibrary.getRenderableMesh("./models/human.obj").renderInstanciated(renderingContext, animationsData);
-
+			
 			//Render items in hands
 			for (EntityHumanoid entity : renderableEntitiesIterator)
 			{
@@ -421,9 +416,9 @@ public abstract class EntityHumanoid extends EntityLivingImplementation
 		if (isOnGround())
 			metersWalked += Math.abs(horizontalSpeed.length());
 
-		boolean inWater = isInWater(); //voxelIn != null && voxelIn.getType().isLiquid();
+		boolean inWater = isInWater();
 
-		Voxel voxelStandingOn = world.peek(new Vector3d(this.getLocation()).add(0.0, -0.01, 0.0)).getVoxel();//world.getGameContext().getContent().voxels().getVoxelById(world.getVoxelData(new Vector3d(this.getLocation()).add(0.0, -0.01, 0.0)));
+		Voxel voxelStandingOn = world.peek(new Vector3d(this.getLocation()).add(0.0, -0.01, 0.0)).getVoxel();
 
 		if (voxelStandingOn == null || !voxelStandingOn.getType().isSolid() && !voxelStandingOn.getType().isLiquid())
 			return;
@@ -512,8 +507,6 @@ public abstract class EntityHumanoid extends EntityLivingImplementation
 
 		world.getSoundManager().playSoundEffect("sounds/sfx/entities/flesh.ogg", Mode.NORMAL, this.getLocation(), (float)Math.random() * 0.4f + 0.4f, 1);
 		
-		//System.out.println("Hit:"+(osef == null ? "" : osef.getName()) + " dmg: "+damage);
-
 		return super.damage(cause, null, damage);
 	}
 
