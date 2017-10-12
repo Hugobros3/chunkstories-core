@@ -82,7 +82,7 @@ public class SmoothStepVoxelRenderer implements VoxelRenderer {
 			bLoop:
 			for(int b = wz - 1; b <= wz + 1; b ++) {
 				for(int h = wy + 1; h >= wy - 1; h--) {
-					int data = world.getVoxelData(a, h, b);
+					int data = world.peekSimple(a, h, b);
 					if(VoxelFormat.id(data) == goodID) {
 						height[(a - wx + 1) * 3 + b - wz + 1] = h - chunk.getChunkY() * 32 + 1/8f + VoxelFormat.meta(data) / 8f;
 						continue bLoop;

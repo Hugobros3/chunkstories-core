@@ -2,7 +2,8 @@ package io.xol.chunkstories.core.voxel;
 
 import io.xol.chunkstories.api.Location;
 import io.xol.chunkstories.api.entity.Entity;
-import io.xol.chunkstories.api.exceptions.IllegalBlockModificationException;
+import io.xol.chunkstories.api.events.voxel.WorldModificationCause;
+import io.xol.chunkstories.api.exceptions.world.voxel.IllegalBlockModificationException;
 import io.xol.chunkstories.api.physics.CollisionBox;
 import io.xol.chunkstories.api.voxel.Voxel;
 import io.xol.chunkstories.api.voxel.VoxelFormat;
@@ -11,7 +12,7 @@ import io.xol.chunkstories.api.voxel.VoxelSides;
 import io.xol.chunkstories.api.voxel.VoxelType;
 import io.xol.chunkstories.api.voxel.models.VoxelModel;
 import io.xol.chunkstories.api.world.VoxelContext;
-import io.xol.chunkstories.api.world.World;
+import io.xol.chunkstories.api.world.chunk.Chunk.ChunkVoxelContext;
 import io.xol.chunkstories.core.entity.EntityPlayer;
 
 //(c) 2015-2017 XolioWare Interactive
@@ -82,7 +83,7 @@ public class VoxelStairs extends Voxel implements VoxelLogic
 	}
 
 	@Override
-	public int onPlace(World world, int x, int y, int z, int voxelData, Entity entity)
+	public int onPlace(ChunkVoxelContext context, int voxelData, WorldModificationCause cause)
 	{
 		// id+dir of slope
 		// 0LEFT x-
@@ -91,11 +92,12 @@ public class VoxelStairs extends Voxel implements VoxelLogic
 		// 3FRONT z+
 		
 		int stairsSide = 0;
-		if (entity != null)
+		if (cause != null && cause instanceof Entity)
 		{
+			Entity entity = (Entity)cause;
 			Location loc = entity.getLocation();
-			double dx = loc.x() - (x + 0.5);
-			double dz = loc.z() - (z + 0.5);
+			double dx = loc.x() - (context.getX() + 0.5);
+			double dz = loc.z() - (context.getZ() + 0.5);
 
 			//System.out.println("dx: "+dx+" dz:" + dz);
 			
@@ -126,14 +128,15 @@ public class VoxelStairs extends Voxel implements VoxelLogic
 	}
 
 	@Override
-	public void onRemove(World world, int x, int y, int z, int voxelData, Entity entity)
+	public void onRemove(ChunkVoxelContext context, int voxelData, WorldModificationCause cause)
 	{
 		//System.out.println("on remove stairs");
 	}
 	
 	@Override
-	public int onModification(World world, int x, int y, int z, int formerData, int voxelData, Entity entity) throws IllegalBlockModificationException
+	public int onModification(ChunkVoxelContext context, int voxelData, WorldModificationCause cause) throws IllegalBlockModificationException
 	{
-		throw new IllegalBlockModificationException("Stairs can't be changed direction");
+		return voxelData;
+		//throw new IllegalBlockModificationException("Stairs can't be changed direction");
 	}
 }

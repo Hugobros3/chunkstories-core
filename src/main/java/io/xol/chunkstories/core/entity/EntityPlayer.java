@@ -18,7 +18,9 @@ import io.xol.chunkstories.api.entity.interfaces.EntityFlying;
 import io.xol.chunkstories.api.entity.interfaces.EntityOverlay;
 import io.xol.chunkstories.api.entity.interfaces.EntityNameable;
 import io.xol.chunkstories.api.entity.interfaces.EntityWithInventory;
+import io.xol.chunkstories.api.entity.interfaces.EntityWorldModifier;
 import io.xol.chunkstories.api.events.player.voxel.PlayerVoxelModificationEvent;
+import io.xol.chunkstories.api.exceptions.world.WorldException;
 import io.xol.chunkstories.api.input.Input;
 import io.xol.chunkstories.api.item.ItemVoxel;
 import io.xol.chunkstories.api.item.interfaces.ItemOverlay;
@@ -66,7 +68,10 @@ import io.xol.chunkstories.core.voxel.VoxelClimbable;
 /**
  * Core/Vanilla player, has all the functionality you'd want from it: creative/survival mode, flying and walking controller...
  */
-public class EntityPlayer extends EntityHumanoid implements EntityControllable, EntityFeedable, EntityOverlay, EntityNameable, EntityWithInventory, EntityWithSelectedItem, EntityCreative, EntityFlying, EntityWithArmor
+public class EntityPlayer extends EntityHumanoid implements 
+EntityControllable, EntityFeedable, EntityOverlay, EntityNameable, 
+EntityWithInventory, EntityWithSelectedItem, EntityCreative, EntityFlying, EntityWithArmor,
+EntityWorldModifier
 {
 	//Add the controller component to whatever else the superclass may have
 	final EntityComponentController controllerComponent;
@@ -95,9 +100,9 @@ public class EntityPlayer extends EntityHumanoid implements EntityControllable, 
 
 	int variant;
 	
-	public EntityPlayer(EntityType t, World w, double x, double y, double z)
+	public EntityPlayer(EntityType t, Location location)
 	{
-		super(t, w, x, y, z);
+		super(t, location);
 		
 		controllerComponent = new EntityComponentController(this, this.getComponents().getLastComponent());
 		
@@ -113,9 +118,9 @@ public class EntityPlayer extends EntityHumanoid implements EntityControllable, 
 		armor = new EntityArmorInventory(this, 4, 1);
 	}
 
-	public EntityPlayer(EntityType t, World w, double x, double y, double z, String name)
+	public EntityPlayer(EntityType t, Location location, String name)
 	{
-		this(t, w, x, y, z);
+		this(t, location);
 		this.name.setName(name);
 
 		variant = ColorsTools.getUniqueColorCode(name) % 6;
@@ -238,7 +243,7 @@ public class EntityPlayer extends EntityHumanoid implements EntityControllable, 
 			
 			//Being on a ladder resets your jump height
 			if(onLadder)
-				lastStandingHeight = this.getEntityComponentPosition().getLocation().y();
+				lastStandingHeight = this.positionComponent.getLocation().y();
 			if(this.getFlyingComponent().get())
 				lastStandingHeight = Double.NaN;
 			
@@ -558,7 +563,8 @@ public class EntityPlayer extends EntityHumanoid implements EntityControllable, 
 					matrix.translate(loc3f);
 					renderingContext.setObjectMatrix(matrix);
 
-					VoxelContext context = entity.getWorld().peek(entity.getLocation());
+					//Obtains the data for the block the player is standing inside of, so he can be lit appropriately
+					VoxelContext context = entity.getWorld().peekSafely(entity.getLocation());
 					int modelBlockData = context.getData();
 
 					int lightSky = VoxelFormat.sunlight(modelBlockData);
@@ -697,7 +703,7 @@ public class EntityPlayer extends EntityHumanoid implements EntityControllable, 
 						// Player events mod
 						if(controller instanceof Player) {
 							Player player = (Player)controller;
-							VoxelContext ctx = world.peek(blockLocation);
+							VoxelContext ctx = world.peekSafely(blockLocation);
 							PlayerVoxelModificationEvent event = new PlayerVoxelModificationEvent(ctx, 0, EntityCreative.CREATIVE_MODE, player);
 							
 							//Anyone has objections ?
@@ -707,7 +713,11 @@ public class EntityPlayer extends EntityHumanoid implements EntityControllable, 
 								return true;
 						}
 						
-						world.setVoxelData(blockLocation, 0, this);
+						try {
+							world.poke((int)blockLocation.x, (int)blockLocation.y, (int)blockLocation.z, 0, this);
+						} catch (WorldException e) {
+							//Discard but maybe play some effect ?
+						}
 						return true;
 					}
 				}
@@ -715,7 +725,7 @@ public class EntityPlayer extends EntityHumanoid implements EntityControllable, 
 				{
 					if (blockLocation != null)
 					{
-						int data = this.getWorld().getVoxelData(blockLocation);
+						int data = this.getWorld().peekSafely(blockLocation).getData();
 
 						int voxelID = VoxelFormat.id(data);
 						int voxelMeta = VoxelFormat.meta(data);

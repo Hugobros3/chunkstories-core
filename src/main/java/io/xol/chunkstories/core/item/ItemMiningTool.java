@@ -9,8 +9,9 @@ import io.xol.chunkstories.api.client.ClientInterface;
 import io.xol.chunkstories.api.entity.Controller;
 import io.xol.chunkstories.api.entity.Entity;
 import io.xol.chunkstories.api.entity.interfaces.EntityControllable;
-import io.xol.chunkstories.api.events.voxel.VoxelModificationCause;
+import io.xol.chunkstories.api.entity.interfaces.EntityWorldModifier;
 import io.xol.chunkstories.api.events.voxel.VoxelModificationEvent;
+import io.xol.chunkstories.api.exceptions.world.WorldException;
 import io.xol.chunkstories.api.input.InputsManager;
 import io.xol.chunkstories.api.item.Item;
 import io.xol.chunkstories.api.item.ItemType;
@@ -21,6 +22,7 @@ import io.xol.chunkstories.api.player.Player;
 import io.xol.chunkstories.api.rendering.RenderingInterface;
 import io.xol.chunkstories.api.sound.SoundSource.Mode;
 import io.xol.chunkstories.api.voxel.Voxel;
+import io.xol.chunkstories.api.world.VoxelContext;
 import io.xol.chunkstories.api.world.World;
 import io.xol.chunkstories.api.world.WorldMaster;
 
@@ -28,7 +30,7 @@ import io.xol.chunkstories.api.world.WorldMaster;
 //http://chunkstories.xyz
 //http://xol.io
 
-public class ItemMiningTool extends Item implements VoxelModificationCause {
+public class ItemMiningTool extends Item {
 
 	public final String toolType;
 	public final float miningEfficiency;
@@ -50,10 +52,9 @@ public class ItemMiningTool extends Item implements VoxelModificationCause {
 	@Override
 	public void tickInHand(Entity owner, ItemPile itemPile) {
 		
-		//if(!(owner.getWorld() instanceof WorldMaster))
-		//	return;
 		World world = owner.getWorld();
-		if(owner instanceof EntityControllable) {
+		if(owner instanceof EntityControllable && owner instanceof EntityWorldModifier) {
+			EntityWorldModifier entityModifier = (EntityWorldModifier)owner;
 			EntityControllable owner2 = (EntityControllable)owner;
 			Controller controller = owner2.getController();
 			if(controller != null && controller instanceof Player) {
@@ -67,22 +68,24 @@ public class ItemMiningTool extends Item implements VoxelModificationCause {
 				if(inputs.getInputByName("mouse.left").isPressed()) {
 					
 					//Cancel mining if looking away or the block changed by itself
-					if(lookingAt == null || (progress != null && (lookingAt.distance(progress.loc) > 0 || owner.getWorld().getVoxelData(progress.loc) != progress.startId))) {
+					if(lookingAt == null || (progress != null && (lookingAt.distance(progress.loc) > 0 || owner.getWorld().peekSafely(progress.loc).getId() != progress.startId))) {
 						progress = null;
 					}
 					
 					if(progress == null) {
 						//Try starting mining something
 						if(lookingAt != null)
-							progress = new MiningProgress(lookingAt);
+							progress = new MiningProgress(world.peekSafely(lookingAt));
 					} else {
 						//Progress using efficiency / ticks per second
 						progress.progress += ItemMiningTool.this.miningEfficiency / 60f / progress.materialHardnessForThisTool;
 
 						if(progress.progress >= 1.0f) {
 							if(owner.getWorld() instanceof WorldMaster) {
+								
+								//TODO should this event be a part of the world implem poke() method ?
 								//Check no one minds
-								VoxelModificationEvent event = new VoxelModificationEvent(owner.getWorld().peek(progress.loc), 0, this);
+								VoxelModificationEvent event = new VoxelModificationEvent(owner.getWorld().peekSafely(progress.loc), 0, entityModifier);
 								owner.getWorld().getGameContext().getPluginManager().fireEvent(event);
 								
 								//DO IT
@@ -94,7 +97,13 @@ public class ItemMiningTool extends Item implements VoxelModificationCause {
 										world.getParticlesManager().spawnParticleAtPosition("voxel_frag", rnd);
 										world.getSoundManager().playSoundEffect("sounds/gameplay/voxel_remove.ogg", Mode.NORMAL, progress.loc, 1.0f, 1.0f);
 									}
-									world.setVoxelData(progress.loc, 0, owner);
+									
+									try {
+										world.poke(progress.context.getX(), progress.context.getY(), progress.context.getZ(), 0, entityModifier);
+									} catch (WorldException e) {
+										//Didn't work
+										//TODO make some ingame effect so as to clue in the player why it failed
+									}
 								}
 							}
 							
@@ -150,7 +159,7 @@ public class ItemMiningTool extends Item implements VoxelModificationCause {
 					elapsedd /= (float)animationCycleDuration;
 					
 					if(elapsedd >= progress.timesSoundPlayed && elapsed > 50) {
-						world.getSoundManager().playSoundEffect("sounds/gameplay/voxel_remove.ogg", Mode.NORMAL, progress.loc, 1.5f, 1.0f);
+						world.getSoundManager().playSoundEffect("sounds/gameplay/voxel_remove.ogg", Mode.NORMAL, progress.context.getLocation(), 1.5f, 1.0f);
 						progress.timesSoundPlayed++;
 					}
 					
@@ -176,11 +185,12 @@ public class ItemMiningTool extends Item implements VoxelModificationCause {
 
 	public class MiningProgress {
 		
-		public MiningProgress(Location loc) {
-			this.loc = loc;
-			this.startId = loc.getWorld().getVoxelData(loc);
+		public MiningProgress(VoxelContext context) {
+			this.context = context;
+			this.loc = context.getLocation();
+			this.startId = context.getId();
 			
-			voxel = loc.getWorld().peek(loc).getVoxel();
+			voxel = context.getVoxel();
 			material = voxel.getMaterial();
 			String hardnessString = null;
 			
@@ -205,6 +215,7 @@ public class ItemMiningTool extends Item implements VoxelModificationCause {
 			this.started = System.currentTimeMillis();
 		}
 		
+		public final VoxelContext context;
 		public final Voxel voxel;
 		public final Material material;
 		public final Location loc;

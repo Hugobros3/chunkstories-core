@@ -28,7 +28,6 @@ import io.xol.chunkstories.api.sound.SoundSource.Mode;
 import io.xol.chunkstories.api.voxel.Voxel;
 import io.xol.chunkstories.api.voxel.VoxelFormat;
 import io.xol.chunkstories.api.world.VoxelContext;
-import io.xol.chunkstories.api.world.World;
 import io.xol.chunkstories.api.world.WorldClient;
 import io.xol.chunkstories.api.world.WorldMaster;
 import io.xol.chunkstories.core.entity.components.EntityComponentStance;
@@ -60,9 +59,9 @@ public abstract class EntityHumanoid extends EntityLivingImplementation
 	
 	public final EntityComponentStance stance;
 
-	public EntityHumanoid(EntityType t, World world, double x, double y, double z)
+	public EntityHumanoid(EntityType t, Location location)
 	{
-		super(t, world, x, y, z);
+		super(t, location);
 
 		stance = new EntityComponentStance(this);
 		
@@ -250,7 +249,7 @@ public abstract class EntityHumanoid extends EntityLivingImplementation
 				if (renderingContext.getWorldRenderer().getCurrentRenderingPass() == RenderingPass.SHADOW && location.distance(renderingContext.getCamera().getCameraPosition()) > 15f)
 					continue;
 
-				VoxelContext context = entity.getWorld().peek(entity.getLocation());
+				VoxelContext context = entity.getWorld().peekSafely(entity.getLocation());
 				int modelBlockData = context.getData();
 
 				int lightSky = VoxelFormat.sunlight(modelBlockData);
@@ -418,7 +417,7 @@ public abstract class EntityHumanoid extends EntityLivingImplementation
 
 		boolean inWater = isInWater();
 
-		Voxel voxelStandingOn = world.peek(new Vector3d(this.getLocation()).add(0.0, -0.01, 0.0)).getVoxel();
+		Voxel voxelStandingOn = world.peekSafely(new Vector3d(this.getLocation()).add(0.0, -0.01, 0.0)).getVoxel();
 
 		if (voxelStandingOn == null || !voxelStandingOn.getType().isSolid() && !voxelStandingOn.getType().isLiquid())
 			return;

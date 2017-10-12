@@ -14,10 +14,10 @@ repositories {
 }
 
 description = 'The free base content chunkstories is built on.'
-version = '121'
+version = '122'
 
 ext {
-	apiRevisionBuiltAgainst = '113'
+	apiRevisionBuiltAgainst = '114'
 }
 
 dependencies {

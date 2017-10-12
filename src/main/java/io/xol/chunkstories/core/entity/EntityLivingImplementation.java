@@ -14,11 +14,12 @@ import io.xol.chunkstories.api.entity.EntityBase;
 import io.xol.chunkstories.api.entity.EntityLiving;
 import io.xol.chunkstories.api.entity.EntityType;
 import io.xol.chunkstories.api.entity.components.EntityComponentRotation;
+import io.xol.chunkstories.api.entity.components.EntityComponentVelocity;
 import io.xol.chunkstories.api.entity.interfaces.EntityControllable;
 import io.xol.chunkstories.api.entity.interfaces.EntityFlying;
+import io.xol.chunkstories.api.entity.interfaces.EntityWithVelocity;
 import io.xol.chunkstories.api.events.entity.EntityDamageEvent;
 import io.xol.chunkstories.api.world.VoxelContext;
-import io.xol.chunkstories.api.world.World;
 import io.xol.chunkstories.api.world.WorldClient;
 import io.xol.chunkstories.api.world.WorldMaster;
 import io.xol.chunkstories.core.entity.components.EntityComponentHealth;
@@ -27,10 +28,11 @@ import io.xol.chunkstories.core.entity.components.EntityComponentHealth;
 //http://chunkstories.xyz
 //http://xol.io
 
-public abstract class EntityLivingImplementation extends EntityBase implements EntityLiving
+public abstract class EntityLivingImplementation extends EntityBase implements EntityLiving, EntityWithVelocity
 {
 	//Head/body rotation
-	EntityComponentRotation entityRotationComponent;
+	final protected EntityComponentRotation entityRotationComponent;
+	final protected EntityComponentVelocity velocityComponent;
 
 	//Movement stuff
 	public Vector3d acceleration = new Vector3d();
@@ -46,15 +48,22 @@ public abstract class EntityLivingImplementation extends EntityBase implements E
 	protected double lastStandingHeight = Double.NaN;
 	protected boolean wasStandingLastTick = true;
 
-	public EntityLivingImplementation(EntityType t, World world, double x, double y, double z)
+	public EntityLivingImplementation(EntityType t, Location location)
 	{
-		super(t, world, x, y, z);
+		super(t, location);
 
+		velocityComponent = new EntityComponentVelocity(this);
+		
 		entityRotationComponent = new EntityComponentRotation(this, this.getComponents().getLastComponent());
 		entityHealthComponent = new EntityComponentHealth(this, getStartHealth());
 	}
 	
+	public EntityComponentVelocity getVelocityComponent() {
+		return velocityComponent;
+	}
+	
 	@Override
+	/** Teleports reset the last standing height, meanining you can't take fall damage from a teleport */
 	public void setLocation(Location loc)
 	{
 		super.setLocation(loc);
@@ -164,7 +173,7 @@ public abstract class EntityLivingImplementation extends EntityBase implements E
 			{
 				if(!wasStandingLastTick && !Double.isNaN(lastStandingHeight))
 				{
-					double fallDistance = lastStandingHeight - this.getEntityComponentPosition().getLocation().y();
+					double fallDistance = lastStandingHeight - this.positionComponent.getLocation().y();
 					if(fallDistance > 0)
 					{
 						//System.out.println("Fell "+fallDistance+" meters");
@@ -176,7 +185,7 @@ public abstract class EntityLivingImplementation extends EntityBase implements E
 						}
 					}
 				}
-				lastStandingHeight = this.getEntityComponentPosition().getLocation().y();
+				lastStandingHeight = this.positionComponent.getLocation().y();
 			}
 			this.wasStandingLastTick = isOnGround();
 		}

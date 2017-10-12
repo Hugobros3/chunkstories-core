@@ -2,7 +2,8 @@ package io.xol.chunkstories.core.voxel;
 
 import io.xol.chunkstories.api.Location;
 import io.xol.chunkstories.api.entity.Entity;
-import io.xol.chunkstories.api.exceptions.IllegalBlockModificationException;
+import io.xol.chunkstories.api.events.voxel.WorldModificationCause;
+import io.xol.chunkstories.api.exceptions.world.voxel.IllegalBlockModificationException;
 import io.xol.chunkstories.api.input.Input;
 import io.xol.chunkstories.api.item.ItemVoxel;
 import io.xol.chunkstories.api.item.inventory.ItemPile;
@@ -17,10 +18,11 @@ import io.xol.chunkstories.api.voxel.VoxelSides;
 import io.xol.chunkstories.api.voxel.VoxelType;
 import io.xol.chunkstories.api.voxel.models.VoxelModel;
 import io.xol.chunkstories.api.voxel.textures.VoxelTexture;
+import io.xol.chunkstories.api.world.EditableVoxelContext;
 import io.xol.chunkstories.api.world.VoxelContext;
 import io.xol.chunkstories.api.world.World;
 import io.xol.chunkstories.api.world.WorldMaster;
-import io.xol.chunkstories.api.world.World.WorldVoxelContext;
+import io.xol.chunkstories.api.world.chunk.Chunk.ChunkVoxelContext;
 
 //(c) 2015-2017 XolioWare Interactive
 //http://chunkstories.xyz
@@ -108,7 +110,7 @@ public class VoxelDoor extends Voxel implements VoxelLogic, VoxelInteractive, Vo
 	//0x2-0x4 -> side ( VoxelSide << 2 )
 
 	@Override
-	public boolean handleInteraction(Entity entity, WorldVoxelContext voxelContext, Input input)
+	public boolean handleInteraction(Entity entity, ChunkVoxelContext voxelContext, Input input)
 	{
 		if (!input.getName().equals("mouse.right"))
 			return false;
@@ -130,14 +132,17 @@ public class VoxelDoor extends Voxel implements VoxelLogic, VoxelInteractive, Vo
 		else
 			otherPartLocation.add(0.0, 1.0, 0.0);
 
-		int otherLocationId = VoxelFormat.id(otherPartLocation.getVoxelDataAtLocation());
-		if (store.getVoxelById(otherLocationId) instanceof VoxelDoor)
+		EditableVoxelContext otherLocationPeek = voxelContext.getWorld().peekSafely(otherPartLocation);
+		if (otherLocationPeek.getVoxel() instanceof VoxelDoor)
 		{
 			System.out.println("new door status : " + newState);
 			voxelContext.getWorld().getSoundManager().playSoundEffect("sounds/sfx/door.ogg", Mode.NORMAL, voxelContext.getLocation(), 1.0f, 1.0f);
 
-			voxelContext.getLocation().setVoxelDataAtLocation(VoxelFormat.changeMeta(voxelContext.getData(), newData));
-			otherPartLocation.setVoxelDataAtLocation(VoxelFormat.changeMeta(otherPartLocation.getVoxelDataAtLocation(), newData));
+			voxelContext.getWorld().pokeSimple(voxelContext.getX(), voxelContext.getY(), voxelContext.getZ(), VoxelFormat.changeMeta(voxelContext.getData(), newData));
+			//voxelContext.getLocation().setVoxelDataAtLocation(VoxelFormat.changeMeta(voxelContext.getData(), newData));
+			
+			otherLocationPeek.pokeSimple(VoxelFormat.changeMeta(otherLocationPeek.getData(), newData));
+			//otherPartLocation.setVoxelDataAtLocation(VoxelFormat.changeMeta(otherPartLocation.getVoxelDataAtLocation(), newData));
 		}
 		else
 		{
@@ -213,24 +218,29 @@ public class VoxelDoor extends Voxel implements VoxelLogic, VoxelInteractive, Vo
 	}
 
 	@Override
-	public int onPlace(World world, int x, int y, int z, int voxelData, Entity entity) throws IllegalBlockModificationException
+	public int onPlace(ChunkVoxelContext context, int voxelData, WorldModificationCause cause) throws IllegalBlockModificationException
 	{
 		//Ignore all that crap on a slave world
-		if (!(world instanceof WorldMaster))
+		if (!(context.getWorld() instanceof WorldMaster))
 			return voxelData;
 
 		//We should only place the lower part, prevent entities from doing so !
-		if (top && entity != null)
-			throw new IllegalBlockModificationException("Entities can't place upper doors parts");
+		if (top && cause != null && cause instanceof Entity)
+			throw new IllegalBlockModificationException(context, "Entities can't place upper doors parts");
 
 		//If the system adds the upper part, no modifications to be done on it
 		if (top)
 			return voxelData;
+		
+		World world = context.getWorld();
+		int x = context.getX();
+		int y = context.getY();
+		int z = context.getZ();
 
 		//Check top is free
-		int topData = world.getVoxelData(x, y + 1, z);
+		int topData = world.peekSimple(x, y + 1, z);
 		if (VoxelFormat.id(topData) != 0)
-			throw new IllegalBlockModificationException("Top part isn't free");
+			throw new IllegalBlockModificationException(context, "Top part isn't free");
 
 		//grab our attributes
 		boolean isOpen = ((VoxelFormat.meta(voxelData) >> 0) & 0x1) == 1;
@@ -241,9 +251,9 @@ public class VoxelDoor extends Voxel implements VoxelLogic, VoxelInteractive, Vo
 		VoxelSides doorSideFacing = VoxelSides.values()[facingPassed];
 
 		//Determine side if placed by an entity and not internal code
-		if (entity != null)
+		if (cause != null && cause instanceof Entity)
 		{
-			Location loc = entity.getLocation();
+			Location loc = ((Entity) cause).getLocation();
 			double dx = loc.x() - (x + 0.5);
 			double dz = loc.z() - (z + 0.5);
 			if (Math.abs(dx) > Math.abs(dz))
@@ -266,16 +276,16 @@ public class VoxelDoor extends Voxel implements VoxelLogic, VoxelInteractive, Vo
 			switch (doorSideFacing)
 			{
 			case LEFT:
-				adjacentId = world.getVoxelData(x, y, z - 1);
+				adjacentId = world.peekSimple(x, y, z - 1);
 				break;
 			case RIGHT:
-				adjacentId = world.getVoxelData(x, y, z + 1);
+				adjacentId = world.peekSimple(x, y, z + 1);
 				break;
 			case FRONT:
-				adjacentId = world.getVoxelData(x - 1, y, z);
+				adjacentId = world.peekSimple(x - 1, y, z);
 				break;
 			case BACK:
-				adjacentId = world.getVoxelData(x + 1, y, z);
+				adjacentId = world.peekSimple(x + 1, y, z);
 				break;
 			default:
 				break;
@@ -289,7 +299,9 @@ public class VoxelDoor extends Voxel implements VoxelLogic, VoxelInteractive, Vo
 		}
 
 		//Place the upper part and we're good to go
-		world.setVoxelData(x, y + 1, z, VoxelFormat.changeId(voxelData, this.getId() + 1));
+		
+		world.pokeSimple(x, y + 1, z, VoxelFormat.changeId(voxelData, this.getId() + 1));
+		//world.setVoxelData(x, y + 1, z, VoxelFormat.changeId(voxelData, this.getId() + 1));
 
 		//Return updated voxelData
 		return voxelData;
@@ -307,8 +319,13 @@ public class VoxelDoor extends Voxel implements VoxelLogic, VoxelInteractive, Vo
 	}
 
 	@Override
-	public void onRemove(World world, int x, int y, int z, int voxelData, Entity entity)
+	public void onRemove(ChunkVoxelContext context, int voxelData, WorldModificationCause cause)
 	{
+		World world = context.getWorld();
+		int x = context.getX();
+		int y = context.getY();
+		int z = context.getZ();
+		
 		//Ignore all that crap on a slave world
 		if (!(world instanceof WorldMaster))
 			return;
@@ -319,12 +336,12 @@ public class VoxelDoor extends Voxel implements VoxelLogic, VoxelInteractive, Vo
 		else
 			otherY++;
 
-		world.setVoxelDataWithoutUpdates(x, y, z, 0);
-		int otherData = world.getVoxelData(x, otherY, z);
+		world.pokeSimple(x, y, z, 0);
+		int otherData = world.peekSimple(x, otherY, z);
 		//Remove the other part as well, if it still exists
 		if (store.getVoxelById(otherData) instanceof VoxelDoor)
 		{
-			world.setVoxelData(x, otherY, z, 0);
+			world.pokeSimple(x, otherY, z, 0);
 		}
 	}
 
@@ -343,7 +360,7 @@ public class VoxelDoor extends Voxel implements VoxelLogic, VoxelInteractive, Vo
 	}
 
 	@Override
-	public int onModification(World world, int x, int y, int z, int formerData, int voxelData, Entity entity) throws IllegalBlockModificationException
+	public int onModification(ChunkVoxelContext context, int voxelData, WorldModificationCause cause) throws IllegalBlockModificationException
 	{
 		return voxelData;
 	}

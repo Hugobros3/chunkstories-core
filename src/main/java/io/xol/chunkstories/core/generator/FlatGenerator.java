@@ -28,11 +28,11 @@ public class FlatGenerator extends WorldGenerator
 	int ws;
 
 	@Override
-	public Chunk generateChunk(Chunk c)
+	public Chunk generateChunk(Chunk chunk)
 	{
-		int cx = c.getChunkX();
-		int cy = c.getChunkY();
-		int cz = c.getChunkZ();
+		int cx = chunk.getChunkX();
+		int cy = chunk.getChunkY();
+		int cz = chunk.getChunkZ();
 		
 		rnd.setSeed(cx * 32 + cz + 48716148);
 
@@ -57,11 +57,11 @@ public class FlatGenerator extends WorldGenerator
 						type = 23;
 					if (y == 30)
 						type = 25;
-					c.setVoxelDataWithoutUpdates(x, y, z, type);
+					chunk.pokeSimple(x, y, z, type);
 					y++;
 				}
 			}
-		return c;
+		return chunk;
 	}
 
 	@Override

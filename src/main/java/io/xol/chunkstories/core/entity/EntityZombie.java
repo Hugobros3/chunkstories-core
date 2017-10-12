@@ -26,7 +26,6 @@ import io.xol.chunkstories.api.serialization.StreamTarget;
 import io.xol.chunkstories.api.sound.SoundSource.Mode;
 import io.xol.chunkstories.api.voxel.VoxelFormat;
 import io.xol.chunkstories.api.world.VoxelContext;
-import io.xol.chunkstories.api.world.World;
 import io.xol.chunkstories.api.world.WorldMaster;
 import io.xol.chunkstories.core.entity.ai.ZombieAI;
 import io.xol.chunkstories.core.entity.interfaces.EntityWithSelectedItem;
@@ -105,14 +104,14 @@ public class EntityZombie extends EntityHumanoid
 		zombieTargets.add(EntityPlayer.class);
 	}
 	
-	public EntityZombie(EntityType t, World world, double x, double y, double z)
+	public EntityZombie(EntityType t, Location location)
 	{
-		this(t, world, x, y, z, Stage.values()[(int) Math.floor(Math.random() * Stage.values().length)]);
+		this(t, location, Stage.values()[(int) Math.floor(Math.random() * Stage.values().length)]);
 	}
 	
-	public EntityZombie(EntityType t, World world, double x, double y, double z, Stage stage)
+	public EntityZombie(EntityType t, Location location, Stage stage)
 	{
-		super(t, world, x, y, z);
+		super(t, location);
 		zombieAi = new ZombieAI(this, zombieTargets);
 		
 		this.stageComponent = new StageComponent(this);
@@ -167,7 +166,7 @@ public class EntityZombie extends EntityHumanoid
 				if (renderingContext.getWorldRenderer().getCurrentRenderingPass() == RenderingPass.SHADOW && location.distance(renderingContext.getCamera().getCameraPosition()) > 15f)
 					continue;
 
-				VoxelContext context = entity.getWorld().peek(entity.getLocation());
+				VoxelContext context = entity.getWorld().peekSafely(entity.getLocation());
 				int modelBlockData = context.getData();
 
 				int lightSky = VoxelFormat.sunlight(modelBlockData);

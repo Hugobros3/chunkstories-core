@@ -142,7 +142,7 @@ public class ParticleVoxelFragment extends ParticleTypeHandler
 	@Override
 	public ParticleData createNew(World world, float x, float y, float z)
 	{
-		return new FragmentData(x, y, z, world.getVoxelData((int)x, (int)y, (int)z));
+		return new FragmentData(x, y, z, world.peekSimple((int)x, (int)y, (int)z));
 	}
 
 	@Override
@@ -155,7 +155,7 @@ public class ParticleVoxelFragment extends ParticleTypeHandler
 		b.y = ((float) (b.y() + b.vel.y()));
 		b.z = ((float) (b.z() + b.vel.z()));
 		
-		if(b.isCollidingAgainst(world, b.x, b.y - 0.1f, b.z))//if (!((WorldImplementation) world).checkCollisionPoint(b.x(), b.y() - 0.1, b.z()))
+		if(!b.isCollidingAgainst(world, b.x, b.y - 0.1f, b.z))//if (!((WorldImplementation) world).checkCollisionPoint(b.x(), b.y() - 0.1, b.z()))
 			b.vel.y = (b.vel.y() + -0.89/60.0);
 		else
 			b.vel.set(0d, 0d, 0d);

@@ -3,27 +3,32 @@ package io.xol.chunkstories.core.voxel;
 import io.xol.chunkstories.api.Location;
 import io.xol.chunkstories.api.entity.Controller;
 import io.xol.chunkstories.api.entity.Entity;
-import io.xol.chunkstories.api.entity.EntityVoxel;
 import io.xol.chunkstories.api.entity.interfaces.EntityControllable;
-import io.xol.chunkstories.api.exceptions.IllegalBlockModificationException;
+import io.xol.chunkstories.api.events.voxel.WorldModificationCause;
+import io.xol.chunkstories.api.exceptions.world.WorldException;
+import io.xol.chunkstories.api.exceptions.world.voxel.IllegalBlockModificationException;
 import io.xol.chunkstories.api.input.Input;
+import io.xol.chunkstories.api.item.inventory.Inventory;
 import io.xol.chunkstories.api.player.Player;
-import io.xol.chunkstories.api.voxel.VoxelEntity;
+import io.xol.chunkstories.api.voxel.Voxel;
 import io.xol.chunkstories.api.voxel.VoxelFormat;
+import io.xol.chunkstories.api.voxel.VoxelInteractive;
+import io.xol.chunkstories.api.voxel.VoxelLogic;
 import io.xol.chunkstories.api.voxel.VoxelSides;
 import io.xol.chunkstories.api.voxel.VoxelType;
+import io.xol.chunkstories.api.voxel.components.VoxelComponent;
 import io.xol.chunkstories.api.voxel.textures.VoxelTexture;
 import io.xol.chunkstories.api.world.VoxelContext;
-import io.xol.chunkstories.api.world.World;
 import io.xol.chunkstories.api.world.WorldMaster;
-import io.xol.chunkstories.api.world.World.WorldVoxelContext;
-import io.xol.chunkstories.core.entity.voxel.EntityChest;
+import io.xol.chunkstories.api.world.chunk.Chunk.ChunkVoxelContext;
+import io.xol.chunkstories.core.item.inventory.BasicInventory;
+import io.xol.chunkstories.core.voxel.components.VoxelInventoryComponent;
 
 //(c) 2015-2017 XolioWare Interactive
 //http://chunkstories.xyz
 //http://xol.io
 
-public class VoxelChest extends VoxelEntity
+public class VoxelChest extends Voxel implements VoxelInteractive, VoxelLogic
 {
 	VoxelTexture frontTexture;
 	VoxelTexture sideTexture;
@@ -39,7 +44,7 @@ public class VoxelChest extends VoxelEntity
 	}
 
 	@Override
-	public boolean handleInteraction(Entity entity, WorldVoxelContext voxelContext, Input input)
+	public boolean handleInteraction(Entity entity, ChunkVoxelContext voxelContext, Input input)
 	{
 		//Open GUI
 		if(input.getName().equals("mouse.right") && voxelContext.getWorld() instanceof WorldMaster) {
@@ -50,34 +55,30 @@ public class VoxelChest extends VoxelEntity
 				
 				if(c instanceof Player) {
 					Player p = (Player)c;
-					p.openInventory(((EntityChest)this.getVoxelEntity(voxelContext.getWorld(), voxelContext.getX(), voxelContext.getY(), voxelContext.getZ())).getInventory());
+					p.openInventory(getInventory(voxelContext));
+					//p.openInventory(((EntityChest)this.getEntity(voxelContext)).getInventory());
 				}
 				
 			}
 		}
-		/*if(input.getName().equals("mouse.right") && entity.getWorld() instanceof WorldClient)
-		{	
-			Client.getInstance().openInventory(((EntityChest)this.getVoxelEntity(voxelLocation)).getInventory());
-			return true;
-		}*/
 		return false;
 	}
-
-	@Override
-	public EntityChest getVoxelEntity(World world, int worldX, int worldY, int worldZ)
-	{
-		EntityVoxel ev = super.getVoxelEntity(world, worldX, worldY, worldZ);
-		if(!(ev instanceof EntityChest))
-				throw new RuntimeException("VoxelEntity representation invariant fail, wrong entity found at " + worldX + ":" + worldY + ":" + worldZ);
-		return (EntityChest) ev;
-	}
-
-	@Override
-	protected EntityVoxel createVoxelEntity(World world, int x, int y, int z)
-	{
-		return new EntityChest(store.parent().entities().getEntityTypeByName("chest"), world, x, y, z);
-	}
 	
+	private Inventory getInventory(ChunkVoxelContext context) {
+		
+		// Try to grab the existing chest inventory
+		VoxelComponent comp = context.components().get("chestInventory");
+		if(comp != null) {
+			VoxelInventoryComponent component = (VoxelInventoryComponent)comp;
+			return component.getInventory();
+		}
+
+		// Create a new component and insert it into the chunk
+		VoxelInventoryComponent component = new VoxelInventoryComponent(context.components(), new BasicInventory(10, 6));
+		context.components().put("chestInventory", component);
+		return component.getInventory();
+	}
+
 	@Override
 	public VoxelTexture getVoxelTexture(int data, VoxelSides side, VoxelContext info)
 	{
@@ -94,18 +95,18 @@ public class VoxelChest extends VoxelEntity
 	
 	@Override
 	//Chunk stories chests use Minecraft format to ease porting of maps
-	public int onPlace(World world, int x, int y, int z, int voxelData, Entity entity) throws IllegalBlockModificationException
+	public int onPlace(ChunkVoxelContext context, int voxelData, WorldModificationCause cause) throws IllegalBlockModificationException
 	{
-		super.onPlace(world, x, y, z, voxelData, entity);
+		//super.onPlace(context, voxelData, cause);
 		
 		int stairsSide = 0;
 		//See: 
 		//http://minecraft.gamepedia.com/Data_values#Ladders.2C_Furnaces.2C_Chests.2C_Trapped_Chests
-		if (entity != null)
+		if (cause != null && cause instanceof Entity)
 		{
-			Location loc = entity.getLocation();
-			double dx = loc.x() - (x + 0.5);
-			double dz = loc.z() - (z + 0.5);
+			Location loc = ((Entity) cause).getLocation();
+			double dx = loc.x() - (context.getX() + 0.5);
+			double dz = loc.z() - (context.getZ() + 0.5);
 			if (Math.abs(dx) > Math.abs(dz))
 			{
 				if(dx > 0)
@@ -124,4 +125,17 @@ public class VoxelChest extends VoxelEntity
 		}
 		return voxelData;
 	}
+
+	@Override
+	public void onRemove(ChunkVoxelContext context, int voxelData, WorldModificationCause cause) throws WorldException {
+		context.components().erase();
+	}
+
+	@Override
+	public int onModification(ChunkVoxelContext context, int voxelData, WorldModificationCause cause)
+			throws WorldException {
+		return voxelData;
+	}
+	
+	
 }

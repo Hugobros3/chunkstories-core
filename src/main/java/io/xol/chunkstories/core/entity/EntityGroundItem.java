@@ -1,5 +1,6 @@
 package io.xol.chunkstories.core.entity;
 
+import io.xol.chunkstories.api.Location;
 import io.xol.chunkstories.api.entity.EntityBase;
 import io.xol.chunkstories.api.entity.EntityType;
 import io.xol.chunkstories.api.item.inventory.ItemPile;
@@ -12,7 +13,6 @@ import io.xol.chunkstories.api.rendering.entity.EntityRenderer;
 import io.xol.chunkstories.api.rendering.entity.RenderingIterator;
 import io.xol.chunkstories.api.voxel.VoxelFormat;
 import io.xol.chunkstories.api.world.VoxelContext;
-import io.xol.chunkstories.api.world.World;
 
 //(c) 2015-2017 XolioWare Interactive
 //http://chunkstories.xyz
@@ -23,15 +23,15 @@ public class EntityGroundItem extends EntityBase implements EntityRenderable
 	private long spawnTime;
 	private final EntityGroundItemPileComponent itemPileWithin;
 	
-	public EntityGroundItem(EntityType t, World world, double x, double y, double z)
+	public EntityGroundItem(EntityType t, Location location)
 	{
-		super(t, world, x, y, z);
+		super(t, location);
 		itemPileWithin = new EntityGroundItemPileComponent(this);
 	}
 	
-	public EntityGroundItem(EntityType t, World world, double x, double y, double z, ItemPile itemPile)
+	public EntityGroundItem(EntityType t, Location location, ItemPile itemPile)
 	{
-		super(t, world, x, y, z);
+		super(t, location);
 		itemPileWithin = new EntityGroundItemPileComponent(this, itemPile);
 		spawnTime = System.currentTimeMillis();
 	}
@@ -76,7 +76,7 @@ public class EntityGroundItem extends EntityBase implements EntityRenderable
 				ItemPile within = e.itemPileWithin.getItemPile();
 				if(within != null)
 				{
-					VoxelContext context = e.getWorld().peek(e.getLocation());
+					VoxelContext context = e.getWorld().peekSafely(e.getLocation());
 					int modelBlockData = context.getData();
 
 					int lightSky = VoxelFormat.sunlight(modelBlockData);

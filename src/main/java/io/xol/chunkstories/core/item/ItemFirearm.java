@@ -10,6 +10,7 @@ import io.xol.chunkstories.api.entity.EntityLiving.HitBox;
 import io.xol.chunkstories.api.entity.components.EntityComponentRotation;
 import io.xol.chunkstories.api.entity.interfaces.EntityControllable;
 import io.xol.chunkstories.api.entity.interfaces.EntityCreative;
+import io.xol.chunkstories.api.exceptions.world.voxel.IllegalBlockModificationException;
 import io.xol.chunkstories.api.input.Input;
 import io.xol.chunkstories.api.item.ItemType;
 import io.xol.chunkstories.api.item.interfaces.ItemCustomHoldingAnimation;
@@ -28,6 +29,7 @@ import io.xol.chunkstories.api.rendering.RenderingInterface;
 import io.xol.chunkstories.api.rendering.text.FontRenderer.Font;
 import io.xol.chunkstories.api.sound.SoundSource.Mode;
 import io.xol.chunkstories.api.voxel.Voxel;
+import io.xol.chunkstories.api.world.EditableVoxelContext;
 import io.xol.chunkstories.api.world.VoxelContext;
 import io.xol.chunkstories.api.world.World;
 import io.xol.chunkstories.api.world.WorldClient;
@@ -276,18 +278,23 @@ public class ItemFirearm extends ItemWeapon implements ItemOverlay, ItemZoom, It
 					Vector3dc nearestLocation = null;
 
 					//Loops to try and break blocks
+					boolean brokeLastBlock = false;
 					while(user.getWorld() instanceof WorldMaster && shotBlock != null)
 					{
-						VoxelContext peek = user.getWorld().peek(shotBlock);
+						EditableVoxelContext peek = user.getWorld().peekSafely(shotBlock);
 						//int data = peek.getData();
 						Voxel voxel = peek.getVoxel();
 						
+						brokeLastBlock = false;
 						if(voxel.getId() != 0 && voxel.getMaterial().resolveProperty("bulletBreakable") != null && voxel.getMaterial().resolveProperty("bulletBreakable").equals("true"))
 						{
 							//Spawn an event to check if it's okay
 							
 							//Destroy it
-							user.getWorld().setVoxelData(shotBlock, 0);
+							peek.pokeSimple(0);
+							//user.getWorld().setVoxelData(shotBlock, 0);
+							
+							brokeLastBlock = true;
 							for(int i = 0; i < 25; i++)
 							{
 								Vector3d smashedVoxelParticleDirection = new Vector3d(direction);
@@ -306,7 +313,8 @@ public class ItemFirearm extends ItemWeapon implements ItemOverlay, ItemZoom, It
 							break;
 					}
 					
-					if (shotBlock != null)
+					//Spawn decal and particles on block the bullet embedded itself in
+					if (shotBlock != null && !brokeLastBlock)
 					{
 						Location shotBlockOuter = user.getWorld().collisionsManager().raytraceSolidOuter(eyeLocation, direction, range);
 						
@@ -324,7 +332,7 @@ public class ItemFirearm extends ItemWeapon implements ItemOverlay, ItemZoom, It
 
 							//shotBlock.setX(shotBlock.getX() + 1);
 							
-							VoxelContext peek = user.getWorld().peek(shotBlock);
+							VoxelContext peek = user.getWorld().peekSafely(shotBlock);
 							
 							//int data = user.getWorld().getVoxelData(shotBlock);
 							//Voxel voxel = VoxelsStore.get().getVoxelById(data);

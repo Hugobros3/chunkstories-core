@@ -31,11 +31,11 @@ public class HorizonGenerator extends WorldGenerator
 	}
 	
 	@Override
-	public Chunk generateChunk(Chunk c)
+	public Chunk generateChunk(Chunk chunk)
 	{
-		int cx = c.getChunkX();
-		int cy = c.getChunkY();
-		int cz = c.getChunkZ();
+		int cx = chunk.getChunkX();
+		int cy = chunk.getChunkY();
+		int cz = chunk.getChunkZ();
 		rnd.setSeed(cx * 32 + cz + 48716148);
 		
 		//CubicChunk c = new CubicChunk(region, cx, cy, cz);
@@ -55,16 +55,16 @@ public class HorizonGenerator extends WorldGenerator
 						type = 3;
 					else
 						type = 2;
-					c.setVoxelDataWithoutUpdates(x, y, z, type);
+					chunk.pokeSimple(x, y, z, type);
 					y++;
 				}
 				while(y < cy * 32 + 32 && y < 60)
 				{
-					c.setVoxelDataWithoutUpdates(x, y, z, 128);
+					chunk.pokeSimple(x, y, z, 128);
 					y++;
 				}
 			}
-		return c;
+		return chunk;
 	}
 	
 	float fractalNoise(int x, int z, int octaves, float freq, float persistence)

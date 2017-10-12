@@ -54,7 +54,7 @@ public class GenericHumanoidAI extends AI<EntityHumanoid>
 		}
 		
 		//Water-jump
-		if(entity.getWorld().peek(entity.getLocation()).getVoxel().getType().isLiquid())
+		if(entity.getWorld().peekSafely(entity.getLocation()).getVoxel().getType().isLiquid())
 		{
 			if(entity.getVelocityComponent().getVelocity().y() < 0.15)
 				entity.getVelocityComponent().addVelocity(0.0, 0.15, 0.0);

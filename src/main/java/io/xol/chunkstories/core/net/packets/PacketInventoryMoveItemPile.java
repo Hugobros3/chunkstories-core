@@ -168,7 +168,7 @@ public class PacketInventoryMoveItemPile extends PacketSynchPrepared
 				}
 				
 				Location loc = playerEntity.getLocation();
-				EntityGroundItem entity = new EntityGroundItem(player.getContext().getContent().entities().getEntityTypeByName("groundItem"), loc.getWorld(), loc.x(), loc.y(), loc.z(), itemPile);
+				EntityGroundItem entity = new EntityGroundItem(player.getContext().getContent().entities().getEntityTypeByName("groundItem"), loc, itemPile);
 				loc.getWorld().addEntity(entity);
 				
 				player.sendMessage("Notice : throwing stuff on ground is still glitchy and experimental.");

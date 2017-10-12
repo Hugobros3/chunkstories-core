@@ -9,11 +9,11 @@ entity zombie 2
 	class: io.xol.chunkstories.core.entity.EntityZombie
 end
 
-entity chest 6
+voxel_entity chest 6
 	class: io.xol.chunkstories.core.entity.voxel.EntityChest
 end
 
-entity sign 7
+voxel_entity sign 7
 	class: io.xol.chunkstories.core.entity.voxel.EntitySign
 end
 

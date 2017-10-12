@@ -11,8 +11,8 @@ uniform float time;
 
 out vec4 modelview;
 
-attribute vec4 particlesPositionIn;
-attribute vec2 textureCoordinatesIn;
+in vec4 particlesPositionIn;
+in vec2 textureCoordinatesIn;
 
 uniform float areTextureCoordinatesSupplied;
 

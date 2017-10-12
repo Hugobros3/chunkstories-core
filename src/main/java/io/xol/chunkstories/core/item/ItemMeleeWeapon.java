@@ -20,6 +20,7 @@ import io.xol.chunkstories.api.physics.CollisionBox;
 import io.xol.chunkstories.api.player.PlayerClient;
 import io.xol.chunkstories.api.rendering.RenderingInterface;
 import io.xol.chunkstories.api.sound.SoundSource.Mode;
+import io.xol.chunkstories.api.world.EditableVoxelContext;
 import io.xol.chunkstories.api.world.VoxelContext;
 import io.xol.chunkstories.api.world.World;
 import io.xol.chunkstories.api.world.WorldMaster;
@@ -142,14 +143,15 @@ public class ItemMeleeWeapon extends ItemWeapon
 			//Loops to try and break blocks
 			while(owner.getWorld() instanceof WorldMaster && shotBlock != null)
 			{
-				VoxelContext peek = owner.getWorld().peek(shotBlock);
+				EditableVoxelContext peek = owner.getWorld().peekSafely(shotBlock);
 				
 				if(peek.getVoxel().getId() != 0 && peek.getVoxel().getMaterial().resolveProperty("bulletBreakable") != null && peek.getVoxel().getMaterial().resolveProperty("bulletBreakable").equals("true"))
 				{
 					//Spawn an event to check if it's okay
 					
 					//Destroy it
-					owner.getWorld().setVoxelData(shotBlock, 0);
+					peek.pokeSimple(0);
+					//owner.getWorld().setVoxelData(shotBlock, 0);
 					for(int i = 0; i < 25; i++)
 					{
 						Vector3d smashedVoxelParticleDirection = new Vector3d(direction);
@@ -182,7 +184,7 @@ public class ItemMeleeWeapon extends ItemWeapon
 					Vector3d reflected = new Vector3d(direction);
 					reflected.sub(NxNbyI2x);
 
-					VoxelContext peek = owner.getWorld().peek(shotBlock);
+					VoxelContext peek = owner.getWorld().peekSafely(shotBlock);
 
 					//This seems fine
 					for (CollisionBox box : peek.getVoxel().getTranslatedCollisionBoxes(owner.getWorld(), (int) (double) shotBlock.x(), (int) (double) shotBlock.y(), (int) (double) shotBlock.z()))
@@ -216,7 +218,7 @@ public class ItemMeleeWeapon extends ItemWeapon
 
 						Vector3d ppos = new Vector3d(nearestLocation);
 						owner.getWorld().getParticlesManager().spawnParticleAtPositionWithVelocity("voxel_frag", ppos, untouchedReflection);
-						owner.getWorld().getSoundManager().playSoundEffect(owner.getWorld().peek(shotBlock).getVoxel().getMaterial().resolveProperty("landingSounds"), Mode.NORMAL, ppos, 1, 0.25f);
+						owner.getWorld().getSoundManager().playSoundEffect(owner.getWorld().peekSafely(shotBlock).getVoxel().getMaterial().resolveProperty("landingSounds"), Mode.NORMAL, ppos, 1, 0.25f);
 					}
 
 					owner.getWorld().getDecalsManager().drawDecal(nearestLocation, normal.negate(), new Vector3d(0.5), "bullethole");

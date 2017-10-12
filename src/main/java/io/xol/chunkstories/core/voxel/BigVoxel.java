@@ -1,14 +1,15 @@
 package io.xol.chunkstories.core.voxel;
 
 import io.xol.chunkstories.api.entity.Entity;
-import io.xol.chunkstories.api.exceptions.IllegalBlockModificationException;
+import io.xol.chunkstories.api.events.voxel.WorldModificationCause;
+import io.xol.chunkstories.api.exceptions.world.voxel.IllegalBlockModificationException;
 import io.xol.chunkstories.api.voxel.Voxel;
 import io.xol.chunkstories.api.voxel.VoxelFormat;
 import io.xol.chunkstories.api.voxel.VoxelLogic;
 import io.xol.chunkstories.api.voxel.VoxelType;
 import io.xol.chunkstories.api.world.VoxelContext;
-import io.xol.chunkstories.api.world.World;
 import io.xol.chunkstories.api.world.chunk.Chunk;
+import io.xol.chunkstories.api.world.chunk.Chunk.ChunkVoxelContext;
 
 public class BigVoxel extends Voxel implements VoxelLogic {
 
@@ -43,26 +44,31 @@ public class BigVoxel extends Voxel implements VoxelLogic {
 	}
 
 	@Override
-	public int onPlace(World world, final int x, final int y, final int z, int voxelData, Entity entity) throws IllegalBlockModificationException {
-		if(entity == null)
+	public int onPlace(ChunkVoxelContext context, int voxelData, WorldModificationCause cause) throws IllegalBlockModificationException {
+		//Be cool with the system doing it's thing
+		if(cause == null)
 			return voxelData;
+		
+		int x = context.getX();
+		int y = context.getY();
+		int z = context.getZ();
 		
 		//Check if there is space for it ...
 		for(int a = x; a < x + xWidth; a++) {
 			for(int b = y; b < y + yWidth; b++) {
 				for(int c = z; c < z + zWidth; c++) {
-					Chunk chunk = world.getChunkWorldCoordinates(a, b, c);
+					Chunk chunk = context.getWorld().getChunkWorldCoordinates(a, b, c);
 					
 					if(chunk == null)
-						throw new IllegalBlockModificationException("All chunks upon wich this block places itself must be fully loaded !");
+						throw new IllegalBlockModificationException(context, "All chunks upon wich this block places itself must be fully loaded !");
 					
-					VoxelContext stuff = world.peek(a, b, c);
+					VoxelContext stuff = context.getWorld().peekSafely(a, b, c);
 					if(stuff.getVoxel() == null || stuff.getVoxel().getId() == 0 || !stuff.getVoxel().getType().isSolid())
 					{
 						//These blocks are replaceable
 						continue;
 					}
-					else throw new IllegalBlockModificationException("Can't overwrite block at "+a+": "+b+": "+c);
+					else throw new IllegalBlockModificationException(context, "Can't overwrite block at "+a+": "+b+": "+c);
 				}
 			}
 		}
@@ -72,7 +78,9 @@ public class BigVoxel extends Voxel implements VoxelLogic {
 			for(int b = 0; b < 0 + yWidth; b++) {
 				for(int c = 0; c < 0 + zWidth; c++) {
 					int metadata = (byte) (((a & xMask ) << xShift) | ((b & yMask) << yShift) | ((c & zMask) << zShift));
-					world.setVoxelData(a + x, b + y, c + z, VoxelFormat.changeMeta(this.getId(), metadata));
+					
+					context.getWorld().pokeSimple(a + x, b + y, c + z, VoxelFormat.changeMeta(this.getId(), metadata));
+					//world.setVoxelData(a + x, b + y, c + z, VoxelFormat.changeMeta(this.getId(), metadata));
 				}
 			}
 		}
@@ -82,10 +90,14 @@ public class BigVoxel extends Voxel implements VoxelLogic {
 	}
 
 	@Override
-	public void onRemove(World world, int x, int y, int z, int voxelData, Entity entity) throws IllegalBlockModificationException {
+	public void onRemove(ChunkVoxelContext context, int voxelData, WorldModificationCause cause) throws IllegalBlockModificationException {
 		//Don't mess with machine removal
-		if(entity == null)
+		if(cause == null)
 			return;
+
+		int x = context.getX();
+		int y = context.getY();
+		int z = context.getZ();
 		
 		//Backpedal to find the root block
 		int meta = VoxelFormat.meta(voxelData);
@@ -94,7 +106,7 @@ public class BigVoxel extends Voxel implements VoxelLogic {
 		int bp = (meta >> yShift) & yMask;
 		int cp = (meta >> zShift) & zMask;
 		
-		System.out.println("Removingz "+ap+": "+bp+": "+cp);
+		System.out.println("Removing "+ap+": "+bp+": "+cp);
 		
 		int startX = x - ap;
 		int startY = y - bp;
@@ -103,7 +115,10 @@ public class BigVoxel extends Voxel implements VoxelLogic {
 		for(int a = startX; a < startX + xWidth; a++) {
 			for(int b = startY; b < startY + yWidth; b++) {
 				for(int c = startZ; c < startZ + zWidth; c++) {
-					world.setVoxelData(a, b, c, 0);
+					
+					//Safely poke zero into the relevant locations
+					context.getWorld().pokeSimple(a, b, c, 0);
+					//world.setVoxelData(a, b, c, 0);
 				}
 			}
 		}
@@ -111,9 +126,9 @@ public class BigVoxel extends Voxel implements VoxelLogic {
 
 	@Override
 	/** Big voxels manage themselves using their 8 bits of metadata. They don't let themselves being touched ! */
-	public int onModification(World world, int x, int y, int z, int formerData, int voxelData, Entity entity) throws IllegalBlockModificationException {
-		if(entity != null)
-			throw new IllegalBlockModificationException("Big Voxels aren't modifiable by anyone !");
+	public int onModification(ChunkVoxelContext context, int voxelData, WorldModificationCause cause) throws IllegalBlockModificationException {
+		if(cause != null && cause instanceof Entity)
+			throw new IllegalBlockModificationException(context, "Big Voxels aren't modifiable by anyone !");
 		return voxelData;
 	}
 

@@ -1,53 +1,42 @@
 package io.xol.chunkstories.core.voxel;
 
 import io.xol.chunkstories.api.entity.Entity;
-import io.xol.chunkstories.api.entity.EntityVoxel;
-import io.xol.chunkstories.api.exceptions.IllegalBlockModificationException;
+import io.xol.chunkstories.api.events.voxel.WorldModificationCause;
+import io.xol.chunkstories.api.exceptions.world.WorldException;
+import io.xol.chunkstories.api.exceptions.world.voxel.IllegalBlockModificationException;
 import io.xol.chunkstories.api.input.Input;
 
 import org.joml.Vector2f;
 import org.joml.Vector3d;
+
+import io.xol.chunkstories.api.voxel.Voxel;
 import io.xol.chunkstories.api.voxel.VoxelCustomIcon;
-import io.xol.chunkstories.api.voxel.VoxelEntity;
+import io.xol.chunkstories.api.voxel.VoxelDynamicallyRendered;
 import io.xol.chunkstories.api.voxel.VoxelFormat;
+import io.xol.chunkstories.api.voxel.VoxelInteractive;
+import io.xol.chunkstories.api.voxel.VoxelLogic;
 import io.xol.chunkstories.api.voxel.VoxelType;
+import io.xol.chunkstories.api.voxel.components.VoxelComponentDynamicRenderer;
 import io.xol.chunkstories.api.voxel.models.VoxelRenderer;
 import io.xol.chunkstories.api.world.VoxelContext;
-import io.xol.chunkstories.api.world.World;
-import io.xol.chunkstories.api.world.World.WorldVoxelContext;
-import io.xol.chunkstories.core.entity.voxel.EntitySign;
+import io.xol.chunkstories.api.world.chunk.Chunk.ChunkVoxelContext;
+import io.xol.chunkstories.core.voxel.components.VoxelComponentSignText;
 
 //(c) 2015-2017 XolioWare Interactive
 //http://chunkstories.xyz
 //http://xol.io
 
-public class VoxelSign extends VoxelEntity implements VoxelCustomIcon
+public class VoxelSign extends Voxel implements VoxelInteractive, VoxelLogic, VoxelCustomIcon, VoxelDynamicallyRendered
 {
-	
 	public VoxelSign(VoxelType type)
 	{
 		super(type);
 	}
 
 	@Override
-	public boolean handleInteraction(Entity entity, WorldVoxelContext voxelContext, Input input)
+	public boolean handleInteraction(Entity entity, ChunkVoxelContext voxelContext, Input input)
 	{
 		return false;
-	}
-
-	@Override
-	public EntitySign getVoxelEntity(World world, int worldX, int worldY, int worldZ)
-	{
-		EntityVoxel ev = super.getVoxelEntity(world, worldX, worldY, worldZ);
-		if(!(ev instanceof EntitySign))
-				throw new RuntimeException("VoxelEntity representation invariant fail, wrong entity found at " + worldX + ":" + worldY + ":" + worldZ);
-		return (EntitySign) ev;
-	}
-
-	@Override
-	protected EntityVoxel createVoxelEntity(World world, int x, int y, int z)
-	{
-		return new EntitySign(store.parent().entities().getEntityTypeByName("sign"), world, x, y, z);
 	}
 	
 	@Override
@@ -57,14 +46,22 @@ public class VoxelSign extends VoxelEntity implements VoxelCustomIcon
 	}
 		
 	@Override
-	public int onPlace(World world, int x, int y, int z, int voxelData, Entity entity) throws IllegalBlockModificationException
+	public int onPlace(ChunkVoxelContext context, int voxelData, WorldModificationCause cause) throws IllegalBlockModificationException
 	{
-		super.onPlace(world, x, y, z, voxelData, entity);
+		context.components().put("signData", new VoxelComponentSignText(context.components()));
 		
-		if(entity != null)
+		//super.onPlace(context, voxelData, cause);
+		//World world = context.getWorld();
+		int x = context.getX();
+		int y = context.getY();
+		int z = context.getZ();
+		
+		//super.onPlace(world, x, y, z, voxelData, entity);
+		
+		if(cause != null && cause instanceof Entity)
 		{
 			Vector3d blockLocation = new Vector3d(x + 0.5, y, z + 0.5);
-			blockLocation.sub(entity.getLocation());
+			blockLocation.sub(((Entity) cause).getLocation());
 			blockLocation.negate();
 			
 			Vector2f direction = new Vector2f((float)(double)blockLocation.x(), (float)(double)blockLocation.z());
@@ -89,6 +86,26 @@ public class VoxelSign extends VoxelEntity implements VoxelCustomIcon
 		}
 		
 		return voxelData;
+	}
+
+	@Override
+	public void onRemove(ChunkVoxelContext context, int voxelData, WorldModificationCause cause) throws WorldException {
+		context.components().erase();
+	}
+
+	@Override
+	public int onModification(ChunkVoxelContext context, int voxelData, WorldModificationCause cause)
+			throws WorldException {
+		return voxelData;
+	}
+
+	@Override
+	public VoxelComponentDynamicRenderer getDynamicRendererComponent(ChunkVoxelContext context) {
+		return getSignData(context);
+	}
+
+	private VoxelComponentSignText getSignData(ChunkVoxelContext context) {
+		return (VoxelComponentSignText) context.components().get("signData");
 	}
 	
 }

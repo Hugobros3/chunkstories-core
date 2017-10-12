@@ -60,10 +60,12 @@ public class ZombieAI extends GenericHumanoidAI
 					//Crouched players are 70% less visible
 					if(player.stance.get().equals(EntityHumanoidStance.CROUCHING))
 						visibilityModifier -= 0.7f;
+				
+					//If the entity is sprinting
+					if (player.getVelocityComponent().getVelocity().length() > 0.7)
+						visibilityModifier += 1.0f;
+				
 				}
-				//If the entity is sprinting
-				if (entityToLook.getVelocityComponent().getVelocity().length() > 0.7)
-					visibilityModifier += 1.0f;
 				
 				if (!entityToLook.equals(entity) && entityToLook.getLocation().distance(entity.getLocation()) * visibilityModifier <= entity.stage().aggroRadius && entityToLook instanceof EntityHumanoid && !((EntityHumanoid) entityToLook).isDead())
 				{
