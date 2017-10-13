@@ -108,10 +108,10 @@ public class NoiseWorldGenerator extends WorldGenerator
 
 					//Blocks writing
 					if (value > 0.0f)
-						chunk.pokeSimple(x, y, z, VoxelFormat.format(1, 15-(int)(value * 15f), 0, 0));
+						chunk.pokeSimpleSilently(x, y, z, VoxelFormat.format(1, 15-(int)(value * 15f), 0, 0));
 					//Water
 					else if (cy * 32 + y < 256)
-						chunk.pokeSimple(x, y, z, 128);
+						chunk.pokeSimpleSilently(x, y, z, 128);
 				}
 			}
 		return chunk;

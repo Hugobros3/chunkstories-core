@@ -57,7 +57,7 @@ public class FlatGenerator extends WorldGenerator
 						type = 23;
 					if (y == 30)
 						type = 25;
-					chunk.pokeSimple(x, y, z, type);
+					chunk.pokeSimpleSilently(x, y, z, type);
 					y++;
 				}
 			}

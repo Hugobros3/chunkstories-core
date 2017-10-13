@@ -55,12 +55,12 @@ public class HorizonGenerator extends WorldGenerator
 						type = 3;
 					else
 						type = 2;
-					chunk.pokeSimple(x, y, z, type);
+					chunk.pokeSimpleSilently(x, y, z, type);
 					y++;
 				}
 				while(y < cy * 32 + 32 && y < 60)
 				{
-					chunk.pokeSimple(x, y, z, 128);
+					chunk.pokeSimpleSilently(x, y, z, 128);
 					y++;
 				}
 			}
