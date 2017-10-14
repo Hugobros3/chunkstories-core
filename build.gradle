@@ -14,10 +14,29 @@ repositories {
 }
 
 description = 'The free base content chunkstories is built on.'
-version = '122'
+version = '123'
 
 ext {
 	apiRevisionBuiltAgainst = '114'
+	useEclipseCompiler = true
+}
+
+buildscript {
+	repositories {
+		mavenCentral() // for ecj
+		maven { url 'https://jitpack.io' } // for this plugin
+	}
+
+	dependencies {
+		// Replace master-SNAPSHOT with a specific commit hash to not always get the latest version
+		classpath 'com.github.johni0702:gradle-ecj-plugin:master-SNAPSHOT'
+	}
+}
+
+if(ext.useEclipseCompiler) {
+	apply plugin: 'de.johni0702.ecj'
+	
+	println "Using ECJ compiler"
 }
 
 dependencies {

@@ -10,7 +10,6 @@ import io.xol.chunkstories.api.entity.EntityLiving.HitBox;
 import io.xol.chunkstories.api.entity.components.EntityComponentRotation;
 import io.xol.chunkstories.api.entity.interfaces.EntityControllable;
 import io.xol.chunkstories.api.entity.interfaces.EntityCreative;
-import io.xol.chunkstories.api.exceptions.world.voxel.IllegalBlockModificationException;
 import io.xol.chunkstories.api.input.Input;
 import io.xol.chunkstories.api.item.ItemType;
 import io.xol.chunkstories.api.item.interfaces.ItemCustomHoldingAnimation;
