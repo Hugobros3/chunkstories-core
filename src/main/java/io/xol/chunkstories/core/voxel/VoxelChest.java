@@ -55,6 +55,8 @@ public class VoxelChest extends Voxel implements VoxelInteractive, VoxelLogic
 				
 				if(c instanceof Player) {
 					Player p = (Player)c;
+					
+					//System.out.println(getInventory(voxelContext).getWidth() + " : " + getInventory(voxelContext).getHeight());
 					p.openInventory(getInventory(voxelContext));
 					//p.openInventory(((EntityChest)this.getEntity(voxelContext)).getInventory());
 				}
@@ -97,6 +99,7 @@ public class VoxelChest extends Voxel implements VoxelInteractive, VoxelLogic
 	//Chunk stories chests use Minecraft format to ease porting of maps
 	public int onPlace(ChunkVoxelContext context, int voxelData, WorldModificationCause cause) throws IllegalBlockModificationException
 	{
+		getInventory(context);
 		//super.onPlace(context, voxelData, cause);
 		
 		int stairsSide = 0;
@@ -128,6 +131,8 @@ public class VoxelChest extends Voxel implements VoxelInteractive, VoxelLogic
 
 	@Override
 	public void onRemove(ChunkVoxelContext context, int voxelData, WorldModificationCause cause) throws WorldException {
+		
+		//Delete the components as to not pollute the chunk's components space
 		context.components().erase();
 	}
 

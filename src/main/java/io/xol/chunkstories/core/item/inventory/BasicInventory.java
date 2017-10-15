@@ -313,6 +313,8 @@ public class BasicInventory implements Inventory
 		this.width = stream.readInt();
 		this.height = stream.readInt();
 
+		//System.out.println("w: "+width+"; h:"+height);
+		
 		contents = new ItemPile[width][height];
 		//int id;
 		//Item item;

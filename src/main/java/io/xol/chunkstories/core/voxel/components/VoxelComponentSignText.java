@@ -31,31 +31,31 @@ public class VoxelComponentSignText extends VoxelComponentDynamicRenderer
 	String cachedText = null;
 	TextMesh renderData = null;
 
-	String signTexture =  "\n"
-			+ "\n"
-			+ "\n"
-			+ "";
+	String signText =  "In soviet belgium\n"
+			+ "#FFFF00Waffles are yellow\n"
+			+ "#FFFF00Fries are yellow\n"
+			+ "Ketchup is #FF0000red";
 	
 	public String getSignText()
 	{
-		return signTexture;
+		return signText;
 	}
 
 	public void setSignText(String name)
 	{
-		this.signTexture = name;
+		this.signText = name;
 	}
 
 	@Override
 	public void push(StreamTarget destinator, DataOutputStream dos) throws IOException
 	{
-		dos.writeUTF(signTexture);
+		dos.writeUTF(signText);
 	}
 
 	@Override
 	public void pull(StreamSource from, DataInputStream dis) throws IOException
 	{
-		signTexture = dis.readUTF();
+		signText = dis.readUTF();
 	}
 
 	//TODO: 
