@@ -321,6 +321,10 @@ public class VoxelDoor extends Voxel implements VoxelLogic, VoxelInteractive, Vo
 	@Override
 	public void onRemove(ChunkVoxelContext context, int voxelData, WorldModificationCause cause)
 	{
+		//Don't interfere with system pokes, else we get stuck in a loop
+		if(cause == null || !(cause instanceof Entity))
+			return;
+			
 		World world = context.getWorld();
 		int x = context.getX();
 		int y = context.getY();
@@ -336,7 +340,7 @@ public class VoxelDoor extends Voxel implements VoxelLogic, VoxelInteractive, Vo
 		else
 			otherY++;
 
-		world.pokeSimple(x, y, z, 0);
+		//world.pokeSimple(x, y, z, 0);
 		int otherData = world.peekSimple(x, otherY, z);
 		//Remove the other part as well, if it still exists
 		if (store.getVoxelById(otherData) instanceof VoxelDoor)

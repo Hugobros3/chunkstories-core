@@ -76,7 +76,6 @@ public class VoxelComponentSignText extends VoxelComponentDynamicRenderer
 		public void renderVoxels(RenderingInterface renderingContext, IterableIterator<ChunkVoxelContext> renderableEntitiesIterator)
 		{
 			setupRender(renderingContext);
-			
 			int e = 0;
 			
 			renderingContext.setObjectMatrix(null);
@@ -108,12 +107,17 @@ public class VoxelComponentSignText extends VoxelComponentDynamicRenderer
 					mutrix.translate(new Vector3f(0.0f, 0.0f, -0.5f));
 				renderingContext.setObjectMatrix(mutrix);
 	
+				//System.out.println("bonsoir");
+				
 				if (!isPost)
 					renderingContext.meshes().getRenderableMeshByName("./models/sign_post.obj").render(renderingContext);
 				else
 					renderingContext.meshes().getRenderableMeshByName("./models/sign.obj").render(renderingContext);
 	
 				VoxelComponentSignText signTextComponent = (VoxelComponentSignText) context.components().get("signData");
+				
+				if(signTextComponent == null)
+					continue;
 				
 				// bake sign mesh
 				if (signTextComponent.cachedText == null || !signTextComponent.cachedText.equals(signTextComponent.getSignText()))
