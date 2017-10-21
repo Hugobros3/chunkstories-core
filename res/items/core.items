@@ -31,43 +31,43 @@ item 5 iron_axe
 end
 
 item 6 bread
-	customClass: io.xol.dogez.mods.items.FoodItem
+	customClass: io.xol.chunkstories.core.ItemFood
 	calories: 20
 	maxStackSize: 5
 end
 
 item 7 soup
-	customClass: io.xol.dogez.mods.items.FoodItem
+	customClass: io.xol.chunkstories.core.ItemFood
 	calories: 15
 	maxStackSize: 10
 end
 
 item 8 cookie
-	customClass: io.xol.dogez.mods.items.FoodItem
+	customClass: io.xol.chunkstories.core.ItemFood
 	calories: 10
 	maxStackSize: 30
 end
 
 item 9 pie
-	customClass: io.xol.dogez.mods.items.FoodItem
+	customClass: io.xol.chunkstories.core.ItemFood
 	calories: 20
 	maxStackSize: 2
 end
 
 item 10 apple
-	customClass: io.xol.dogez.mods.items.FoodItem
+	customClass: io.xol.chunkstories.core.ItemFood
 	calories: 25
 	maxStackSize: 5
 end
 
 item 11 steak
-	customClass: io.xol.dogez.mods.items.FoodItem
+	customClass: io.xol.chunkstories.core.ItemFood
 	calories: 40
 	maxStackSize: 5
 end
 
 item 12 ble
-	customClass: io.xol.dogez.mods.items.FoodItem
+	customClass: io.xol.chunkstories.core.ItemFood
 	calories: 5
 	maxStackSize: 40
 end
