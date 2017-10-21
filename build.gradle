@@ -56,7 +56,8 @@ task buildContentPack(type: Zip) {
 	}
 	
 	//We want the final archive to bear our mod name
-	archiveName = "${rootProject.name}.zip"
+	archiveName = "core_content.zip";
+	//archiveName = "${rootProject.name}.zip"
 }
 
 jar {

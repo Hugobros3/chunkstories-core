@@ -76,7 +76,6 @@ public class VoxelComponentSignText extends VoxelComponentDynamicRenderer
 		public void renderVoxels(RenderingInterface renderingContext, IterableIterator<ChunkVoxelContext> renderableEntitiesIterator)
 		{
 			setupRender(renderingContext);
-			int e = 0;
 			
 			renderingContext.setObjectMatrix(null);
 	
@@ -84,8 +83,6 @@ public class VoxelComponentSignText extends VoxelComponentDynamicRenderer
 			{
 				if (renderingContext.getCamera().getCameraPosition().distance(context.getLocation()) > 32)
 					continue;
-				
-				e++;
 				
 				Texture2D diffuse = renderingContext.textures().getTexture("./models/sign.png");
 				diffuse.setLinearFiltering(false);
