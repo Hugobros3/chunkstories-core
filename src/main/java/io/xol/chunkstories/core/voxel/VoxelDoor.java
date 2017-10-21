@@ -319,7 +319,7 @@ public class VoxelDoor extends Voxel implements VoxelLogic, VoxelInteractive, Vo
 	}
 
 	@Override
-	public void onRemove(ChunkVoxelContext context, int voxelData, WorldModificationCause cause)
+	public void onRemove(ChunkVoxelContext context, WorldModificationCause cause)
 	{
 		//Don't interfere with system pokes, else we get stuck in a loop
 		if(cause == null || !(cause instanceof Entity))

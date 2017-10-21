@@ -128,7 +128,7 @@ public class VoxelStairs extends Voxel implements VoxelLogic
 	}
 
 	@Override
-	public void onRemove(ChunkVoxelContext context, int voxelData, WorldModificationCause cause)
+	public void onRemove(ChunkVoxelContext context, WorldModificationCause cause)
 	{
 		//System.out.println("on remove stairs");
 	}

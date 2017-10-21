@@ -90,7 +90,7 @@ public class BigVoxel extends Voxel implements VoxelLogic {
 	}
 
 	@Override
-	public void onRemove(ChunkVoxelContext context, int voxelData, WorldModificationCause cause) throws IllegalBlockModificationException {
+	public void onRemove(ChunkVoxelContext context, WorldModificationCause cause) throws IllegalBlockModificationException {
 		//Don't mess with machine removal
 		if(cause == null)
 			return;
@@ -100,7 +100,7 @@ public class BigVoxel extends Voxel implements VoxelLogic {
 		int z = context.getZ();
 		
 		//Backpedal to find the root block
-		int meta = VoxelFormat.meta(voxelData);
+		int meta = context.getMetaData();
 		
 		int ap = (meta >> xShift) & xMask;
 		int bp = (meta >> yShift) & yMask;

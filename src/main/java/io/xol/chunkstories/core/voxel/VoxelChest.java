@@ -130,7 +130,7 @@ public class VoxelChest extends Voxel implements VoxelInteractive, VoxelLogic
 	}
 
 	@Override
-	public void onRemove(ChunkVoxelContext context, int voxelData, WorldModificationCause cause) throws WorldException {
+	public void onRemove(ChunkVoxelContext context, WorldModificationCause cause) throws WorldException {
 		
 		//Delete the components as to not pollute the chunk's components space
 		context.components().erase();

@@ -89,7 +89,7 @@ public class VoxelSign extends Voxel implements VoxelInteractive, VoxelLogic, Vo
 	}
 
 	@Override
-	public void onRemove(ChunkVoxelContext context, int voxelData, WorldModificationCause cause) throws WorldException {
+	public void onRemove(ChunkVoxelContext context, WorldModificationCause cause) throws WorldException {
 		context.components().erase();
 	}
 
