@@ -6,6 +6,7 @@ import io.xol.chunkstories.api.Location;
 import io.xol.chunkstories.api.entity.components.EntityComponentController;
 import io.xol.chunkstories.api.entity.components.EntityComponentCreativeMode;
 import io.xol.chunkstories.api.entity.components.EntityComponentFlying;
+import io.xol.chunkstories.api.entity.components.EntityComponentInventory;
 import io.xol.chunkstories.api.entity.components.EntityComponentName;
 import io.xol.chunkstories.api.entity.Controller;
 import io.xol.chunkstories.api.entity.DamageCause;
@@ -54,7 +55,6 @@ import io.xol.chunkstories.api.world.WorldMaster;
 
 import io.xol.chunkstories.core.entity.EntityArmorInventory.EntityWithArmor;
 import io.xol.chunkstories.core.entity.components.EntityComponentFoodLevel;
-import io.xol.chunkstories.core.entity.components.EntityComponentInventory;
 import io.xol.chunkstories.core.entity.components.EntityComponentSelectedItem;
 import io.xol.chunkstories.core.item.armor.ItemArmor;
 import io.xol.chunkstories.core.item.inventory.InventoryLocalCreativeMenu;

@@ -18,11 +18,11 @@ import io.xol.chunkstories.api.voxel.VoxelLogic;
 import io.xol.chunkstories.api.voxel.VoxelSides;
 import io.xol.chunkstories.api.voxel.VoxelType;
 import io.xol.chunkstories.api.voxel.components.VoxelComponent;
+import io.xol.chunkstories.api.voxel.components.VoxelInventoryComponent;
 import io.xol.chunkstories.api.voxel.textures.VoxelTexture;
 import io.xol.chunkstories.api.world.VoxelContext;
 import io.xol.chunkstories.api.world.WorldMaster;
 import io.xol.chunkstories.api.world.chunk.Chunk.ChunkVoxelContext;
-import io.xol.chunkstories.core.voxel.components.VoxelInventoryComponent;
 
 //(c) 2015-2017 XolioWare Interactive
 //http://chunkstories.xyz
