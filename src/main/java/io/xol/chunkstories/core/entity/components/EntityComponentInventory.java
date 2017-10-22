@@ -11,6 +11,7 @@ import io.xol.chunkstories.api.entity.components.EntityComponent;
 import io.xol.chunkstories.api.entity.interfaces.EntityControllable;
 import io.xol.chunkstories.api.entity.interfaces.EntityNameable;
 import io.xol.chunkstories.api.entity.interfaces.EntityWithInventory;
+import io.xol.chunkstories.api.item.inventory.BasicInventory;
 import io.xol.chunkstories.api.item.inventory.Inventory;
 import io.xol.chunkstories.api.item.inventory.InventoryHolder;
 import io.xol.chunkstories.api.item.inventory.ItemPile;
@@ -18,7 +19,6 @@ import io.xol.chunkstories.api.net.Packet;
 import io.xol.chunkstories.api.player.Player;
 import io.xol.chunkstories.api.serialization.StreamSource;
 import io.xol.chunkstories.api.serialization.StreamTarget;
-import io.xol.chunkstories.core.item.inventory.BasicInventory;
 import io.xol.chunkstories.core.net.packets.PacketInventoryPartialUpdate;
 
 //(c) 2015-2017 XolioWare Interactive
@@ -105,7 +105,7 @@ public class EntityComponentInventory extends EntityComponent
 			if(entity == null)
 				return true;
 			
-			//You have access to yourself always
+			//You always have access to yourself
 			if(entity == EntityComponentInventory.this.entity)
 				return true;
 			
@@ -113,15 +113,13 @@ public class EntityComponentInventory extends EntityComponent
 			if(EntityComponentInventory.this.entity instanceof EntityLiving && ((EntityLiving)EntityComponentInventory.this.entity).isDead())
 				return true;
 			
-			//Wassup with that freeloading shit ?
 			return false;
 		}
 	}
 
+	// Room for expansion
 	public enum UpdateMode
 	{
-		//MOVE_ITEM, 
-		//CHANGE_ITEM, 
 		TOTAL_REFRESH,
 		NEVERMIND,
 	}

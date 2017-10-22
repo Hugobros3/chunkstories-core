@@ -12,6 +12,7 @@ import io.xol.chunkstories.api.entity.Entity;
 import io.xol.chunkstories.api.entity.EntityLiving;
 import io.xol.chunkstories.api.entity.EntityType;
 import io.xol.chunkstories.api.entity.components.EntityComponent;
+import io.xol.chunkstories.api.entity.interfaces.EntityWithSelectedItem;
 import io.xol.chunkstories.api.item.inventory.ItemPile;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
@@ -28,7 +29,6 @@ import io.xol.chunkstories.api.voxel.VoxelFormat;
 import io.xol.chunkstories.api.world.VoxelContext;
 import io.xol.chunkstories.api.world.WorldMaster;
 import io.xol.chunkstories.core.entity.ai.ZombieAI;
-import io.xol.chunkstories.core.entity.interfaces.EntityWithSelectedItem;
 
 //(c) 2015-2017 XolioWare Interactive
 //http://chunkstories.xyz
@@ -201,7 +201,7 @@ public class EntityZombie extends EntityHumanoid
 				ItemPile selectedItemPile = null;
 
 				if (entity instanceof EntityWithSelectedItem)
-					selectedItemPile = ((EntityWithSelectedItem) entity).getSelectedItemComponent().getSelectedItem();
+					selectedItemPile = ((EntityWithSelectedItem) entity).getSelectedItem();
 
 				renderingContext.currentShader().setUniform3f("objectPosition", new Vector3f(0));
 

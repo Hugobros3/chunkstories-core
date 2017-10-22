@@ -9,6 +9,7 @@ import io.xol.chunkstories.api.entity.Controller;
 import io.xol.chunkstories.api.entity.DamageCause;
 import io.xol.chunkstories.api.entity.EntityType;
 import io.xol.chunkstories.api.entity.interfaces.EntityControllable;
+import io.xol.chunkstories.api.entity.interfaces.EntityWithSelectedItem;
 import io.xol.chunkstories.api.item.Item;
 import io.xol.chunkstories.api.item.ItemVoxel;
 import io.xol.chunkstories.api.item.interfaces.ItemCustomHoldingAnimation;
@@ -31,7 +32,6 @@ import io.xol.chunkstories.api.world.VoxelContext;
 import io.xol.chunkstories.api.world.WorldClient;
 import io.xol.chunkstories.api.world.WorldMaster;
 import io.xol.chunkstories.core.entity.components.EntityComponentStance;
-import io.xol.chunkstories.core.entity.interfaces.EntityWithSelectedItem;
 
 //(c) 2015-2017 XolioWare Interactive
 //http://chunkstories.xyz
@@ -81,7 +81,7 @@ public abstract class EntityHumanoid extends EntityLivingImplementation
 			{
 				if (EntityHumanoid.this instanceof EntityWithSelectedItem)
 				{
-					ItemPile selectedItemPile = ((EntityWithSelectedItem) EntityHumanoid.this).getSelectedItemComponent().getSelectedItem();
+					ItemPile selectedItemPile = ((EntityWithSelectedItem) EntityHumanoid.this).getSelectedItem();
 
 					if (selectedItemPile != null)
 					{
@@ -165,7 +165,7 @@ public abstract class EntityHumanoid extends EntityLivingImplementation
 			ItemPile selectedItem = null;
 
 			if (EntityHumanoid.this instanceof EntityWithSelectedItem)
-				selectedItem = ((EntityWithSelectedItem) EntityHumanoid.this).getSelectedItemComponent().getSelectedItem();
+				selectedItem = ((EntityWithSelectedItem) EntityHumanoid.this).getSelectedItem();
 
 			if (Arrays.asList("boneArmLU", "boneArmRU").contains(boneName))
 			{
@@ -202,7 +202,7 @@ public abstract class EntityHumanoid extends EntityLivingImplementation
 				ItemPile selectedItem = null;
 
 				if (EntityHumanoid.this instanceof EntityWithSelectedItem)
-					selectedItem = ((EntityWithSelectedItem) EntityHumanoid.this).getSelectedItemComponent().getSelectedItem();
+					selectedItem = ((EntityWithSelectedItem) EntityHumanoid.this).getSelectedItem();
 
 				if (Arrays.asList("boneArmRU", "boneArmRD").contains(boneName) && selectedItem != null)
 					if (selectedItem.getItem() instanceof ItemVoxel)
@@ -279,7 +279,7 @@ public abstract class EntityHumanoid extends EntityLivingImplementation
 				ItemPile selectedItemPile = null;
 
 				if (entity instanceof EntityWithSelectedItem)
-					selectedItemPile = ((EntityWithSelectedItem) entity).getSelectedItemComponent().getSelectedItem();
+					selectedItemPile = ((EntityWithSelectedItem) entity).getSelectedItem();
 
 				renderingContext.currentShader().setUniform3f("objectPosition", new Vector3f(0));
 

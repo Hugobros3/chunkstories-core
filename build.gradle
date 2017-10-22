@@ -69,6 +69,11 @@ clean {
 	delete configurations.runtime.allArtifacts.files
 }
 
+artifacts {
+	archives jar
+	archives buildContentPack
+}
+
 configurations {
 	deployerJars
 }

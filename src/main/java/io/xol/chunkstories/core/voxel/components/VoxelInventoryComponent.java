@@ -3,11 +3,12 @@ package io.xol.chunkstories.core.voxel.components;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+
+import io.xol.chunkstories.api.item.inventory.BasicInventory;
 import io.xol.chunkstories.api.serialization.StreamSource;
 import io.xol.chunkstories.api.serialization.StreamTarget;
 import io.xol.chunkstories.api.voxel.components.VoxelComponent;
 import io.xol.chunkstories.api.voxel.components.VoxelComponents;
-import io.xol.chunkstories.core.item.inventory.BasicInventory;
 
 //(c) 2015-2017 XolioWare Interactive
 //http://chunkstories.xyz

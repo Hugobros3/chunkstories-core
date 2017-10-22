@@ -13,11 +13,11 @@ import io.xol.chunkstories.api.world.chunk.Chunk.ChunkVoxelContext;
 
 public class BigVoxel extends Voxel implements VoxelLogic {
 
-	final int xWidth, yWidth, zWidth;
+	public final int xWidth, yWidth, zWidth;
 	
-	final int xBits, yBits, zBits;
-	final int xMask, yMask, zMask;
-	final int xShift, yShift, zShift;
+	public final int xBits, yBits, zBits;
+	public final int xMask, yMask, zMask;
+	public final int xShift, yShift, zShift;
 	
 	public BigVoxel(VoxelType type) {
 		super(type);

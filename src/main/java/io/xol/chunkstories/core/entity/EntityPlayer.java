@@ -18,6 +18,7 @@ import io.xol.chunkstories.api.entity.interfaces.EntityFlying;
 import io.xol.chunkstories.api.entity.interfaces.EntityOverlay;
 import io.xol.chunkstories.api.entity.interfaces.EntityNameable;
 import io.xol.chunkstories.api.entity.interfaces.EntityWithInventory;
+import io.xol.chunkstories.api.entity.interfaces.EntityWithSelectedItem;
 import io.xol.chunkstories.api.entity.interfaces.EntityWorldModifier;
 import io.xol.chunkstories.api.events.player.voxel.PlayerVoxelModificationEvent;
 import io.xol.chunkstories.api.exceptions.world.WorldException;
@@ -55,7 +56,6 @@ import io.xol.chunkstories.core.entity.EntityArmorInventory.EntityWithArmor;
 import io.xol.chunkstories.core.entity.components.EntityComponentFoodLevel;
 import io.xol.chunkstories.core.entity.components.EntityComponentInventory;
 import io.xol.chunkstories.core.entity.components.EntityComponentSelectedItem;
-import io.xol.chunkstories.core.entity.interfaces.EntityWithSelectedItem;
 import io.xol.chunkstories.core.item.armor.ItemArmor;
 import io.xol.chunkstories.core.item.inventory.InventoryLocalCreativeMenu;
 import io.xol.chunkstories.core.voxel.VoxelClimbable;
@@ -595,7 +595,7 @@ EntityWorldModifier
 					ItemPile selectedItemPile = null;
 
 					if (entity instanceof EntityWithSelectedItem)
-						selectedItemPile = ((EntityWithSelectedItem) entity).getSelectedItemComponent().getSelectedItem();
+						selectedItemPile = ((EntityWithSelectedItem) entity).getSelectedItem();
 
 					renderingContext.currentShader().setUniform3f("objectPosition", new Vector3f(0));
 
@@ -780,7 +780,6 @@ EntityWorldModifier
 		return inventoryComponent.getInventory();
 	}
 
-	@Override
 	public EntityComponentSelectedItem getSelectedItemComponent()
 	{
 		return this.selectedItemComponent;
@@ -843,5 +842,20 @@ EntityWorldModifier
 	public EntityArmorInventory getArmor()
 	{
 		return armor;
+	}
+
+	@Override
+	public ItemPile getSelectedItem() {
+		return this.selectedItemComponent.getSelectedItem();
+	}
+
+	@Override
+	public int getSelectedItemIndex() {
+		return this.selectedItemComponent.getSelectedSlot();
+	}
+
+	@Override
+	public void setSelectedItemIndex(int i) {
+		this.selectedItemComponent.setSelectedSlot(i);
 	}
 }
