@@ -526,7 +526,7 @@ public class ItemFirearm extends ItemWeapon implements ItemOverlay, ItemZoom, It
 			{
 				String reloadText = "Reloading weapon, please wait";
 				
-				Font font = renderingInterface.getFontRenderer().getFont("arial", 11);
+				Font font = renderingInterface.getFontRenderer().defaultFont();
 				
 				int cooldownLength = font.getWidth(reloadText);//TrueTypeFont.arial11px.getWidth(reloadText);
 				renderingInterface.getFontRenderer().drawString(font, -cooldownLength + renderingInterface.getWindow().getWidth() / 2, renderingInterface.getWindow().getHeight() / 2, reloadText, 2);
