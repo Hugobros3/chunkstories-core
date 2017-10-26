@@ -76,7 +76,7 @@ public class VoxelChest extends Voxel implements VoxelInteractive, VoxelLogic
 		}
 
 		// Create a new component and insert it into the chunk
-		VoxelInventoryComponent component = new VoxelInventoryComponent(context.components(), new BasicInventory(10, 6));
+		VoxelInventoryComponent component = new VoxelInventoryComponent(context.components(), 10, 6);
 		context.components().put("chestInventory", component);
 		return component.getInventory();
 	}
