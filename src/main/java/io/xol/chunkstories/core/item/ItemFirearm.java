@@ -23,7 +23,7 @@ import org.joml.Vector3d;
 import org.joml.Vector3dc;
 import org.joml.Vector4f;
 import io.xol.chunkstories.api.physics.CollisionBox;
-import io.xol.chunkstories.api.player.PlayerClient;
+import io.xol.chunkstories.api.player.LocalPlayer;
 import io.xol.chunkstories.api.rendering.RenderingInterface;
 import io.xol.chunkstories.api.rendering.text.FontRenderer.Font;
 import io.xol.chunkstories.api.sound.SoundSource.Mode;
@@ -169,22 +169,22 @@ public class ItemFirearm extends ItemWeapon implements ItemOverlay, ItemZoom, It
 			Controller controller = owner2.getController();
 
 			//For now only client-side players can trigger shooting actions
-			if (controller instanceof PlayerClient)
+			if (controller instanceof LocalPlayer)
 			{
-				if (!((PlayerClient) controller).hasFocus())
+				if (!((LocalPlayer) controller).hasFocus())
 					return;
 				
-				PlayerClient playerClient = (PlayerClient)controller;
+				LocalPlayer LocalPlayer = (LocalPlayer)controller;
 				
-				if (playerClient.getInputsManager().getInputByName("mouse.left").isPressed())
+				if (LocalPlayer.getInputsManager().getInputByName("mouse.left").isPressed())
 				{
 					//Check for bullet presence (or creative mode)
 					boolean bulletPresence = (owner instanceof EntityCreative && ((EntityCreative) owner).isCreativeMode()) || checkBullet(itemPile);
 					if (!bulletPresence && !wasTriggerPressedLastTick)
 					{
 						//Play sounds
-						if (playerClient != null)
-							playerClient.getSoundManager().playSoundEffect("sounds/dogez/weapon/default/dry.ogg", Mode.NORMAL, owner.getLocation(), 1.0f, 1.0f, 1f, (float) soundRange);
+						if (LocalPlayer != null)
+							LocalPlayer.getSoundManager().playSoundEffect("sounds/dogez/weapon/default/dry.ogg", Mode.NORMAL, owner.getLocation(), 1.0f, 1.0f, 1f, (float) soundRange);
 						//Dry.ogg
 						//return;
 					}
@@ -194,7 +194,7 @@ public class ItemFirearm extends ItemWeapon implements ItemOverlay, ItemZoom, It
 						//ClientInputPressedEvent event = new ClientInputPressedEvent(controller.getInputsManager().getInputByName("shootGun"));
 						//Client.getInstance().getPluginManager().fireEvent(event);
 
-						playerClient.getInputsManager().onInputPressed(controller.getInputsManager().getInputByName("shootGun"));
+						LocalPlayer.getInputsManager().onInputPressed(controller.getInputsManager().getInputByName("shootGun"));
 
 						lastShot = System.currentTimeMillis();
 					}

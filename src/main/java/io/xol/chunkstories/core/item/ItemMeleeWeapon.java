@@ -17,7 +17,7 @@ import org.joml.Vector3d;
 import org.joml.Vector3dc;
 import org.joml.Vector3f;
 import io.xol.chunkstories.api.physics.CollisionBox;
-import io.xol.chunkstories.api.player.PlayerClient;
+import io.xol.chunkstories.api.player.LocalPlayer;
 import io.xol.chunkstories.api.rendering.RenderingInterface;
 import io.xol.chunkstories.api.sound.SoundSource.Mode;
 import io.xol.chunkstories.api.world.EditableVoxelContext;
@@ -88,12 +88,12 @@ public class ItemMeleeWeapon extends ItemWeapon
 					Controller controller = owner2.getController();
 
 					//For now only client-side players can trigger shooting actions
-					if (controller instanceof PlayerClient)
+					if (controller instanceof LocalPlayer)
 					{
-						if (!((PlayerClient) controller).hasFocus())
+						if (!((LocalPlayer) controller).hasFocus())
 							return;
 
-						PlayerClient playerClient = (PlayerClient)controller;
+						LocalPlayer LocalPlayer = (LocalPlayer)controller;
 						
 						//ClientInputPressedEvent event = new ClientInputPressedEvent(controller.getInputsManager().getInputByName("shootGun"));
 						//Client.getInstance().getPluginManager().fireEvent(event);
@@ -101,7 +101,7 @@ public class ItemMeleeWeapon extends ItemWeapon
 						//Client.getInstance().getInputsManager().onInputPressed(controller.getInputsManager().getInputByName("shootGun"));
 						
 						//Uses fake input to notify server/master of intention to attack.
-						playerClient.getInputsManager().onInputPressed(playerClient.getInputsManager().getInputByName("shootGun"));
+						LocalPlayer.getInputsManager().onInputPressed(LocalPlayer.getInputsManager().getInputByName("shootGun"));
 						
 						hasHitYet = true;
 					}

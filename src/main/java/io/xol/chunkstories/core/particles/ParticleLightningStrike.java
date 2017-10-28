@@ -8,7 +8,7 @@ import org.joml.Vector3f;
 import io.xol.chunkstories.api.particles.ParticleType;
 import io.xol.chunkstories.api.particles.ParticleTypeHandler;
 import io.xol.chunkstories.api.particles.ParticlesRenderer;
-import io.xol.chunkstories.api.player.PlayerClient;
+import io.xol.chunkstories.api.player.LocalPlayer;
 import io.xol.chunkstories.api.rendering.RenderingInterface;
 import io.xol.chunkstories.api.rendering.lightning.Light;
 import io.xol.chunkstories.api.world.World;
@@ -49,7 +49,7 @@ public class ParticleLightningStrike extends ParticleTypeHandler
 				Content content = ParticleLightningStrike.this.getType().store().parent();
 				if(content instanceof ClientContent) {
 					ClientContent clientContent = (ClientContent)content;
-					PlayerClient player = clientContent.getClient().getPlayer();
+					LocalPlayer player = clientContent.getClient().getPlayer();
 					
 					Entity entity = player.getControlledEntity();
 					if(entity != null) {

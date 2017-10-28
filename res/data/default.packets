@@ -41,15 +41,23 @@ packet entity_tracking 4
 	commonClass: io.xol.chunkstories.api.net.packets.PacketEntity
 end
 
+# Internal packets used for communicating what the clients wants streamed to it
+# and what the server will actually comply & send
+packet world_user_requests 5
+	allowFrom: all
+	commonClass: io.xol.chunkstories.api.net.packets.PacketWorldUser
+	serverClass: io.xol.chunkstories.server.net.packets.ServerPacketWorldUser
+end
+
 # Clientside request to move some shit in the inventory
 packet move_item 6
 	allowedFrom: client
-	commonClass: io.xol.chunkstories.core.net.packets.PacketInventoryMoveItemPile
+	commonClass: io.xol.chunkstories.net.packets.PacketInventoryMoveItemPile
 end
 
 packet partial_inv_update 7
 	allowedFrom: server
-	commonClass: io.xol.chunkstories.core.net.packets.PacketInventoryPartialUpdate
+	commonClass: io.xol.chunkstories.api.net.packets.PacketInventoryPartialUpdate
 end
 
 packet time 8

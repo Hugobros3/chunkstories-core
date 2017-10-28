@@ -38,8 +38,8 @@ import org.joml.Vector3f;
 import org.joml.Vector3fc;
 import org.joml.Vector4f;
 import io.xol.chunkstories.api.physics.CollisionBox;
+import io.xol.chunkstories.api.player.LocalPlayer;
 import io.xol.chunkstories.api.player.Player;
-import io.xol.chunkstories.api.player.PlayerClient;
 import io.xol.chunkstories.api.rendering.RenderingInterface;
 import io.xol.chunkstories.api.rendering.WorldRenderer.RenderingPass;
 import io.xol.chunkstories.api.rendering.entity.EntityRenderable;
@@ -125,7 +125,7 @@ EntityWorldModifier
 		variant = ColorsTools.getUniqueColorCode(name) % 6;
 	}
 
-	protected void moveCamera(PlayerClient controller)
+	protected void moveCamera(LocalPlayer controller)
 	{
 		if (isDead())
 			return;
@@ -258,7 +258,7 @@ EntityWorldModifier
 
 	// client-side method for updating the player movement
 	@Override
-	public void tickClientController(PlayerClient controller)
+	public void tickClientController(LocalPlayer controller)
 	{
 		// Null-out acceleration, until modified by controls
 		synchronized (this)
@@ -275,7 +275,7 @@ EntityWorldModifier
 		//In that case that means pushing to the server.
 	}
 
-	public void tickNormalMove(PlayerClient controller)
+	public void tickNormalMove(LocalPlayer controller)
 	{
 		if (isDead())
 			return;
@@ -380,7 +380,7 @@ EntityWorldModifier
 
 	public static float flySpeed = 0.125f;
 
-	public void tickFlyMove(PlayerClient controller)
+	public void tickFlyMove(LocalPlayer controller)
 	{
 		if (!controller.hasFocus())
 			return;
@@ -636,7 +636,7 @@ EntityWorldModifier
 	}
 
 	@Override
-	public void onEachFrame(PlayerClient controller)
+	public void onEachFrame(LocalPlayer controller)
 	{
 		if (controller.hasFocus())
 		{
