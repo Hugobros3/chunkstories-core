@@ -39,7 +39,7 @@ public class PacketExplosionEffect extends PacketSynchPrepared
 	}
 
 	@Override
-	public void sendIntoBuffer(PacketDestinator destinator, DataOutputStream out) throws IOException
+	public void fillInternalBuffer(PacketDestinator destinator, DataOutputStream out) throws IOException
 	{
 		out.writeDouble(center.x());
 		out.writeDouble(center.y());
