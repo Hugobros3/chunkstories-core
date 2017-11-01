@@ -504,7 +504,7 @@ public abstract class EntityHumanoid extends EntityLivingImplementation
 		
 		damage *= 0.5;
 
-		world.getSoundManager().playSoundEffect("sounds/sfx/entities/flesh.ogg", Mode.NORMAL, this.getLocation(), (float)Math.random() * 0.4f + 0.4f, 1);
+		world.getSoundManager().playSoundEffect("sounds/entities/flesh.ogg", Mode.NORMAL, this.getLocation(), (float)Math.random() * 0.4f + 0.4f, 1);
 		
 		return super.damage(cause, null, damage);
 	}

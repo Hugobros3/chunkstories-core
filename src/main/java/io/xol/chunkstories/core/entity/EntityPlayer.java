@@ -832,7 +832,7 @@ EntityWorldModifier
 		if(!isDead())
 		{
 			int i = 1 + (int) Math.random() * 3;
-			world.getSoundManager().playSoundEffect("sounds/sfx/entities/human/hurt"+i+".ogg", Mode.NORMAL, this.getLocation(), (float)Math.random() * 0.4f + 0.8f, 5.0f);
+			world.getSoundManager().playSoundEffect("sounds/entities/human/hurt"+i+".ogg", Mode.NORMAL, this.getLocation(), (float)Math.random() * 0.4f + 0.8f, 5.0f);
 		}
 		
 		return super.damage(cause, osef, damage);

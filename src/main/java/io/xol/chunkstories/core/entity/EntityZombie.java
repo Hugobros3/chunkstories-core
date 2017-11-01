@@ -240,7 +240,7 @@ public class EntityZombie extends EntityHumanoid
 	public float damage(DamageCause cause, HitBox osef, float damage)
 	{
 		if(!isDead())
-			world.getSoundManager().playSoundEffect("sounds/sfx/entities/zombie/hurt.ogg", Mode.NORMAL, this.getLocation(), (float)Math.random() * 0.4f + 0.8f, 1.5f + Math.min(0.5f, damage / 15.0f));
+			world.getSoundManager().playSoundEffect("sounds/entities/zombie/hurt.ogg", Mode.NORMAL, this.getLocation(), (float)Math.random() * 0.4f + 0.8f, 1.5f + Math.min(0.5f, damage / 15.0f));
 		
 		if(cause instanceof EntityLiving) {
 

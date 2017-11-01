@@ -80,7 +80,7 @@ public class ItemFirearm extends ItemWeapon implements ItemOverlay, ItemZoom, It
 
 		automatic = type.resolveProperty("fireMode", "semiauto").equals("fullauto");
 		rpm = Double.parseDouble(type.resolveProperty("roundsPerMinute", "60.0"));
-		soundName = type.resolveProperty("fireSound", "sounds/sfx/shoot.ogg");
+		soundName = type.resolveProperty("fireSound", "sounds/weapons/ak47/shoot_old.ogg");
 
 		damage = Double.parseDouble(type.resolveProperty("damage", "1.0"));
 		accuracy = Double.parseDouble(type.resolveProperty("accuracy", "0.0"));
@@ -303,7 +303,7 @@ public class ItemFirearm extends ItemWeapon implements ItemOverlay, ItemZoom, It
 								
 								user.getWorld().getParticlesManager().spawnParticleAtPositionWithVelocity("voxel_frag", shotBlock, smashedVoxelParticleDirection);
 							}
-							user.getWorld().getSoundManager().playSoundEffect("sounds/sfx/glass.ogg", Mode.NORMAL, shotBlock, (float)Math.random() * 0.2f + 0.9f, 1.0f);
+							user.getWorld().getSoundManager().playSoundEffect("sounds/environment/glass.ogg", Mode.NORMAL, shotBlock, (float)Math.random() * 0.2f + 0.9f, 1.0f);
 							
 							//Re-raytrace the ray
 							shotBlock = user.getWorld().collisionsManager().raytraceSolid(eyeLocation, direction, range);

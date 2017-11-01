@@ -73,8 +73,8 @@ public class ZombieAI extends GenericHumanoidAI
 					if (targetsTypes.contains(entityToLook.getClass()))
 					{
 						//Play a borking sound
-						entity.getWorld().getSoundManager().playSoundEffect("sounds/sfx/zombie.ogg", Mode.NORMAL, entity.getLocation(), (float) (1.5 + Math.random() * 0.2), 1.5f);//.setPitch();
-						entity.getWorld().getSoundManager().playSoundEffect("sounds/sfx/zombie.ogg", Mode.NORMAL, entity.getLocation(), (float) (1.5 + Math.random() * 0.2), 1.5f);//.setPitch();
+						entity.getWorld().getSoundManager().playSoundEffect("sounds/entities/zombie/grunt.ogg", Mode.NORMAL, entity.getLocation(), (float) (1.5 + Math.random() * 0.2), 1.5f);//.setPitch();
+						entity.getWorld().getSoundManager().playSoundEffect("sounds/entities/zombie/grunt.ogg", Mode.NORMAL, entity.getLocation(), (float) (1.5 + Math.random() * 0.2), 1.5f);//.setPitch();
 						
 						//Set new task
 						setAiTask(new AiTaskAttackEntity((EntityHumanoid) entityToLook, 10f, 15f, currentTask, entity.stage().attackCooldown, entity.stage().attackDamage));

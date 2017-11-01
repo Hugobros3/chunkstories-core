@@ -44,7 +44,7 @@ public class WorldEffects
 		}
 		
 		//Play the sound more directly
-		world.getSoundManager().playSoundEffect("./sounds/sfx/kboom.ogg", Mode.NORMAL, center, (float)(0.9f + Math.random() * 0.2f), (float)(debrisSpeed * debrisSpeed * 10f), 1, 150);
+		world.getSoundManager().playSoundEffect("./sounds/environment/kboom.ogg", Mode.NORMAL, center, (float)(0.9f + Math.random() * 0.2f), (float)(debrisSpeed * debrisSpeed * 10f), 1, 150);
 	}
 	
 	public static void createFireballFx(World world, Vector3d center, double radius, double debrisSpeed, float f)
