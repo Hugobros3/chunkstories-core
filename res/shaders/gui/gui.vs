@@ -3,12 +3,16 @@ in vec2 vertexIn;
 in vec2 texCoordIn;
 in vec4 colorIn;
 
+struct passMe {
+	vec2 texCoord;
+	vec4 color;
+};
+
 //Simply transfer data
-out vec2 texCoordPassed;
-out vec4 colorPassed;
+out passMe pass;
 
 void main(void) {
-	texCoordPassed = vec2(texCoordIn);
-	colorPassed = colorIn;
+	pass.texCoord = vec2(texCoordIn);
+	pass.color = colorIn;
 	gl_Position = vec4(vertexIn, 0.0, 1.0);
 }
