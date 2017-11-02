@@ -53,11 +53,13 @@ public class GenericHumanoidAI extends AI<EntityHumanoid>
 			entity.getWorld().getSoundManager().playSoundEffect("sounds/entities/zombie/grunt.ogg", Mode.NORMAL, entity.getLocation(), (float) (0.9 + Math.random() * 0.2), 1.0f);//.setPitch();
 		}
 		
+		//System.out.println("lel");
+		
 		//Water-jump
-		if(entity.getWorld().peekSafely(entity.getLocation()).getVoxel().getType().isLiquid())
+		if(entity.getWorld().peekSafely(entity.getLocation().add(0, 1.25, 0)).getVoxel().getType().isLiquid())
 		{
-			if(entity.getVelocityComponent().getVelocity().y() < 0.15)
-				entity.getVelocityComponent().addVelocity(0.0, 0.15, 0.0);
+			if(entity.getVelocityComponent().getVelocity().y() < 0.0)
+				entity.getVelocityComponent().addVelocity(0.0, 0.10, 0.0);
 			//System.out.println("vel:");
 		}
 			
@@ -229,11 +231,16 @@ public class GenericHumanoidAI extends AI<EntityHumanoid>
 			{
 				Vector3dc rem = entity.canMoveWithCollisionRestrain(entity.getTargetVelocity());
 				
-				//rem.setY(0.0D);
-
 				if(Math.sqrt(rem.x() * rem.x() + rem.z() * rem.z()) > 0.001)
-				//if(rem.length() > 0.001)
-					entity.getVelocityComponent().addVelocity(0.0, 0.15, 0.0);
+				{
+					//System.out.println("cuck");
+					//If they have their feet in water
+					if(entity.getWorld().peekSafely(entity.getLocation().add(0, 0.0, 0)).getVoxel().getType().isLiquid()) {
+						entity.getVelocityComponent().addVelocity(0.0, 0.20, 0.0);
+						//System.out.println("feet in water yo");
+					} else
+						entity.getVelocityComponent().addVelocity(0.0, 0.15, 0.0);
+				}
 			}
 		}
 		
