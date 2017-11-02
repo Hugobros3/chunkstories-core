@@ -95,20 +95,19 @@ void createSlab(vec2 pos, int lod) {
 	
 	uint voId = voxel(pos, 0);
 	
+	//colorPassed = vec4(vec3(0.10), 1.0);
+	normalPassed = vec3(0.0, 1.0, 0.0);
+	voxelId = voId;
 	for(int i = 0; i < 6; i++) {
 		vec4 vertice = vec4(pos.x, 0.0, pos.y, 1.0);
 		
 		vertice.xz += displacementPassed[0].xy + triangleConstruction[i] * 32 / pow(2, lod);
 		vertice.y += height;
 		
-		colorPassed = vec4(vec3(0.10), 1.0);
-		
 		gl_Position = modelViewProjectionMatrix * vertice;
 		vertexPassed = vertice;
-		normalPassed = vec3(0.0, 1.0, 0.0);
 		eyeDirection = vertice.xyz-camPos;
 		
-		voxelId = voId;
 		EmitVertex();
 	}
 	EndPrimitive();
@@ -117,6 +116,14 @@ void createSlab(vec2 pos, int lod) {
 	int hnz = int(getHeight(pos + vec2(0.0, 32 / pow(2, lod)), lod));
 	
 	if((hnx - height) != 0) {
+		voxelId = voId;
+		if(hnx > height) {
+			normalPassed = vec3(-1.0, 0.0, 0.0);
+			voxelId = voxel(pos + vec2(32 / pow(2, lod), 0.0), 0);
+		} else {
+			normalPassed = vec3(1.0, 0.0, 0.0);
+		}
+		
 		for(int i = 0; i < 6; i++) {
 			vec4 vertice = vec4(pos.x + 32 / pow(2, lod), 0.0, pos.y, 1.0);
 			
@@ -124,17 +131,8 @@ void createSlab(vec2 pos, int lod) {
 			vertice.yz += triangleConstruction[i] * vec2(float(hnx - height), 32 / pow(2, lod));
 			vertice.y += height;
 			
-			colorPassed = vec4(vec3(0.05), 1.0);
-			
 			gl_Position = modelViewProjectionMatrix * vertice;
 			vertexPassed = vertice;
-			voxelId = voId;
-			if(hnx > height) {
-				normalPassed = vec3(-1.0, 0.0, 0.0);
-				voxelId = voxel(pos + vec2(32 / pow(2, lod), 0.0), 0);
-			} else {
-				normalPassed = vec3(1.0, 0.0, 0.0);
-			}
 			
 			EmitVertex();
 		}
@@ -142,6 +140,13 @@ void createSlab(vec2 pos, int lod) {
 	}
 	
 	if((hnz - height) != 0) {
+		voxelId = voId;
+		if(hnz > height) {
+			normalPassed = vec3(0.0, 0.0, -1.0);
+			voxelId = voxel(pos + vec2(0.0, 32 / pow(2, lod)), 0);
+		} else
+			normalPassed = vec3(0.0, 0.0, 1.0);
+		
 		for(int i = 0; i < 6; i++) {
 			vec4 vertice = vec4(pos.x, 0.0, pos.y + 32 / pow(2, lod), 1.0);
 			
@@ -149,34 +154,11 @@ void createSlab(vec2 pos, int lod) {
 			vertice.yx += triangleConstruction[i] * vec2(float(hnz - height), 32 / pow(2, lod));
 			vertice.y += height;
 			
-			colorPassed = vec4(vec3(0.025), 1.0);
-			
 			gl_Position = modelViewProjectionMatrix * vertice;
 			vertexPassed = vertice;
-			
-			voxelId = voId;
-			if(hnz > height) {
-				normalPassed = vec3(0.0, 0.0, -1.0);
-				voxelId = voxel(pos + vec2(0.0, 32 / pow(2, lod)), 0);
-			} else
-				normalPassed = vec3(0.0, 0.0, 1.0);
 			
 			EmitVertex();
 		}
 		EndPrimitive();
 	}
-	
-	/*for(int i = 0; i < 6; i++) {
-		vec4 vertice = vec4(pos.x, 0.0, pos.y, 1.0);
-		
-		vertice.xz += displacementPassed[0].xy + triangleConstruction[i] * 32 / pow(2, lod);
-		vertice.y += height;
-		
-		colorPassed = vec4(vec3(0.10), 1.0);
-		
-		gl_Position = modelViewProjectionMatrix * vertice;
-		
-		EmitVertex();
-	}
-	EndPrimitive();*/
 }
