@@ -18,10 +18,3 @@ voxel wood_chest 97
 	selfOpaque: true
 	textures: chesttop, chesttop, chestside, chestside, chestfront, chestside
 end
-
-voxel voxelEntityTest 98
-	customClass: io.xol.chunkstories.core.voxel.VoxelEntityTest
-	opaque: false
-	selfOpaque: true
-	textures: sand2, sand2, sand2, sand2, sand2, sand2
-end
