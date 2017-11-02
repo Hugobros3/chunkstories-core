@@ -130,10 +130,10 @@ void createSlab(vec2 pos, int lod) {
 			vertexPassed = vertice;
 			voxelId = voId;
 			if(hnx > height) {
-				normalPassed = vec3(0.0, 0.0, -1.0);
+				normalPassed = vec3(-1.0, 0.0, 0.0);
 				voxelId = voxel(pos + vec2(32 / pow(2, lod), 0.0), 0);
 			} else {
-				normalPassed = vec3(0.0, 0.0, 1.0);
+				normalPassed = vec3(1.0, 0.0, 0.0);
 			}
 			
 			EmitVertex();
@@ -156,10 +156,10 @@ void createSlab(vec2 pos, int lod) {
 			
 			voxelId = voId;
 			if(hnz > height) {
-				normalPassed = vec3(-1.0, 0.0, 0.0);
+				normalPassed = vec3(0.0, 0.0, -1.0);
 				voxelId = voxel(pos + vec2(0.0, 32 / pow(2, lod)), 0);
 			} else
-				normalPassed = vec3(1.0, 0.0, 0.0);
+				normalPassed = vec3(0.0, 0.0, 1.0);
 			
 			EmitVertex();
 		}
