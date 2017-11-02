@@ -59,16 +59,14 @@ uniform int lodLevel;
 
 const vec2 triangleConstruction[] = vec2[](vec2(0.0), vec2(0.0, 1.0), vec2(1.0, 1.0), vec2(0.0), vec2(1.0, 0.0), vec2(1.0, 1.0));
 
-void subdivide1(vec2 pos, int lod);
-void subdivide2(vec2 pos, int lod);
-void output(vec2 pos, int lod);
+void createSlab(vec2 pos, int lod);
 
 uint getHeight(vec2 pos, int lod);
 
 void main() {
 	
 	//Compute coordinates & height
-	output(gl_in[0].gl_Position.xz, lodLevel);
+	createSlab(gl_in[0].gl_Position.xz, lodLevel);
 }
 uint getHeight(vec2 pos, int lod) {
 	vec2 inMeshCoords = (pos.yx + mod(displacementPassed[0].yx, 256.0) + vec2(0.5)) / vec2(256.0);
@@ -80,7 +78,7 @@ uint voxel(vec2 pos, int lod) {
 	return access(topVoxels, inMeshCoords);
 }
 
-void output(vec2 pos, int lod) {
+void createSlab(vec2 pos, int lod) {
 	int height = int(getHeight(pos, lod));
 	
 	vec3 sum = (modelViewMatrix * (vec4(pos.x, height, pos.y, 1.0) + vec4(displacementPassed[0].x, 0, displacementPassed[0].y, 0.0))).xyz;
@@ -132,10 +130,10 @@ void output(vec2 pos, int lod) {
 			vertexPassed = vertice;
 			voxelId = voId;
 			if(hnx > height) {
-				normalPassed = vec3(0.0, 0.0, 1.0);
+				normalPassed = vec3(0.0, 0.0, -1.0);
 				voxelId = voxel(pos + vec2(32 / pow(2, lod), 0.0), 0);
 			} else {
-				normalPassed = vec3(0.0, 0.0, -1.0);
+				normalPassed = vec3(0.0, 0.0, 1.0);
 			}
 			
 			EmitVertex();
@@ -158,10 +156,10 @@ void output(vec2 pos, int lod) {
 			
 			voxelId = voId;
 			if(hnz > height) {
-				normalPassed = vec3(1.0, 0.0, 0.0);
+				normalPassed = vec3(-1.0, 0.0, 0.0);
 				voxelId = voxel(pos + vec2(0.0, 32 / pow(2, lod)), 0);
 			} else
-				normalPassed = vec3(-1.0, 0.0, 0.0);
+				normalPassed = vec3(1.0, 0.0, 0.0);
 			
 			EmitVertex();
 		}
