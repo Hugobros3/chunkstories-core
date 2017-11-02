@@ -66,11 +66,12 @@ public class DefaultItemRenderer extends ItemRenderer
 	public void renderItemInWorld(RenderingInterface renderingInterface, ItemPile pile, World world, Location location, Matrix4f handTransformation)
 	{
 		Matrix4f handTransformation2 = new Matrix4f(handTransformation);
-		
+
 		handTransformation2.rotate((float) (Math.PI / 2f), new Vector3f(0.0f, 0.0f, 1.0f));
 		handTransformation2.rotate((float) (Math.PI / 2f), new Vector3f(0.0f, 1.0f, 0.0f));
-		handTransformation2.translate(new Vector3f(-0.05f, -0.15f, 0.0f));
-		handTransformation2.scale(new Vector3f(0.35f));
+		handTransformation2.translate(new Vector3f(-0.0f, 0.0f, 0.2f));
+		//handTransformation2.translate(new Vector3f(-0.00f, -0.15f, 0.0f));
+		handTransformation2.scale(new Vector3f(1.0f, 0.20f * pile.getItem().getType().getSlotsWidth(), 0.20f * pile.getItem().getType().getSlotsHeight()));
 		renderingInterface.setObjectMatrix(handTransformation2);
 
 		textures.getTexture(pile.getTextureName()).setLinearFiltering(false);
@@ -86,6 +87,10 @@ public class DefaultItemRenderer extends ItemRenderer
 	
 	protected void draw3DPlane(RenderingInterface renderingInterface)
 	{
+		/*if(defaultPlane != null) {
+			defaultPlane.destroy();
+			defaultPlane = null;
+		}*/
 		//defaultPlane = null;
 		if(defaultPlane == null)
 		{
@@ -118,30 +123,29 @@ public class DefaultItemRenderer extends ItemRenderer
 			buf.putFloat(1.0f);
 			buf.putFloat(-1.0f);
 			//Flipped version
-
 			buf.putFloat(0.0f);
 			buf.putFloat(-1.0f);
 			buf.putFloat(1.0f);
-
-			buf.putFloat(0.0f);
-			buf.putFloat(-1.0f);
-			buf.putFloat(-1.0f);
 			
 			buf.putFloat(0.0f);
 			buf.putFloat(1.0f);
 			buf.putFloat(-1.0f);
 
 			buf.putFloat(0.0f);
+			buf.putFloat(-1.0f);
+			buf.putFloat(-1.0f);
+
+			buf.putFloat(0.0f);
 			buf.putFloat(1.0f);
 			buf.putFloat(1.0f);
 
 			buf.putFloat(0.0f);
-			buf.putFloat(-1.0f);
 			buf.putFloat(1.0f);
+			buf.putFloat(-1.0f);
 
 			buf.putFloat(0.0f);
-			buf.putFloat(1.0f);
 			buf.putFloat(-1.0f);
+			buf.putFloat(1.0f);
 			
 			//Vertex texcoord data
 			buf.putFloat(0.0f);
@@ -166,20 +170,20 @@ public class DefaultItemRenderer extends ItemRenderer
 			buf.putFloat(0.0f);
 			buf.putFloat(0.0f);
 
+			buf.putFloat(1.0f);
+			buf.putFloat(1.0f);
+
 			buf.putFloat(0.0f);
 			buf.putFloat(1.0f);
 
 			buf.putFloat(1.0f);
-			buf.putFloat(1.0f);
+			buf.putFloat(0.0f);
 
 			buf.putFloat(1.0f);
-			buf.putFloat(0.0f);
+			buf.putFloat(1.0f);
 			
 			buf.putFloat(0.0f);
 			buf.putFloat(0.0f);
-
-			buf.putFloat(1.0f);
-			buf.putFloat(1.0f);
 			
 			//Normals
 			buf.putFloat(1.0f);
@@ -232,7 +236,7 @@ public class DefaultItemRenderer extends ItemRenderer
 		renderingInterface.bindAttribute("texCoordIn", defaultPlane.asAttributeSource(VertexFormat.FLOAT, 2, 0, 2 * 4 * 3 * 6));
 		renderingInterface.bindAttribute("normalIn", defaultPlane.asAttributeSource(VertexFormat.FLOAT, 3, 0, 2 *( 4 * 3 * 6 + 4 * 2 * 6)));
 		
-		renderingInterface.draw(Primitive.TRIANGLE, 0, 6);
+		renderingInterface.draw(Primitive.TRIANGLE, 0, 6*2);
 	}
 
 }

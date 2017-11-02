@@ -30,7 +30,7 @@ public class FlatIconItemRenderer extends DefaultItemRenderer
 	@Override
 	public void renderItemInWorld(RenderingInterface renderingInterface, ItemPile pile, World world, Location location, Matrix4f handTransformation)
 	{
-		handTransformation.rotate((float) (Math.PI / 4f), new Vector3f(0.0f, 0.0f, 1.0f));
+		/*handTransformation.rotate((float) (Math.PI / 4f), new Vector3f(0.0f, 0.0f, 1.0f));
 		handTransformation.rotate((float) (Math.PI / 2f), new Vector3f(0.0f, 1.0f, 0.0f));
 		handTransformation.translate(new Vector3f(-0.05f, -0.05f, 0.05f));
 		
@@ -47,6 +47,9 @@ public class FlatIconItemRenderer extends DefaultItemRenderer
 		texture.setLinearFiltering(false);
 		renderingInterface.bindAlbedoTexture(texture);
 		
-		draw3DPlane(renderingInterface);
+		draw3DPlane(renderingInterface);*/
+		handTransformation.translate(new Vector3f(-0.05f, -0.05f, 0.05f));
+		handTransformation.rotate((float) -(Math.PI / 4f), new Vector3f(0.0f, 0.0f, 1.0f));
+		super.renderItemInWorld(renderingInterface, pile, world, location, handTransformation);
 	}
 }

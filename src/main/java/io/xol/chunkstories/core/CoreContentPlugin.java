@@ -3,7 +3,7 @@ package io.xol.chunkstories.core;
 import io.xol.chunkstories.api.GameContext;
 import io.xol.chunkstories.api.plugin.ChunkStoriesPlugin;
 import io.xol.chunkstories.api.plugin.PluginInformation;
-import io.xol.chunkstories.core.logic.ItemsLogic;
+import io.xol.chunkstories.core.logic.ItemsLogicListener;
 
 //(c) 2015-2017 XolioWare Interactive
 //http://chunkstories.xyz
@@ -13,7 +13,7 @@ import io.xol.chunkstories.core.logic.ItemsLogic;
 public class CoreContentPlugin extends ChunkStoriesPlugin {
 
 	//TODO add block decals rendering here
-	private ItemsLogic itemsLogic = new ItemsLogic(this);
+	private ItemsLogicListener itemsLogic = new ItemsLogicListener(this);
 	
 	public CoreContentPlugin(PluginInformation pluginInformation, GameContext pluginExecutionContext) {
 		super(pluginInformation, pluginExecutionContext);
