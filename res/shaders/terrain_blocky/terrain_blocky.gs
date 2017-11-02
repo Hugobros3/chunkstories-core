@@ -1,6 +1,6 @@
 #version 330 core
 layout (points) in;
-layout (triangle_strip, max_vertices = 1024) out;
+layout (triangle_strip, max_vertices = 256) out;
 
 //Common camera matrices & uniforms
 uniform mat4 projectionMatrix;

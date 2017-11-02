@@ -10,7 +10,7 @@ in vec2 textureCoord;
 in vec3 eyeDirection;
 in float fogIntensity;
 
-flat in ivec4 indexPassed;
+//flat in ivec4 indexPassed;
 in vec4 colorPassed;
 flat in uint voxelId;
 
@@ -69,7 +69,7 @@ uniform float ignoreWorldCulling;
 
 <include ../sky/sky.glsl>
 
-uint access(usampler2DArray tex, vec2 coords) {
+/*uint access(usampler2DArray tex, vec2 coords) {
 	if(coords.x <= 1.0) {
 		if(coords.y <= 1.0) {
 			return texture(tex, vec3(coords, indexPassed.x)).r;
@@ -88,7 +88,7 @@ uint access(usampler2DArray tex, vec2 coords) {
 	}
 	
 	return 250u;
-}
+}*/
 
 void main()
 {
