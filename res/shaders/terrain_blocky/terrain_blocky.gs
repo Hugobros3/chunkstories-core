@@ -1,6 +1,6 @@
 #version 330 core
 layout (points) in;
-layout (triangle_strip, max_vertices = 256) out;
+layout (triangle_strip, max_vertices = 18) out;
 
 //Common camera matrices & uniforms
 uniform mat4 projectionMatrix;
@@ -28,6 +28,16 @@ uniform usampler2DArray heights;
 uniform usampler2DArray topVoxels; // Block ids
 
 uint access(usampler2DArray tex, vec2 coords) {
+
+	float xBlend = 0.5 + sign(coords.x - 1.0) * 0.5;
+	float yBlend = 0.5 + sign(coords.y - 1.0) * 0.5;
+
+	/*uint t00 = texture(tex, vec3(coords, indexPassed[0].x)).r;
+	uint t01 = texture(tex, vec3(coords - vec2(0.0, 1.0), indexPassed[0].y)).r;
+	uint t10 = texture(tex, vec3(coords - vec2(1.0, 0.0), indexPassed[0].z)).r;
+	uint t11 = texture(tex, vec3(coords - vec2(1.0), indexPassed[0].w)).r;
+	
+	return t00;*/
 	if(coords.x <= 1.0) {
 		if(coords.y <= 1.0) {
 			return texture(tex, vec3(coords, indexPassed[0].x)).r;
@@ -44,7 +54,6 @@ uint access(usampler2DArray tex, vec2 coords) {
 			return texture(tex, vec3(coords - vec2(1.0), indexPassed[0].w)).r;
 		}
 	}
-	
 	return 250u;
 }
 
