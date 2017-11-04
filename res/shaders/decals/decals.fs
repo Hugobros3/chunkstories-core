@@ -34,8 +34,6 @@ uniform mat3 normalMatrixInv;
 <include ../lib/normalmapping.glsl>
 
 out vec4 outDiffuseColor;
-out vec4 outNormalColor;
-out vec4 outMaterialColor;
 
 void main()
 {
@@ -45,18 +43,6 @@ void main()
 	
 	vec3 normal = vec3(0.0, 1.0, 0.0);
 	
-	/*if(abs(depth - gl_FragCoord.z) > 0.001)
-		discard;*/
-	
-	//Debug : shows blue when out of bounds !
-	/*if(texCoordPassed.x < 0.0 || texCoordPassed.x > 1.0)
-		color = vec4(0.0, 0.0,1.0, 1.0);
-		
-	if(texCoordPassed.y < 0.0 || texCoordPassed.y > 1.0)
-		color = vec4(0.0, 0.0,1.0, 1.0);*/
-	
-	//color = vec4(vec3(depth), 1.0);
-	
 	if(color.a == 0.0)
 		discard;
 	
@@ -64,12 +50,6 @@ void main()
 	
 	float dynamicFresnelTerm = 0.0 + 1.0 * clamp(0.7 + dot(normalize(eyeDirection), vec3(normal)), 0.0, 1.0);
 	
-	//gl_FragDepth = gl_FragCoord.z - 0.001;
-	
-	//Diffuse G-Buffer
+	//We just want to tint the target diffuse color
 	outDiffuseColor = vec4(color.rgb, color.a);
-	//Normal G-Buffer + reflections
-	outNormalColor = vec4(encodeNormal(normalMatrix * normal).xy, 0.0 * dynamicFresnelTerm, color.a * 0.0);
-	//Light color G-buffer
-	outMaterialColor = vec4(vec2(0.0, 1.0), 0.0, 0.0);
 }

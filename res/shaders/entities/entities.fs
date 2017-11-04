@@ -4,7 +4,6 @@
 //General data
 in vec2 texcoord; // Coordinate
 in vec3 eye; // eye-position
-in float chunkFade;
 in vec3 inNormal;
 in vec4 inVertex;
 in vec4 colorPassed;
@@ -51,8 +50,10 @@ const vec3 shadowColor = vec3(0.20, 0.20, 0.31);
 const float shadowStrength = 0.75;
 
 out vec4 outDiffuseColor;
-out vec4 outNormalColor;
-out vec4 outMaterialColor;
+out vec3 outNormal;
+out vec2 outVoxelLight;
+out float outSpecularity;
+out uint outMaterial;
 
 <include ../lib/normalmapping.glsl>
 
@@ -97,10 +98,9 @@ void main(){
 	
 	vec3 finalColor = baseColor*blockColor;
 	
-	//Diffuse G-Buffer
-	outDiffuseColor = vec4(finalColor,chunkFade+1);
-	//Normal G-Buffer
-	outNormalColor = vec4(encodeNormal(normal).xy, spec, 1.0);
-	//Metadata color G-buffer
-	outMaterialColor = vec4(worldLight, material.r, material.a);
+	outDiffuseColor = vec4(finalColor, 1.0);
+	outNormal = encodeNormal(normal);
+	outVoxelLight = worldLight;
+	outSpecularity = spec;
+	outMaterial = 255u;
 }

@@ -29,33 +29,33 @@ vec3 perturb_normal( vec3 N, vec3 V, vec2 texcoord, vec3 normalMapDirection)
     return normalize(TBN * normalMapDirection);
 }
 
-vec3 decodeNormal(vec4 compressed)
+/*vec3 decodeNormal(vec4 compressed)
 {
 	float scale = 1.7777;
 	
-	vec3 nn = compressed.xyz * vec3(2.0 * scale, 2 * scale, 0.0) + vec3(-scale, -scale, 1.0);
+	vec3 nn = vec3(compressed.xy, 0.0) * vec3(2.0 * scale, 2 * scale, 0.0) + vec3(-scale, -scale, 1.0);
 	float g = 2.0 / dot(nn.xyz, nn.xyz);
 	vec3 n = vec3(g * nn.xy, g - 1.0);
 	
 	return n;
 }
 
-vec4 encodeNormal(vec3 uncompressed)
+vec2 encodeNormal(vec3 uncompressed)
 {
 	float scale = 1.7777;
 	vec2 enc = uncompressed.xy / (uncompressed.z + 1.0);
 	enc /= scale;
 	enc = enc * 0.5 + vec2(0.5);
 	
-	return vec4(enc, 0.0, 0.0);
-}
+	return enc;
+}*/
 
-/*vec3 decodeNormal(vec4 compressed)
+vec3 decodeNormal(vec4 compressed)
 {
 	return compressed.rgb * 2.0 - vec3(1.0);
 }
 
-vec4 encodeNormal(vec3 uncompressed)
+vec3 encodeNormal(vec3 uncompressed)
 {
-	return vec4(uncompressed * 0.5 + vec3(0.5), 0.0);
-}*/
+	return vec3(uncompressed * 0.5 + vec3(0.5));
+}

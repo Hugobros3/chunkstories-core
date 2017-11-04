@@ -4,9 +4,11 @@
 // http://xol.io
 
 uniform sampler2D depthBuffer;
-uniform sampler2D metaBuffer;
+
+uniform sampler2D voxelLightBuffer;
 uniform sampler2D shadedBuffer;
 uniform sampler2D normalBuffer;
+uniform sampler2D specularityBuffer;
 
 //Reflections stuff
 uniform samplerCube environmentCubemap;
@@ -65,17 +67,13 @@ out vec4 fragColor;
 void main() {
     vec4 cameraSpacePosition = convertScreenSpaceToCameraSpace(screenCoord, depthBuffer);
 	
-	vec4 normalBufferData = texture(normalBuffer, screenCoord);
-	vec4 pixelMeta = texture(metaBuffer, screenCoord);
-	
-	vec3 pixelNormal = decodeNormal(normalBufferData);
-	float spec = pow(normalBufferData.z, 1.0);
+	vec3 pixelNormal = decodeNormal(texture(normalBuffer, screenCoord));
+	float spec = texture(specularityBuffer, screenCoord).x;
 	
 	//Discard fragments using alpha
 	if(texture(shadedBuffer, screenCoord).a > 0.0 && spec > 0.0)
 	{
-		fragColor = computeReflectedPixel(depthBuffer, shadedBuffer, environmentCubemap, screenCoord, cameraSpacePosition.xyz, pixelNormal, pixelMeta.y);
-		//shadingColor = vec4(1.0, 0.0, 0.0, 0.0);
+		fragColor = computeReflectedPixel(depthBuffer, shadedBuffer, environmentCubemap, screenCoord, cameraSpacePosition.xyz, pixelNormal, texture(voxelLightBuffer, screenCoord).y);
 	}
 	else
 		discard;

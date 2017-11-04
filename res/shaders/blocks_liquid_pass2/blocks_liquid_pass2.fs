@@ -14,8 +14,10 @@ in vec4 lightMapCoords; //Computed in vertex shader
 in float fresnelTerm;
 
 out vec4 outDiffuseColor;
-out vec4 outNormalColor;
-out vec4 outMaterialColor;
+out vec3 outNormal;
+out vec2 outVoxelLight;
+out float outSpecularity;
+out uint outMaterial;
 
 //Block and sun Lightning
 uniform float sunIntensity; // Adjusts the lightmap coordinates
@@ -87,7 +89,7 @@ void main(){
 	//Basic texture color
 	vec2 coords = (gl_FragCoord.xy)/screenSize;
 	
-	vec4 baseColor = texture(diffuseTexture, texCoordPassed);
+	//vec4 baseColor = texture(diffuseTexture, texCoordPassed);
 	
 	float spec = fresnelTerm;
 	vec4 worldspaceFragment = convertScreenSpaceToCameraSpace(coords, gl_FragCoord.z);
@@ -97,10 +99,9 @@ void main(){
 	spec = dynamicFresnelTerm;
 	<endif perPixelFresnel>
 	
-	baseColor = texture(readbackShadedBufferTemp, gl_FragCoord.xy / screenSize);
+	vec4 baseColor = texture(readbackShadedBufferTemp, gl_FragCoord.xy / screenSize);
 	
 	spec *= 1-underwater;
-	
 	spec = pow(spec, gamma);
 	
 	//if(mod((gl_FragCoord.x + gl_FragCoord.y), 2) == 0)
@@ -109,7 +110,9 @@ void main(){
 	if(baseColor.a < 1.0)
 		discard;
 	
-	outDiffuseColor = vec4(baseColor);
-	outNormalColor = vec4(encodeNormal(normal).xy, spec, 1.0);
-	outMaterialColor = vec4(lightMapCoords.xyz, 1);
+	outDiffuseColor = baseColor;
+	outNormal = encodeNormal(normal);
+	outVoxelLight = lightMapCoords.xy;
+	outSpecularity = spec;
+	outMaterial = 255u;
 }

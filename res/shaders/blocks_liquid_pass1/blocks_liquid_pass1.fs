@@ -40,11 +40,14 @@ uniform mat4 modelViewMatrixInv;
 uniform mat3 normalMatrix;
 uniform mat3 normalMatrixInv;
 
+uniform vec3 camPos;
+
 const vec3 shadowColor = vec3(0.20, 0.20, 0.31);
 const float shadowStrength = 0.75;
 
 uniform sampler2D readbackAlbedoBufferTemp;
-uniform sampler2D readbackMetaBufferTemp;
+uniform sampler2D readbackVoxelLightBufferTemp;
+uniform sampler2D readbackSpecularityBufferTemp;
 uniform sampler2D readbackDepthBufferTemp;
 
 uniform vec2 shadedBufferDimensions;
@@ -56,6 +59,8 @@ uniform float underwater;
 <include ../lib/gamma.glsl>
 <include ../lib/transformations.glsl>
 
+const vec4 waterColor = vec4(0.2, 0.4, 0.45, 1.0);
+
 void main(){
 
 	//Basic texture color
@@ -66,16 +71,15 @@ void main(){
 	vec4 worldspaceFragment = convertScreenSpaceToCameraSpace(coords, readbackDepthBufferTemp);
 	
 	//Pass 1
-	vec4 meta = texture(readbackMetaBufferTemp, coords);
+	vec2 worldLight = texture(readbackVoxelLightBufferTemp, coords).xy;
 	
-	vec3 blockLight = textureGammaIn(lightColors,vec2(meta.x, 0)).rgb;
-	vec3 sunLight = textureGammaIn(lightColors,vec2(0, meta.y)).rgb;
+	vec3 blockLight = textureGammaIn(lightColors,vec2(worldLight.x, 0)).rgb;
+	vec3 sunLight = textureGammaIn(lightColors,vec2(0, worldLight.y)).rgb;
 	
 	sunLight = mix(sunLight, sunLight * shadowColor, shadowVisiblity * 0.75);
 	
-	vec3 finalLight = blockLight;// * (1-sunLight);
+	vec3 finalLight = blockLight;
 	finalLight += sunLight;
-	//finalLight *= (1-meta.z);
 
 	//coords += 15.0 * (1 - length(worldspaceFragment) / viewDistance) * vec2( normal.xz ) / screenSize;
 	vec4 refracted = texture(readbackAlbedoBufferTemp, coords);
@@ -83,7 +87,15 @@ void main(){
 	float waterFogI2 = length(worldspaceFragment) / viewDistance;
 	refracted.rgb *= pow(finalLight + 0 * vec3(1.0) * (1-refracted.a*lightMapCoords.g), vec3(gammaInv));
 	
-	baseColor.rgb = mix(refracted.rgb, baseColor.rgb, clamp(waterFogI2*(1.0-underwater), 0.0, 1.0));
+	//baseColor.rgba = vec4(1.0);
+	
+	baseColor = mix(refracted, baseColor, clamp(waterFogI2*(1.0-underwater), 0.0, 1.0));
+	
+	//baseColor = mix(baseColor, vec4(waterColor.rgb/* * getSkyColor(dayTime, vec3(0.0, -1.0, 0.0))*/, 1.0), underwater * clamp(length(convertScreenSpaceToCameraSpace((gl_FragCoord.xyz)/vec3(screenSize,1.0))) / 32.0, 0.0, 1.0));
+	
+	if(baseColor.a == 0.0) {
+		discard;
+	}
 	
 	fragColor = vec4(baseColor);
 }

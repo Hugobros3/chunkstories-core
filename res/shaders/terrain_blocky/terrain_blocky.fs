@@ -16,6 +16,7 @@ flat in uint voxelId;
 
 //Framebuffer outputs
 out vec4 shadedFramebufferOut;
+out float noSpecularOut;
 
 //Textures
 uniform sampler2D normalTexture; // Water surface
@@ -188,7 +189,7 @@ void main()
 	//Get per-fragment fog color
 	vec3 fogColor = getSkyColorWOSun(time, normalize(eyeDirection));
 	
-	//Mix in fog
-	//shadedFramebufferOut = vec4(finalColor, 1.0);
+	//Mix in fog 
 	shadedFramebufferOut = mix(vec4(finalColor, 1.0),vec4(fogColor,1.0), fogIntensity);
+	noSpecularOut = 0.0;
 }

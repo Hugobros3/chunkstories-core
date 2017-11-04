@@ -4,7 +4,9 @@ uniform sampler2D shadedBuffer;
 uniform sampler2D albedoBuffer;
 uniform sampler2D depthBuffer;
 uniform sampler2D normalBuffer;
-uniform sampler2D metaBuffer;
+uniform sampler2D voxelLightBuffer;
+uniform sampler2D specularityBuffer;
+uniform usampler2D materialBuffer;
 uniform sampler2D debugBuffer;
 
 uniform sampler2D shadowMap;
@@ -80,8 +82,7 @@ void main() {
 	compositeColor = mix(compositeColor, compositeColor * waterColor, underwater);
 	
 	//Applies reflections
-	vec4 normalData = texture(normalBuffer, finalCoords);
-	float reflectionsAmount = normalData.z;
+	float reflectionsAmount = texture(specularityBuffer, finalCoords).x;
 	
 	//Dynamic reflections
 	<ifdef doRealtimeReflections>
@@ -89,7 +90,7 @@ void main() {
 	<endif doRealtimeReflections>
 	//Static reflections
 	<ifdef !doRealtimeReflections>
-		vec3 pixelNormal = decodeNormal(normalData);
+		vec3 pixelNormal = decodeNormal(texture(normalBuffer, finalCoords));
 		vec3 cameraSpaceVector = normalize(reflect(normalize(cameraSpacePosition.xyz), pixelNormal));
 		vec3 normSkyDirection = normalMatrixInv * cameraSpaceVector;
 		
@@ -113,9 +114,8 @@ void main() {
 	//Gamma-corrects stuff
 	compositeColor.rgb = pow(compositeColor.rgb, vec3(gammaInv));
 	
-	//vec4 cameraSpacePosition = convertScreenSpaceToCameraSpace(finalCoords, depthBuffer);
 	//Darkens further pixels underwater
-	compositeColor = mix(compositeColor, vec4(0.0), underwater * clamp(length(cameraSpacePosition) / 32.0, 0.0, 1.0));
+	compositeColor = mix(compositeColor, vec4(waterColor.rgb * getSkyColor(dayTime, vec3(0.0, -1.0, 0.0)), 1.0), underwater * clamp(length(cameraSpacePosition) / 32.0, 0.0, 1.0));
 	
 	// Eye adapatation
 	compositeColor *= apertureModifier;
@@ -166,17 +166,14 @@ vec4 getDebugShit(vec2 coords)
 		if(coords.y > 0.5)
 		{
 			shit = texture(albedoBuffer, sampleCoords);
-			//if(shit.a == 0)
 			shit += (1.0-shit.a) * vec4(1.0, 0.0, 1.0, 1.0);
 		}
 		else
 		{
-			shit = texture(metaBuffer, sampleCoords).xyzw;
-			//shit = vec4(1.0, 0.5, 0.0, 1.0) * texture(normalBuffer, sampleCoords).w;
-			//shit.yz += texture(metaBuffer, sampleCoords).xy;
+			shit = vec4(texture(voxelLightBuffer, sampleCoords).xy, texture(specularityBuffer, sampleCoords).r, 1.0);
+			
 			<ifdef dynamicGrass>
 			
-			//shit = vec4(1.0, 1.0, 1.0, 1.0) * texture(bloomBuffer, sampleCoords).x * 1.0;
 			shit = texture(debugBuffer, sampleCoords, 80.0);
 			shit = pow(texture(debugBuffer, sampleCoords, 0.0), vec4(gammaInv));
 			<endif dynamicGrass>

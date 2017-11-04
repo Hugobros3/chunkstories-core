@@ -41,8 +41,10 @@ uniform float mapSize;
 <include ../lib/normalmapping.glsl>
 
 out vec4 outDiffuseColor;
-out vec4 outNormalColor;
-out vec4 outMaterialColor;
+out vec3 outNormal;
+out vec2 outVoxelLight;
+out float outSpecularity;
+out uint outMaterial;
 
 void main(){
 	//Check some normal component was made available
@@ -82,8 +84,10 @@ void main(){
 		specularity = (material.g + rainWetness) * dynamicFresnelTerm;
 	<endif perPixelFresnel>
 	
-	//Diffuse G-Buffer
+	//A fancy GBuffer setup we got here
 	outDiffuseColor = vec4(surfaceDiffuseColor, 1.0);
-	outNormalColor = vec4(encodeNormal(normal).xy, specularity, 1.0);
-	outMaterialColor = vec4(worldLight, material.r, material.a);
+	outNormal = encodeNormal(normal);
+	outVoxelLight = worldLight;
+	outSpecularity = specularity;
+	outMaterial = 255u;
 }

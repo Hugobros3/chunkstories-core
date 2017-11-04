@@ -39,8 +39,10 @@ vec4 gammaOutput(vec4 inputValue)
 in float back;
 
 out vec4 outDiffuseColor;
-out vec4 outNormalColor;
-out vec4 outMaterialColor;
+out vec3 outNormal;
+out vec2 outVoxelLight;
+out float outSpecularity;
+out uint outMaterial;
 
 <include ../lib/normalmapping.glsl>
 
@@ -64,15 +66,13 @@ void main(){
 	if(alpha < 1.0)
 		discard;
 	
-	//Diffuse G-Buffer
-	outDiffuseColor = vec4(baseColor,alpha);
-	//Normal G-Buffer + reflections
-	
 	vec3 normalMapped = texture(normalTexture, texcoord.st).xyz;
     normalMapped = normalMapped * 2.0 - 1.0;
 	normalMapped.x = normalMapped.x;
 	
-	outNormalColor = vec4(encodeNormal(normalMapped).xy, 0.0, 1.0);
-	//Light color G-buffer
-	outMaterialColor = vec4(lightMapCoords, 0.0,1.0);
+	outDiffuseColor = vec4(baseColor,alpha);
+	outNormal = encodeNormal(normalMapped);
+	outVoxelLight = lightMapCoords.xy;
+	outSpecularity = 0.0;
+	outMaterial = 255u;
 }

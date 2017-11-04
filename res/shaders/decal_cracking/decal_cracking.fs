@@ -37,8 +37,10 @@ uniform float textureStart;
 uniform float textureScale;
 
 out vec4 outDiffuseColor;
-out vec4 outNormalColor;
-out vec4 outMaterialColor;
+out vec3 outNormal;
+out vec2 outVoxelLight;
+out float outSpecularity;
+out uint outMaterial;
 
 void main()
 {
@@ -54,7 +56,7 @@ void main()
 	//Diffuse G-Buffer
 	outDiffuseColor = vec4(color.rgb, color.a);
 	//Normal G-Buffer + reflections
-	outNormalColor= vec4(encodeNormal(normalMatrix * normal).xy, 0.0 * dynamicFresnelTerm, color.a * 0.0);
+	//outNormalColor= vec4(encodeNormal(normalMatrix * normal).xy, 0.0 * dynamicFresnelTerm, color.a * 0.0);
 	//Light color G-buffer
-	outMaterialColor = vec4(vec2(0.0, 1.0), 0.0, 0.0);
+	//outMaterialColor = vec4(vec2(0.0, 1.0), 0.0, 0.0);
 }
