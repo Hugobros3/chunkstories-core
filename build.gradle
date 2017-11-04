@@ -34,6 +34,8 @@ buildscript {
 
 dependencies {
 	compile group: 'io.xol.chunkstories', name: 'api', version: apiRevisionBuiltAgainst
+	
+	compile group: 'io.xol.enklume', name: 'enklume', version: 100
 }
 
 if(ext.useEclipseCompiler) {
