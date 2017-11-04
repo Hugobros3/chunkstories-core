@@ -2,9 +2,9 @@ package io.xol.chunkstories.core.entity.ai;
 
 import java.util.Collection;
 
-import io.xol.chunkstories.api.ai.AI;
 import io.xol.chunkstories.api.entity.Entity;
 import io.xol.chunkstories.api.entity.EntityLiving;
+import io.xol.chunkstories.api.entity.ai.AI;
 import io.xol.chunkstories.api.sound.SoundSource.Mode;
 
 import org.joml.Vector3d;

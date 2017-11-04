@@ -6,8 +6,8 @@ import java.io.IOException;
 
 import io.xol.chunkstories.api.entity.Entity;
 import io.xol.chunkstories.api.entity.components.EntityComponent;
-import io.xol.chunkstories.api.serialization.StreamSource;
-import io.xol.chunkstories.api.serialization.StreamTarget;
+import io.xol.chunkstories.api.world.serialization.StreamSource;
+import io.xol.chunkstories.api.world.serialization.StreamTarget;
 import io.xol.chunkstories.core.entity.EntityHumanoid.EntityHumanoidStance;
 
 //(c) 2015-2017 XolioWare Interactive

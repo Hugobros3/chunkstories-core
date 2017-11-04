@@ -4,7 +4,7 @@ import org.joml.Vector3d;
 import org.joml.Vector3dc;
 import org.joml.Vector3fc;
 
-import io.xol.chunkstories.api.Content.Voxels;
+import io.xol.chunkstories.api.content.Content.Voxels;
 import io.xol.chunkstories.api.particles.ParticleDataWithTextureCoordinates;
 import io.xol.chunkstories.api.particles.ParticleDataWithVelocity;
 import io.xol.chunkstories.api.particles.ParticleType;

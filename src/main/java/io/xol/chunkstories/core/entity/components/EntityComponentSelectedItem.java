@@ -12,12 +12,12 @@ import io.xol.chunkstories.api.exceptions.NullItemException;
 import io.xol.chunkstories.api.exceptions.UndefinedItemTypeException;
 import io.xol.chunkstories.api.item.inventory.Inventory;
 import io.xol.chunkstories.api.item.inventory.ItemPile;
-import io.xol.chunkstories.api.serialization.OfflineSerializedData;
-import io.xol.chunkstories.api.serialization.StreamSource;
-import io.xol.chunkstories.api.serialization.StreamTarget;
 import io.xol.chunkstories.api.util.ChunkStoriesLogger;
 import io.xol.chunkstories.api.util.ChunkStoriesLogger.LogLevel;
 import io.xol.chunkstories.api.world.WorldMaster;
+import io.xol.chunkstories.api.world.serialization.OfflineSerializedData;
+import io.xol.chunkstories.api.world.serialization.StreamSource;
+import io.xol.chunkstories.api.world.serialization.StreamTarget;
 
 //(c) 2015-2017 XolioWare Interactive
 //http://chunkstories.xyz

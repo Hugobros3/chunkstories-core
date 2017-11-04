@@ -11,12 +11,12 @@ import io.xol.chunkstories.api.Location;
 import io.xol.chunkstories.api.rendering.RenderingInterface;
 import io.xol.chunkstories.api.rendering.text.TextMesh;
 import io.xol.chunkstories.api.rendering.textures.Texture2D;
-import io.xol.chunkstories.api.serialization.StreamSource;
-import io.xol.chunkstories.api.serialization.StreamTarget;
 import io.xol.chunkstories.api.util.IterableIterator;
 import io.xol.chunkstories.api.voxel.components.VoxelComponentDynamicRenderer;
 import io.xol.chunkstories.api.voxel.components.VoxelComponents;
 import io.xol.chunkstories.api.world.chunk.Chunk.ChunkVoxelContext;
+import io.xol.chunkstories.api.world.serialization.StreamSource;
+import io.xol.chunkstories.api.world.serialization.StreamTarget;
 
 //(c) 2015-2017 XolioWare Interactive
 //http://chunkstories.xyz

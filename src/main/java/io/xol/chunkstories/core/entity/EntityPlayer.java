@@ -3,6 +3,7 @@ package io.xol.chunkstories.core.entity;
 import java.util.Iterator;
 
 import io.xol.chunkstories.api.Location;
+import io.xol.chunkstories.api.client.LocalPlayer;
 import io.xol.chunkstories.api.entity.components.EntityComponentController;
 import io.xol.chunkstories.api.entity.components.EntityComponentCreativeMode;
 import io.xol.chunkstories.api.entity.components.EntityComponentFlying;
@@ -38,7 +39,6 @@ import org.joml.Vector3f;
 import org.joml.Vector3fc;
 import org.joml.Vector4f;
 import io.xol.chunkstories.api.physics.CollisionBox;
-import io.xol.chunkstories.api.player.LocalPlayer;
 import io.xol.chunkstories.api.player.Player;
 import io.xol.chunkstories.api.rendering.RenderingInterface;
 import io.xol.chunkstories.api.rendering.WorldRenderer.RenderingPass;

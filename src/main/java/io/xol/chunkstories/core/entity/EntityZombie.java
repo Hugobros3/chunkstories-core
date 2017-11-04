@@ -22,12 +22,12 @@ import io.xol.chunkstories.api.rendering.entity.EntityRenderable;
 import io.xol.chunkstories.api.rendering.entity.EntityRenderer;
 import io.xol.chunkstories.api.rendering.entity.RenderingIterator;
 import io.xol.chunkstories.api.rendering.textures.Texture2D;
-import io.xol.chunkstories.api.serialization.StreamSource;
-import io.xol.chunkstories.api.serialization.StreamTarget;
 import io.xol.chunkstories.api.sound.SoundSource.Mode;
 import io.xol.chunkstories.api.voxel.VoxelFormat;
 import io.xol.chunkstories.api.world.VoxelContext;
 import io.xol.chunkstories.api.world.WorldMaster;
+import io.xol.chunkstories.api.world.serialization.StreamSource;
+import io.xol.chunkstories.api.world.serialization.StreamTarget;
 import io.xol.chunkstories.core.entity.ai.ZombieAI;
 
 //(c) 2015-2017 XolioWare Interactive

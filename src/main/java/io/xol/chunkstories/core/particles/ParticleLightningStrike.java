@@ -1,14 +1,14 @@
 package io.xol.chunkstories.core.particles;
 
-import io.xol.chunkstories.api.Content;
 import io.xol.chunkstories.api.Location;
 import io.xol.chunkstories.api.client.ClientContent;
+import io.xol.chunkstories.api.client.LocalPlayer;
+import io.xol.chunkstories.api.content.Content;
 import io.xol.chunkstories.api.entity.Entity;
 import org.joml.Vector3f;
 import io.xol.chunkstories.api.particles.ParticleType;
 import io.xol.chunkstories.api.particles.ParticleTypeHandler;
 import io.xol.chunkstories.api.particles.ParticlesRenderer;
-import io.xol.chunkstories.api.player.LocalPlayer;
 import io.xol.chunkstories.api.rendering.RenderingInterface;
 import io.xol.chunkstories.api.rendering.lightning.Light;
 import io.xol.chunkstories.api.world.World;

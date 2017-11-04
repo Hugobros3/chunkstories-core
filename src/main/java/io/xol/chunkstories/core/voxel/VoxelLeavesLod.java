@@ -1,6 +1,6 @@
 package io.xol.chunkstories.core.voxel;
 
-import io.xol.chunkstories.api.Content.Voxels;
+import io.xol.chunkstories.api.content.Content.Voxels;
 import io.xol.chunkstories.api.voxel.Voxel;
 import io.xol.chunkstories.api.voxel.VoxelType;
 import io.xol.chunkstories.api.voxel.models.ChunkRenderer;

@@ -1,6 +1,6 @@
 package io.xol.chunkstories.core.voxel.renderers;
 
-import io.xol.chunkstories.api.Content.Voxels;
+import io.xol.chunkstories.api.content.Content.Voxels;
 
 //(c) 2015-2017 XolioWare Interactive
 //http://chunkstories.xyz

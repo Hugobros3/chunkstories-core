@@ -2,7 +2,7 @@ package io.xol.chunkstories.core.generator;
 
 import java.util.Random;
 
-import io.xol.chunkstories.api.Content.WorldGenerators.WorldGeneratorType;
+import io.xol.chunkstories.api.content.Content.WorldGenerators.WorldGeneratorType;
 import io.xol.chunkstories.api.math.random.SeededSimplexNoiseGenerator;
 import org.joml.Vector3f;
 import io.xol.chunkstories.api.voxel.VoxelFormat;
