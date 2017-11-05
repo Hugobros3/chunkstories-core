@@ -12,8 +12,6 @@ import io.xol.chunkstories.api.exceptions.NullItemException;
 import io.xol.chunkstories.api.exceptions.UndefinedItemTypeException;
 import io.xol.chunkstories.api.item.inventory.Inventory;
 import io.xol.chunkstories.api.item.inventory.ItemPile;
-import io.xol.chunkstories.api.util.ChunkStoriesLogger;
-import io.xol.chunkstories.api.util.ChunkStoriesLogger.LogLevel;
 import io.xol.chunkstories.api.world.WorldMaster;
 import io.xol.chunkstories.api.world.serialization.OfflineSerializedData;
 import io.xol.chunkstories.api.world.serialization.StreamSource;
@@ -122,9 +120,9 @@ public class EntityComponentSelectedItem extends EntityComponent
 			catch (UndefinedItemTypeException e)
 			{
 				//This is slightly more problematic
-				ChunkStoriesLogger logger = this.entity.getWorld().getGameContext().logger();
-				logger.log(e.getMessage(), LogLevel.WARN);
-				e.printStackTrace(logger.getPrintWriter());
+				//Logger logger = this.entity.getWorld().getGameContext().logger();
+				this.entity.getWorld().getGameContext().logger().info(e.getMessage());
+				//e.printStackTrace(logger.getPrintWriter());
 			}
 
 			//Ensures only client worlds accepts such pushes
