@@ -68,6 +68,8 @@ uniform int lodLevel;
 
 const vec2 triangleConstruction[] = vec2[](vec2(0.0), vec2(0.0, 1.0), vec2(1.0, 1.0), vec2(0.0), vec2(1.0, 0.0), vec2(1.0, 1.0));
 
+//const float cellSizeForLod[] = float[](32, 16, 8, 4, 2, 1); //32.0 / pow(2, lod)
+
 void createSlab(vec2 pos, int lod);
 
 uint getHeight(vec2 pos, int lod);
@@ -90,6 +92,8 @@ uint voxel(vec2 pos, int lod) {
 void createSlab(vec2 pos, int lod) {
 	int height = int(getHeight(pos, lod));
 	
+	float cellSize = exp2(5-lod);//cellSizeForLod[lod];
+	
 	vec3 sum = (modelViewMatrix * (vec4(pos.x, height, pos.y, 1.0) + vec4(displacementPassed[0].x, 0, displacementPassed[0].y, 0.0))).xyz;
 	float dist = length(sum)-fogStartDistance;
 	const float LOG2 = 1.442695;
@@ -110,7 +114,7 @@ void createSlab(vec2 pos, int lod) {
 	for(int i = 0; i < 6; i++) {
 		vec4 vertice = vec4(pos.x, 0.0, pos.y, 1.0);
 		
-		vertice.xz += displacementPassed[0].xy + triangleConstruction[i] * 32 / pow(2, lod);
+		vertice.xz += displacementPassed[0].xy + triangleConstruction[i] * cellSize;
 		vertice.y += height;
 		
 		gl_Position = modelViewProjectionMatrix * vertice;
@@ -121,23 +125,23 @@ void createSlab(vec2 pos, int lod) {
 	}
 	EndPrimitive();
 	
-	int hnx = int(getHeight(pos + vec2(32 / pow(2, lod), 0.0), lod));
-	int hnz = int(getHeight(pos + vec2(0.0, 32 / pow(2, lod)), lod));
+	int hnx = int(getHeight(pos + vec2(cellSize, 0.0), lod));
+	int hnz = int(getHeight(pos + vec2(0.0, cellSize), lod));
 	
 	if((hnx - height) != 0) {
 		voxelId = voId;
 		if(hnx > height) {
 			normalPassed = vec3(-1.0, 0.0, 0.0);
-			voxelId = voxel(pos + vec2(32 / pow(2, lod), 0.0), 0);
+			voxelId = voxel(pos + vec2(cellSize, 0.0), 0);
 		} else {
 			normalPassed = vec3(1.0, 0.0, 0.0);
 		}
 		
 		for(int i = 0; i < 6; i++) {
-			vec4 vertice = vec4(pos.x + 32 / pow(2, lod), 0.0, pos.y, 1.0);
+			vec4 vertice = vec4(pos.x + cellSize, 0.0, pos.y, 1.0);
 			
 			vertice.xz += displacementPassed[0].xy;
-			vertice.yz += triangleConstruction[i] * vec2(float(hnx - height), 32 / pow(2, lod));
+			vertice.yz += triangleConstruction[i] * vec2(float(hnx - height), cellSize);
 			vertice.y += height;
 			
 			gl_Position = modelViewProjectionMatrix * vertice;
@@ -152,15 +156,15 @@ void createSlab(vec2 pos, int lod) {
 		voxelId = voId;
 		if(hnz > height) {
 			normalPassed = vec3(0.0, 0.0, -1.0);
-			voxelId = voxel(pos + vec2(0.0, 32 / pow(2, lod)), 0);
+			voxelId = voxel(pos + vec2(0.0, cellSize), 0);
 		} else
 			normalPassed = vec3(0.0, 0.0, 1.0);
 		
 		for(int i = 0; i < 6; i++) {
-			vec4 vertice = vec4(pos.x, 0.0, pos.y + 32 / pow(2, lod), 1.0);
+			vec4 vertice = vec4(pos.x, 0.0, pos.y + cellSize, 1.0);
 			
 			vertice.xz += displacementPassed[0].xy;
-			vertice.yx += triangleConstruction[i] * vec2(float(hnz - height), 32 / pow(2, lod));
+			vertice.yx += triangleConstruction[i] * vec2(float(hnz - height), cellSize);
 			vertice.y += height;
 			
 			gl_Position = modelViewProjectionMatrix * vertice;
