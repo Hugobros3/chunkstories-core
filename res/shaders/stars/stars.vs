@@ -19,7 +19,7 @@ out vec4 calculatedLight;
 out float blend;
 
 void main(){
-	blend = dot(normalize(sunPos), vec3(0.0, -1.0, 0.0));
+	blend = 0.5 + 0.5 * dot(normalize(sunPos), vec3(0.0, -1.0, 0.0));
 	
 	calculatedLight = vec4(5.0) * blend;
 	

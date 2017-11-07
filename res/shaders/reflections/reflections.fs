@@ -73,7 +73,7 @@ void main() {
 	//Discard fragments using alpha
 	if(texture(shadedBuffer, screenCoord).a > 0.0 && spec > 0.0)
 	{
-		fragColor = computeReflectedPixel(depthBuffer, shadedBuffer, environmentCubemap, screenCoord, cameraSpacePosition.xyz, pixelNormal, texture(voxelLightBuffer, screenCoord).y);
+		fragColor = clamp(computeReflectedPixel(depthBuffer, shadedBuffer, environmentCubemap, screenCoord, cameraSpacePosition.xyz, pixelNormal, texture(voxelLightBuffer, screenCoord).y), 0.0, 1000);
 	}
 	else
 		discard;

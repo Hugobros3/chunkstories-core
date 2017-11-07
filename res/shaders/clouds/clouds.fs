@@ -28,11 +28,12 @@ uniform float time;
 
 void main()
 {
-	vec4 color = vec4(getSkyColor(time, eyeDirection), 1.0);
+	vec3 skyColor = getSkyColor(time, eyeDirection);
+	vec4 color = vec4(skyColor, 1.0);
 	
 	vec3 cloudsColor = getSkyTexture(vec2(time, 1.0)).rgb;
 	
-	color.rgb += 0.125 * cloudsColor * clamp(alphaPassed, 0.0, 1.0);
+	color.rgb += 0.125 * getSkyColor(time, eyeDirection) * clamp(alphaPassed, 0.0, 1.0);
 	
 	shadedFramebufferOut = color;
 }

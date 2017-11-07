@@ -58,6 +58,7 @@ uniform vec3 sunColor;
 out vec4 fragColor;
 
 <include ../sky/sky.glsl>
+<include ../sky/fog.glsl>
 <include ../lib/transformations.glsl>
 <include ../lib/shadowTricks.glsl>
 <include ../lib/normalmapping.glsl>
@@ -65,10 +66,10 @@ out vec4 fragColor;
 
 vec4 computeLight(vec4 inputColor2, vec3 normal, vec4 worldSpacePosition, vec2 voxelLight)
 {
-	vec4 inputColor = vec4(0.0);
+	vec4 inputColor = vec4(0.0, 0.0, 0.0, 0.0);
 	inputColor.rgb = pow(inputColor2.rgb, vec3(gamma));
 
-	float NdotL = clamp(dot(normalize(normal), normalize(normalMatrix * sunPos )), -1.0, 1.0);
+	float NdotL = clamp(dot(normalize(normal), normalize(normalMatrix * sunPos )), 0.0, 1.0);
 
 	float opacity = 0.0;
 
@@ -79,8 +80,14 @@ vec4 computeLight(vec4 inputColor2, vec3 normal, vec4 worldSpacePosition, vec2 v
 	vec3 voxelSunlight = textureGammaIn(blockLightmap, vec2(0.0, voxelLight.y)).rgb;
 	voxelSunlight *= textureGammaIn(lightColors, vec2(dayTime, 1.0)).rgb;
 		
-	vec3 sunLight_g = pow(sunColor, vec3(gamma));
-	vec3 shadowLight_g = pow(shadowColor, vec3(gamma));
+	//vec3 sunAbsorption = getSkyAbsorption(skyColor, zenithDensity(lDotU + multiScatterPhase));
+
+	
+	float sunVisibility = clamp(1.0 - overcastFactor * 2.0, 0.0, 1.0);
+	float storminess = clamp(-1.0 + overcastFactor * 2.0, 0.0, 1.0);
+	
+	vec3 sunLight_g = mix(getSkyAbsorption(skyColor, zenithDensity(NdotL + multiScatterPhase)), vec3(0.0), overcastFactor);//pow(sunColor, vec3(gamma));
+	vec3 shadowLight_g = mix(skyColor, vec3(length(skyColor)), overcastFactor) / pi;//pow(shadowColor, vec3(gamma));
 		
 	<ifdef shadows>
 	//Shadows sampling
@@ -95,7 +102,7 @@ vec4 computeLight(vec4 inputColor2, vec3 normal, vec4 worldSpacePosition, vec2 v
 		float edgeSmoother = 0.0;
 		
 		//How much does the pixel is lit by directional light
-		float directionalLightning = clamp((NdotL * 1.1 - 0.1) + (1  - 1.0/*- meta.a*/), 0.0, 1.0);
+		float directionalLightning = clamp((NdotL * 1.1 - 0.1), 0.0, 1.0);
 		
 		if(!(coordinatesInShadowmap.x <= 0.0 || coordinatesInShadowmap.x >= 1.0 || coordinatesInShadowmap.y <= 0.0 || coordinatesInShadowmap.y >= 1.0  || coordinatesInShadowmap.z >= 1.0 || coordinatesInShadowmap.z <= -1.0))
 		{
@@ -110,8 +117,8 @@ vec4 computeLight(vec4 inputColor2, vec3 normal, vec4 worldSpacePosition, vec2 v
 		
 		float sunlightAmount = ( directionalLightning * ( mix( shadowIllumination, voxelLight.y, 1-edgeSmoother) ) ) * shadowVisiblity;
 		
-		finalLight += sunLight_g * sunlightAmount;
-		finalLight += voxelSunlight * shadowLight_g;
+		finalLight += clamp(sunLight_g * sunlightAmount, 0.0, 4096);
+		finalLight += clamp(voxelSunlight * shadowLight_g, 0.0, 4096);
 		
 		//finalLight = mix(sunLight_g, voxelSunlight * shadowLight_g, (1.0 - sunlightAmount));
 		
@@ -125,8 +132,10 @@ vec4 computeLight(vec4 inputColor2, vec3 normal, vec4 worldSpacePosition, vec2 v
 		opacityModified += 0.75 * clamp(dot(vec3(0.0, -1.0, 0.0), shadingDir), 0.0, 1.0);
 		
 		//opacity = mix(opacity, opacityModified, meta.a);
-		finalLight = mix(voxelSunlight * sunLight_g, vec3(0.0), opacityModified);
+		//finalLight = mix(voxelSunlight * sunLight_g, vec3(0.0), opacityModified);
 	<endif !shadows>
+		
+	finalLight *= (0.1 + 0.2 * sunVisibility + 0.8 * (1.0 - storminess));
 	
 	//Adds block light
 	finalLight += textureGammaIn(blockLightmap, vec2(voxelLight.x, 0.0)).rgb;
@@ -142,6 +151,8 @@ vec4 computeLight(vec4 inputColor2, vec3 normal, vec4 worldSpacePosition, vec2 v
 }
 
 void main() {
+	
+	
     vec4 cameraSpacePosition = convertScreenSpaceToCameraSpace(screenCoord, depthBuffer);
 	
 	vec3 pixelNormal = decodeNormal(texture(normalBuffer, screenCoord));
@@ -154,12 +165,9 @@ void main() {
 		discard;
 	
 	// Apply fog
-	vec3 sum = (cameraSpacePosition.xyz);
-	float dist = length(sum)-fogStartDistance;
-	float fogFactor = (dist) / (fogEndDistance-fogStartDistance);
-	float fogIntensity = clamp(fogFactor, 0.0, 1.0);
 	
-	vec3 fogColor = getSkyColorWOSun(dayTime, normalize(((modelViewMatrixInv * cameraSpacePosition).xyz - camPos).xyz));
+	vec4 fogColor = getFogColor(dayTime, ((modelViewMatrixInv * cameraSpacePosition).xyz - camPos).xyz);
 	
-	fragColor = mix(shadingColor, vec4(fogColor,shadingColor.a), fogIntensity);
+	fragColor = mix(shadingColor, vec4(fogColor.xyz, 1.0), fogColor.a);
+	fragColor.w = 1.0;
 }

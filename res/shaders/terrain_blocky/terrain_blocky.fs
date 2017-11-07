@@ -8,7 +8,7 @@ in vec4 vertexPassed;
 in vec3 normalPassed;
 in vec2 textureCoord;
 in vec3 eyeDirection;
-in float fogIntensity;
+//in float fogIntensity;
 
 //flat in ivec4 indexPassed;
 in vec4 colorPassed;
@@ -68,7 +68,11 @@ uniform float overcastFactor;
 //World mesh culling
 uniform float ignoreWorldCulling;
 
+uniform float fogStartDistance;
+uniform float fogEndDistance;
+
 <include ../sky/sky.glsl>
+<include ../sky/fog.glsl>
 
 /*uint access(usampler2DArray tex, vec2 coords) {
 	if(coords.x <= 1.0) {
@@ -179,17 +183,17 @@ void main()
 		<endif doDynamicCubemaps>
 		
 		//Add sunlight reflection
-		float sunSpecularReflection = specularity * 100.0 * pow(clamp(dot(normalize(reflect(normalMatrix * eyeDirection,normalMatrix * normal)),normalize(normalMatrix * sunPos)), 0.0, 1.0),750.0);
-		finalColor += vec3(sunSpecularReflection);
+		//float sunSpecularReflection = specularity * 100.0 * pow(clamp(dot(normalize(reflect(normalMatrix * eyeDirection,normalMatrix * normal)),normalize(normalMatrix * sunPos)), 0.0, 1.0),750.0);
+		//finalColor += vec3(sunSpecularReflection);
 		
 		//Mix them to obtain final colour
 		finalColor = mix(finalColor, reflected , specularity);
 	}
 	
 	//Get per-fragment fog color
-	vec3 fogColor = getSkyColorWOSun(time, normalize(eyeDirection));
+	vec4 fogColor = getFogColor(time, vertexPassed.xyz - camPos);
 	
 	//Mix in fog 
-	shadedFramebufferOut = mix(vec4(finalColor, 1.0),vec4(fogColor,1.0), fogIntensity);
+	shadedFramebufferOut = mix(vec4(finalColor, 1.0), vec4(fogColor.xyz, 1.0), fogColor.a);
 	noSpecularOut = 0.0;
 }
