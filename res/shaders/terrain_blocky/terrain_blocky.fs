@@ -152,7 +152,19 @@ void main()
 	//Compute side illumination by sun
 	float NdotL = clamp(dot(normal, normalize(sunPos)), 0.0, 1.0);
 	float sunlightAmount = NdotL * shadowVisiblity;
-	vec3 finalLight = mix(pow(sunColor, vec3(gamma)), baseLight * pow(shadowColor, vec3(gamma)), (1.0 - sunlightAmount) * shadowStrength);
+	
+	float sunVisibility = clamp(1.0 - overcastFactor * 2.0, 0.0, 1.0);
+	float storminess = clamp(-1.0 + overcastFactor * 2.0, 0.0, 1.0);
+	
+	//vec3 sunLight_g = pow(sunColor, vec3(gamma));
+	vec3 sunLight_g = mix(getSkyAbsorption(skyColor, zenithDensity(NdotL + multiScatterPhase)), vec3(0.0), overcastFactor);//pow(sunColor, vec3(gamma));
+	vec3 shadowLight_g = mix(skyColor, vec3(length(skyColor)), overcastFactor) / pi;//pow(shadowColor, vec3(gamma));
+	shadowLight_g *= textureGammaIn(lightColors, vec2(time, 1.0)).rgb;
+	
+	vec3 finalLight = shadowLight_g;
+	finalLight += sunLight_g * sunlightAmount;
+	
+	//vec3 finalLight = mix(sunLight_g, baseLight * pow(shadowColor, vec3(gamma)), (1.0 - sunlightAmount) * shadowStrength);
 	
 	// Simple lightning for lower end machines
 	<ifdef !shadows>
@@ -166,6 +178,9 @@ void main()
 		
 		finalLight = mix(baseLight, vec3(0.0), faceDarkening);
 	<endif !shadows>
+	
+	
+	finalLight *= (0.1 + 0.2 * sunVisibility + 0.8 * (1.0 - storminess));
 
 	//Merges diffuse and lightning
 	vec3 finalColor = diffuseColor.rgb * finalLight;

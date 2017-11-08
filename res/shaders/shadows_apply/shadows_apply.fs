@@ -78,7 +78,7 @@ vec4 computeLight(vec4 inputColor2, vec3 normal, vec4 worldSpacePosition, vec2 v
 	
 	//Voxel light input, modified linearly according to time of day
 	vec3 voxelSunlight = textureGammaIn(blockLightmap, vec2(0.0, voxelLight.y)).rgb;
-	voxelSunlight *= textureGammaIn(lightColors, vec2(dayTime, 1.0)).rgb;
+	//voxelSunlight *= textureGammaIn(lightColors, vec2(dayTime, 1.0)).rgb;
 		
 	//vec3 sunAbsorption = getSkyAbsorption(skyColor, zenithDensity(lDotU + multiScatterPhase));
 
@@ -88,6 +88,7 @@ vec4 computeLight(vec4 inputColor2, vec3 normal, vec4 worldSpacePosition, vec2 v
 	
 	vec3 sunLight_g = mix(getSkyAbsorption(skyColor, zenithDensity(NdotL + multiScatterPhase)), vec3(0.0), overcastFactor);//pow(sunColor, vec3(gamma));
 	vec3 shadowLight_g = mix(skyColor, vec3(length(skyColor)), overcastFactor) / pi;//pow(shadowColor, vec3(gamma));
+	shadowLight_g *= textureGammaIn(lightColors, vec2(dayTime, 1.0)).rgb;
 		
 	<ifdef shadows>
 	//Shadows sampling
@@ -118,7 +119,7 @@ vec4 computeLight(vec4 inputColor2, vec3 normal, vec4 worldSpacePosition, vec2 v
 		float sunlightAmount = ( directionalLightning * ( mix( shadowIllumination, voxelLight.y, 1-edgeSmoother) ) ) * shadowVisiblity;
 		
 		finalLight += clamp(sunLight_g * sunlightAmount, 0.0, 4096);
-		finalLight += clamp(voxelSunlight * shadowLight_g, 0.0, 4096);
+		finalLight += clamp(shadowLight_g * voxelSunlight, 0.0, 4096);
 		
 		//finalLight = mix(sunLight_g, voxelSunlight * shadowLight_g, (1.0 - sunlightAmount));
 		
