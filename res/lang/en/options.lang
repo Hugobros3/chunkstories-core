@@ -1,3 +1,5 @@
+options.title Options Menu
+
 Rendering Rendering
 
 viewDistance View distance
@@ -33,11 +35,14 @@ bind.right Right
 bind.left Left
 bind.exit Pause
 bind.chat Open chat
+bind.crouch Crouch
 
 Sound Sound
 
 Debug Debug
 
 log-policy Send log reports
-frametimeGraph FPS graph
+frametimeGraph Performance graph
 showDebugInfo Show debug info
+debugGBuffers Debug render buffers
+physicsVisualization Physics debug

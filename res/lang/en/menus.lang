@@ -1,0 +1,23 @@
+menu.resume Resume
+menu.options Options
+menu.back Back
+menu.backto Back to menu
+menu.validate Validate
+menu.new New
+
+menu.online Find a server...
+menu.mods Mods...
+
+menu.singleplayer Singleplayer
+menu.serverbrowser Multiplayer
+menu.quit Quit
+
+connection.connect Connect
+
+login.username Username
+login.password Password
+login.login Connection
+login.register Register at http://chunkstories.xyz
+
+login.auto1 Autologin in 
+login.auto2  seconds... (ESC to cancel)

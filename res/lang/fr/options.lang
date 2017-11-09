@@ -1,3 +1,5 @@
+options.title Menu d'options
+
 Rendering Rendu
 
 viewDistance Distance d'affichage
@@ -33,11 +35,14 @@ bind.right Droite
 bind.left Gauche
 bind.exit Pause
 bind.chat Ouvrir le chat
+bind.crouch S'accroupir
 
 Sound Son
 
 Debug Debbogage
 
 log-policy Envoyer les rapports
-frametimeGraph Graphique des FPS
+frametimeGraph Graphe des performances
 showDebugInfo Afficher infos de debug
+debugGBuffers Vis. buffers de rendu
+physicsVisualization Visualisation physique
