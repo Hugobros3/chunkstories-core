@@ -104,7 +104,7 @@ vec4 ComputeVolumetricLight(vec4 worldSpacePosition, vec3 lightVec, vec3 eyeDire
 	float lDotV = 1.0 - dot(normalize(lightVec), normalize(eyeDirection));
 	
 	vec3 sunLight_g = mix(getSkyAbsorption(skyColor, zenithDensity(lDotU + multiScatterPhase)), vec3(0.0), overcastFactor);//pow(sunColor, vec3(gamma));
-	float sunlightAmount = ray * shadowVisiblity * (0.2 / (lDotV));
+	float sunlightAmount = ray * shadowVisiblity * (0.001 / pow(lDotV * 0.2, 2.0));
 
 	return vec4(jodieReinhardTonemap(clamp(sunLight_g * sunlightAmount, 0.0, 4096) * oneOverSteps), 0.0);
 }
