@@ -126,14 +126,16 @@ vec4 computeLight(vec4 inputColor2, vec3 normal, vec4 worldSpacePosition, vec2 v
 	<endif shadows>
 	<ifdef !shadows>
 		// Simple lightning for lower end machines
-		float opacityModified = 0.0;
+		float flatShading = 0.0;
 		vec3 shadingDir = normalize(normalMatrixInv * normal);
-		opacityModified += 0.35 * abs(dot(vec3(1.0, 0.0, 0.0), shadingDir));
-		opacityModified += 0.55 * abs(dot(vec3(0.0, 0.0, 1.0), shadingDir));
-		opacityModified += 0.75 * clamp(dot(vec3(0.0, -1.0, 0.0), shadingDir), 0.0, 1.0);
+		flatShading += 0.35 * clamp(dot(/*vec3(0.0, 0.0, 0.0)*/sunPos, shadingDir), -0.5, 1.0);
+		flatShading += 0.25 * clamp(dot(/*vec3(0.0, 0.0, 1.0)*/sunPos, shadingDir), -0.5, 1.0);
+		flatShading += 0.5 * clamp(dot(/*vec3(0.0, 1.0, 0.0)*/sunPos, shadingDir), 0.0, 1.0);
 		
-		//opacity = mix(opacity, opacityModified, meta.a);
-		//finalLight = mix(voxelSunlight * sunLight_g, vec3(0.0), opacityModified);
+		flatShading *= clamp(dot(sunPos, vec3(0.0, 1.0, 0.0)), 0.0, 1.0);
+		
+		finalLight += clamp(sunLight_g * flatShading * voxelSunlight, 0.0, 4096);
+		finalLight += clamp(shadowLight_g * voxelSunlight, 0.0, 4096);
 	<endif !shadows>
 		
 	finalLight *= (0.1 + 0.2 * sunVisibility + 0.8 * (1.0 - storminess));
