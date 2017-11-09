@@ -63,7 +63,6 @@ out vec4 fragColor;
 <include ../lib/transformations.glsl>
 <include ../lib/shadowTricks.glsl>
 <include ../lib/normalmapping.glsl>
-<include ../sky/volumetricLight.glsl>
 //<include ../lib/ssr.glsl>
 
 vec4 computeLight(vec4 inputColor2, vec3 normal, vec4 worldSpacePosition, vec2 voxelLight)
@@ -166,7 +165,7 @@ void main() {
 	
 	//Discard fragments using alpha
 	if(shadingColor.a > 0.0)
-		shadingColor = computeLight(shadingColor, pixelNormal, cameraSpacePosition, texture(voxelLightBuffer, screenCoord).xy) + ComputeVolumetricLight(cameraSpacePosition, sunPos, eyeDirection);
+		shadingColor = computeLight(shadingColor, pixelNormal, cameraSpacePosition, texture(voxelLightBuffer, screenCoord).xy);
 	else
 		discard;
 	
