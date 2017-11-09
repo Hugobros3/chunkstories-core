@@ -6,24 +6,12 @@ vec4 computeReflectedPixel(sampler2D depthBuffer, sampler2D colorBuffer, sampler
 	
     vec3 cameraSpaceViewDir = normalize(cameraSpacePosition);
     vec3 cameraSpaceVector = normalize(reflect(cameraSpaceViewDir, pixelNormal));
-    vec3 cameraSpaceVectorPosition = cameraSpacePosition + cameraSpaceVector;
-    vec3 currentPosition = convertCameraSpaceToScreenSpace(cameraSpaceVectorPosition);
     
 	// Is the reflection pointing in the right direction ?
 	vec4 color = vec4(0.0);
-   
-	const int maxRefinements = 3;
-	int numRefinements = 0;
-    int count = 0;
-	vec2 finalSamplePos = screenSpacePosition2D;
-	
-	int numSteps = 0;
-	
-	bool outOfViewport = true;
 	
 	//SSR stepping goes here
 	<ifdef doRealtimeReflections>
-    
 	color = raytrace(depthBuffer, colorBuffer, cameraSpacePosition, cameraSpaceVector);
 	<endif doRealtimeReflections>
 	

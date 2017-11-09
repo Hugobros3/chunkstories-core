@@ -167,6 +167,7 @@ void main()
 	//vec3 finalLight = mix(sunLight_g, baseLight * pow(shadowColor, vec3(gamma)), (1.0 - sunlightAmount) * shadowStrength);
 	
 	// Simple lightning for lower end machines
+	/*
 	<ifdef !shadows>
 		float faceDarkening = 0.0;
 		vec3 shadingDir = normal;
@@ -179,7 +180,7 @@ void main()
 		finalLight = mix(baseLight, vec3(0.0), faceDarkening);
 	<endif !shadows>
 	
-	
+	*/
 	finalLight *= (0.1 + 0.2 * sunVisibility + 0.8 * (1.0 - storminess));
 
 	//Merges diffuse and lightning

@@ -84,27 +84,9 @@ void main() {
 	//Applies reflections
 	float reflectionsAmount = texture(specularityBuffer, finalCoords).x;
 	
+	vec4 reflection = texture(reflectionsBuffer, finalCoords);
+	compositeColor.rgb = mix(compositeColor.rgb, reflection.rgb, reflectionsAmount);
 	//Dynamic reflections
-	<ifdef doRealtimeReflections>
-		compositeColor = mix(compositeColor, texture(reflectionsBuffer, finalCoords), reflectionsAmount);
-	<endif doRealtimeReflections>
-	//Static reflections
-	<ifdef !doRealtimeReflections>
-		vec3 pixelNormal = decodeNormal(texture(normalBuffer, finalCoords));
-		vec3 cameraSpaceVector = normalize(reflect(normalize(cameraSpacePosition.xyz), pixelNormal));
-		vec3 normSkyDirection = normalMatrixInv * cameraSpaceVector;
-		
-		//If dynamics cubemap are enabled, use that
-		<ifdef doDynamicCubemaps>
-			compositeColor = mix(compositeColor, texture(environmentMap, vec3(normSkyDirection.x, -normSkyDirection.y, -normSkyDirection.z)), reflectionsAmount);
-		<endif doDynamicCubemaps>
-		
-		//Else just use the crappy sky color only
-		<ifdef !doDynamicCubemaps>
-			vec3 skyColor = getSkyColor(dayTime, normSkyDirection);
-			compositeColor = mix(compositeColor, vec4(skyColor, 1.0), reflectionsAmount);
-		<endif !doDynamicCubemaps>
-	<endif !doRealtimeReflections>
 	
 	//Applies bloom
 	<ifdef doBloom>
