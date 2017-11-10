@@ -82,7 +82,7 @@ vec3 ComputeVolumetricLight(vec3 background, vec4 worldSpacePosition, vec3 light
 	const int steps = 16;
 	const float oneOverSteps = 1.0 / float(steps);
 
-	vec3 startRay = (shadowMatrix * (untranslatedMVInv * vec4(0.0, 0.0, 0.0, 1.0))).rgb;
+	vec3 startRay = mat3(shadowMatrix) * untranslatedMVInv[3].xyz;
 	vec3 endRay = (shadowMatrix * (untranslatedMVInv * worldSpacePosition)).rgb;
 
 	vec3 increment = normalize(startRay - endRay) * distance(startRay, endRay) * oneOverSteps;
@@ -95,7 +95,7 @@ vec3 ComputeVolumetricLight(vec3 background, vec4 worldSpacePosition, vec3 light
 	for (int i = 0; i < steps; i++){
 		vec3 shadowCoord = accuratizeShadow(vec4(rayPosition, 0.0)).rgb + vec3(0.0, 0.0, 0.0001);
 
-		ray += texture(shadowMap, shadowCoord, 0.0) * weight;
+		ray += texture(shadowMap, shadowCoord, 0.0);
 
 		rayPosition += increment;
 	}
@@ -104,7 +104,7 @@ vec3 ComputeVolumetricLight(vec3 background, vec4 worldSpacePosition, vec3 light
 	float lDotV = 1.0 - dot(normalize(lightVec), normalize(eyeDirection));
 	
 	vec3 sunLight_g = mix(getSkyAbsorption(skyColor, zenithDensity(lDotU + multiScatterPhase)), vec3(0.0), overcastFactor);//pow(sunColor, vec3(gamma));
-	float sunlightAmount = ray * shadowVisiblity * oneOverSteps * (1.0 / (lDotV*lDotV) * 0.02 );
+	float sunlightAmount = ray * shadowVisiblity * oneOverSteps * (1.0 / (lDotV*lDotV) * 0.02 ) * weight;
 
 	return sunlightAmount * sunLight_g;
 }
@@ -167,7 +167,7 @@ void main() {
 	);
 	compositeColor.rgb *= mix(vec3(1.0), overlayColor, clamp(pauseOverlayFade, 0.0, 1.0));
 
-	compositeColor.rgb = jodieReinhardTonemap(compositeColor.rgb);
+	compositeColor.rgb = pow(jodieReinhardTonemap(compositeColor.rgb * 6.0), vec3(gamma));
 	
 	//Ouputs
 	fragColor = compositeColor;
