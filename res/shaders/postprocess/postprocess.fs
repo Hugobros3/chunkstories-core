@@ -135,9 +135,7 @@ void main() {
 	compositeColor.rgb = mix(compositeColor.rgb, reflection.rgb, reflectionsAmount);
 	//Dynamic reflections
 	
-	compositeColor.rgb = pow(compositeColor.rgb, vec3(gamma));
-	compositeColor.rgb += pow(ComputeVolumetricLight(compositeColor.rgb, cameraSpacePosition, sunPos, eyeDirection), vec3(gamma));
-	compositeColor.rgb = pow(compositeColor.rgb, vec3(gammaInv));
+	compositeColor.rgb += ComputeVolumetricLight(compositeColor.rgb, cameraSpacePosition, sunPos, eyeDirection);
 
 	//Applies bloom
 	<ifdef doBloom>
