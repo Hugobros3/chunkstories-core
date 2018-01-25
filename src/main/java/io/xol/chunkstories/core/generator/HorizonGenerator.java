@@ -4,6 +4,7 @@ import java.util.Random;
 
 import io.xol.chunkstories.api.content.Content.WorldGenerators.WorldGeneratorDefinition;
 import io.xol.chunkstories.api.math.random.SeededSimplexNoiseGenerator;
+import io.xol.chunkstories.api.voxel.Voxel;
 import io.xol.chunkstories.api.world.generator.environment.DefaultWorldEnvironment;
 import io.xol.chunkstories.api.world.World;
 import io.xol.chunkstories.api.world.generator.environment.WorldEnvironment;
@@ -21,6 +22,10 @@ public class HorizonGenerator extends WorldGenerator
 	SeededSimplexNoiseGenerator ssng;
 	
 	int worldSizeInBlocks;
+	private Voxel WATER_VOXEL;
+	private Voxel GROUND_VOXEL;
+	private Voxel UNDERGROUND_VOXEL;
+	private Voxel STONE_VOXEL;
 	
 	public HorizonGenerator(WorldGeneratorDefinition type, World w)
 	{
@@ -28,6 +33,11 @@ public class HorizonGenerator extends WorldGenerator
 		ssng = new SeededSimplexNoiseGenerator(w.getWorldInfo().getSeed());
 		worldSizeInBlocks = world.getSizeInChunks() * 32;
 		worldEnv = new DefaultWorldEnvironment(world);
+
+		this.STONE_VOXEL = world.getGameContext().getContent().voxels().getVoxelByName("stone");
+		this.WATER_VOXEL = world.getGameContext().getContent().voxels().getVoxelByName("water");
+		this.GROUND_VOXEL = world.getGameContext().getContent().voxels().getVoxelByName("grass");
+		this.UNDERGROUND_VOXEL = world.getGameContext().getContent().voxels().getVoxelByName("dirt");
 	}
 	
 	@Override
@@ -39,7 +49,7 @@ public class HorizonGenerator extends WorldGenerator
 		rnd.setSeed(cx * 32 + cz + 48716148);
 		
 		//CubicChunk c = new CubicChunk(region, cx, cy, cz);
-		int type = 0;
+		Voxel type = null;
 		for(int x = 0; x < 32; x++)
 			for(int z = 0; z < 32; z++)
 			{
@@ -50,17 +60,17 @@ public class HorizonGenerator extends WorldGenerator
 				while(y < cy * 32 + 32 && y < v)
 				{
 					if(v - y >= 3)
-						type = 1;
+						type = STONE_VOXEL;
 					else if(v - y > 1 || y + 1 < 60)
-						type = 3;
+						type = UNDERGROUND_VOXEL;
 					else
-						type = 2;
-					chunk.pokeSimpleSilently(x, y, z, type);
+						type = GROUND_VOXEL;
+					chunk.pokeSimpleSilently(x, y, z, type, -1, -1, 0);
 					y++;
 				}
 				while(y < cy * 32 + 32 && y < 60)
 				{
-					chunk.pokeSimpleSilently(x, y, z, 128);
+					chunk.pokeSimpleSilently(x, y, z, WATER_VOXEL, -1, -1, 0);
 					y++;
 				}
 			}

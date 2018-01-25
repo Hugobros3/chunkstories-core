@@ -5,7 +5,8 @@ import java.util.Random;
 import io.xol.chunkstories.api.content.Content.WorldGenerators.WorldGeneratorDefinition;
 import io.xol.chunkstories.api.math.random.SeededSimplexNoiseGenerator;
 import org.joml.Vector3f;
-import io.xol.chunkstories.api.voxel.VoxelFormat;
+
+import io.xol.chunkstories.api.voxel.Voxel;
 import io.xol.chunkstories.api.world.generator.environment.DefaultWorldEnvironment;
 import io.xol.chunkstories.api.world.World;
 import io.xol.chunkstories.api.world.generator.environment.WorldEnvironment;
@@ -23,6 +24,8 @@ public class NoiseWorldGenerator extends WorldGenerator
 	SeededSimplexNoiseGenerator ssng;
 
 	int ws;
+	private Voxel STONE_VOXEL;
+	private Voxel WATER_VOXEL;
 
 	public NoiseWorldGenerator(WorldGeneratorDefinition type, World w)
 	{
@@ -31,6 +34,9 @@ public class NoiseWorldGenerator extends WorldGenerator
 		ws = world.getSizeInChunks() * 32;
 		
 		worldEnv = new DefaultWorldEnvironment(world);
+		
+		this.STONE_VOXEL = world.getGameContext().getContent().voxels().getVoxelByName("stone");
+		this.WATER_VOXEL = world.getGameContext().getContent().voxels().getVoxelByName("water");
 	}
 
 	@Override
@@ -108,10 +114,10 @@ public class NoiseWorldGenerator extends WorldGenerator
 
 					//Blocks writing
 					if (value > 0.0f)
-						chunk.pokeSimpleSilently(x, y, z, VoxelFormat.format(1, 15-(int)(value * 15f), 0, 0));
+						chunk.pokeSimpleSilently(x, y, z, STONE_VOXEL, -1, -1, 0);
 					//Water
 					else if (cy * 32 + y < 256)
-						chunk.pokeSimpleSilently(x, y, z, 128);
+						chunk.pokeSimpleSilently(x, y, z, WATER_VOXEL, -1, -1, 0);
 				}
 			}
 		return chunk;
