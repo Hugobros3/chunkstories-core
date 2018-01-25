@@ -14,10 +14,10 @@ repositories {
 
 description = 'The free base content chunkstories is built on.'
 group = 'io.xol.chunkstories'
-version = '124'
+version = '125'
 
 ext {
-	apiRevisionBuiltAgainst = '115'
+	apiRevisionBuiltAgainst = '116'
 	useEclipseCompiler = true
 }
 

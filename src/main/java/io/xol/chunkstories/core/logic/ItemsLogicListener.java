@@ -5,7 +5,6 @@ import org.joml.Vector3d;
 import io.xol.chunkstories.api.Location;
 import io.xol.chunkstories.api.entity.Entity;
 import io.xol.chunkstories.api.entity.EntityLiving;
-import io.xol.chunkstories.api.entity.components.EntityComponentInventory;
 import io.xol.chunkstories.api.entity.interfaces.EntityWithInventory;
 import io.xol.chunkstories.api.events.EventHandler;
 import io.xol.chunkstories.api.events.Listener;
@@ -54,7 +53,7 @@ public class ItemsLogicListener implements Listener {
 		thrownItem.velocityComponent.setVelocity(throwForce);
 		thrownItem.setItemPile(event.getItemPile());
 		
-		//EntityGroundItem entity = new EntityGroundItem(core.getPluginExecutionContext().getContent().entities().getEntityTypeByName("groundItem"), event.getLocation(), event.getItemPile());
+		//EntityGroundItem entity = new EntityGroundItem(core.getPluginExecutionContext().getContent().entities().getEntityDefinitionByName("groundItem"), event.getLocation(), event.getItemPile());
 		event.setItemEntity(thrownItem);
 	}
 }

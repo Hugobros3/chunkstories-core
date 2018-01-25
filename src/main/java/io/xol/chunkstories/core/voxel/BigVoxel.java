@@ -4,13 +4,14 @@ import io.xol.chunkstories.api.entity.Entity;
 import io.xol.chunkstories.api.events.voxel.WorldModificationCause;
 import io.xol.chunkstories.api.exceptions.world.voxel.IllegalBlockModificationException;
 import io.xol.chunkstories.api.voxel.Voxel;
-import io.xol.chunkstories.api.voxel.VoxelFormat;
 import io.xol.chunkstories.api.voxel.VoxelLogic;
-import io.xol.chunkstories.api.voxel.VoxelType;
+import io.xol.chunkstories.api.voxel.VoxelDefinition;
+import io.xol.chunkstories.api.world.FutureVoxelContext;
 import io.xol.chunkstories.api.world.VoxelContext;
 import io.xol.chunkstories.api.world.chunk.Chunk;
 import io.xol.chunkstories.api.world.chunk.Chunk.ChunkVoxelContext;
 
+// don't trust the lies of BIG VOXEL !!!!
 public class BigVoxel extends Voxel implements VoxelLogic {
 
 	public final int xWidth, yWidth, zWidth;
@@ -19,7 +20,7 @@ public class BigVoxel extends Voxel implements VoxelLogic {
 	public final int xMask, yMask, zMask;
 	public final int xShift, yShift, zShift;
 	
-	public BigVoxel(VoxelType type) {
+	public BigVoxel(VoxelDefinition type) {
 		super(type);
 		
 		this.xWidth = Integer.parseInt(type.resolveProperty("xWidth", "1"));
@@ -44,7 +45,7 @@ public class BigVoxel extends Voxel implements VoxelLogic {
 	}
 
 	@Override
-	public int onPlace(ChunkVoxelContext context, int voxelData, WorldModificationCause cause) throws IllegalBlockModificationException {
+	public FutureVoxelContext onPlace(ChunkVoxelContext context, FutureVoxelContext voxelData, WorldModificationCause cause) throws IllegalBlockModificationException {
 		//Be cool with the system doing it's thing
 		if(cause == null)
 			return voxelData;
@@ -63,7 +64,7 @@ public class BigVoxel extends Voxel implements VoxelLogic {
 						throw new IllegalBlockModificationException(context, "All chunks upon wich this block places itself must be fully loaded !");
 					
 					VoxelContext stuff = context.getWorld().peekSafely(a, b, c);
-					if(stuff.getVoxel() == null || stuff.getVoxel().getId() == 0 || !stuff.getVoxel().getType().isSolid())
+					if(stuff.getVoxel() == null || stuff.getVoxel().isAir() || !stuff.getVoxel().getDefinition().isSolid())
 					{
 						//These blocks are replaceable
 						continue;
@@ -79,8 +80,7 @@ public class BigVoxel extends Voxel implements VoxelLogic {
 				for(int c = 0; c < 0 + zWidth; c++) {
 					int metadata = (byte) (((a & xMask ) << xShift) | ((b & yMask) << yShift) | ((c & zMask) << zShift));
 					
-					context.getWorld().pokeSimple(a + x, b + y, c + z, VoxelFormat.changeMeta(this.getId(), metadata));
-					//world.setVoxelData(a + x, b + y, c + z, VoxelFormat.changeMeta(this.getId(), metadata));
+					context.getWorld().pokeSimple(a + x, b + y, c + z, this, -1, -1, metadata);
 				}
 			}
 		}
@@ -115,10 +115,8 @@ public class BigVoxel extends Voxel implements VoxelLogic {
 		for(int a = startX; a < startX + xWidth; a++) {
 			for(int b = startY; b < startY + yWidth; b++) {
 				for(int c = startZ; c < startZ + zWidth; c++) {
-					
-					//Safely poke zero into the relevant locations
-					context.getWorld().pokeSimple(a, b, c, 0);
-					//world.setVoxelData(a, b, c, 0);
+					//poke zero where the big voxel used to be
+					context.getWorld().pokeSimple(a, b, c, store().air(), -1, -1, 0);
 				}
 			}
 		}
@@ -126,9 +124,9 @@ public class BigVoxel extends Voxel implements VoxelLogic {
 
 	@Override
 	/** Big voxels manage themselves using their 8 bits of metadata. They don't let themselves being touched ! */
-	public int onModification(ChunkVoxelContext context, int voxelData, WorldModificationCause cause) throws IllegalBlockModificationException {
+	public FutureVoxelContext onModification(ChunkVoxelContext context, FutureVoxelContext voxelData, WorldModificationCause cause) throws IllegalBlockModificationException {
 		if(cause != null && cause instanceof Entity)
-			throw new IllegalBlockModificationException(context, "Big Voxels aren't modifiable by anyone !");
+			throw new IllegalBlockModificationException(context, "Big Voxels aren't modifiable by anyone !"); // BIG VOXEL is untouchable!!!
 		return voxelData;
 	}
 

@@ -1,7 +1,7 @@
 package io.xol.chunkstories.core.particles;
 
 import org.joml.Vector3f;
-import io.xol.chunkstories.api.particles.ParticleType;
+import io.xol.chunkstories.api.particles.ParticleTypeDefinition;
 import io.xol.chunkstories.api.particles.ParticleTypeHandler;
 import io.xol.chunkstories.api.particles.ParticlesRenderer;
 import io.xol.chunkstories.api.rendering.RenderingInterface;
@@ -14,7 +14,7 @@ import io.xol.chunkstories.api.world.World;
 
 public class ParticleMuzzleFlash extends ParticleTypeHandler
 {
-	public ParticleMuzzleFlash(ParticleType type) {
+	public ParticleMuzzleFlash(ParticleTypeDefinition type) {
 		super(type);
 	}
 

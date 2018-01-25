@@ -7,7 +7,7 @@ import org.joml.Vector3f;
 import org.joml.Vector3fc;
 
 import io.xol.chunkstories.api.particles.ParticleDataWithVelocity;
-import io.xol.chunkstories.api.particles.ParticleType;
+import io.xol.chunkstories.api.particles.ParticleTypeDefinition;
 import io.xol.chunkstories.api.particles.ParticleTypeHandler;
 import io.xol.chunkstories.api.particles.ParticlesRenderer;
 import io.xol.chunkstories.api.rendering.RenderingInterface;
@@ -21,7 +21,7 @@ import io.xol.chunkstories.api.world.World;
 
 public class ParticleFireLight extends ParticleTypeHandler
 {
-	public ParticleFireLight(ParticleType type) {
+	public ParticleFireLight(ParticleTypeDefinition type) {
 		super(type);
 	}
 

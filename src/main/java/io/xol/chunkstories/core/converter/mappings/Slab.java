@@ -1,13 +1,14 @@
 package io.xol.chunkstories.core.converter.mappings;
 
+import io.xol.chunkstories.api.content.ContentTranslator;
 import io.xol.chunkstories.api.converter.mappings.Mapper;
 import io.xol.chunkstories.api.voxel.Voxel;
 import io.xol.chunkstories.api.voxel.VoxelFormat;
 
 public class Slab extends Mapper {
 	
-	public Slab(Voxel voxel) {
-		super(voxel);
+	public Slab(Voxel voxel, ContentTranslator translator) {
+		super(voxel, translator);
 	}
 
 	@Override

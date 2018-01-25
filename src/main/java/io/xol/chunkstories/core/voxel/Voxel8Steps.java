@@ -4,7 +4,7 @@ import io.xol.chunkstories.api.physics.CollisionBox;
 import io.xol.chunkstories.api.voxel.Voxel;
 import io.xol.chunkstories.api.voxel.VoxelFormat;
 import io.xol.chunkstories.api.voxel.VoxelSides;
-import io.xol.chunkstories.api.voxel.VoxelType;
+import io.xol.chunkstories.api.voxel.VoxelDefinition;
 import io.xol.chunkstories.api.voxel.models.VoxelModel;
 import io.xol.chunkstories.api.voxel.models.VoxelRenderer;
 import io.xol.chunkstories.api.world.VoxelContext;
@@ -19,11 +19,11 @@ public class Voxel8Steps extends Voxel
 	VoxelModel[] steps = new VoxelModel[8];
 	SmoothStepVoxelRenderer nextGen;
 
-	public Voxel8Steps(VoxelType type)
+	public Voxel8Steps(VoxelDefinition type)
 	{
 		super(type);
 		for(int i = 0; i < 8; i++)
-			steps[i] = getType().store().models().getVoxelModelByName("steps.m"+i);
+			steps[i] = store().models().getVoxelModelByName("steps.m"+i);
 		
 		nextGen = new SmoothStepVoxelRenderer(this, steps);
 	}

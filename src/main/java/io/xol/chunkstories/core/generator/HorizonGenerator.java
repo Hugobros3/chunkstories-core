@@ -2,7 +2,7 @@ package io.xol.chunkstories.core.generator;
 
 import java.util.Random;
 
-import io.xol.chunkstories.api.content.Content.WorldGenerators.WorldGeneratorType;
+import io.xol.chunkstories.api.content.Content.WorldGenerators.WorldGeneratorDefinition;
 import io.xol.chunkstories.api.math.random.SeededSimplexNoiseGenerator;
 import io.xol.chunkstories.api.world.generator.environment.DefaultWorldEnvironment;
 import io.xol.chunkstories.api.world.World;
@@ -22,7 +22,7 @@ public class HorizonGenerator extends WorldGenerator
 	
 	int worldSizeInBlocks;
 	
-	public HorizonGenerator(WorldGeneratorType type, World w)
+	public HorizonGenerator(WorldGeneratorDefinition type, World w)
 	{
 		super(type, w);
 		ssng = new SeededSimplexNoiseGenerator(w.getWorldInfo().getSeed());

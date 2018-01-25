@@ -92,8 +92,7 @@ public class EntityComponentSelectedItem extends EntityComponent
 		else
 		{
 			dos.writeBoolean(true);
-			//dos.writeInt(pile.getItem().getID());
-			pile.saveItemIntoStream(dos);
+			pile.saveIntoStream(entity.getWorld().getContentTranslator(), dos);
 		}
 	}
 
@@ -111,7 +110,7 @@ public class EntityComponentSelectedItem extends EntityComponent
 			ItemPile itemPile = null;
 			try
 			{
-				itemPile = ItemPile.obtainItemPileFromStream(entity.getWorld().getGameContext().getContent().items(), dis);
+				itemPile = ItemPile.obtainItemPileFromStream(entity.getWorld().getContentTranslator(), dis);
 			}
 			catch (NullItemException e)
 			{
@@ -131,7 +130,7 @@ public class EntityComponentSelectedItem extends EntityComponent
 			
 			
 			/*int id = dis.readInt() & 0x00FFFFFF;
-			ItemType itemType = ItemTypes.getItemTypeById(id);
+			ItemDefinition itemType = ItemDefinitions.getItemDefinitionById(id);
 			if(itemType != null)
 			{
 				Item item = itemType.newItem();

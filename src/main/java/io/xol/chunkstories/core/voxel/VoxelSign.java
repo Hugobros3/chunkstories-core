@@ -12,12 +12,12 @@ import org.joml.Vector3d;
 import io.xol.chunkstories.api.voxel.Voxel;
 import io.xol.chunkstories.api.voxel.VoxelCustomIcon;
 import io.xol.chunkstories.api.voxel.VoxelDynamicallyRendered;
-import io.xol.chunkstories.api.voxel.VoxelFormat;
 import io.xol.chunkstories.api.voxel.VoxelInteractive;
 import io.xol.chunkstories.api.voxel.VoxelLogic;
-import io.xol.chunkstories.api.voxel.VoxelType;
+import io.xol.chunkstories.api.voxel.VoxelDefinition;
 import io.xol.chunkstories.api.voxel.components.VoxelComponentDynamicRenderer;
 import io.xol.chunkstories.api.voxel.models.VoxelRenderer;
+import io.xol.chunkstories.api.world.FutureVoxelContext;
 import io.xol.chunkstories.api.world.VoxelContext;
 import io.xol.chunkstories.api.world.chunk.Chunk.ChunkVoxelContext;
 import io.xol.chunkstories.core.voxel.components.VoxelComponentSignText;
@@ -28,7 +28,7 @@ import io.xol.chunkstories.core.voxel.components.VoxelComponentSignText;
 
 public class VoxelSign extends Voxel implements VoxelInteractive, VoxelLogic, VoxelCustomIcon, VoxelDynamicallyRendered
 {
-	public VoxelSign(VoxelType type)
+	public VoxelSign(VoxelDefinition type)
 	{
 		super(type);
 	}
@@ -46,7 +46,7 @@ public class VoxelSign extends Voxel implements VoxelInteractive, VoxelLogic, Vo
 	}
 		
 	@Override
-	public int onPlace(ChunkVoxelContext context, int voxelData, WorldModificationCause cause) throws IllegalBlockModificationException
+	public FutureVoxelContext onPlace(ChunkVoxelContext context, FutureVoxelContext futureData, WorldModificationCause cause) throws IllegalBlockModificationException
 	{
 		context.components().put("signData", new VoxelComponentSignText(context.components()));
 		
@@ -82,10 +82,10 @@ public class VoxelSign extends Voxel implements VoxelInteractive, VoxelLogic, Vo
 			//System.out.println(asAngle);
 			
 			int meta = (int)(16 * asAngle / 360);
-			voxelData = VoxelFormat.changeMeta(voxelData, meta);
+			futureData.setMetaData(meta);
 		}
 		
-		return voxelData;
+		return futureData;
 	}
 
 	@Override
@@ -94,8 +94,7 @@ public class VoxelSign extends Voxel implements VoxelInteractive, VoxelLogic, Vo
 	}
 
 	@Override
-	public int onModification(ChunkVoxelContext context, int voxelData, WorldModificationCause cause)
-			throws WorldException {
+	public FutureVoxelContext onModification(ChunkVoxelContext context, FutureVoxelContext voxelData, WorldModificationCause cause) throws WorldException {
 		return voxelData;
 	}
 

@@ -2,7 +2,7 @@ package io.xol.chunkstories.core.voxel;
 
 import io.xol.chunkstories.api.physics.CollisionBox;
 import io.xol.chunkstories.api.voxel.Voxel;
-import io.xol.chunkstories.api.voxel.VoxelType;
+import io.xol.chunkstories.api.voxel.VoxelDefinition;
 import io.xol.chunkstories.api.voxel.models.VoxelModel;
 import io.xol.chunkstories.api.world.VoxelContext;
 
@@ -10,7 +10,7 @@ public class VoxelLadder extends Voxel implements VoxelClimbable
 {
 	VoxelModel[] models = new VoxelModel[4];
 
-	public VoxelLadder(VoxelType type)
+	public VoxelLadder(VoxelDefinition type)
 	{
 		super(type);
 		for (int i = 0; i < 4; i++)

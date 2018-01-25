@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import io.xol.chunkstories.api.item.Item;
-import io.xol.chunkstories.api.item.ItemType;
+import io.xol.chunkstories.api.item.ItemDefinition;
 
 //(c) 2015-2017 XolioWare Interactive
 // http://chunkstories.xyz
@@ -14,7 +14,7 @@ public class ItemFirearmMagazine extends Item
 {
 	Set<String> supportedWeaponsSet = new HashSet<String>();
 	
-	public ItemFirearmMagazine(ItemType type)
+	public ItemFirearmMagazine(ItemDefinition type)
 	{
 		super(type);
 		

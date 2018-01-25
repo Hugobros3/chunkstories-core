@@ -1,103 +1,103 @@
 # Here you get/have to assign items their ID and class.
 
-item 1 item_voxel
+item item_voxel
 	customClass: io.xol.chunkstories.api.item.ItemVoxel
 	maxStackSize: 100
 end
 
-item 2 item_voxel_1x2
+item item_voxel_1x2
 	customClass: io.xol.chunkstories.api.item.ItemVoxel
 	maxStackSize: 100
 	width: 1
 	height: 2
 end
 
-item 3 iron_pickaxe
+item iron_pickaxe
 	class: io.xol.chunkstories.core.item.ItemMiningTool
 	toolType: pickaxe
 	miningEfficiency: 1.0
 end
 
-item 4 iron_shovel
+item iron_shovel
 	class: io.xol.chunkstories.core.item.ItemMiningTool
 	toolType: shovel
 	miningEfficiency: 1.0
 end
 
-item 5 iron_axe
+item iron_axe
 	class: io.xol.chunkstories.core.item.ItemMiningTool
 	toolType: axe
 	miningEfficiency: 1.0
 end
 
-item 6 bread
+item bread
 	customClass: io.xol.chunkstories.core.item.ItemFood
 	calories: 20
 	maxStackSize: 5
 end
 
-item 7 soup
+item soup
 	customClass: io.xol.chunkstories.core.item.ItemFood
 	calories: 15
 	maxStackSize: 10
 end
 
-item 8 cookie
+item cookie
 	customClass: io.xol.chunkstories.core.item.ItemFood
 	calories: 10
 	maxStackSize: 30
 end
 
-item 9 pie
+item pie
 	customClass: io.xol.chunkstories.core.item.ItemFood
 	calories: 20
 	maxStackSize: 2
 end
 
-item 10 apple
+item apple
 	customClass: io.xol.chunkstories.core.item.ItemFood
 	calories: 25
 	maxStackSize: 5
 end
 
-item 11 steak
+item steak
 	customClass: io.xol.chunkstories.core.item.ItemFood
 	calories: 40
 	maxStackSize: 5
 end
 
-item 12 ble
+item ble
 	customClass: io.xol.chunkstories.core.item.ItemFood
 	calories: 5
 	maxStackSize: 40
 end
 
-item 13 bow
+item bow
 end
 
-item 14 arrow
+item arrow
 end
 
-item 15 stick
+item stick
 end
 
-item 16 diamond
+item diamond
 end
 
-item 17 gold_bar
+item gold_bar
 end
 
-item 18 iron_bar
+item iron_bar
 end
 
-item 19 copper_bar
+item copper_bar
 end
 
-item 20 coal
+item coal
 end
 
 # Standalone demo of the weapons component
-item 128 weapon_ak47
+item weapon_ak47
 	customClass: io.xol.chunkstories.core.item.ItemFirearm
 	width: 3
 	height: 3
@@ -116,7 +116,7 @@ item 128 weapon_ak47
 	shootingAnimationDuration: 100
 end
 
-item 129 mag_ak47
+item mag_ak47
 	customClass: io.xol.chunkstories.core.item.ItemFirearmMagazine
 	width: 2
 	height: 2

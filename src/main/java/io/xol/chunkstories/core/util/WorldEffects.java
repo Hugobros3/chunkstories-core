@@ -24,7 +24,7 @@ public class WorldEffects
 		//Dispatch to users in MP
 		else if(world instanceof WorldMaster)
 		{
-			PacketExplosionEffect packet = new PacketExplosionEffect(center, radius, debrisSpeed, f);
+			PacketExplosionEffect packet = new PacketExplosionEffect(world, center, radius, debrisSpeed, f);
 			WorldMaster ws = (WorldMaster)world;
 			for(Player p : ws.getPlayers())
 			{

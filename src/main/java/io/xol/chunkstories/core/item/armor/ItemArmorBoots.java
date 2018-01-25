@@ -1,6 +1,6 @@
 package io.xol.chunkstories.core.item.armor;
 
-import io.xol.chunkstories.api.item.ItemType;
+import io.xol.chunkstories.api.item.ItemDefinition;
 
 //(c) 2015-2017 XolioWare Interactive
 //http://chunkstories.xyz
@@ -10,7 +10,7 @@ public class ItemArmorBoots extends ItemArmor
 {
 	public static final String[] bodyParts = {"boneFootR","boneFootL"};
 
-	public ItemArmorBoots(ItemType type)
+	public ItemArmorBoots(ItemDefinition type)
 	{
 		super(type);
 	}

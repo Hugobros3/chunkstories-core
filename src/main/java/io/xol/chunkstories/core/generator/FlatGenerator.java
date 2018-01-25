@@ -2,7 +2,7 @@ package io.xol.chunkstories.core.generator;
 
 import java.util.Random;
 
-import io.xol.chunkstories.api.content.Content.WorldGenerators.WorldGeneratorType;
+import io.xol.chunkstories.api.content.Content.WorldGenerators.WorldGeneratorDefinition;
 import io.xol.chunkstories.api.world.generator.environment.DefaultWorldEnvironment;
 import io.xol.chunkstories.api.world.World;
 import io.xol.chunkstories.api.world.generator.environment.WorldEnvironment;
@@ -18,7 +18,7 @@ public class FlatGenerator extends WorldGenerator
 	DefaultWorldEnvironment worldEnv;
 	Random rnd = new Random();
 
-	public FlatGenerator(WorldGeneratorType type, World w)
+	public FlatGenerator(WorldGeneratorDefinition type, World w)
 	{
 		super(type, w);
 		ws = world.getSizeInChunks() * 32;

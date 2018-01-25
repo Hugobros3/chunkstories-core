@@ -1,4 +1,4 @@
-voxel stonebrick_stairs 21
+voxel stonebrick_stairs
 	customClass: io.xol.chunkstories.core.voxel.VoxelStairs
 	texture: stonebrick
 	opaque: false
@@ -6,7 +6,7 @@ voxel stonebrick_stairs 21
 	material: stone
 end
 
-voxel brick_stairs 22
+voxel brick_stairs
 	customClass: io.xol.chunkstories.core.voxel.VoxelStairs
 	texture: redbricks
 	opaque: false
@@ -14,7 +14,7 @@ voxel brick_stairs 22
 	material: stone
 end
 
-voxel cobble_stairs 49
+voxel cobble_stairs
 	customClass: io.xol.chunkstories.core.voxel.VoxelStairs
 	texture: stonebrick
 	opaque: false
@@ -22,7 +22,7 @@ voxel cobble_stairs 49
 	material: stone
 end
 
-voxel ardoise_stairs 84
+voxel ardoise_stairs
 	customClass: io.xol.chunkstories.core.voxel.VoxelStairs
 	texture: ardoise
 	opaque: false
@@ -30,7 +30,7 @@ voxel ardoise_stairs 84
 	material: stone
 end
 
-voxel planks_stairs 50
+voxel planks_stairs
 	customClass: io.xol.chunkstories.core.voxel.VoxelStairs
 	texture: planks
 	opaque: false
@@ -38,7 +38,7 @@ voxel planks_stairs 50
 	material: bluntwood
 end
 
-voxel goldplanks_stairs 106
+voxel goldplanks_stairs
 	customClass: io.xol.chunkstories.core.voxel.VoxelStairs
 	texture: goldplanks
 	opaque: false
@@ -46,7 +46,7 @@ voxel goldplanks_stairs 106
 	material: bluntwood
 end
 
-voxel whiteplanks_stairs 107
+voxel whiteplanks_stairs
 	customClass: io.xol.chunkstories.core.voxel.VoxelStairs
 	texture: whiteplanks
 	opaque: false
@@ -54,7 +54,7 @@ voxel whiteplanks_stairs 107
 	material: bluntwood
 end
 
-voxel darkplanks_stairs 108
+voxel darkplanks_stairs
 	customClass: io.xol.chunkstories.core.voxel.VoxelStairs
 	texture: darkplanks
 	opaque: false
@@ -62,7 +62,7 @@ voxel darkplanks_stairs 108
 	material: bluntwood
 end
 
-voxel hardsand_stairs 105
+voxel hardsand_stairs
 	customClass: io.xol.chunkstories.core.voxel.VoxelStairs
 	texture: hard_sand
 	opaque: false
@@ -70,7 +70,7 @@ voxel hardsand_stairs 105
 	material: stone
 end
 
-voxel white_concrete_stairs 113
+voxel white_concrete_stairs
 	customClass: io.xol.chunkstories.core.voxel.VoxelStairs
 	texture: white_concrete
 	opaque: false

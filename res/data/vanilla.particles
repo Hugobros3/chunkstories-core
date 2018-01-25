@@ -1,23 +1,23 @@
-particle voxel_frag 0
+particle voxel_frag
 	handlerClass: io.xol.chunkstories.core.particles.ParticleVoxelFragment
 	billboardSize: 0.06125
 	renderTime: gbuffer
 end
 
-particle blood 1
+particle blood
 	handlerClass: io.xol.chunkstories.core.particles.ParticleBlood
 	renderTime: gbuffer
 	billboardSize: 0.1
 	albedoTexture: ./textures/particles/blood.png
 end
 
-particle muzzle 2
+particle muzzle
 	handlerClass: io.xol.chunkstories.core.particles.ParticleMuzzleFlash
 	renderTime: never
 	billboardSize: 0.0
 end
 
-particle smoke 3
+particle smoke
 	handlerClass: io.xol.chunkstories.core.particles.ParticleSmoke
 	billboardSize: 1.0
 	shaderName: particles_ab
@@ -25,28 +25,28 @@ particle smoke 3
 	renderTime: forward
 end
 
-particle spotlight 4
+particle spotlight
 	handlerClass: io.xol.chunkstories.core.particles.ParticleSetupLight
 	billboardSize: 3.0
 	renderTime: gbuffer
 	albedoTexture: ./textures/light.png
 end
 
-particle light 5
+particle light
 	handlerClass: io.xol.chunkstories.core.particles.ParticleLight
 	billboardSize: 0.0
 	renderTime: never
 	albedoTexture: ./res/textures/particle.png
 end
 
-particle snow 6
+particle snow
 	handlerClass: io.xol.chunkstories.core.particles.ParticleSnow
 	billboardSize: 0.06125
 	albedoTexture: ./textures/particles/snow.png
 	renderTime: forward
 end
 
-particle fire 7
+particle fire
 	handlerClass: io.xol.chunkstories.core.particles.ParticleFire
 	billboardSize: 2.0
 	shaderName: particles_fire
@@ -54,7 +54,7 @@ particle fire 7
 	albedoTexture: ./textures/particles/white_smoke.png
 end
 
-particle fire_light 8
+particle fire_light
 	handlerClass: io.xol.chunkstories.core.particles.ParticleFireLight
 	billboardSize: 1.0
 	albedoTexture: ./textures/particles/white_smoke.png
@@ -62,13 +62,13 @@ particle fire_light 8
 	renderTime: never
 end
 
-particle lightning_strike_illumination 9
+particle lightning_strike_illumination
 	handlerClass: io.xol.chunkstories.core.particles.ParticleLightningStrike
 	billboardSize: 0.0
 	renderTime: never
 end
 
-particle fire_small 10
+particle fire_small
 	handlerClass: io.xol.chunkstories.core.particles.ParticleFire
 	billboardSize: 0.3
 	shaderName: particles_fire
@@ -78,7 +78,7 @@ particle fire_small 10
 	ignoreCollisions: true
 end
 
-particle black_smoke 11
+particle black_smoke
 	handlerClass: io.xol.chunkstories.core.particles.ParticleSmoke
 	billboardSize: 1.5
 	shaderName: particles_ab

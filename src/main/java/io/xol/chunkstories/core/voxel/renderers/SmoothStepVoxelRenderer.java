@@ -1,5 +1,7 @@
 package io.xol.chunkstories.core.voxel.renderers;
 
+import io.xol.chunkstories.api.voxel.Voxel;
+
 //(c) 2015-2017 XolioWare Interactive
 //http://chunkstories.xyz
 //http://xol.io
@@ -65,7 +67,7 @@ public class SmoothStepVoxelRenderer implements VoxelRenderer {
 		//if(true)
 		//	return old(voxelInformations).renderInto(chunkRenderer, bakingContext, chunk, voxelInformations);
 		
-		VoxelTexture texture = voxel.getVoxelTexture(voxelInformations.getData(), VoxelSides.TOP, voxelInformations);
+		VoxelTexture texture = voxel.getVoxelTexture(VoxelSides.TOP, voxelInformations);
 		
 		baker.usingTexture(texture);
 		
@@ -74,7 +76,6 @@ public class SmoothStepVoxelRenderer implements VoxelRenderer {
 		//int textureT = texture.getAtlasT() + (z % texture.getTextureScale()) * offset;
 		
 		//final int max_step = 8;
-		int goodID = voxel.getId();
 		
 		float height[] = new float[9];
 		
@@ -82,9 +83,10 @@ public class SmoothStepVoxelRenderer implements VoxelRenderer {
 			bLoop:
 			for(int b = wz - 1; b <= wz + 1; b ++) {
 				for(int h = wy + 1; h >= wy - 1; h--) {
-					int data = world.peekSimple(a, h, b);
-					if(VoxelFormat.id(data) == goodID) {
-						height[(a - wx + 1) * 3 + b - wz + 1] = h - chunk.getChunkY() * 32 + 1/8f + VoxelFormat.meta(data) / 8f;
+					Voxel peek = world.peekSimple(a, h, b);
+					int raw = world.peekRaw(a, h, b);
+					if(voxel.sameKind(peek)) {
+						height[(a - wx + 1) * 3 + b - wz + 1] = h - chunk.getChunkY() * 32 + 1/8f + VoxelFormat.meta(raw) / 8f;
 						continue bLoop;
 					}
 				}

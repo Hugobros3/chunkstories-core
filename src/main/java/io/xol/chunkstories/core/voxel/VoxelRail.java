@@ -2,7 +2,7 @@ package io.xol.chunkstories.core.voxel;
 
 import io.xol.chunkstories.api.voxel.Voxel;
 import io.xol.chunkstories.api.voxel.VoxelSides;
-import io.xol.chunkstories.api.voxel.VoxelType;
+import io.xol.chunkstories.api.voxel.VoxelDefinition;
 import io.xol.chunkstories.api.voxel.models.VoxelModel;
 import io.xol.chunkstories.api.world.VoxelContext;
 
@@ -12,7 +12,7 @@ import io.xol.chunkstories.api.world.VoxelContext;
 
 public class VoxelRail extends Voxel
 {
-	public VoxelRail(VoxelType type)
+	public VoxelRail(VoxelDefinition type)
 	{
 		super(type);
 	}
@@ -20,7 +20,7 @@ public class VoxelRail extends Voxel
 	@Override
 	public VoxelModel getVoxelRenderer(VoxelContext info)
 	{
-		if(info.getSideId(VoxelSides.FRONT.ordinal()) == this.getId())
+		if(info.getNeightborVoxel(VoxelSides.FRONT.ordinal()).sameKind(this))
 			return store.models().getVoxelModelByName("rails.alt");
 
 		return store.models().getVoxelModelByName("rails.default");

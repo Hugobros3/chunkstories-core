@@ -6,7 +6,7 @@ import org.joml.Vector3fc;
 
 import io.xol.chunkstories.api.particles.ParticleDataWithTextureCoordinates;
 import io.xol.chunkstories.api.particles.ParticleDataWithVelocity;
-import io.xol.chunkstories.api.particles.ParticleType;
+import io.xol.chunkstories.api.particles.ParticleTypeDefinition;
 import io.xol.chunkstories.api.particles.ParticleTypeHandler;
 import io.xol.chunkstories.api.particles.ParticlesRenderer;
 import io.xol.chunkstories.api.rendering.RenderingInterface;
@@ -22,7 +22,7 @@ public class ParticleFire extends ParticleTypeHandler
 	final boolean ignoreCollisions;
 	final boolean destroyOnCollision;
 	
-	public ParticleFire(ParticleType type) {
+	public ParticleFire(ParticleTypeDefinition type) {
 		super(type);
 		
 		ignoreCollisions = type.resolveProperty("ignoreCollisions", "false").equals("true");

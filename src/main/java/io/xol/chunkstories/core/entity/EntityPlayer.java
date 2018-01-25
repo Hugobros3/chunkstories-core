@@ -12,7 +12,7 @@ import io.xol.chunkstories.api.entity.components.EntityComponentName;
 import io.xol.chunkstories.api.entity.Controller;
 import io.xol.chunkstories.api.entity.DamageCause;
 import io.xol.chunkstories.api.entity.Entity;
-import io.xol.chunkstories.api.entity.EntityType;
+import io.xol.chunkstories.api.entity.EntityDefinition;
 import io.xol.chunkstories.api.entity.interfaces.EntityControllable;
 import io.xol.chunkstories.api.entity.interfaces.EntityCreative;
 import io.xol.chunkstories.api.entity.interfaces.EntityFeedable;
@@ -49,7 +49,9 @@ import io.xol.chunkstories.api.rendering.textures.Texture2D;
 import io.xol.chunkstories.api.sound.SoundSource.Mode;
 import io.xol.chunkstories.api.util.ColorsTools;
 import io.xol.chunkstories.api.voxel.VoxelFormat;
+import io.xol.chunkstories.api.world.FutureVoxelContext;
 import io.xol.chunkstories.api.world.VoxelContext;
+import io.xol.chunkstories.api.world.World.WorldVoxelContext;
 import io.xol.chunkstories.api.world.WorldClient;
 import io.xol.chunkstories.api.world.WorldMaster;
 
@@ -99,7 +101,7 @@ EntityWorldModifier
 
 	int variant;
 	
-	public EntityPlayer(EntityType t, Location location)
+	public EntityPlayer(EntityDefinition t, Location location)
 	{
 		super(t, location);
 		
@@ -117,7 +119,7 @@ EntityWorldModifier
 		armor = new EntityArmorInventory(this, 4, 1);
 	}
 
-	public EntityPlayer(EntityType t, Location location, String name)
+	public EntityPlayer(EntityDefinition t, Location location, String name)
 	{
 		this(t, location);
 		this.name.setName(name);
@@ -652,7 +654,7 @@ EntityWorldModifier
 		{
 			
 			if(creativeMode.get()) {
-				((WorldClient)getWorld()).getClient().openInventories(this.inventoryComponent.getInventory(), new InventoryLocalCreativeMenu(this.getType().store().parent().voxels()));
+				((WorldClient)getWorld()).getClient().openInventories(this.inventoryComponent.getInventory(), new InventoryLocalCreativeMenu(world));
 			}
 			else {
 				((WorldClient)getWorld()).getClient().openInventories(this.inventoryComponent.getInventory(), this.armor.getInventory());
@@ -702,39 +704,41 @@ EntityWorldModifier
 						// Player events mod
 						if(controller instanceof Player) {
 							Player player = (Player)controller;
-							VoxelContext ctx = world.peekSafely(blockLocation);
-							PlayerVoxelModificationEvent event = new PlayerVoxelModificationEvent(ctx, 0, EntityCreative.CREATIVE_MODE, player);
+							WorldVoxelContext ctx = world.peekSafely(blockLocation);
+							FutureVoxelContext fvc = new FutureVoxelContext(ctx);
+							fvc.setVoxel(this.getType().store().parent().voxels().air());
+							
+							PlayerVoxelModificationEvent event = new PlayerVoxelModificationEvent(ctx, fvc, EntityCreative.CREATIVE_MODE, player);
 							
 							//Anyone has objections ?
 							world.getGameContext().getPluginManager().fireEvent(event);
 							
 							if(event.isCancelled())
 								return true;
-						}
 						
-						try {
-							world.poke((int)blockLocation.x, (int)blockLocation.y, (int)blockLocation.z, 0, this);
-						} catch (WorldException e) {
-							//Discard but maybe play some effect ?
+							try {
+								world.poke(fvc, this);
+								//world.poke((int)blockLocation.x, (int)blockLocation.y, (int)blockLocation.z, null, 0, 0, 0, this);
+							} catch (WorldException e) {
+								//Discard but maybe play some effect ?
+							}
+							
+							return true;
 						}
-						return true;
 					}
 				}
 				else if (input.getName().equals("mouse.middle"))
 				{
 					if (blockLocation != null)
 					{
-						int data = this.getWorld().peekSafely(blockLocation).getData();
+						VoxelContext ctx = this.getWorld().peekSafely(blockLocation);
 
-						int voxelID = VoxelFormat.id(data);
-						int voxelMeta = VoxelFormat.meta(data);
-
-						if (voxelID > 0)
+						if (!ctx.getVoxel().isAir())
 						{
 							//Spawn new itemPile in his inventory
 							ItemVoxel item = (ItemVoxel) world.getGameContext().getContent().items().getItemTypeByName("item_voxel").newItem();
-							item.voxel = world.getGameContext().getContent().voxels().getVoxelById(voxelID);
-							item.voxelMeta = voxelMeta;
+							item.voxel = ctx.getVoxel();
+							item.voxelMeta = ctx.getMetaData();
 
 							ItemPile itemVoxel = new ItemPile(item);
 							this.getInventory().setItemPileAt(getSelectedItemComponent().getSelectedSlot(), 0, itemVoxel);

@@ -12,7 +12,7 @@ import io.xol.chunkstories.api.entity.components.EntityComponentRotation;
 import io.xol.chunkstories.api.entity.interfaces.EntityControllable;
 import io.xol.chunkstories.api.entity.interfaces.EntityCreative;
 import io.xol.chunkstories.api.input.Input;
-import io.xol.chunkstories.api.item.ItemType;
+import io.xol.chunkstories.api.item.ItemDefinition;
 import io.xol.chunkstories.api.item.interfaces.ItemCustomHoldingAnimation;
 import io.xol.chunkstories.api.item.interfaces.ItemOverlay;
 import io.xol.chunkstories.api.item.interfaces.ItemZoom;
@@ -74,7 +74,7 @@ public class ItemFirearm extends ItemWeapon implements ItemOverlay, ItemZoom, It
 
 	private ItemPile currentMagazine;
 
-	public ItemFirearm(ItemType type)
+	public ItemFirearm(ItemDefinition type)
 	{
 		super(type);
 
@@ -285,13 +285,12 @@ public class ItemFirearm extends ItemWeapon implements ItemOverlay, ItemZoom, It
 						Voxel voxel = peek.getVoxel();
 						
 						brokeLastBlock = false;
-						if(voxel.getId() != 0 && voxel.getMaterial().resolveProperty("bulletBreakable") != null && voxel.getMaterial().resolveProperty("bulletBreakable").equals("true"))
+						if(!voxel.isAir() && voxel.getMaterial().resolveProperty("bulletBreakable") != null && voxel.getMaterial().resolveProperty("bulletBreakable").equals("true"))
 						{
-							//Spawn an event to check if it's okay
+							//TODO Spawn an event to check if it's okay
 							
 							//Destroy it
-							peek.pokeSimple(0);
-							//user.getWorld().setVoxelData(shotBlock, 0);
+							peek.pokeSimple(voxel.store().air(), -1, -1, 0);
 							
 							brokeLastBlock = true;
 							for(int i = 0; i < 25; i++)
@@ -338,7 +337,7 @@ public class ItemFirearm extends ItemWeapon implements ItemOverlay, ItemZoom, It
 
 							//This seems fine
 
-							for (CollisionBox box : peek.getVoxel().getTranslatedCollisionBoxes(user.getWorld(), (int) (double) shotBlock.x(), (int) (double) shotBlock.y(), (int) (double) shotBlock.z()))
+							for (CollisionBox box : peek.getTranslatedCollisionBoxes())
 							{
 								Vector3dc thisLocation = box.lineIntersection(eyeLocation, direction);
 								if (thisLocation != null)

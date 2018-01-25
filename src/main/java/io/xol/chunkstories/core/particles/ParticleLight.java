@@ -1,7 +1,7 @@
 package io.xol.chunkstories.core.particles;
 
 import org.joml.Vector3f;
-import io.xol.chunkstories.api.particles.ParticleType;
+import io.xol.chunkstories.api.particles.ParticleTypeDefinition;
 import io.xol.chunkstories.api.particles.ParticleTypeHandler;
 import io.xol.chunkstories.api.particles.ParticlesRenderer;
 import io.xol.chunkstories.api.rendering.RenderingInterface;
@@ -15,7 +15,7 @@ import io.xol.chunkstories.core.particles.ParticleMuzzleFlash.MuzzleData;
 
 public class ParticleLight extends ParticleTypeHandler
 {
-	public ParticleLight(ParticleType type) {
+	public ParticleLight(ParticleTypeDefinition type) {
 		super(type);
 		// TODO Auto-generated constructor stub
 	}

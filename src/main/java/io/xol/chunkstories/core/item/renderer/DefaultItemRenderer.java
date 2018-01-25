@@ -9,7 +9,7 @@ import io.xol.chunkstories.api.Location;
 import io.xol.chunkstories.api.client.ClientContent;
 import io.xol.chunkstories.api.client.ClientContent.TexturesLibrary;
 import io.xol.chunkstories.api.item.Item;
-import io.xol.chunkstories.api.item.ItemType;
+import io.xol.chunkstories.api.item.ItemDefinition;
 import io.xol.chunkstories.api.item.inventory.ItemPile;
 import io.xol.chunkstories.api.item.renderer.ItemRenderer;
 import io.xol.chunkstories.api.rendering.Primitive;
@@ -26,7 +26,7 @@ import io.xol.chunkstories.api.world.World;
 public class DefaultItemRenderer extends ItemRenderer
 {
 	private final TexturesLibrary textures;
-	ItemType itemType;
+	ItemDefinition itemType;
 	
 	public DefaultItemRenderer(Item item)
 	{
@@ -36,7 +36,7 @@ public class DefaultItemRenderer extends ItemRenderer
 		this.textures = ((ClientContent)itemType.store().parent()).textures();
 	}
 
-	public DefaultItemRenderer(ItemType itemType, ClientContent parent) {
+	public DefaultItemRenderer(ItemDefinition itemType, ClientContent parent) {
 		super(null);
 		this.itemType = itemType;
 		

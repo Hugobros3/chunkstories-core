@@ -5,7 +5,7 @@ import org.joml.Vector3dc;
 import org.joml.Vector3fc;
 
 import io.xol.chunkstories.api.particles.ParticleDataWithVelocity;
-import io.xol.chunkstories.api.particles.ParticleType;
+import io.xol.chunkstories.api.particles.ParticleTypeDefinition;
 import io.xol.chunkstories.api.particles.ParticleTypeHandler;
 import io.xol.chunkstories.api.particles.ParticlesRenderer;
 import io.xol.chunkstories.api.rendering.RenderingInterface;
@@ -18,7 +18,7 @@ import io.xol.chunkstories.api.world.World;
 
 public class ParticleSmoke extends ParticleTypeHandler
 {
-	public ParticleSmoke(ParticleType type) {
+	public ParticleSmoke(ParticleTypeDefinition type) {
 		super(type);
 	}
 

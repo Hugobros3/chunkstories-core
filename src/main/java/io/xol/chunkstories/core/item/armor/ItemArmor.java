@@ -1,7 +1,7 @@
 package io.xol.chunkstories.core.item.armor;
 
 import io.xol.chunkstories.api.item.Item;
-import io.xol.chunkstories.api.item.ItemType;
+import io.xol.chunkstories.api.item.ItemDefinition;
 
 //(c) 2015-2017 XolioWare Interactive
 //http://chunkstories.xyz
@@ -12,7 +12,7 @@ public abstract class ItemArmor extends Item
 	private final float mutiplier;
 	private final String overlay;
 	
-	public ItemArmor(ItemType type)
+	public ItemArmor(ItemDefinition type)
 	{
 		super(type);
 		

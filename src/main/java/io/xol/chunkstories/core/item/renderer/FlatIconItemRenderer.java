@@ -6,7 +6,7 @@ import io.xol.chunkstories.api.Location;
 import io.xol.chunkstories.api.client.ClientContent;
 import io.xol.chunkstories.api.client.ClientContent.TexturesLibrary;
 import io.xol.chunkstories.api.item.Item;
-import io.xol.chunkstories.api.item.ItemType;
+import io.xol.chunkstories.api.item.ItemDefinition;
 import io.xol.chunkstories.api.item.inventory.ItemPile;
 import io.xol.chunkstories.api.item.renderer.ItemRenderer;
 import io.xol.chunkstories.api.rendering.RenderingInterface;
@@ -21,7 +21,7 @@ public class FlatIconItemRenderer extends DefaultItemRenderer
 {
 	private final TexturesLibrary textures;
 	
-	public FlatIconItemRenderer(Item item, ItemRenderer fallbackRenderer, ItemType itemType)
+	public FlatIconItemRenderer(Item item, ItemRenderer fallbackRenderer, ItemDefinition itemType)
 	{
 		super(item);
 		this.textures = ((ClientContent)item.getType().store().parent()).textures();

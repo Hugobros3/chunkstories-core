@@ -10,7 +10,7 @@ import io.xol.chunkstories.api.Location;
 import io.xol.chunkstories.api.entity.DamageCause;
 import io.xol.chunkstories.api.entity.Entity;
 import io.xol.chunkstories.api.entity.EntityLiving;
-import io.xol.chunkstories.api.entity.EntityType;
+import io.xol.chunkstories.api.entity.EntityDefinition;
 import io.xol.chunkstories.api.entity.components.EntityComponent;
 import io.xol.chunkstories.api.entity.interfaces.EntityWithSelectedItem;
 import io.xol.chunkstories.api.item.inventory.ItemPile;
@@ -104,12 +104,12 @@ public class EntityZombie extends EntityHumanoid
 		zombieTargets.add(EntityPlayer.class);
 	}
 	
-	public EntityZombie(EntityType t, Location location)
+	public EntityZombie(EntityDefinition t, Location location)
 	{
 		this(t, location, Stage.values()[(int) Math.floor(Math.random() * Stage.values().length)]);
 	}
 	
-	public EntityZombie(EntityType t, Location location, Stage stage)
+	public EntityZombie(EntityDefinition t, Location location, Stage stage)
 	{
 		super(t, location);
 		zombieAi = new ZombieAI(this, zombieTargets);

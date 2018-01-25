@@ -7,7 +7,7 @@ import io.xol.chunkstories.api.animation.CompoundAnimationHelper;
 import io.xol.chunkstories.api.animation.SkeletalAnimation;
 import io.xol.chunkstories.api.entity.Controller;
 import io.xol.chunkstories.api.entity.DamageCause;
-import io.xol.chunkstories.api.entity.EntityType;
+import io.xol.chunkstories.api.entity.EntityDefinition;
 import io.xol.chunkstories.api.entity.interfaces.EntityControllable;
 import io.xol.chunkstories.api.entity.interfaces.EntityWithSelectedItem;
 import io.xol.chunkstories.api.item.Item;
@@ -59,7 +59,7 @@ public abstract class EntityHumanoid extends EntityLivingImplementation
 	
 	public final EntityComponentStance stance;
 
-	public EntityHumanoid(EntityType t, Location location)
+	public EntityHumanoid(EntityDefinition t, Location location)
 	{
 		super(t, location);
 
@@ -419,7 +419,7 @@ public abstract class EntityHumanoid extends EntityLivingImplementation
 
 		Voxel voxelStandingOn = world.peekSafely(new Vector3d(this.getLocation()).add(0.0, -0.01, 0.0)).getVoxel();
 
-		if (voxelStandingOn == null || !voxelStandingOn.getType().isSolid() && !voxelStandingOn.getType().isLiquid())
+		if (voxelStandingOn == null || !voxelStandingOn.getDefinition().isSolid() && !voxelStandingOn.getDefinition().isLiquid())
 			return;
 
 		Material material = voxelStandingOn.getMaterial();

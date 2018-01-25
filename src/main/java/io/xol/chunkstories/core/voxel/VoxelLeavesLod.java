@@ -2,7 +2,7 @@ package io.xol.chunkstories.core.voxel;
 
 import io.xol.chunkstories.api.content.Content.Voxels;
 import io.xol.chunkstories.api.voxel.Voxel;
-import io.xol.chunkstories.api.voxel.VoxelType;
+import io.xol.chunkstories.api.voxel.VoxelDefinition;
 import io.xol.chunkstories.api.voxel.models.ChunkRenderer;
 import io.xol.chunkstories.api.voxel.models.VoxelBakerCubic;
 import io.xol.chunkstories.api.voxel.models.VoxelRenderer;
@@ -25,7 +25,7 @@ public class VoxelLeavesLod extends Voxel
 	
 	LodedLeavesBlocksRenderer renderer;
 	
-	public VoxelLeavesLod(VoxelType type)
+	public VoxelLeavesLod(VoxelDefinition type)
 	{
 		super(type);
 		this.baseTexture = store.textures().getVoxelTextureByName(getName());
@@ -55,12 +55,12 @@ public class VoxelLeavesLod extends Voxel
 		protected boolean shallBuildWallArround(VoxelContext renderInfo, int face, LodLevel lodLevel)
 		{
 			//int baseID = renderInfo.data;
-			Voxel facing = store.getVoxelById(renderInfo.getSideId(face));
+			Voxel facing = renderInfo.getNeightborVoxel(face);
 			Voxel voxel = renderInfo.getVoxel();
 
-			if (voxel.getType().isLiquid() && !facing.getType().isLiquid())
+			if (voxel.getDefinition().isLiquid() && !facing.getDefinition().isLiquid())
 				return true;
-			if (!facing.getType().isOpaque() && ( (!voxel.sameKind(facing) || (lodLevel == LodLevel.HIGH && !voxel.getType().isSelfOpaque())) ) )
+			if (!facing.getDefinition().isOpaque() && ( (!voxel.sameKind(facing) || (lodLevel == LodLevel.HIGH && !voxel.getDefinition().isSelfOpaque())) ) )
 				return true;
 			return false;
 		}

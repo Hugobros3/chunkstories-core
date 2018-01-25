@@ -6,11 +6,10 @@ import io.xol.chunkstories.api.events.voxel.WorldModificationCause;
 import io.xol.chunkstories.api.exceptions.world.voxel.IllegalBlockModificationException;
 import io.xol.chunkstories.api.physics.CollisionBox;
 import io.xol.chunkstories.api.voxel.Voxel;
-import io.xol.chunkstories.api.voxel.VoxelFormat;
 import io.xol.chunkstories.api.voxel.VoxelLogic;
-import io.xol.chunkstories.api.voxel.VoxelSides;
-import io.xol.chunkstories.api.voxel.VoxelType;
+import io.xol.chunkstories.api.voxel.VoxelDefinition;
 import io.xol.chunkstories.api.voxel.models.VoxelModel;
+import io.xol.chunkstories.api.world.FutureVoxelContext;
 import io.xol.chunkstories.api.world.VoxelContext;
 import io.xol.chunkstories.api.world.chunk.Chunk.ChunkVoxelContext;
 import io.xol.chunkstories.core.entity.EntityPlayer;
@@ -23,7 +22,7 @@ public class VoxelStairs extends Voxel implements VoxelLogic
 {
 	VoxelModel[] models = new VoxelModel[8];
 
-	public VoxelStairs(VoxelType type)
+	public VoxelStairs(VoxelDefinition type)
 	{
 		super(type);
 		for (int i = 0; i < 8; i++)
@@ -40,7 +39,7 @@ public class VoxelStairs extends Voxel implements VoxelLogic
 	@Override
 	public CollisionBox[] getCollisionBoxes(VoxelContext info)
 	{
-		int meta = VoxelFormat.meta(info.getData());
+		int meta = info.getMetaData();
 		CollisionBox[] boxes = new CollisionBox[2];
 		boxes[0] = new CollisionBox(1, 0.5, 1);//.translate(0.5, -1, 0.5);
 		switch (meta % 4)
@@ -77,13 +76,7 @@ public class VoxelStairs extends Voxel implements VoxelLogic
 	}
 
 	@Override
-	public int getLightLevelModifier(int dataFrom, int dataTo, VoxelSides side)
-	{
-		return super.getLightLevelModifier(dataFrom, dataTo, side);
-	}
-
-	@Override
-	public int onPlace(ChunkVoxelContext context, int voxelData, WorldModificationCause cause)
+	public FutureVoxelContext onPlace(ChunkVoxelContext context, FutureVoxelContext voxelData, WorldModificationCause cause)
 	{
 		// id+dir of slope
 		// 0LEFT x-
@@ -122,7 +115,7 @@ public class VoxelStairs extends Voxel implements VoxelLogic
 					stairsSide += 4;
 			}
 			
-			voxelData = VoxelFormat.changeMeta(voxelData, stairsSide);
+			voxelData.setMetaData(stairsSide);
 		}
 		return voxelData;
 	}
@@ -134,9 +127,8 @@ public class VoxelStairs extends Voxel implements VoxelLogic
 	}
 	
 	@Override
-	public int onModification(ChunkVoxelContext context, int voxelData, WorldModificationCause cause) throws IllegalBlockModificationException
+	public FutureVoxelContext onModification(ChunkVoxelContext context, FutureVoxelContext voxelData, WorldModificationCause cause) throws IllegalBlockModificationException
 	{
 		return voxelData;
-		//throw new IllegalBlockModificationException("Stairs can't be changed direction");
 	}
 }

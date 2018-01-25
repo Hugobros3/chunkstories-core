@@ -2,7 +2,7 @@ package io.xol.chunkstories.core.entity;
 
 import io.xol.chunkstories.api.Location;
 import io.xol.chunkstories.api.entity.EntityBase;
-import io.xol.chunkstories.api.entity.EntityType;
+import io.xol.chunkstories.api.entity.EntityDefinition;
 import io.xol.chunkstories.api.entity.components.EntityComponentVelocity;
 import io.xol.chunkstories.api.item.inventory.ItemPile;
 import io.xol.chunkstories.api.math.Math2;
@@ -38,13 +38,13 @@ public class EntityGroundItem extends EntityBase implements EntityRenderable
 	private long spawnTime;
 	private final EntityGroundItemPileComponent itemPileWithin;
 	
-	public EntityGroundItem(EntityType t, Location location)
+	public EntityGroundItem(EntityDefinition t, Location location)
 	{
 		super(t, location);
 		itemPileWithin = new EntityGroundItemPileComponent(this);
 	}
 	
-	public EntityGroundItem(EntityType t, Location location, ItemPile itemPile)
+	public EntityGroundItem(EntityDefinition t, Location location, ItemPile itemPile)
 	{
 		super(t, location);
 		itemPileWithin = new EntityGroundItemPileComponent(this, itemPile);
@@ -75,7 +75,7 @@ public class EntityGroundItem extends EntityBase implements EntityRenderable
 
 		if (world instanceof WorldMaster) {
 			Voxel voxelIn = world.peekSafely(positionComponent.getLocation()).getVoxel();
-			boolean inWater = voxelIn.getType().isLiquid();
+			boolean inWater = voxelIn.getDefinition().isLiquid();
 
 			double terminalVelocity = inWater ? -0.05 : -0.5;
 			if (velocity.y() > terminalVelocity && !this.isOnGround())

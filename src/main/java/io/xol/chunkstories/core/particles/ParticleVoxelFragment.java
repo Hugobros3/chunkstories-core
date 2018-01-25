@@ -7,14 +7,14 @@ import org.joml.Vector3fc;
 import io.xol.chunkstories.api.content.Content.Voxels;
 import io.xol.chunkstories.api.particles.ParticleDataWithTextureCoordinates;
 import io.xol.chunkstories.api.particles.ParticleDataWithVelocity;
-import io.xol.chunkstories.api.particles.ParticleType;
+import io.xol.chunkstories.api.particles.ParticleTypeDefinition;
 import io.xol.chunkstories.api.particles.ParticleTypeHandler;
 import io.xol.chunkstories.api.particles.ParticlesRenderer;
 import io.xol.chunkstories.api.rendering.RenderingInterface;
 import io.xol.chunkstories.api.rendering.textures.Texture2D;
-import io.xol.chunkstories.api.voxel.VoxelFormat;
 import io.xol.chunkstories.api.voxel.VoxelSides;
 import io.xol.chunkstories.api.voxel.textures.VoxelTexture;
+import io.xol.chunkstories.api.world.VoxelContext;
 import io.xol.chunkstories.api.world.World;
 
 //(c) 2015-2017 XolioWare Interactive
@@ -25,7 +25,7 @@ public class ParticleVoxelFragment extends ParticleTypeHandler
 {
 	Voxels voxelStore;
 	
-	public ParticleVoxelFragment(ParticleType type) {
+	public ParticleVoxelFragment(ParticleTypeDefinition type) {
 		super(type);
 		
 		voxelStore = type.store().parent().voxels();
@@ -40,14 +40,22 @@ public class ParticleVoxelFragment extends ParticleTypeHandler
 		
 		float rightX, topY, leftX, bottomY;
 		
-		public FragmentData(float x, float y, float z, int data)
+		public FragmentData(float x, float y, float z, VoxelContext context)
 		{
 			super(x, y, z);
-			int id = VoxelFormat.id(data);
 			
-			tex = voxelStore.getVoxelById(id).getVoxelTexture(data, VoxelSides.LEFT, null);
-			setData(data);
-			//System.out.println("id+"+id + " "+ tex.atlasOffset / 32768f);
+			tex = context.getTexture(VoxelSides.LEFT);
+			
+			int qx = (int) Math.floor(Math.random() * 4.0);
+			int rx = qx + 1;
+			int qy = (int) Math.floor(Math.random() * 4.0);
+			int ry = qy + 1;
+			
+			leftX = (tex.getAtlasS()) / 32768f + tex.getAtlasOffset() / 32768f * (qx / 4.0f);
+			rightX = (tex.getAtlasS()) / 32768f + tex.getAtlasOffset() / 32768f * (rx / 4.0f);
+			
+			topY = (tex.getAtlasT()) / 32768f + tex.getAtlasOffset() / 32768f * (qy / 4.0f);
+			bottomY = (tex.getAtlasT()) / 32768f + tex.getAtlasOffset() / 32768f * (ry / 4.0f);
 		}
 		
 		public void setVelocity(Vector3dc vel)
@@ -113,36 +121,12 @@ public class ParticleVoxelFragment extends ParticleTypeHandler
 		{
 			return bottomY;
 		}
-
-		void setData(int data)
-		{
-			int id = VoxelFormat.id(data);
-			VoxelTexture tex = voxelStore.getVoxelById(id).getVoxelTexture(data, VoxelSides.LEFT, null);
-			
-			int qx = (int) Math.floor(Math.random() * 4.0);
-			int rx = qx + 1;
-			int qy = (int) Math.floor(Math.random() * 4.0);
-			int ry = qy + 1;
-			
-			//System.out.println("qx:"+qx+"rx:"+rx);
-			
-			//leftX = (tex.atlasS + tex.atlasOffset) / 32768f;
-			leftX = (tex.getAtlasS()) / 32768f + tex.getAtlasOffset() / 32768f * (qx / 4.0f);
-			rightX = (tex.getAtlasS()) / 32768f + tex.getAtlasOffset() / 32768f * (rx / 4.0f);
-			
-
-			topY = (tex.getAtlasT()) / 32768f + tex.getAtlasOffset() / 32768f * (qy / 4.0f);
-			bottomY = (tex.getAtlasT()) / 32768f + tex.getAtlasOffset() / 32768f * (ry / 4.0f);
-			
-			//topY = (tex.atlasT + tex.atlasOffset) / 32768f;
-			//bottomY = (tex.atlasT) / 32768f;
-		}
 	}
 
 	@Override
 	public ParticleData createNew(World world, float x, float y, float z)
 	{
-		return new FragmentData(x, y, z, world.peekSimple((int)x, (int)y, (int)z));
+		return new FragmentData(x, y, z, world.peekSafely((int)x, (int)y, (int)z));
 	}
 
 	@Override

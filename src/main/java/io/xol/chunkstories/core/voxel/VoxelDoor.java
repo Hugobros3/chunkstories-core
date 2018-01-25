@@ -15,10 +15,11 @@ import io.xol.chunkstories.api.voxel.VoxelFormat;
 import io.xol.chunkstories.api.voxel.VoxelInteractive;
 import io.xol.chunkstories.api.voxel.VoxelLogic;
 import io.xol.chunkstories.api.voxel.VoxelSides;
-import io.xol.chunkstories.api.voxel.VoxelType;
+import io.xol.chunkstories.api.voxel.VoxelDefinition;
 import io.xol.chunkstories.api.voxel.models.VoxelModel;
 import io.xol.chunkstories.api.voxel.textures.VoxelTexture;
 import io.xol.chunkstories.api.world.EditableVoxelContext;
+import io.xol.chunkstories.api.world.FutureVoxelContext;
 import io.xol.chunkstories.api.world.VoxelContext;
 import io.xol.chunkstories.api.world.World;
 import io.xol.chunkstories.api.world.WorldMaster;
@@ -39,7 +40,7 @@ public class VoxelDoor extends Voxel implements VoxelLogic, VoxelInteractive, Vo
 
 	boolean top;
 
-	public VoxelDoor(VoxelType type)
+	public VoxelDoor(VoxelDefinition type)
 	{
 		super(type);
 
@@ -54,8 +55,22 @@ public class VoxelDoor extends Voxel implements VoxelLogic, VoxelInteractive, Vo
 			models[i] = store.models().getVoxelModelByName("door.m" + i);
 	}
 
+	public Voxel getUpperPart() {
+		if(top)
+			return this;
+		else
+			return store().getVoxelByName(getName()+"_top");
+	}
+	
+	public Voxel getLowerPart() {
+		if(top) 
+			return store.getVoxelByName(getName().substring(0, getName().length() - 4));
+		else
+			return this;
+	}
+	
 	@Override
-	public VoxelTexture getVoxelTexture(int data, VoxelSides side, VoxelContext info)
+	public VoxelTexture getVoxelTexture(VoxelSides side, VoxelContext info)
 	{
 		return doorTexture;
 	}
@@ -117,10 +132,9 @@ public class VoxelDoor extends Voxel implements VoxelLogic, VoxelInteractive, Vo
 		if (!(entity.getWorld() instanceof WorldMaster))
 			return true;
 		
-		int voxelData = voxelContext.getData();
-		boolean isOpen = ((VoxelFormat.meta(voxelData) >> 0) & 0x1) == 1;
-		boolean hingeSide = ((VoxelFormat.meta(voxelData) >> 1) & 0x1) == 1;
-		int facingPassed = (VoxelFormat.meta(voxelData) >> 2) & 0x3;
+		boolean isOpen = ((voxelContext.getMetaData() >> 0) & 0x1) == 1;
+		boolean hingeSide = ((voxelContext.getMetaData() >> 1) & 0x1) == 1;
+		int facingPassed = (voxelContext.getMetaData() >> 2) & 0x3;
 
 		boolean newState = !isOpen;
 
@@ -138,10 +152,9 @@ public class VoxelDoor extends Voxel implements VoxelLogic, VoxelInteractive, Vo
 			System.out.println("new door status : " + newState);
 			voxelContext.getWorld().getSoundManager().playSoundEffect("sounds/voxels/door.ogg", Mode.NORMAL, voxelContext.getLocation(), 1.0f, 1.0f);
 
-			voxelContext.getWorld().pokeSimple(voxelContext.getX(), voxelContext.getY(), voxelContext.getZ(), VoxelFormat.changeMeta(voxelContext.getData(), newData));
-			//voxelContext.getLocation().setVoxelDataAtLocation(VoxelFormat.changeMeta(voxelContext.getData(), newData));
+			voxelContext.pokeSimple(null, -1, -1, newData);
+			otherLocationPeek.pokeSimple(null, -1, -1, newData);
 			
-			otherLocationPeek.pokeSimple(VoxelFormat.changeMeta(otherLocationPeek.getData(), newData));
 			//otherPartLocation.setVoxelDataAtLocation(VoxelFormat.changeMeta(otherPartLocation.getVoxelDataAtLocation(), newData));
 		}
 		else
@@ -218,7 +231,7 @@ public class VoxelDoor extends Voxel implements VoxelLogic, VoxelInteractive, Vo
 	}
 
 	@Override
-	public int onPlace(ChunkVoxelContext context, int voxelData, WorldModificationCause cause) throws IllegalBlockModificationException
+	public FutureVoxelContext onPlace(ChunkVoxelContext context, FutureVoxelContext voxelData, WorldModificationCause cause) throws IllegalBlockModificationException
 	{
 		//Ignore all that crap on a slave world
 		if (!(context.getWorld() instanceof WorldMaster))
@@ -238,14 +251,14 @@ public class VoxelDoor extends Voxel implements VoxelLogic, VoxelInteractive, Vo
 		int z = context.getZ();
 
 		//Check top is free
-		int topData = world.peekSimple(x, y + 1, z);
+		int topData = world.peekRaw(x, y + 1, z);
 		if (VoxelFormat.id(topData) != 0)
 			throw new IllegalBlockModificationException(context, "Top part isn't free");
 
 		//grab our attributes
-		boolean isOpen = ((VoxelFormat.meta(voxelData) >> 0) & 0x1) == 1;
-		boolean hingeSide = ((VoxelFormat.meta(voxelData) >> 1) & 0x1) == 1;
-		int facingPassed = (VoxelFormat.meta(voxelData) >> 2) & 0x3;
+		boolean isOpen = ((voxelData.getMetaData() >> 0) & 0x1) == 1;
+		boolean hingeSide = ((voxelData.getMetaData() >> 1) & 0x1) == 1;
+		int facingPassed = (voxelData.getMetaData() >> 2) & 0x3;
 
 		//Default face is given by passed metadata
 		VoxelSides doorSideFacing = VoxelSides.values()[facingPassed];
@@ -272,36 +285,35 @@ public class VoxelDoor extends Voxel implements VoxelLogic, VoxelInteractive, Vo
 			}
 
 			//If there is an adjacent one, set the hinge to right
-			int adjacentId = 0;
+			Voxel adjacent = null;
 			switch (doorSideFacing)
 			{
 			case LEFT:
-				adjacentId = world.peekSimple(x, y, z - 1);
+				adjacent = world.peekSimple(x, y, z - 1);
 				break;
 			case RIGHT:
-				adjacentId = world.peekSimple(x, y, z + 1);
+				adjacent = world.peekSimple(x, y, z + 1);
 				break;
 			case FRONT:
-				adjacentId = world.peekSimple(x - 1, y, z);
+				adjacent = world.peekSimple(x - 1, y, z);
 				break;
 			case BACK:
-				adjacentId = world.peekSimple(x + 1, y, z);
+				adjacent = world.peekSimple(x + 1, y, z);
 				break;
 			default:
 				break;
 			}
-			if (store.getVoxelById(adjacentId) instanceof VoxelDoor)
+			if (adjacent instanceof VoxelDoor)
 			{
 				hingeSide = true;
 			}
 
-			voxelData = VoxelFormat.changeMeta(voxelData, computeMeta(isOpen, hingeSide, doorSideFacing));
+			voxelData.setMetaData(computeMeta(isOpen, hingeSide, doorSideFacing));
 		}
 
 		//Place the upper part and we're good to go
-		
-		world.pokeSimple(x, y + 1, z, VoxelFormat.changeId(voxelData, this.getId() + 1));
-		//world.setVoxelData(x, y + 1, z, VoxelFormat.changeId(voxelData, this.getId() + 1));
+		world.pokeSimple(x, y + 1, z, this.getUpperPart(), -1, -1, voxelData.getMetaData());
+		//, VoxelFormat.changeId(voxelData, world.getContentTranslator().getIdForVoxel(this.getUpperPart())));
 
 		//Return updated voxelData
 		return voxelData;
@@ -334,19 +346,18 @@ public class VoxelDoor extends Voxel implements VoxelLogic, VoxelInteractive, Vo
 		if (!(world instanceof WorldMaster))
 			return;
 
-		int otherY = y;
+		int otherPartOfTheDoorY = y;
+		
 		if (top)
-			otherY--;
+			otherPartOfTheDoorY--;
 		else
-			otherY++;
+			otherPartOfTheDoorY++;
 
-		//world.pokeSimple(x, y, z, 0);
-		int otherData = world.peekSimple(x, otherY, z);
+		Voxel restOfTheDoorVoxel = world.peekSimple(x, otherPartOfTheDoorY, z);
 		//Remove the other part as well, if it still exists
-		if (store.getVoxelById(otherData) instanceof VoxelDoor)
-		{
-			world.pokeSimple(x, otherY, z, 0);
-		}
+		if (restOfTheDoorVoxel instanceof VoxelDoor)
+			world.pokeSimple(x, otherPartOfTheDoorY, z, store().air(), -1, -1, 0);
+		
 	}
 
 	@Override
@@ -364,7 +375,7 @@ public class VoxelDoor extends Voxel implements VoxelLogic, VoxelInteractive, Vo
 	}
 
 	@Override
-	public int onModification(ChunkVoxelContext context, int voxelData, WorldModificationCause cause) throws IllegalBlockModificationException
+	public FutureVoxelContext onModification(ChunkVoxelContext context, FutureVoxelContext voxelData, WorldModificationCause cause) throws IllegalBlockModificationException
 	{
 		return voxelData;
 	}

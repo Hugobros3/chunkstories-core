@@ -12,7 +12,7 @@ import io.xol.chunkstories.api.entity.DamageCause;
 import io.xol.chunkstories.api.entity.Entity;
 import io.xol.chunkstories.api.entity.EntityBase;
 import io.xol.chunkstories.api.entity.EntityLiving;
-import io.xol.chunkstories.api.entity.EntityType;
+import io.xol.chunkstories.api.entity.EntityDefinition;
 import io.xol.chunkstories.api.entity.components.EntityComponentRotation;
 import io.xol.chunkstories.api.entity.components.EntityComponentVelocity;
 import io.xol.chunkstories.api.entity.interfaces.EntityControllable;
@@ -48,7 +48,7 @@ public abstract class EntityLivingImplementation extends EntityBase implements E
 	protected double lastStandingHeight = Double.NaN;
 	protected boolean wasStandingLastTick = true;
 
-	public EntityLivingImplementation(EntityType t, Location location)
+	public EntityLivingImplementation(EntityDefinition t, Location location)
 	{
 		super(t, location);
 
@@ -328,7 +328,7 @@ public abstract class EntityLivingImplementation extends EntityBase implements E
 
 	public boolean isInWater() {
 		for(VoxelContext vctx : world.getVoxelsWithin(this.getTranslatedBoundingBox())) {
-			if(vctx.getVoxel().getType().isLiquid())
+			if(vctx.getVoxel().getDefinition().isLiquid())
 				return true;
 		}
 		return false;

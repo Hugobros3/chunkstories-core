@@ -1,9 +1,9 @@
-voxel full_slab 43
+voxel full_slab
 	textures: slab_side, slab_side, slab_side, slab_side, slab_top, slab_top
 	material: stone
 end
 
-voxel slab 44
+voxel slab
 	customClass: io.xol.chunkstories.core.voxel.VoxelHalfTile
 	opaque: false
 	textures: ~_side, ~_side, ~_side, ~_side, ~_top, ~_top
@@ -11,7 +11,7 @@ voxel slab 44
 	material: stone
 end
 
-voxel brick_slab 45
+voxel brick_slab
 	customClass: io.xol.chunkstories.core.voxel.VoxelHalfTile
 	opaque: false
 	texture: redbricks
@@ -19,7 +19,7 @@ voxel brick_slab 45
 	material: stone
 end
 
-voxel planks_slab 46
+voxel planks_slab
 	customClass: io.xol.chunkstories.core.voxel.VoxelHalfTile
 	opaque: false
 	texture: planks
@@ -27,7 +27,7 @@ voxel planks_slab 46
 	material: bluntwood
 end
 
-voxel goldplanks_slab 100
+voxel goldplanks_slab
 	customClass: io.xol.chunkstories.core.voxel.VoxelHalfTile
 	opaque: false
 	texture: goldplanks
@@ -35,7 +35,7 @@ voxel goldplanks_slab 100
 	material: bluntwood
 end
 
-voxel whiteplanks_slab 101
+voxel whiteplanks_slab
 	customClass: io.xol.chunkstories.core.voxel.VoxelHalfTile
 	opaque: false
 	texture: whiteplanks
@@ -43,7 +43,7 @@ voxel whiteplanks_slab 101
 	material: bluntwood
 end
 
-voxel darkplanks_slab 102
+voxel darkplanks_slab
 	customClass: io.xol.chunkstories.core.voxel.VoxelHalfTile
 	opaque: false
 	texture: darkplanks
@@ -51,7 +51,7 @@ voxel darkplanks_slab 102
 	material: bluntwood
 end
 
-voxel hardsand_slab 103
+voxel hardsand_slab
 	customClass: io.xol.chunkstories.core.voxel.VoxelHalfTile
 	opaque: false
 	texture: hard_sand
@@ -59,7 +59,7 @@ voxel hardsand_slab 103
 	material: stone
 end
 
-voxel cobble_slab 47
+voxel cobble_slab
 	customClass: io.xol.chunkstories.core.voxel.VoxelHalfTile
 	opaque: false
 	texture: cobble
@@ -68,7 +68,7 @@ voxel cobble_slab 47
 	material: stone
 end
 
-voxel stonebrick_slab 48
+voxel stonebrick_slab
 	customClass: io.xol.chunkstories.core.voxel.VoxelHalfTile
 	opaque: false
 	texture: stonebrick
@@ -77,7 +77,7 @@ voxel stonebrick_slab 48
 	material: stone
 end
 
-voxel ardoise_slab 81
+voxel ardoise_slab
 	customClass: io.xol.chunkstories.core.voxel.VoxelHalfTile
 	opaque: false
 	texture: ardoise
@@ -86,7 +86,7 @@ voxel ardoise_slab 81
 	material: stone
 end
 
-voxel white_concrete_slab 104
+voxel white_concrete_slab
 	customClass: io.xol.chunkstories.core.voxel.VoxelHalfTile
 	opaque: false
 	texture: white_concrete

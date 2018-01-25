@@ -11,14 +11,14 @@ import io.xol.chunkstories.api.input.Input;
 import io.xol.chunkstories.api.item.inventory.Inventory;
 import io.xol.chunkstories.api.player.Player;
 import io.xol.chunkstories.api.voxel.Voxel;
-import io.xol.chunkstories.api.voxel.VoxelFormat;
 import io.xol.chunkstories.api.voxel.VoxelInteractive;
 import io.xol.chunkstories.api.voxel.VoxelLogic;
 import io.xol.chunkstories.api.voxel.VoxelSides;
-import io.xol.chunkstories.api.voxel.VoxelType;
+import io.xol.chunkstories.api.voxel.VoxelDefinition;
 import io.xol.chunkstories.api.voxel.components.VoxelComponent;
 import io.xol.chunkstories.api.voxel.components.VoxelInventoryComponent;
 import io.xol.chunkstories.api.voxel.textures.VoxelTexture;
+import io.xol.chunkstories.api.world.FutureVoxelContext;
 import io.xol.chunkstories.api.world.VoxelContext;
 import io.xol.chunkstories.api.world.WorldMaster;
 import io.xol.chunkstories.api.world.chunk.Chunk.ChunkVoxelContext;
@@ -33,7 +33,7 @@ public class VoxelChest extends Voxel implements VoxelInteractive, VoxelLogic
 	VoxelTexture sideTexture;
 	VoxelTexture topTexture;
 	
-	public VoxelChest(VoxelType type)
+	public VoxelChest(VoxelDefinition type)
 	{
 		super(type);
 		
@@ -81,9 +81,9 @@ public class VoxelChest extends Voxel implements VoxelInteractive, VoxelLogic
 	}
 
 	@Override
-	public VoxelTexture getVoxelTexture(int data, VoxelSides side, VoxelContext info)
+	public VoxelTexture getVoxelTexture(VoxelSides side, VoxelContext info)
 	{
-		VoxelSides actualSide = VoxelSides.getSideMcStairsChestFurnace(VoxelFormat.meta(data));
+		VoxelSides actualSide = VoxelSides.getSideMcStairsChestFurnace(info.getMetaData());
 		
 		if(side.equals(VoxelSides.TOP))
 			return topTexture;
@@ -96,7 +96,7 @@ public class VoxelChest extends Voxel implements VoxelInteractive, VoxelLogic
 	
 	@Override
 	//Chunk stories chests use Minecraft format to ease porting of maps
-	public int onPlace(ChunkVoxelContext context, int voxelData, WorldModificationCause cause) throws IllegalBlockModificationException
+	public FutureVoxelContext onPlace(ChunkVoxelContext context, FutureVoxelContext voxelData, WorldModificationCause cause) throws IllegalBlockModificationException
 	{
 		getInventory(context);
 		//super.onPlace(context, voxelData, cause);
@@ -123,7 +123,7 @@ public class VoxelChest extends Voxel implements VoxelInteractive, VoxelLogic
 				else
 					stairsSide = 3;
 			}
-			voxelData = VoxelFormat.changeMeta(voxelData, stairsSide);
+			voxelData.setMetaData(stairsSide);
 		}
 		return voxelData;
 	}
@@ -136,7 +136,7 @@ public class VoxelChest extends Voxel implements VoxelInteractive, VoxelLogic
 	}
 
 	@Override
-	public int onModification(ChunkVoxelContext context, int voxelData, WorldModificationCause cause)
+	public FutureVoxelContext onModification(ChunkVoxelContext context, FutureVoxelContext voxelData, WorldModificationCause cause)
 			throws WorldException {
 		return voxelData;
 	}

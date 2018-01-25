@@ -54,7 +54,7 @@ public class EntityGroundItemPileComponent extends EntityComponent
 		if (itemPile == null)
 			dos.writeInt(0);
 		else
-			itemPile.saveItemIntoStream(dos);
+			itemPile.saveIntoStream(entity.getWorld().getContentTranslator(), dos);
 		
 		System.out.println("pushed"+itemPile+".");
 	}
@@ -64,7 +64,7 @@ public class EntityGroundItemPileComponent extends EntityComponent
 	{
 		try
 		{
-			itemPile = ItemPile.obtainItemPileFromStream(entity.getWorld().getGameContext().getContent().items(), dis);
+			itemPile = ItemPile.obtainItemPileFromStream(entity.getWorld().getContentTranslator(), dis);
 		}
 		catch (UndefinedItemTypeException | NullItemException e)
 		{

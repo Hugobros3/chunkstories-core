@@ -14,7 +14,7 @@ import io.xol.chunkstories.api.events.voxel.VoxelModificationEvent;
 import io.xol.chunkstories.api.exceptions.world.WorldException;
 import io.xol.chunkstories.api.input.InputsManager;
 import io.xol.chunkstories.api.item.Item;
-import io.xol.chunkstories.api.item.ItemType;
+import io.xol.chunkstories.api.item.ItemDefinition;
 import io.xol.chunkstories.api.item.inventory.ItemPile;
 import io.xol.chunkstories.api.item.renderer.ItemRenderer;
 import io.xol.chunkstories.api.player.Player;
@@ -22,8 +22,10 @@ import io.xol.chunkstories.api.rendering.RenderingInterface;
 import io.xol.chunkstories.api.sound.SoundSource.Mode;
 import io.xol.chunkstories.api.voxel.Voxel;
 import io.xol.chunkstories.api.voxel.materials.Material;
+import io.xol.chunkstories.api.world.FutureVoxelContext;
 import io.xol.chunkstories.api.world.VoxelContext;
 import io.xol.chunkstories.api.world.World;
+import io.xol.chunkstories.api.world.World.WorldVoxelContext;
 import io.xol.chunkstories.api.world.WorldMaster;
 
 //(c) 2015-2017 XolioWare Interactive
@@ -40,7 +42,7 @@ public class ItemMiningTool extends Item {
 	private MiningProgress progress;
 	public static MiningProgress myProgress;
 	
-	public ItemMiningTool(ItemType type) {
+	public ItemMiningTool(ItemDefinition type) {
 		super(type);
 		
 		this.toolType = type.resolveProperty("toolType", "pickaxe");
@@ -66,9 +68,11 @@ public class ItemMiningTool extends Item {
 					lookingAt = null;
 				
 				if(inputs.getInputByName("mouse.left").isPressed()) {
+
+					WorldVoxelContext ctx = owner.getWorld().peekSafely(progress.loc);
 					
 					//Cancel mining if looking away or the block changed by itself
-					if(lookingAt == null || (progress != null && (lookingAt.distance(progress.loc) > 0 || owner.getWorld().peekSafely(progress.loc).getId() != progress.startId))) {
+					if(lookingAt == null || (progress != null && (lookingAt.distance(progress.loc) > 0 || !ctx.getVoxel().sameKind(progress.voxel)))) {
 						progress = null;
 					}
 					
@@ -83,9 +87,14 @@ public class ItemMiningTool extends Item {
 						if(progress.progress >= 1.0f) {
 							if(owner.getWorld() instanceof WorldMaster) {
 								
+								FutureVoxelContext fvc = new FutureVoxelContext(ctx);
+								
+								fvc.setVoxel(this.getType().store().parent().voxels().air());
+								
 								//TODO should this event be a part of the world implem poke() method ?
 								//Check no one minds
-								VoxelModificationEvent event = new VoxelModificationEvent(owner.getWorld().peekSafely(progress.loc), 0, entityModifier);
+								
+								VoxelModificationEvent event = new VoxelModificationEvent(ctx, fvc, entityModifier);
 								owner.getWorld().getGameContext().getPluginManager().fireEvent(event);
 								
 								//DO IT
@@ -99,7 +108,7 @@ public class ItemMiningTool extends Item {
 									}
 									
 									try {
-										world.poke(progress.context.getX(), progress.context.getY(), progress.context.getZ(), 0, entityModifier);
+										world.poke(fvc, entityModifier);
 									} catch (WorldException e) {
 										//Didn't work
 										//TODO make some ingame effect so as to clue in the player why it failed
@@ -188,18 +197,18 @@ public class ItemMiningTool extends Item {
 		public MiningProgress(VoxelContext context) {
 			this.context = context;
 			this.loc = context.getLocation();
-			this.startId = context.getId();
+			//this.startId = context.getId();
 			
 			voxel = context.getVoxel();
 			material = voxel.getMaterial();
 			String hardnessString = null;
 			
 			//First order, check the voxel itself if it states a certain hardness for this tool type
-			hardnessString = voxel.getType().resolveProperty("hardnessFor"+ItemMiningTool.this.toolType, null);
+			hardnessString = voxel.getDefinition().resolveProperty("hardnessFor"+ItemMiningTool.this.toolType, null);
 			
 			//Then check if the voxel states a general hardness multiplier
 			if(hardnessString == null)
-				hardnessString = voxel.getType().resolveProperty("hardness", null);
+				hardnessString = voxel.getDefinition().resolveProperty("hardness", null);
 			
 			//if the voxel is devoid of information, we do the same on the material
 			if(hardnessString == null)
@@ -219,7 +228,7 @@ public class ItemMiningTool extends Item {
 		public final Voxel voxel;
 		public final Material material;
 		public final Location loc;
-		public final int startId;
+		//public final int startId;
 		public float progress;
 		public final long started;
 		

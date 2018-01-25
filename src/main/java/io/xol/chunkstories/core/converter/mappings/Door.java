@@ -1,5 +1,6 @@
 package io.xol.chunkstories.core.converter.mappings;
 
+import io.xol.chunkstories.api.content.ContentTranslator;
 import io.xol.chunkstories.api.converter.mappings.NonTrivialMapper;
 import io.xol.chunkstories.api.voxel.Voxel;
 import io.xol.chunkstories.api.voxel.VoxelFormat;
@@ -11,8 +12,8 @@ import io.xol.enklume.MinecraftRegion;
 
 public class Door extends NonTrivialMapper {
 
-	public Door(Voxel voxel) {
-		super(voxel);
+	public Door(Voxel voxel, ContentTranslator translator) {
+		super(voxel, translator);
 	}
 
 	@Override
@@ -35,7 +36,7 @@ public class Door extends NonTrivialMapper {
 			int direction = minecraftMetaData & 0x3;
 			int baked = VoxelFormat.format(voxelID, VoxelDoor.computeMeta(open == 1, hingeSide == 1, VoxelSides.getSideMcDoor(direction)), 0, 0);
 			
-			csWorld.pokeSimpleSilently(csX, csY, csZ, baked);
+			csWorld.pokeRawSilently(csX, csY, csZ, baked);
 
 		}
 		else

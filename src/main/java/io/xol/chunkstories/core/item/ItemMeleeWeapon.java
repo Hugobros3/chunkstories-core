@@ -10,7 +10,7 @@ import io.xol.chunkstories.api.entity.EntityLiving;
 import io.xol.chunkstories.api.entity.EntityLiving.HitBox;
 import io.xol.chunkstories.api.entity.interfaces.EntityControllable;
 import io.xol.chunkstories.api.input.Input;
-import io.xol.chunkstories.api.item.ItemType;
+import io.xol.chunkstories.api.item.ItemDefinition;
 import io.xol.chunkstories.api.item.inventory.ItemPile;
 import io.xol.chunkstories.api.item.renderer.ItemRenderer;
 import org.joml.Matrix4f;
@@ -46,7 +46,7 @@ public class ItemMeleeWeapon extends ItemWeapon
 	boolean hasHitYet = false;
 	long cooldownEnd = 0L;
 
-	public ItemMeleeWeapon(ItemType type)
+	public ItemMeleeWeapon(ItemDefinition type)
 	{
 		super(type);
 
@@ -145,13 +145,13 @@ public class ItemMeleeWeapon extends ItemWeapon
 			{
 				EditableVoxelContext peek = owner.getWorld().peekSafely(shotBlock);
 				
-				if(peek.getVoxel().getId() != 0 && peek.getVoxel().getMaterial().resolveProperty("bulletBreakable") != null && peek.getVoxel().getMaterial().resolveProperty("bulletBreakable").equals("true"))
+				if(!peek.getVoxel().isAir() && peek.getVoxel().getMaterial().resolveProperty("bulletBreakable") != null && peek.getVoxel().getMaterial().resolveProperty("bulletBreakable").equals("true"))
 				{
-					//Spawn an event to check if it's okay
+					//TODO: Spawn an event to check if it's okay
 					
 					//Destroy it
-					peek.pokeSimple(0);
-					//owner.getWorld().setVoxelData(shotBlock, 0);
+					peek.pokeSimple(peek.getVoxel().store().air(), -1, -1, 0);
+					
 					for(int i = 0; i < 25; i++)
 					{
 						Vector3d smashedVoxelParticleDirection = new Vector3d(direction);
@@ -187,7 +187,7 @@ public class ItemMeleeWeapon extends ItemWeapon
 					VoxelContext peek = owner.getWorld().peekSafely(shotBlock);
 
 					//This seems fine
-					for (CollisionBox box : peek.getVoxel().getTranslatedCollisionBoxes(owner.getWorld(), (int) (double) shotBlock.x(), (int) (double) shotBlock.y(), (int) (double) shotBlock.z()))
+					for (CollisionBox box : peek.getTranslatedCollisionBoxes())
 					{
 						Vector3dc thisLocation = box.lineIntersection(eyeLocation, direction);
 						if (thisLocation != null)
