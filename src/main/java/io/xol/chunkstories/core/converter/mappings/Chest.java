@@ -1,19 +1,16 @@
 package io.xol.chunkstories.core.converter.mappings;
 
-import io.xol.chunkstories.api.content.ContentTranslator;
 import io.xol.chunkstories.api.converter.mappings.NonTrivialMapper;
-import io.xol.chunkstories.api.exceptions.world.WorldException;
 import io.xol.chunkstories.api.voxel.Voxel;
 import io.xol.chunkstories.api.world.FutureVoxelContext;
 import io.xol.chunkstories.api.world.World;
 import io.xol.chunkstories.api.world.chunk.Chunk;
-import io.xol.chunkstories.core.voxel.VoxelChest;
 import io.xol.enklume.MinecraftRegion;
 
 public class Chest extends NonTrivialMapper {
 
-	public Chest(Voxel voxel, ContentTranslator translator) {
-		super(voxel, translator);
+	public Chest(Voxel voxel) {
+		super(voxel);
 	}
 
 	@Override

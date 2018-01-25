@@ -1,10 +1,8 @@
 package io.xol.chunkstories.core.converter.mappings;
 
-import io.xol.chunkstories.api.content.ContentTranslator;
 import io.xol.chunkstories.api.converter.mappings.NonTrivialMapper;
 import io.xol.chunkstories.api.exceptions.world.WorldException;
 import io.xol.chunkstories.api.voxel.Voxel;
-import io.xol.chunkstories.api.voxel.VoxelFormat;
 import io.xol.chunkstories.api.voxel.components.VoxelComponent;
 import io.xol.chunkstories.api.world.FutureVoxelContext;
 import io.xol.chunkstories.api.world.World;
@@ -22,8 +20,8 @@ import io.xol.enklume.util.SignParseUtil;
 
 public class Sign extends NonTrivialMapper {
 
-	public Sign(Voxel voxel, ContentTranslator translator) {
-		super(voxel, translator);
+	public Sign(Voxel voxel) {
+		super(voxel);
 	}
 
 	@Override
@@ -33,8 +31,6 @@ public class Sign extends NonTrivialMapper {
 
 		Chunk chunk = csWorld.getChunkWorldCoordinates(csX, csY, csZ);
 		assert chunk != null;
-		
-		int baked = voxelID;
 		
 		if (voxel instanceof VoxelSign) {
 			
