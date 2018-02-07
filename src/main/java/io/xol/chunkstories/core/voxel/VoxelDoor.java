@@ -152,8 +152,8 @@ public class VoxelDoor extends Voxel implements VoxelLogic, VoxelInteractive, Vo
 			System.out.println("new door status : " + newState);
 			voxelContext.getWorld().getSoundManager().playSoundEffect("sounds/voxels/door.ogg", Mode.NORMAL, voxelContext.getLocation(), 1.0f, 1.0f);
 
-			voxelContext.pokeSimple(null, -1, -1, newData);
-			otherLocationPeek.pokeSimple(null, -1, -1, newData);
+			voxelContext.setMetaData(newData);
+			otherLocationPeek.setMetaData(newData);
 			
 			//otherPartLocation.setVoxelDataAtLocation(VoxelFormat.changeMeta(otherPartLocation.getVoxelDataAtLocation(), newData));
 		}

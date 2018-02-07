@@ -150,7 +150,7 @@ public class ItemMeleeWeapon extends ItemWeapon
 					//TODO: Spawn an event to check if it's okay
 					
 					//Destroy it
-					peek.pokeSimple(peek.getVoxel().store().air(), -1, -1, 0);
+					peek.setVoxel(getType().store().parent().voxels().air());
 					
 					for(int i = 0; i < 25; i++)
 					{

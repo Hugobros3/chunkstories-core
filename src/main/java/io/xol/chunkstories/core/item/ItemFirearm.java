@@ -290,7 +290,7 @@ public class ItemFirearm extends ItemWeapon implements ItemOverlay, ItemZoom, It
 							//TODO Spawn an event to check if it's okay
 							
 							//Destroy it
-							peek.pokeSimple(voxel.store().air(), -1, -1, 0);
+							peek.setVoxel(voxel.store().air());
 							
 							brokeLastBlock = true;
 							for(int i = 0; i < 25; i++)
