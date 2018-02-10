@@ -16,8 +16,8 @@ import io.xol.chunkstories.api.voxel.models.ChunkRenderer.ChunkRenderContext;
 import io.xol.chunkstories.api.voxel.models.VoxelBakerHighPoly;
 import io.xol.chunkstories.api.voxel.models.VoxelRenderer;
 import io.xol.chunkstories.api.voxel.textures.VoxelTexture;
-import io.xol.chunkstories.api.world.VoxelContext;
 import io.xol.chunkstories.api.world.World;
+import io.xol.chunkstories.api.world.cell.CellData;
 import io.xol.chunkstories.api.world.chunk.Chunk;
 import io.xol.chunkstories.core.voxel.Voxel8Steps;
 
@@ -33,13 +33,13 @@ public class SmoothStepVoxelRenderer implements VoxelRenderer {
 		this.steps = steps;
 	}
 	
-	private VoxelRenderer old(VoxelContext info) {
+	private VoxelRenderer old(CellData info) {
 		return steps[info.getMetaData() % 8];
 	}
 	
 	@Override
 	public int renderInto(ChunkRenderer chunkRenderer, ChunkRenderContext bakingContext, Chunk chunk,
-			VoxelContext voxelInformations) {
+			CellData voxelInformations) {
 		
 		int x = bakingContext.getRenderedVoxelPositionInChunkX();
 		int y = bakingContext.getRenderedVoxelPositionInChunkY();

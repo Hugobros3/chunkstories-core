@@ -14,7 +14,7 @@ import io.xol.chunkstories.api.rendering.textures.Texture2D;
 import io.xol.chunkstories.api.util.IterableIterator;
 import io.xol.chunkstories.api.voxel.components.VoxelComponentDynamicRenderer;
 import io.xol.chunkstories.api.voxel.components.VoxelComponents;
-import io.xol.chunkstories.api.world.chunk.Chunk.ChunkVoxelContext;
+import io.xol.chunkstories.api.world.chunk.Chunk.ChunkCell;
 import io.xol.chunkstories.api.world.serialization.StreamSource;
 import io.xol.chunkstories.api.world.serialization.StreamTarget;
 
@@ -73,13 +73,13 @@ public class VoxelComponentSignText extends VoxelComponentDynamicRenderer
 		}
 		
 		@Override
-		public void renderVoxels(RenderingInterface renderingContext, IterableIterator<ChunkVoxelContext> renderableEntitiesIterator)
+		public void renderVoxels(RenderingInterface renderingContext, IterableIterator<ChunkCell> renderableEntitiesIterator)
 		{
 			setupRender(renderingContext);
 			
 			renderingContext.setObjectMatrix(null);
 	
-			for (ChunkVoxelContext context : renderableEntitiesIterator)//.getElementsInFrustrumOnly())
+			for (ChunkCell context : renderableEntitiesIterator)//.getElementsInFrustrumOnly())
 			{
 				if (renderingContext.getCamera().getCameraPosition().distance(context.getLocation()) > 32)
 					continue;

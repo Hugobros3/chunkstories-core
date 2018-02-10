@@ -22,11 +22,11 @@ import io.xol.chunkstories.api.rendering.RenderingInterface;
 import io.xol.chunkstories.api.sound.SoundSource.Mode;
 import io.xol.chunkstories.api.voxel.Voxel;
 import io.xol.chunkstories.api.voxel.materials.Material;
-import io.xol.chunkstories.api.world.FutureVoxelContext;
-import io.xol.chunkstories.api.world.VoxelContext;
 import io.xol.chunkstories.api.world.World;
-import io.xol.chunkstories.api.world.World.WorldVoxelContext;
+import io.xol.chunkstories.api.world.World.WorldCell;
 import io.xol.chunkstories.api.world.WorldMaster;
+import io.xol.chunkstories.api.world.cell.CellData;
+import io.xol.chunkstories.api.world.cell.FutureCell;
 
 //(c) 2015-2017 XolioWare Interactive
 //http://chunkstories.xyz
@@ -69,7 +69,7 @@ public class ItemMiningTool extends Item {
 				
 				if(inputs.getInputByName("mouse.left").isPressed()) {
 
-					WorldVoxelContext ctx = owner.getWorld().peekSafely(progress.loc);
+					WorldCell ctx = owner.getWorld().peekSafely(progress.loc);
 					
 					//Cancel mining if looking away or the block changed by itself
 					if(lookingAt == null || (progress != null && (lookingAt.distance(progress.loc) > 0 || !ctx.getVoxel().sameKind(progress.voxel)))) {
@@ -87,7 +87,7 @@ public class ItemMiningTool extends Item {
 						if(progress.progress >= 1.0f) {
 							if(owner.getWorld() instanceof WorldMaster) {
 								
-								FutureVoxelContext fvc = new FutureVoxelContext(ctx);
+								FutureCell fvc = new FutureCell(ctx);
 								
 								fvc.setVoxel(this.getType().store().parent().voxels().air());
 								
@@ -194,7 +194,7 @@ public class ItemMiningTool extends Item {
 
 	public class MiningProgress {
 		
-		public MiningProgress(VoxelContext context) {
+		public MiningProgress(CellData context) {
 			this.context = context;
 			this.loc = context.getLocation();
 			//this.startId = context.getId();
@@ -224,7 +224,7 @@ public class ItemMiningTool extends Item {
 			this.started = System.currentTimeMillis();
 		}
 		
-		public final VoxelContext context;
+		public final CellData context;
 		public final Voxel voxel;
 		public final Material material;
 		public final Location loc;

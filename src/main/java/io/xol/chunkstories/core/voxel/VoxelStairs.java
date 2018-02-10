@@ -3,22 +3,19 @@ package io.xol.chunkstories.core.voxel;
 import io.xol.chunkstories.api.Location;
 import io.xol.chunkstories.api.entity.Entity;
 import io.xol.chunkstories.api.events.voxel.WorldModificationCause;
-import io.xol.chunkstories.api.exceptions.world.voxel.IllegalBlockModificationException;
 import io.xol.chunkstories.api.physics.CollisionBox;
 import io.xol.chunkstories.api.voxel.Voxel;
-import io.xol.chunkstories.api.voxel.VoxelLogic;
 import io.xol.chunkstories.api.voxel.VoxelDefinition;
 import io.xol.chunkstories.api.voxel.models.VoxelModel;
-import io.xol.chunkstories.api.world.FutureVoxelContext;
-import io.xol.chunkstories.api.world.VoxelContext;
-import io.xol.chunkstories.api.world.chunk.Chunk.ChunkVoxelContext;
+import io.xol.chunkstories.api.world.cell.CellData;
+import io.xol.chunkstories.api.world.cell.FutureCell;
 import io.xol.chunkstories.core.entity.EntityPlayer;
 
 //(c) 2015-2017 XolioWare Interactive
 //http://chunkstories.xyz
 //http://xol.io
 
-public class VoxelStairs extends Voxel implements VoxelLogic
+public class VoxelStairs extends Voxel
 {
 	VoxelModel[] models = new VoxelModel[8];
 
@@ -30,14 +27,14 @@ public class VoxelStairs extends Voxel implements VoxelLogic
 	}
 
 	@Override
-	public VoxelModel getVoxelRenderer(VoxelContext info)
+	public VoxelModel getVoxelRenderer(CellData info)
 	{
 		int meta = info.getMetaData();
 		return models[meta % 8];
 	}
 
 	@Override
-	public CollisionBox[] getCollisionBoxes(VoxelContext info)
+	public CollisionBox[] getCollisionBoxes(CellData info)
 	{
 		int meta = info.getMetaData();
 		CollisionBox[] boxes = new CollisionBox[2];
@@ -76,7 +73,7 @@ public class VoxelStairs extends Voxel implements VoxelLogic
 	}
 
 	@Override
-	public FutureVoxelContext onPlace(ChunkVoxelContext context, FutureVoxelContext voxelData, WorldModificationCause cause)
+	public void onPlace(FutureCell cell, WorldModificationCause cause)
 	{
 		// id+dir of slope
 		// 0LEFT x-
@@ -89,8 +86,8 @@ public class VoxelStairs extends Voxel implements VoxelLogic
 		{
 			Entity entity = (Entity)cause;
 			Location loc = entity.getLocation();
-			double dx = loc.x() - (context.getX() + 0.5);
-			double dz = loc.z() - (context.getZ() + 0.5);
+			double dx = loc.x() - (cell.getX() + 0.5);
+			double dz = loc.z() - (cell.getZ() + 0.5);
 
 			//System.out.println("dx: "+dx+" dz:" + dz);
 			
@@ -115,20 +112,7 @@ public class VoxelStairs extends Voxel implements VoxelLogic
 					stairsSide += 4;
 			}
 			
-			voxelData.setMetaData(stairsSide);
+			cell.setMetaData(stairsSide);
 		}
-		return voxelData;
-	}
-
-	@Override
-	public void onRemove(ChunkVoxelContext context, WorldModificationCause cause)
-	{
-		//System.out.println("on remove stairs");
-	}
-	
-	@Override
-	public FutureVoxelContext onModification(ChunkVoxelContext context, FutureVoxelContext voxelData, WorldModificationCause cause) throws IllegalBlockModificationException
-	{
-		return voxelData;
 	}
 }

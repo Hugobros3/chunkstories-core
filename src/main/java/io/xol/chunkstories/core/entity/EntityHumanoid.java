@@ -26,11 +26,10 @@ import io.xol.chunkstories.api.rendering.entity.RenderingIterator;
 import io.xol.chunkstories.api.rendering.textures.Texture2D;
 import io.xol.chunkstories.api.sound.SoundSource.Mode;
 import io.xol.chunkstories.api.voxel.Voxel;
-import io.xol.chunkstories.api.voxel.VoxelFormat;
 import io.xol.chunkstories.api.voxel.materials.Material;
-import io.xol.chunkstories.api.world.VoxelContext;
 import io.xol.chunkstories.api.world.WorldClient;
 import io.xol.chunkstories.api.world.WorldMaster;
+import io.xol.chunkstories.api.world.cell.CellData;
 import io.xol.chunkstories.core.entity.components.EntityComponentStance;
 
 //(c) 2015-2017 XolioWare Interactive
@@ -236,9 +235,9 @@ public abstract class EntityHumanoid extends EntityLivingImplementation
 		}
 
 		@Override
-		public int renderEntities(RenderingInterface renderingContext, RenderingIterator<H> renderableEntitiesIterator)
+		public int renderEntities(RenderingInterface renderer, RenderingIterator<H> renderableEntitiesIterator)
 		{
-			setupRender(renderingContext);
+			setupRender(renderer);
 			
 			int e = 0;
 
@@ -246,34 +245,30 @@ public abstract class EntityHumanoid extends EntityLivingImplementation
 			{
 				Location location = entity.getPredictedLocation();
 
-				if (renderingContext.getWorldRenderer().getCurrentRenderingPass() == RenderingPass.SHADOW && location.distance(renderingContext.getCamera().getCameraPosition()) > 15f)
+				if (renderer.getWorldRenderer().getCurrentRenderingPass() == RenderingPass.SHADOW && location.distance(renderer.getCamera().getCameraPosition()) > 15f)
 					continue;
 
-				VoxelContext context = entity.getWorld().peekSafely(entity.getLocation());
-				int modelBlockData = context.getData();
-
-				int lightSky = VoxelFormat.sunlight(modelBlockData);
-				int lightBlock = VoxelFormat.blocklight(modelBlockData);
-				renderingContext.currentShader().setUniform2f("worldLightIn", lightBlock, lightSky );
+				CellData cell = entity.getWorld().peekSafely(entity.getLocation());
+				renderer.currentShader().setUniform2f("worldLightIn", cell.getBlocklight(), cell.getSunlight());
 				
-				entity.cachedSkeleton.lodUpdate(renderingContext);
+				entity.cachedSkeleton.lodUpdate(renderer);
 
 				Matrix4f matrix = new Matrix4f();
 				matrix.translate((float)location.x, (float)location.y, (float)location.z);
-				renderingContext.setObjectMatrix(matrix);
+				renderer.setObjectMatrix(matrix);
 
-				renderingContext.meshes().getRenderableMultiPartAnimatableMeshByName("./models/human.obj").render(renderingContext, entity.getAnimatedSkeleton(), System.currentTimeMillis() % 1000000);
+				renderer.meshes().getRenderableMultiPartAnimatableMeshByName("./models/human.obj").render(renderer, entity.getAnimatedSkeleton(), System.currentTimeMillis() % 1000000);
 				
-				renderingContext.bindAlbedoTexture(renderingContext.textures().getTexture("./textures/armor/isis.png"));
-				renderingContext.textures().getTexture("./textures/armor/isis.png").setLinearFiltering(false);
-				renderingContext.meshes().getRenderableMultiPartAnimatableMeshByName("./models/human_overlay.obj").render(renderingContext, entity.getAnimatedSkeleton(), System.currentTimeMillis() % 1000000);
+				renderer.bindAlbedoTexture(renderer.textures().getTexture("./textures/armor/isis.png"));
+				renderer.textures().getTexture("./textures/armor/isis.png").setLinearFiltering(false);
+				renderer.meshes().getRenderableMultiPartAnimatableMeshByName("./models/human_overlay.obj").render(renderer, entity.getAnimatedSkeleton(), System.currentTimeMillis() % 1000000);
 			}
 			
 			//Render items in hands
 			for (EntityHumanoid entity : renderableEntitiesIterator)
 			{
 
-				if (renderingContext.getWorldRenderer().getCurrentRenderingPass() == RenderingPass.SHADOW && entity.getLocation().distance(renderingContext.getCamera().getCameraPosition()) > 15f)
+				if (renderer.getWorldRenderer().getCurrentRenderingPass() == RenderingPass.SHADOW && entity.getLocation().distance(renderer.getCamera().getCameraPosition()) > 15f)
 					continue;
 
 				ItemPile selectedItemPile = null;
@@ -281,7 +276,7 @@ public abstract class EntityHumanoid extends EntityLivingImplementation
 				if (entity instanceof EntityWithSelectedItem)
 					selectedItemPile = ((EntityWithSelectedItem) entity).getSelectedItem();
 
-				renderingContext.currentShader().setUniform3f("objectPosition", new Vector3f(0));
+				renderer.currentShader().setUniform3f("objectPosition", new Vector3f(0));
 
 				if (selectedItemPile != null)
 				{
@@ -291,7 +286,7 @@ public abstract class EntityHumanoid extends EntityLivingImplementation
 					itemMatrix.mul(entity.getAnimatedSkeleton().getBoneHierarchyTransformationMatrix("boneItemInHand", System.currentTimeMillis() % 1000000));
 					//Matrix4f.mul(itemMatrix, entity.getAnimatedSkeleton().getBoneHierarchyTransformationMatrix("boneItemInHand", System.currentTimeMillis() % 1000000), itemMatrix);
 
-					selectedItemPile.getItem().getType().getRenderer().renderItemInWorld(renderingContext, selectedItemPile, world, entity.getLocation(), itemMatrix);
+					selectedItemPile.getItem().getType().getRenderer().renderItemInWorld(renderer, selectedItemPile, world, entity.getLocation(), itemMatrix);
 				}
 
 				e++;

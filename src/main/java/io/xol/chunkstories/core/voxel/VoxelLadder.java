@@ -4,7 +4,7 @@ import io.xol.chunkstories.api.physics.CollisionBox;
 import io.xol.chunkstories.api.voxel.Voxel;
 import io.xol.chunkstories.api.voxel.VoxelDefinition;
 import io.xol.chunkstories.api.voxel.models.VoxelModel;
-import io.xol.chunkstories.api.world.VoxelContext;
+import io.xol.chunkstories.api.world.cell.CellData;
 
 public class VoxelLadder extends Voxel implements VoxelClimbable
 {
@@ -18,7 +18,7 @@ public class VoxelLadder extends Voxel implements VoxelClimbable
 	}
 
 	@Override
-	public VoxelModel getVoxelRenderer(VoxelContext info)
+	public VoxelModel getVoxelRenderer(CellData info)
 	{
 		int meta = info.getMetaData();
 		
@@ -34,7 +34,7 @@ public class VoxelLadder extends Voxel implements VoxelClimbable
 	}
 
 	@Override
-	public CollisionBox[] getCollisionBoxes(VoxelContext info) {
+	public CollisionBox[] getCollisionBoxes(CellData info) {
 
 		int meta = info.getMetaData();
 		

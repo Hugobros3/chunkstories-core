@@ -4,7 +4,7 @@ import io.xol.chunkstories.api.voxel.Voxel;
 import io.xol.chunkstories.api.voxel.VoxelSides;
 import io.xol.chunkstories.api.voxel.VoxelDefinition;
 import io.xol.chunkstories.api.voxel.models.VoxelModel;
-import io.xol.chunkstories.api.world.VoxelContext;
+import io.xol.chunkstories.api.world.cell.CellData;
 
 //(c) 2015-2017 XolioWare Interactive
 //http://chunkstories.xyz
@@ -18,7 +18,7 @@ public class VoxelRail extends Voxel
 	}
 
 	@Override
-	public VoxelModel getVoxelRenderer(VoxelContext info)
+	public VoxelModel getVoxelRenderer(CellData info)
 	{
 		if(info.getNeightborVoxel(VoxelSides.FRONT.ordinal()).sameKind(this))
 			return store.models().getVoxelModelByName("rails.alt");

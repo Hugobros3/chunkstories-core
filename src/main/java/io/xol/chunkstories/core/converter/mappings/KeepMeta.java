@@ -2,7 +2,7 @@ package io.xol.chunkstories.core.converter.mappings;
 
 import io.xol.chunkstories.api.converter.mappings.Mapper;
 import io.xol.chunkstories.api.voxel.Voxel;
-import io.xol.chunkstories.api.world.FutureVoxelContext;
+import io.xol.chunkstories.api.world.cell.FutureCell;
 
 public class KeepMeta extends Mapper {
 	
@@ -11,8 +11,8 @@ public class KeepMeta extends Mapper {
 	}
 
 	@Override
-	public void output(int minecraftId, byte minecraftMeta, FutureVoxelContext fvc) {
-		fvc.setVoxel(voxel);
-		fvc.setMetaData(minecraftMeta);
+	public void output(int minecraftId, byte minecraftMeta, FutureCell cell) {
+		cell.setVoxel(voxel);
+		cell.setMetaData(minecraftMeta);
 	}
 }

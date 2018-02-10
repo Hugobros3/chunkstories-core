@@ -12,22 +12,21 @@ import io.xol.chunkstories.api.item.inventory.Inventory;
 import io.xol.chunkstories.api.player.Player;
 import io.xol.chunkstories.api.voxel.Voxel;
 import io.xol.chunkstories.api.voxel.VoxelInteractive;
-import io.xol.chunkstories.api.voxel.VoxelLogic;
 import io.xol.chunkstories.api.voxel.VoxelSides;
 import io.xol.chunkstories.api.voxel.VoxelDefinition;
 import io.xol.chunkstories.api.voxel.components.VoxelComponent;
 import io.xol.chunkstories.api.voxel.components.VoxelInventoryComponent;
 import io.xol.chunkstories.api.voxel.textures.VoxelTexture;
-import io.xol.chunkstories.api.world.FutureVoxelContext;
-import io.xol.chunkstories.api.world.VoxelContext;
 import io.xol.chunkstories.api.world.WorldMaster;
-import io.xol.chunkstories.api.world.chunk.Chunk.ChunkVoxelContext;
+import io.xol.chunkstories.api.world.cell.CellData;
+import io.xol.chunkstories.api.world.cell.FutureCell;
+import io.xol.chunkstories.api.world.chunk.Chunk.ChunkCell;
 
 //(c) 2015-2017 XolioWare Interactive
 //http://chunkstories.xyz
 //http://xol.io
 
-public class VoxelChest extends Voxel implements VoxelInteractive, VoxelLogic
+public class VoxelChest extends Voxel implements VoxelInteractive
 {
 	VoxelTexture frontTexture;
 	VoxelTexture sideTexture;
@@ -43,7 +42,7 @@ public class VoxelChest extends Voxel implements VoxelInteractive, VoxelLogic
 	}
 
 	@Override
-	public boolean handleInteraction(Entity entity, ChunkVoxelContext voxelContext, Input input)
+	public boolean handleInteraction(Entity entity, ChunkCell voxelContext, Input input)
 	{
 		//Open GUI
 		if(input.getName().equals("mouse.right") && voxelContext.getWorld() instanceof WorldMaster) {
@@ -65,7 +64,7 @@ public class VoxelChest extends Voxel implements VoxelInteractive, VoxelLogic
 		return false;
 	}
 	
-	private Inventory getInventory(ChunkVoxelContext context) {
+	private Inventory getInventory(ChunkCell context) {
 		
 		// Try to grab the existing chest inventory
 		VoxelComponent comp = context.components().get("chestInventory");
@@ -81,7 +80,7 @@ public class VoxelChest extends Voxel implements VoxelInteractive, VoxelLogic
 	}
 
 	@Override
-	public VoxelTexture getVoxelTexture(VoxelSides side, VoxelContext info)
+	public VoxelTexture getVoxelTexture(VoxelSides side, CellData info)
 	{
 		VoxelSides actualSide = VoxelSides.getSideMcStairsChestFurnace(info.getMetaData());
 		
@@ -96,10 +95,10 @@ public class VoxelChest extends Voxel implements VoxelInteractive, VoxelLogic
 	
 	@Override
 	//Chunk stories chests use Minecraft format to ease porting of maps
-	public FutureVoxelContext onPlace(ChunkVoxelContext context, FutureVoxelContext voxelData, WorldModificationCause cause) throws IllegalBlockModificationException
+	public void onPlace(FutureCell cell, WorldModificationCause cause) throws IllegalBlockModificationException
 	{
-		getInventory(context);
-		//super.onPlace(context, voxelData, cause);
+		//Can't access the components of a non-yet placed FutureCell
+		//getInventory(context);
 		
 		int stairsSide = 0;
 		//See: 
@@ -107,8 +106,8 @@ public class VoxelChest extends Voxel implements VoxelInteractive, VoxelLogic
 		if (cause != null && cause instanceof Entity)
 		{
 			Location loc = ((Entity) cause).getLocation();
-			double dx = loc.x() - (context.getX() + 0.5);
-			double dz = loc.z() - (context.getZ() + 0.5);
+			double dx = loc.x() - (cell.getX() + 0.5);
+			double dz = loc.z() - (cell.getZ() + 0.5);
 			if (Math.abs(dx) > Math.abs(dz))
 			{
 				if(dx > 0)
@@ -123,23 +122,14 @@ public class VoxelChest extends Voxel implements VoxelInteractive, VoxelLogic
 				else
 					stairsSide = 3;
 			}
-			voxelData.setMetaData(stairsSide);
+			cell.setMetaData(stairsSide);
 		}
-		return voxelData;
 	}
 
 	@Override
-	public void onRemove(ChunkVoxelContext context, WorldModificationCause cause) throws WorldException {
+	public void onRemove(ChunkCell context, WorldModificationCause cause) throws WorldException {
 		
 		//Delete the components as to not pollute the chunk's components space
 		context.components().erase();
 	}
-
-	@Override
-	public FutureVoxelContext onModification(ChunkVoxelContext context, FutureVoxelContext voxelData, WorldModificationCause cause)
-			throws WorldException {
-		return voxelData;
-	}
-	
-	
 }

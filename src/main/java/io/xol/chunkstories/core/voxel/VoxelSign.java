@@ -17,9 +17,9 @@ import io.xol.chunkstories.api.voxel.VoxelLogic;
 import io.xol.chunkstories.api.voxel.VoxelDefinition;
 import io.xol.chunkstories.api.voxel.components.VoxelComponentDynamicRenderer;
 import io.xol.chunkstories.api.voxel.models.VoxelRenderer;
-import io.xol.chunkstories.api.world.FutureVoxelContext;
-import io.xol.chunkstories.api.world.VoxelContext;
-import io.xol.chunkstories.api.world.chunk.Chunk.ChunkVoxelContext;
+import io.xol.chunkstories.api.world.cell.CellData;
+import io.xol.chunkstories.api.world.cell.FutureCell;
+import io.xol.chunkstories.api.world.chunk.Chunk.ChunkCell;
 import io.xol.chunkstories.core.voxel.components.VoxelComponentSignText;
 
 //(c) 2015-2017 XolioWare Interactive
@@ -34,29 +34,24 @@ public class VoxelSign extends Voxel implements VoxelInteractive, VoxelLogic, Vo
 	}
 
 	@Override
-	public boolean handleInteraction(Entity entity, ChunkVoxelContext voxelContext, Input input)
+	public boolean handleInteraction(Entity entity, ChunkCell voxelContext, Input input)
 	{
 		return false;
 	}
 	
 	@Override
-	public VoxelRenderer getVoxelRenderer(VoxelContext info)
+	public VoxelRenderer getVoxelRenderer(CellData info)
 	{
 		return super.getVoxelRenderer(info);
 	}
 		
 	@Override
-	public FutureVoxelContext onPlace(ChunkVoxelContext context, FutureVoxelContext futureData, WorldModificationCause cause) throws IllegalBlockModificationException
+	public void onPlace(FutureCell cell, WorldModificationCause cause) throws IllegalBlockModificationException
 	{
-		context.components().put("signData", new VoxelComponentSignText(context.components()));
-		
-		//super.onPlace(context, voxelData, cause);
-		//World world = context.getWorld();
-		int x = context.getX();
-		int y = context.getY();
-		int z = context.getZ();
-		
-		//super.onPlace(world, x, y, z, voxelData, entity);
+		//We don't create the components here, as the cell isn't actually changed yet!
+		int x = cell.getX();
+		int y = cell.getY();
+		int z = cell.getZ();
 		
 		if(cause != null && cause instanceof Entity)
 		{
@@ -82,29 +77,34 @@ public class VoxelSign extends Voxel implements VoxelInteractive, VoxelLogic, Vo
 			//System.out.println(asAngle);
 			
 			int meta = (int)(16 * asAngle / 360);
-			futureData.setMetaData(meta);
+			cell.setMetaData(meta);
 		}
-		
-		return futureData;
 	}
 
 	@Override
-	public void onRemove(ChunkVoxelContext context, WorldModificationCause cause) throws WorldException {
+	public void onRemove(ChunkCell context, WorldModificationCause cause) throws WorldException {
 		context.components().erase();
 	}
 
 	@Override
-	public FutureVoxelContext onModification(ChunkVoxelContext context, FutureVoxelContext voxelData, WorldModificationCause cause) throws WorldException {
-		return voxelData;
+	public void onModification(ChunkCell context, FutureCell voxelData, WorldModificationCause cause) throws WorldException {
+		
 	}
 
 	@Override
-	public VoxelComponentDynamicRenderer getDynamicRendererComponent(ChunkVoxelContext context) {
+	public VoxelComponentDynamicRenderer getDynamicRendererComponent(ChunkCell context) {
 		return getSignData(context);
 	}
 
-	private VoxelComponentSignText getSignData(ChunkVoxelContext context) {
-		return (VoxelComponentSignText) context.components().get("signData");
+	private VoxelComponentSignText getSignData(ChunkCell context) {
+		VoxelComponentSignText signTextComponent = (VoxelComponentSignText) context.components().get("signData");
+		
+		if(signTextComponent == null) {
+			signTextComponent = new VoxelComponentSignText(context.components());
+			context.components().put("signData", signTextComponent);
+		}
+		
+		return signTextComponent;
 	}
 	
 }

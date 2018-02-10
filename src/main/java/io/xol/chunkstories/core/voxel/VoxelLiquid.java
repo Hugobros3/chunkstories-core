@@ -2,7 +2,7 @@ package io.xol.chunkstories.core.voxel;
 
 import io.xol.chunkstories.api.voxel.Voxel;
 import io.xol.chunkstories.api.voxel.VoxelDefinition;
-import io.xol.chunkstories.api.world.VoxelContext;
+import io.xol.chunkstories.api.world.cell.CellData;
 import io.xol.chunkstories.core.voxel.renderers.VoxelWaterRenderer;
 
 //(c) 2015-2017 XolioWare Interactive
@@ -22,7 +22,7 @@ public class VoxelLiquid extends Voxel
 	}
 
 	@Override
-	public VoxelWaterRenderer getVoxelRenderer(VoxelContext info)
+	public VoxelWaterRenderer getVoxelRenderer(CellData info)
 	{
 		//Return the surface only if the top block isn't liquid
 		if(!info.getNeightborVoxel(4).getDefinition().isLiquid())

@@ -5,7 +5,7 @@ import io.xol.chunkstories.api.voxel.Voxel;
 import io.xol.chunkstories.api.voxel.VoxelSides;
 import io.xol.chunkstories.api.voxel.VoxelDefinition;
 import io.xol.chunkstories.api.voxel.models.VoxelModel;
-import io.xol.chunkstories.api.world.VoxelContext;
+import io.xol.chunkstories.api.world.cell.CellData;
 
 //(c) 2015-2017 XolioWare Interactive
 // http://chunkstories.xyz
@@ -30,7 +30,7 @@ public class VoxelHalfTile extends Voxel
 	}
 
 	@Override
-	public VoxelModel getVoxelRenderer(VoxelContext info)
+	public VoxelModel getVoxelRenderer(CellData info)
 	{
 		int meta = info.getMetaData();
 		if (bottomOrTop(meta))
@@ -39,7 +39,7 @@ public class VoxelHalfTile extends Voxel
 	}
 
 	@Override
-	public CollisionBox[] getCollisionBoxes(VoxelContext info)
+	public CollisionBox[] getCollisionBoxes(CellData info)
 	{
 		// System.out.println("kek");
 		CollisionBox box2 = new CollisionBox(1, 0.5, 1);
@@ -51,7 +51,7 @@ public class VoxelHalfTile extends Voxel
 	}
 	
 	@Override
-	public int getLightLevelModifier(VoxelContext dataFrom, VoxelContext dataTo, VoxelSides side2)
+	public int getLightLevelModifier(CellData dataFrom, CellData dataTo, VoxelSides side2)
 	{
 		int side = side2.ordinal();
 		

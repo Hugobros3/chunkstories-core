@@ -6,7 +6,7 @@ import io.xol.chunkstories.api.voxel.Voxel;
 import io.xol.chunkstories.api.voxel.VoxelSides;
 import io.xol.chunkstories.api.voxel.VoxelDefinition;
 import io.xol.chunkstories.api.voxel.textures.VoxelTexture;
-import io.xol.chunkstories.api.world.VoxelContext;
+import io.xol.chunkstories.api.world.cell.CellData;
 
 //(c) 2015-2017 XolioWare Interactive
 //http://chunkstories.xyz
@@ -24,7 +24,7 @@ public class VoxelMeta16 extends Voxel
 	}
 
 	@Override
-	public VoxelTexture getVoxelTexture(VoxelSides side, VoxelContext info) // 0 for top, 1 bot,
+	public VoxelTexture getVoxelTexture(VoxelSides side, CellData info) // 0 for top, 1 bot,
 	// 2,3,4,5
 	// north/south/east/west
 	{

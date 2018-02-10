@@ -3,7 +3,7 @@ package io.xol.chunkstories.core.voxel;
 import io.xol.chunkstories.api.physics.CollisionBox;
 import io.xol.chunkstories.api.voxel.Voxel;
 import io.xol.chunkstories.api.voxel.VoxelDefinition;
-import io.xol.chunkstories.api.world.VoxelContext;
+import io.xol.chunkstories.api.world.cell.CellData;
 
 public class VoxelAir extends Voxel {
 
@@ -13,8 +13,10 @@ public class VoxelAir extends Voxel {
 	}
 
 	@Override
-	public CollisionBox[] getCollisionBoxes(VoxelContext info)
+	public CollisionBox[] getCollisionBoxes(CellData info)
 	{
-		return new CollisionBox[] {};
+		return noCollisionBoxes;
 	}
+	
+	final static CollisionBox[] noCollisionBoxes = new CollisionBox[] {};
 }

@@ -16,7 +16,7 @@ import io.xol.chunkstories.api.voxel.models.ChunkMeshDataSubtypes.LodLevel;
 import io.xol.chunkstories.api.voxel.models.ChunkMeshDataSubtypes.ShadingType;
 import io.xol.chunkstories.api.voxel.models.ChunkRenderer.ChunkRenderContext;
 import io.xol.chunkstories.api.voxel.textures.VoxelTexture;
-import io.xol.chunkstories.api.world.VoxelContext;
+import io.xol.chunkstories.api.world.cell.CellData;
 import io.xol.chunkstories.api.world.chunk.Chunk;
 
 /** Renders classic voxels as cubes ( and intelligently culls faces ) */
@@ -29,48 +29,47 @@ public class DefaultVoxelRenderer implements VoxelRenderer
 	}
 	
 	@Override
-	public int renderInto(ChunkRenderer chunkRenderer, ChunkRenderContext bakingContext, Chunk chunk, VoxelContext voxelInformations)
+	public int renderInto(ChunkRenderer chunkRenderer, ChunkRenderContext bakingContext, Chunk chunk, CellData cell)
 	{
-		Voxel vox = voxelInformations.getVoxel();
-		//int src = voxelInformations.getData();
+		Voxel vox = cell.getVoxel();
 		
-		int i = voxelInformations.getX() & 0x1F;
-		int k = voxelInformations.getY() & 0x1F;
-		int j = voxelInformations.getZ() & 0x1F;
+		int i = cell.getX() & 0x1F;
+		int k = cell.getY() & 0x1F;
+		int j = cell.getZ() & 0x1F;
 		
 		VoxelBakerCubic vbc = chunkRenderer.getLowpolyBakerFor(LodLevel.ANY, ShadingType.OPAQUE);
 		byte wavyVegetationFlag = 0;
 		
 		int vertices = 0;
 		
-		if (shallBuildWallArround(voxelInformations, 5) && (k != 0 || bakingContext.isBottomChunkLoaded()))
+		if (shallBuildWallArround(cell, 5) && (k != 0 || bakingContext.isBottomChunkLoaded()))
 		{
-			addQuadBottom(chunk, bakingContext, vbc, i, k, j, vox.getVoxelTexture(VoxelSides.BOTTOM, voxelInformations), wavyVegetationFlag);
+			addQuadBottom(chunk, bakingContext, vbc, i, k, j, vox.getVoxelTexture(VoxelSides.BOTTOM, cell), wavyVegetationFlag);
 			vertices += 6;
 		}
-		if (shallBuildWallArround(voxelInformations, 4) && (k != 31 || bakingContext.isTopChunkLoaded()))
+		if (shallBuildWallArround(cell, 4) && (k != 31 || bakingContext.isTopChunkLoaded()))
 		{
-			addQuadTop(chunk, bakingContext, vbc, i, k, j, vox.getVoxelTexture(VoxelSides.TOP, voxelInformations), wavyVegetationFlag);
+			addQuadTop(chunk, bakingContext, vbc, i, k, j, vox.getVoxelTexture(VoxelSides.TOP, cell), wavyVegetationFlag);
 			vertices += 6;
 		}
-		if (shallBuildWallArround(voxelInformations, 2) && (i != 31 || bakingContext.isRightChunkLoaded()))
+		if (shallBuildWallArround(cell, 2) && (i != 31 || bakingContext.isRightChunkLoaded()))
 		{
-			addQuadRight(chunk, bakingContext, vbc, i, k, j, vox.getVoxelTexture(VoxelSides.RIGHT, voxelInformations), wavyVegetationFlag);
+			addQuadRight(chunk, bakingContext, vbc, i, k, j, vox.getVoxelTexture(VoxelSides.RIGHT, cell), wavyVegetationFlag);
 			vertices += 6;
 		}
-		if (shallBuildWallArround(voxelInformations, 0) && (i != 0 || bakingContext.isLeftChunkLoaded()))
+		if (shallBuildWallArround(cell, 0) && (i != 0 || bakingContext.isLeftChunkLoaded()))
 		{
-			addQuadLeft(chunk, bakingContext, vbc, i, k, j, vox.getVoxelTexture(VoxelSides.LEFT, voxelInformations), wavyVegetationFlag);
+			addQuadLeft(chunk, bakingContext, vbc, i, k, j, vox.getVoxelTexture(VoxelSides.LEFT, cell), wavyVegetationFlag);
 			vertices += 6;
 		}
-		if (shallBuildWallArround(voxelInformations, 1) && (j != 31 || bakingContext.isFrontChunkLoaded()))
+		if (shallBuildWallArround(cell, 1) && (j != 31 || bakingContext.isFrontChunkLoaded()))
 		{
-			addQuadFront(chunk, bakingContext, vbc, i, k, j, vox.getVoxelTexture(VoxelSides.FRONT, voxelInformations), wavyVegetationFlag);
+			addQuadFront(chunk, bakingContext, vbc, i, k, j, vox.getVoxelTexture(VoxelSides.FRONT, cell), wavyVegetationFlag);
 			vertices += 6;
 		}
-		if (shallBuildWallArround(voxelInformations, 3) && (j != 0 || bakingContext.isBackChunkLoaded()))
+		if (shallBuildWallArround(cell, 3) && (j != 0 || bakingContext.isBackChunkLoaded()))
 		{
-			addQuadBack(chunk, bakingContext, vbc, i, k, j, vox.getVoxelTexture(VoxelSides.BACK, voxelInformations), wavyVegetationFlag);
+			addQuadBack(chunk, bakingContext, vbc, i, k, j, vox.getVoxelTexture(VoxelSides.BACK, cell), wavyVegetationFlag);
 			vertices += 6;
 		}
 		
@@ -303,7 +302,7 @@ public class DefaultVoxelRenderer implements VoxelRenderer
 		rbbf.endVertex();
 	}
 
-	protected boolean shallBuildWallArround(VoxelContext renderInfo, int face)
+	protected boolean shallBuildWallArround(CellData renderInfo, int face)
 	{
 		Voxel facing = renderInfo.getNeightborVoxel(face);
 		Voxel voxel = renderInfo.getVoxel();

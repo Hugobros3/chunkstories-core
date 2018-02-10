@@ -25,8 +25,8 @@ import io.xol.chunkstories.api.voxel.models.VoxelRenderer;
 import io.xol.chunkstories.api.voxel.models.layout.BaseLayoutBaker;
 import io.xol.chunkstories.api.voxel.models.ChunkMeshDataSubtypes.LodLevel;
 import io.xol.chunkstories.api.voxel.models.ChunkMeshDataSubtypes.ShadingType;
-import io.xol.chunkstories.api.world.VoxelContext;
 import io.xol.chunkstories.api.world.WorldClient;
+import io.xol.chunkstories.api.world.cell.CellData;
 import io.xol.chunkstories.core.item.ItemMiningTool.MiningProgress;
 import io.xol.chunkstories.core.voxel.renderers.DefaultVoxelRenderer;
 
@@ -39,7 +39,7 @@ public class BreakingBlockDecal {
 	
 	public BreakingBlockDecal(MiningProgress miningProgress, RenderingInterface renderingInterface) {
 		this.miningProgress = miningProgress;
-		VoxelContext ctx = miningProgress.loc.getWorld().peekSafely(miningProgress.loc);
+		CellData ctx = miningProgress.loc.getWorld().peekSafely(miningProgress.loc);
 		
 		BreakingBlockDecalVoxelBaker bbdvb = new BreakingBlockDecalVoxelBaker(((WorldClient) ctx.getWorld()).getClient().getContent(), miningProgress.loc);
 		

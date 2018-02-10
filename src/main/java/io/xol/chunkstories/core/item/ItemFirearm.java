@@ -28,9 +28,8 @@ import io.xol.chunkstories.api.rendering.RenderingInterface;
 import io.xol.chunkstories.api.rendering.text.FontRenderer.Font;
 import io.xol.chunkstories.api.sound.SoundSource.Mode;
 import io.xol.chunkstories.api.voxel.Voxel;
-import io.xol.chunkstories.api.world.EditableVoxelContext;
-import io.xol.chunkstories.api.world.VoxelContext;
 import io.xol.chunkstories.api.world.World;
+import io.xol.chunkstories.api.world.World.WorldCell;
 import io.xol.chunkstories.api.world.WorldClient;
 import io.xol.chunkstories.api.world.WorldMaster;
 import io.xol.chunkstories.core.entity.EntityPlayer;
@@ -280,7 +279,7 @@ public class ItemFirearm extends ItemWeapon implements ItemOverlay, ItemZoom, It
 					boolean brokeLastBlock = false;
 					while(user.getWorld() instanceof WorldMaster && shotBlock != null)
 					{
-						EditableVoxelContext peek = user.getWorld().peekSafely(shotBlock);
+						WorldCell peek = user.getWorld().peekSafely(shotBlock);
 						//int data = peek.getData();
 						Voxel voxel = peek.getVoxel();
 						
@@ -330,7 +329,7 @@ public class ItemFirearm extends ItemWeapon implements ItemOverlay, ItemZoom, It
 
 							//shotBlock.setX(shotBlock.getX() + 1);
 							
-							VoxelContext peek = user.getWorld().peekSafely(shotBlock);
+							WorldCell peek = user.getWorld().peekSafely(shotBlock);
 							
 							//int data = user.getWorld().getVoxelData(shotBlock);
 							//Voxel voxel = VoxelsStore.get().getVoxelById(data);

@@ -5,10 +5,8 @@ import io.xol.chunkstories.api.entity.EntityBase;
 import io.xol.chunkstories.api.entity.EntityDefinition;
 import io.xol.chunkstories.api.entity.components.EntityComponentVelocity;
 import io.xol.chunkstories.api.item.inventory.ItemPile;
-import io.xol.chunkstories.api.math.Math2;
 
 import org.joml.Matrix4f;
-import org.joml.Vector2d;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
 import org.joml.Vector3f;
@@ -16,12 +14,10 @@ import io.xol.chunkstories.api.rendering.RenderingInterface;
 import io.xol.chunkstories.api.rendering.entity.EntityRenderable;
 import io.xol.chunkstories.api.rendering.entity.EntityRenderer;
 import io.xol.chunkstories.api.rendering.entity.RenderingIterator;
-import io.xol.chunkstories.api.sound.SoundSource.Mode;
 import io.xol.chunkstories.api.voxel.Voxel;
-import io.xol.chunkstories.api.voxel.VoxelFormat;
-import io.xol.chunkstories.api.world.VoxelContext;
 import io.xol.chunkstories.api.world.WorldClient;
 import io.xol.chunkstories.api.world.WorldMaster;
+import io.xol.chunkstories.api.world.cell.CellData;
 
 //(c) 2015-2017 XolioWare Interactive
 //http://chunkstories.xyz
@@ -152,7 +148,7 @@ public class EntityGroundItem extends EntityBase implements EntityRenderable
 	static class EntityGroundItemRenderer implements EntityRenderer<EntityGroundItem> {
 		
 		@Override
-		public int renderEntities(RenderingInterface renderingInterface, RenderingIterator<EntityGroundItem> renderableEntitiesIterator)
+		public int renderEntities(RenderingInterface renderer, RenderingIterator<EntityGroundItem> renderableEntitiesIterator)
 		{
 			int i = 0;
 			
@@ -163,12 +159,8 @@ public class EntityGroundItem extends EntityBase implements EntityRenderable
 				ItemPile within = e.itemPileWithin.getItemPile();
 				if(within != null)
 				{
-					VoxelContext context = e.getWorld().peekSafely(e.getLocation());
-					int modelBlockData = context.getData();
-
-					int lightSky = VoxelFormat.sunlight(modelBlockData);
-					int lightBlock = VoxelFormat.blocklight(modelBlockData);
-					renderingInterface.currentShader().setUniform2f("worldLightIn", lightBlock, lightSky );
+					CellData cell = e.getWorld().peekSafely(e.getLocation());
+					renderer.currentShader().setUniform2f("worldLightIn", cell.getBlocklight(), cell.getSunlight());
 					
 					Matrix4f matrix = new Matrix4f();
 					
@@ -176,7 +168,7 @@ public class EntityGroundItem extends EntityBase implements EntityRenderable
 					matrix.translate((float)loc.x, (float)(loc.y + Math.sin(Math.PI/180*e.rotation * 2) * 0.125 + 0.25), (float)loc.z);
 					//matrix.rotate((float)Math.PI/2, new Vector3f(1,0 ,0));
 					matrix.rotate((float)Math.PI/180*e.rotation, new Vector3f(0, 1, 0));
-					within.getItem().getType().getRenderer().renderItemInWorld(renderingInterface, within, e.getWorld(), e.getLocation(), matrix);
+					within.getItem().getType().getRenderer().renderItemInWorld(renderer, within, e.getWorld(), e.getLocation(), matrix);
 					//renderingInterface.flush();
 				}
 				else

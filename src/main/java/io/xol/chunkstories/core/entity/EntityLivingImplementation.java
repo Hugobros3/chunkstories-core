@@ -19,9 +19,9 @@ import io.xol.chunkstories.api.entity.interfaces.EntityControllable;
 import io.xol.chunkstories.api.entity.interfaces.EntityFlying;
 import io.xol.chunkstories.api.entity.interfaces.EntityWithVelocity;
 import io.xol.chunkstories.api.events.entity.EntityDamageEvent;
-import io.xol.chunkstories.api.world.VoxelContext;
 import io.xol.chunkstories.api.world.WorldClient;
 import io.xol.chunkstories.api.world.WorldMaster;
+import io.xol.chunkstories.api.world.cell.CellData;
 import io.xol.chunkstories.core.entity.components.EntityComponentHealth;
 
 //(c) 2015-2017 XolioWare Interactive
@@ -327,8 +327,8 @@ public abstract class EntityLivingImplementation extends EntityBase implements E
 	}
 
 	public boolean isInWater() {
-		for(VoxelContext vctx : world.getVoxelsWithin(this.getTranslatedBoundingBox())) {
-			if(vctx.getVoxel().getDefinition().isLiquid())
+		for(CellData cell : world.getVoxelsWithin(this.getTranslatedBoundingBox())) {
+			if(cell.getVoxel().getDefinition().isLiquid())
 				return true;
 		}
 		return false;

@@ -2,8 +2,8 @@ package io.xol.chunkstories.core.converter.mappings;
 
 import io.xol.chunkstories.api.converter.mappings.NonTrivialMapper;
 import io.xol.chunkstories.api.voxel.Voxel;
-import io.xol.chunkstories.api.world.FutureVoxelContext;
 import io.xol.chunkstories.api.world.World;
+import io.xol.chunkstories.api.world.cell.FutureCell;
 import io.xol.chunkstories.api.world.chunk.Chunk;
 import io.xol.enklume.MinecraftRegion;
 
@@ -34,7 +34,7 @@ public class Chest extends NonTrivialMapper {
 			System.out.println("fuck you 666");
 		
 		csWorld.pokeRawSilently(csX, csY, csZ, baked);*/
-		csWorld.pokeSimple(new FutureVoxelContext(csWorld, csX, csY, csZ, voxel));
+		csWorld.pokeSimple(new FutureCell(csWorld, csX, csY, csZ, voxel));
 	}
 	
 }

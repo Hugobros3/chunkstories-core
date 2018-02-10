@@ -10,7 +10,7 @@ import io.xol.chunkstories.api.voxel.models.ChunkMeshDataSubtypes.LodLevel;
 import io.xol.chunkstories.api.voxel.models.ChunkMeshDataSubtypes.ShadingType;
 import io.xol.chunkstories.api.voxel.models.ChunkRenderer.ChunkRenderContext;
 import io.xol.chunkstories.api.voxel.textures.VoxelTexture;
-import io.xol.chunkstories.api.world.VoxelContext;
+import io.xol.chunkstories.api.world.cell.CellData;
 import io.xol.chunkstories.api.world.chunk.Chunk;
 import io.xol.chunkstories.core.voxel.renderers.DefaultVoxelRenderer;
 
@@ -34,7 +34,7 @@ public class VoxelLeavesLod extends Voxel
 	}
 	
 	@Override
-	public VoxelRenderer getVoxelRenderer(VoxelContext info) {
+	public VoxelRenderer getVoxelRenderer(CellData info) {
 		return renderer;
 	}
 	
@@ -45,14 +45,14 @@ public class VoxelLeavesLod extends Voxel
 		}
 
 		@Override
-		public int renderInto(ChunkRenderer chunkRenderer, ChunkRenderContext bakingContext, Chunk chunk, VoxelContext voxelInformations)
+		public int renderInto(ChunkRenderer chunkRenderer, ChunkRenderContext bakingContext, Chunk chunk, CellData voxelInformations)
 		{
 			renderLodVersion(chunkRenderer, bakingContext, chunk, voxelInformations, LodLevel.LOW);
 			renderLodVersion(chunkRenderer, bakingContext, chunk, voxelInformations, LodLevel.HIGH);
 			return 0;
 		}
 		
-		protected boolean shallBuildWallArround(VoxelContext renderInfo, int face, LodLevel lodLevel)
+		protected boolean shallBuildWallArround(CellData renderInfo, int face, LodLevel lodLevel)
 		{
 			//int baseID = renderInfo.data;
 			Voxel facing = renderInfo.getNeightborVoxel(face);
@@ -65,7 +65,7 @@ public class VoxelLeavesLod extends Voxel
 			return false;
 		}
 		
-		public void renderLodVersion(ChunkRenderer chunkRenderer, ChunkRenderContext bakingContext, Chunk chunk, VoxelContext voxelInformations, LodLevel lodLevel)
+		public void renderLodVersion(ChunkRenderer chunkRenderer, ChunkRenderContext bakingContext, Chunk chunk, CellData voxelInformations, LodLevel lodLevel)
 		{
 			//Voxel vox = voxelInformations.getVoxel();
 			//int src = voxelInformations.getData();

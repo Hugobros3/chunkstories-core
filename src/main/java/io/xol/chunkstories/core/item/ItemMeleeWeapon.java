@@ -20,10 +20,10 @@ import org.joml.Vector3f;
 import io.xol.chunkstories.api.physics.CollisionBox;
 import io.xol.chunkstories.api.rendering.RenderingInterface;
 import io.xol.chunkstories.api.sound.SoundSource.Mode;
-import io.xol.chunkstories.api.world.EditableVoxelContext;
-import io.xol.chunkstories.api.world.VoxelContext;
 import io.xol.chunkstories.api.world.World;
 import io.xol.chunkstories.api.world.WorldMaster;
+import io.xol.chunkstories.api.world.cell.CellData;
+import io.xol.chunkstories.api.world.cell.EditableCell;
 import io.xol.chunkstories.core.entity.EntityPlayer;
 import io.xol.chunkstories.core.item.renderer.FlatIconItemRenderer;
 import io.xol.chunkstories.core.item.renderer.ObjViewModelRenderer;
@@ -143,7 +143,7 @@ public class ItemMeleeWeapon extends ItemWeapon
 			//Loops to try and break blocks
 			while(owner.getWorld() instanceof WorldMaster && shotBlock != null)
 			{
-				EditableVoxelContext peek = owner.getWorld().peekSafely(shotBlock);
+				EditableCell peek = owner.getWorld().peekSafely(shotBlock);
 				
 				if(!peek.getVoxel().isAir() && peek.getVoxel().getMaterial().resolveProperty("bulletBreakable") != null && peek.getVoxel().getMaterial().resolveProperty("bulletBreakable").equals("true"))
 				{
@@ -184,7 +184,7 @@ public class ItemMeleeWeapon extends ItemWeapon
 					Vector3d reflected = new Vector3d(direction);
 					reflected.sub(NxNbyI2x);
 
-					VoxelContext peek = owner.getWorld().peekSafely(shotBlock);
+					CellData peek = owner.getWorld().peekSafely(shotBlock);
 
 					//This seems fine
 					for (CollisionBox box : peek.getTranslatedCollisionBoxes())

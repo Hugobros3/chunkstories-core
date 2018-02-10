@@ -4,8 +4,8 @@ import io.xol.chunkstories.api.converter.mappings.NonTrivialMapper;
 import io.xol.chunkstories.api.exceptions.world.WorldException;
 import io.xol.chunkstories.api.voxel.Voxel;
 import io.xol.chunkstories.api.voxel.components.VoxelComponent;
-import io.xol.chunkstories.api.world.FutureVoxelContext;
 import io.xol.chunkstories.api.world.World;
+import io.xol.chunkstories.api.world.cell.FutureCell;
 import io.xol.chunkstories.api.world.chunk.Chunk;
 import io.xol.chunkstories.core.voxel.VoxelSign;
 import io.xol.chunkstories.core.voxel.components.VoxelComponentSignText;
@@ -55,7 +55,7 @@ public class Sign extends NonTrivialMapper {
 			}
 			
 			csWorld.pokeRawSilently(csX, csY, csZ, baked);*/
-			csWorld.pokeSimple(new FutureVoxelContext(csWorld, csX, csY, csZ, voxel));
+			csWorld.pokeSimple(new FutureCell(csWorld, csX, csY, csZ, voxel));
 			
 			try {
 				translateSignText(csWorld.peek(csX, csY, csZ).components().get("signData"), region.getChunk(minecraftCuurrentChunkXinsideRegion, minecraftCuurrentChunkZinsideRegion), x, y, z);
@@ -166,7 +166,7 @@ public class Sign extends NonTrivialMapper {
 					
 					assert chunk != null; // Chunk should really be loaded at this point !!!
 					
-					ChunkVoxelContext context = chunk.peek(csCoordinatesX, csCoordinatesY, csCoordinatesZ);
+					ChunkCell context = chunk.peek(csCoordinatesX, csCoordinatesY, csCoordinatesZ);
 					
 					assert context.getVoxel() instanceof VoxelSign; // We expect this too
 					

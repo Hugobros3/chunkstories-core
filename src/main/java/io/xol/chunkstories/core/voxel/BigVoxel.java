@@ -4,15 +4,14 @@ import io.xol.chunkstories.api.entity.Entity;
 import io.xol.chunkstories.api.events.voxel.WorldModificationCause;
 import io.xol.chunkstories.api.exceptions.world.voxel.IllegalBlockModificationException;
 import io.xol.chunkstories.api.voxel.Voxel;
-import io.xol.chunkstories.api.voxel.VoxelLogic;
 import io.xol.chunkstories.api.voxel.VoxelDefinition;
-import io.xol.chunkstories.api.world.FutureVoxelContext;
-import io.xol.chunkstories.api.world.VoxelContext;
+import io.xol.chunkstories.api.world.cell.CellData;
+import io.xol.chunkstories.api.world.cell.FutureCell;
 import io.xol.chunkstories.api.world.chunk.Chunk;
-import io.xol.chunkstories.api.world.chunk.Chunk.ChunkVoxelContext;
+import io.xol.chunkstories.api.world.chunk.Chunk.ChunkCell;
 
 // don't trust the lies of BIG VOXEL !!!!
-public class BigVoxel extends Voxel implements VoxelLogic {
+public class BigVoxel extends Voxel {
 
 	public final int xWidth, yWidth, zWidth;
 	
@@ -45,10 +44,10 @@ public class BigVoxel extends Voxel implements VoxelLogic {
 	}
 
 	@Override
-	public FutureVoxelContext onPlace(ChunkVoxelContext context, FutureVoxelContext voxelData, WorldModificationCause cause) throws IllegalBlockModificationException {
+	public void onPlace(FutureCell context, WorldModificationCause cause) throws IllegalBlockModificationException {
 		//Be cool with the system doing it's thing
 		if(cause == null)
-			return voxelData;
+			return;
 		
 		int x = context.getX();
 		int y = context.getY();
@@ -63,7 +62,7 @@ public class BigVoxel extends Voxel implements VoxelLogic {
 					if(chunk == null)
 						throw new IllegalBlockModificationException(context, "All chunks upon wich this block places itself must be fully loaded !");
 					
-					VoxelContext stuff = context.getWorld().peekSafely(a, b, c);
+					CellData stuff = context.getWorld().peekSafely(a, b, c);
 					if(stuff.getVoxel() == null || stuff.getVoxel().isAir() || !stuff.getVoxel().getDefinition().isSolid())
 					{
 						//These blocks are replaceable
@@ -84,13 +83,10 @@ public class BigVoxel extends Voxel implements VoxelLogic {
 				}
 			}
 		}
-		
-		//Return okay for the user
-		return voxelData;
 	}
 
 	@Override
-	public void onRemove(ChunkVoxelContext context, WorldModificationCause cause) throws IllegalBlockModificationException {
+	public void onRemove(ChunkCell context, WorldModificationCause cause) throws IllegalBlockModificationException {
 		//Don't mess with machine removal
 		if(cause == null)
 			return;
@@ -124,10 +120,9 @@ public class BigVoxel extends Voxel implements VoxelLogic {
 
 	@Override
 	/** Big voxels manage themselves using their 8 bits of metadata. They don't let themselves being touched ! */
-	public FutureVoxelContext onModification(ChunkVoxelContext context, FutureVoxelContext voxelData, WorldModificationCause cause) throws IllegalBlockModificationException {
+	public void onModification(ChunkCell context, FutureCell voxelData, WorldModificationCause cause) throws IllegalBlockModificationException {
 		if(cause != null && cause instanceof Entity)
 			throw new IllegalBlockModificationException(context, "Big Voxels aren't modifiable by anyone !"); // BIG VOXEL is untouchable!!!
-		return voxelData;
 	}
 
 	/** Test out the auto-partitionning logic for the 8 bits of metadata */

@@ -48,13 +48,11 @@ import io.xol.chunkstories.api.rendering.entity.RenderingIterator;
 import io.xol.chunkstories.api.rendering.textures.Texture2D;
 import io.xol.chunkstories.api.sound.SoundSource.Mode;
 import io.xol.chunkstories.api.util.ColorsTools;
-import io.xol.chunkstories.api.voxel.VoxelFormat;
-import io.xol.chunkstories.api.world.FutureVoxelContext;
-import io.xol.chunkstories.api.world.VoxelContext;
-import io.xol.chunkstories.api.world.World.WorldVoxelContext;
+import io.xol.chunkstories.api.world.World.WorldCell;
 import io.xol.chunkstories.api.world.WorldClient;
 import io.xol.chunkstories.api.world.WorldMaster;
-
+import io.xol.chunkstories.api.world.cell.CellData;
+import io.xol.chunkstories.api.world.cell.FutureCell;
 import io.xol.chunkstories.core.entity.EntityArmorInventory.EntityWithArmor;
 import io.xol.chunkstories.core.entity.components.EntityComponentFoodLevel;
 import io.xol.chunkstories.core.entity.components.EntityComponentSelectedItem;
@@ -297,7 +295,7 @@ EntityWorldModifier
 		onLadder = false;
 		
 		all:
-		for(VoxelContext vctx : world.getVoxelsWithin(this.getTranslatedBoundingBox())) {
+		for(CellData vctx : world.getVoxelsWithin(this.getTranslatedBoundingBox())) {
 			if(vctx.getVoxel() instanceof VoxelClimbable)
 			{
 				for(CollisionBox box : vctx.getTranslatedCollisionBoxes()) {
@@ -565,12 +563,8 @@ EntityWorldModifier
 					renderingContext.setObjectMatrix(matrix);
 
 					//Obtains the data for the block the player is standing inside of, so he can be lit appropriately
-					VoxelContext context = entity.getWorld().peekSafely(entity.getLocation());
-					int modelBlockData = context.getData();
-
-					int lightSky = VoxelFormat.sunlight(modelBlockData);
-					int lightBlock = VoxelFormat.blocklight(modelBlockData);
-					renderingContext.currentShader().setUniform2f("worldLightIn", lightBlock, lightSky );
+					CellData cell = entity.getWorld().peekSafely(entity.getLocation());
+					renderingContext.currentShader().setUniform2f("worldLightIn", cell.getBlocklight(), cell.getSunlight() );
 					
 					variant = ColorsTools.getUniqueColorCode(entity.getName()) % 6;
 
@@ -704,11 +698,11 @@ EntityWorldModifier
 						// Player events mod
 						if(controller instanceof Player) {
 							Player player = (Player)controller;
-							WorldVoxelContext ctx = world.peekSafely(blockLocation);
-							FutureVoxelContext fvc = new FutureVoxelContext(ctx);
-							fvc.setVoxel(this.getType().store().parent().voxels().air());
+							WorldCell cell = world.peekSafely(blockLocation);
+							FutureCell future = new FutureCell(cell);
+							future.setVoxel(this.getType().store().parent().voxels().air());
 							
-							PlayerVoxelModificationEvent event = new PlayerVoxelModificationEvent(ctx, fvc, EntityCreative.CREATIVE_MODE, player);
+							PlayerVoxelModificationEvent event = new PlayerVoxelModificationEvent(cell, future, EntityCreative.CREATIVE_MODE, player);
 							
 							//Anyone has objections ?
 							world.getGameContext().getPluginManager().fireEvent(event);
@@ -717,7 +711,7 @@ EntityWorldModifier
 								return true;
 						
 							try {
-								world.poke(fvc, this);
+								world.poke(future, this);
 								//world.poke((int)blockLocation.x, (int)blockLocation.y, (int)blockLocation.z, null, 0, 0, 0, this);
 							} catch (WorldException e) {
 								//Discard but maybe play some effect ?
@@ -731,7 +725,7 @@ EntityWorldModifier
 				{
 					if (blockLocation != null)
 					{
-						VoxelContext ctx = this.getWorld().peekSafely(blockLocation);
+						CellData ctx = this.getWorld().peekSafely(blockLocation);
 
 						if (!ctx.getVoxel().isAir())
 						{
