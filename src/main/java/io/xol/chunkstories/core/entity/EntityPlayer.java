@@ -700,7 +700,7 @@ EntityWorldModifier
 							Player player = (Player)controller;
 							WorldCell cell = world.peekSafely(blockLocation);
 							FutureCell future = new FutureCell(cell);
-							future.setVoxel(this.getType().store().parent().voxels().air());
+							future.setVoxel(this.getDefinition().store().parent().voxels().air());
 							
 							PlayerVoxelModificationEvent event = new PlayerVoxelModificationEvent(cell, future, EntityCreative.CREATIVE_MODE, player);
 							
