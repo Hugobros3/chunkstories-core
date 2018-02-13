@@ -25,8 +25,10 @@ public class VoxelLiquid extends Voxel
 	public VoxelWaterRenderer getVoxelRenderer(CellData info)
 	{
 		//Return the surface only if the top block isn't liquid
-		if(!info.getNeightborVoxel(4).getDefinition().isLiquid())
+		if(!info.getNeightborVoxel(4).getDefinition().isLiquid()) {
 			return surface;
+		}
+		
 		else return inside;
 	}
 }

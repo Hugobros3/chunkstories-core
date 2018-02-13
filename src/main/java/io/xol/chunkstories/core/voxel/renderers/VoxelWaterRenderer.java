@@ -24,10 +24,9 @@ public class VoxelWaterRenderer implements VoxelRenderer
 	}
 
 	@Override
-	public int renderInto(ChunkRenderer chunkRenderer, ChunkRenderContext bakingContext, Chunk chunk, CellData info)
+	public int renderInto(ChunkRenderer chunkRenderer, ChunkRenderContext bakingContext, Chunk chunk, CellData cell)
 	{
 		VoxelBakerHighPoly renderByteBuffer = chunkRenderer.getHighpolyBakerFor(LodLevel.ANY, ShadingType.LIQUIDS);
-		
-		return model.renderInto(renderByteBuffer, bakingContext, info, chunk, info.getX(), info.getY(), info.getZ());
+		return model.renderInto(renderByteBuffer, bakingContext, cell, chunk, cell.getX() & 0x1F, cell.getY() & 0x1F, cell.getZ() & 0x1F);
 	}
 }
