@@ -11,7 +11,6 @@ import io.xol.chunkstories.api.input.Input;
 import io.xol.chunkstories.api.item.inventory.Inventory;
 import io.xol.chunkstories.api.player.Player;
 import io.xol.chunkstories.api.voxel.Voxel;
-import io.xol.chunkstories.api.voxel.VoxelInteractive;
 import io.xol.chunkstories.api.voxel.VoxelSides;
 import io.xol.chunkstories.api.voxel.VoxelDefinition;
 import io.xol.chunkstories.api.voxel.components.VoxelComponent;
@@ -21,12 +20,13 @@ import io.xol.chunkstories.api.world.WorldMaster;
 import io.xol.chunkstories.api.world.cell.CellData;
 import io.xol.chunkstories.api.world.cell.FutureCell;
 import io.xol.chunkstories.api.world.chunk.Chunk.ChunkCell;
+import io.xol.chunkstories.api.world.chunk.Chunk.FreshChunkCell;
 
 //(c) 2015-2017 XolioWare Interactive
 //http://chunkstories.xyz
 //http://xol.io
 
-public class VoxelChest extends Voxel implements VoxelInteractive
+public class VoxelChest extends Voxel
 {
 	VoxelTexture frontTexture;
 	VoxelTexture sideTexture;
@@ -65,18 +65,16 @@ public class VoxelChest extends Voxel implements VoxelInteractive
 	}
 	
 	private Inventory getInventory(ChunkCell context) {
-		
-		// Try to grab the existing chest inventory
 		VoxelComponent comp = context.components().get("chestInventory");
-		if(comp != null) {
-			VoxelInventoryComponent component = (VoxelInventoryComponent)comp;
-			return component.getInventory();
-		}
-
-		// Create a new component and insert it into the chunk
-		VoxelInventoryComponent component = new VoxelInventoryComponent(context.components(), 10, 6);
-		context.components().put("chestInventory", component);
+		VoxelInventoryComponent component = (VoxelInventoryComponent)comp;
 		return component.getInventory();
+	}
+	
+	@Override
+	public void whenPlaced(FreshChunkCell cell) {
+		// Create a new component and insert it into the chunk
+		VoxelInventoryComponent component = new VoxelInventoryComponent(cell.components(), 10, 6);
+		cell.registerComponent("chestInventory", component);
 	}
 
 	@Override
@@ -130,6 +128,6 @@ public class VoxelChest extends Voxel implements VoxelInteractive
 	public void onRemove(ChunkCell context, WorldModificationCause cause) throws WorldException {
 		
 		//Delete the components as to not pollute the chunk's components space
-		context.components().erase();
+		//context.components().erase();
 	}
 }

@@ -2,7 +2,6 @@ package io.xol.chunkstories.core.voxel;
 
 import io.xol.chunkstories.api.entity.Entity;
 import io.xol.chunkstories.api.events.voxel.WorldModificationCause;
-import io.xol.chunkstories.api.exceptions.world.WorldException;
 import io.xol.chunkstories.api.exceptions.world.voxel.IllegalBlockModificationException;
 import io.xol.chunkstories.api.input.Input;
 
@@ -11,22 +10,19 @@ import org.joml.Vector3d;
 
 import io.xol.chunkstories.api.voxel.Voxel;
 import io.xol.chunkstories.api.voxel.VoxelCustomIcon;
-import io.xol.chunkstories.api.voxel.VoxelDynamicallyRendered;
-import io.xol.chunkstories.api.voxel.VoxelInteractive;
-import io.xol.chunkstories.api.voxel.VoxelLogic;
 import io.xol.chunkstories.api.voxel.VoxelDefinition;
-import io.xol.chunkstories.api.voxel.components.VoxelComponentDynamicRenderer;
 import io.xol.chunkstories.api.voxel.models.VoxelRenderer;
 import io.xol.chunkstories.api.world.cell.CellData;
 import io.xol.chunkstories.api.world.cell.FutureCell;
 import io.xol.chunkstories.api.world.chunk.Chunk.ChunkCell;
+import io.xol.chunkstories.api.world.chunk.Chunk.FreshChunkCell;
 import io.xol.chunkstories.core.voxel.components.VoxelComponentSignText;
 
 //(c) 2015-2017 XolioWare Interactive
 //http://chunkstories.xyz
 //http://xol.io
 
-public class VoxelSign extends Voxel implements VoxelInteractive, VoxelLogic, VoxelCustomIcon, VoxelDynamicallyRendered
+public class VoxelSign extends Voxel implements VoxelCustomIcon
 {
 	public VoxelSign(VoxelDefinition type)
 	{
@@ -82,28 +78,18 @@ public class VoxelSign extends Voxel implements VoxelInteractive, VoxelLogic, Vo
 	}
 
 	@Override
-	public void onRemove(ChunkCell context, WorldModificationCause cause) throws WorldException {
-		context.components().erase();
+	public void whenPlaced(FreshChunkCell cell) {
+		VoxelComponentSignText signTextComponent = new VoxelComponentSignText(cell.components());
+		cell.registerComponent("signData", signTextComponent);
 	}
-
-	@Override
-	public void onModification(ChunkCell context, FutureCell voxelData, WorldModificationCause cause) throws WorldException {
-		
-	}
-
-	@Override
+	
+	/*@Override
 	public VoxelComponentDynamicRenderer getDynamicRendererComponent(ChunkCell context) {
 		return getSignData(context);
-	}
+	}*/
 
-	private VoxelComponentSignText getSignData(ChunkCell context) {
+	public VoxelComponentSignText getSignData(ChunkCell context) {
 		VoxelComponentSignText signTextComponent = (VoxelComponentSignText) context.components().get("signData");
-		
-		if(signTextComponent == null) {
-			signTextComponent = new VoxelComponentSignText(context.components());
-			context.components().put("signData", signTextComponent);
-		}
-		
 		return signTextComponent;
 	}
 	

@@ -13,7 +13,7 @@ import io.xol.chunkstories.api.rendering.text.TextMesh;
 import io.xol.chunkstories.api.rendering.textures.Texture2D;
 import io.xol.chunkstories.api.util.IterableIterator;
 import io.xol.chunkstories.api.voxel.components.VoxelComponentDynamicRenderer;
-import io.xol.chunkstories.api.voxel.components.VoxelComponents;
+import io.xol.chunkstories.api.world.cell.CellComponents;
 import io.xol.chunkstories.api.world.chunk.Chunk.ChunkCell;
 import io.xol.chunkstories.api.world.serialization.StreamSource;
 import io.xol.chunkstories.api.world.serialization.StreamTarget;
@@ -24,7 +24,7 @@ import io.xol.chunkstories.api.world.serialization.StreamTarget;
 
 public class VoxelComponentSignText extends VoxelComponentDynamicRenderer
 {
-	public VoxelComponentSignText(VoxelComponents holder) {
+	public VoxelComponentSignText(CellComponents holder) {
 		super(holder);
 	}
 	

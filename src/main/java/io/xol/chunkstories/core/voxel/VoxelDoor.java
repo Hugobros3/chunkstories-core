@@ -12,7 +12,6 @@ import io.xol.chunkstories.api.sound.SoundSource.Mode;
 import io.xol.chunkstories.api.voxel.Voxel;
 import io.xol.chunkstories.api.voxel.VoxelCustomIcon;
 import io.xol.chunkstories.api.voxel.VoxelFormat;
-import io.xol.chunkstories.api.voxel.VoxelInteractive;
 import io.xol.chunkstories.api.voxel.VoxelSides;
 import io.xol.chunkstories.api.voxel.VoxelDefinition;
 import io.xol.chunkstories.api.voxel.models.VoxelModel;
@@ -31,7 +30,7 @@ import io.xol.chunkstories.api.world.chunk.Chunk.ChunkCell;
 /**
  * 2-blocks tall door Requires two consecutive voxel ids, x being lower, x+1 top, the top part should be suffixed of _top
  */
-public class VoxelDoor extends Voxel implements VoxelInteractive, VoxelCustomIcon
+public class VoxelDoor extends Voxel implements VoxelCustomIcon
 {
 	VoxelTexture doorTexture;
 
