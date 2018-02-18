@@ -7,46 +7,6 @@
 # If both are overidden, commonClass is effectively useless
 # Such instances serve an educational/semantic purpose
 
-# This packet handles basic text communication using UTF-8.
-# This is used for various internal misc purpose, I recommand not touching this at all
-packet text
-	allowedFrom: all
-	type: system
-	commonClass: io.xol.chunkstories.api.net.packets.PacketText
-	clientClass: io.xol.chunkstories.client.net.packets.PacketReceiveText
-	serverClass: io.xol.chunkstories.server.net.packets.PacketReceiveText
-end
-
-# Sends the world.info data for a world to the client connecting to a server
-packet world_info
-	allowedFrom: server
-	type: system
-	commonClass: io.xol.chunkstories.net.packets.PacketSendWorldInfo
-	clientClass: io.xol.chunkstories.client.net.packets.PacketInitializeRemoteWorld
-end
-
-# Sends an entire file over the wire
-packet file
-	allowedFrom: server
-	type: general
-	commonClass: io.xol.chunkstories.net.packets.PacketSendFile
-	clientClass: io.xol.chunkstories.client.net.packets.PacketReceiveFile
-end
-
-# Sends compressed chunk data to a client who requested it
-packet chunk_data
-	allowedFrom: server
-	type: world_streaming
-	commonClass: io.xol.chunkstories.net.packets.PacketChunkCompressedData
-end
-
-# Sends compressed summary data (heightmap stuff) to a client who requested it
-packet region_summary
-	allowedFrom: server
-	type: world_streaming
-	commonClass: io.xol.chunkstories.net.packets.PacketRegionSummary
-end
-
 # Internal packets used for communicating what the clients wants streamed to it
 # and what the server will actually comply & send
 packet world_user_requests
