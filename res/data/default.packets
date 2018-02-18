@@ -27,7 +27,7 @@ end
 packet move_item
 	allowedFrom: client
 	type: world
-	commonClass: io.xol.chunkstories.net.packets.PacketInventoryMoveItemPile
+	commonClass: io.xol.chunkstories.api.net.packets.PacketInventoryMoveItemPile
 end
 
 packet partial_inv_update
@@ -84,8 +84,7 @@ end
 packet open_inventory
 	allowedFrom: server
 	type: world
-	commonClass: io.xol.chunkstories.net.packets.PacketOpenInventory
-	clientClass: io.xol.chunkstories.client.net.packets.PacketOpenInventoryClient
+	commonClass: io.xol.chunkstories.api.net.packets.PacketOpenInventory
 end
 
 packet fx_explosion
