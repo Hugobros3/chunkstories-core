@@ -9,12 +9,6 @@
 
 # Internal packets used for communicating what the clients wants streamed to it
 # and what the server will actually comply & send
-packet world_user_requests
-	allowFrom: all
-	type: world_streaming
-	commonClass: io.xol.chunkstories.api.net.packets.PacketWorldUser
-	serverClass: io.xol.chunkstories.server.net.packets.ServerPacketWorldUser
-end
 
 # General-purpose entity update packet (slow!)
 packet entity_tracking
