@@ -67,9 +67,9 @@ public class ItemMiningTool extends Item {
 				if(lookingAt != null && lookingAt.distance(owner.getLocation()) > 7f)
 					lookingAt = null;
 				
-				if(inputs.getInputByName("mouse.left").isPressed()) {
+				if(inputs.getInputByName("mouse.left").isPressed() && lookingAt != null) {
 
-					WorldCell ctx = owner.getWorld().peekSafely(progress.loc);
+					WorldCell ctx = world.peekSafely(lookingAt);
 					
 					//Cancel mining if looking away or the block changed by itself
 					if(lookingAt == null || (progress != null && (lookingAt.distance(progress.loc) > 0 || !ctx.getVoxel().sameKind(progress.voxel)))) {
@@ -157,9 +157,9 @@ public class ItemMiningTool extends Item {
 			
 				Matrix4f rotated = new Matrix4f(transformation);
 
-				Vector3f center = new Vector3f(0.0f, -0.5f, -100f);
+				Vector3f center = new Vector3f(0.0f, -0.0f, -100f);
 				
-				rotated.translate(-0.1f, 0.4f, -0.1f);
+				rotated.translate(0.05f, -0.1f, 0f);
 				MiningProgress progress = ((ItemMiningTool)pile.getItem()).progress;
 				
 				if(progress != null) {
