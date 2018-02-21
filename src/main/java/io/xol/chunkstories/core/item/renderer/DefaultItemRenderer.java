@@ -207,25 +207,25 @@ public class DefaultItemRenderer extends ItemRenderer
 			buf.putFloat(1.0f);
 			//And again
 
-			buf.putFloat(1.0f);
-			buf.putFloat(1.0f);
-			buf.putFloat(1.0f);
-			buf.putFloat(1.0f);
-			buf.putFloat(1.0f);
-			buf.putFloat(1.0f);
-			buf.putFloat(1.0f);
-			buf.putFloat(1.0f);
-			buf.putFloat(1.0f);
+			buf.putFloat(-1.0f);
+			buf.putFloat(-1.0f);
+			buf.putFloat(-1.0f);
+			buf.putFloat(-1.0f);
+			buf.putFloat(-1.0f);
+			buf.putFloat(-1.0f);
+			buf.putFloat(-1.0f);
+			buf.putFloat(-1.0f);
+			buf.putFloat(-1.0f);
 
-			buf.putFloat(1.0f);
-			buf.putFloat(1.0f);
-			buf.putFloat(1.0f);
-			buf.putFloat(1.0f);
-			buf.putFloat(1.0f);
-			buf.putFloat(1.0f);
-			buf.putFloat(1.0f);
-			buf.putFloat(1.0f);
-			buf.putFloat(1.0f);
+			buf.putFloat(-1.0f);
+			buf.putFloat(-1.0f);
+			buf.putFloat(-1.0f);
+			buf.putFloat(-1.0f);
+			buf.putFloat(-1.0f);
+			buf.putFloat(-1.0f);
+			buf.putFloat(-1.0f);
+			buf.putFloat(-1.0f);
+			buf.putFloat(-1.0f);
 			
 			
 			buf.flip();

@@ -19,7 +19,7 @@ import io.xol.chunkstories.core.entity.EntityPlayer;
 //http://xol.io
 
 public class ItemsLogicListener implements Listener {
-	private CoreContentPlugin core;
+	private final CoreContentPlugin core;
 	
 	public ItemsLogicListener(CoreContentPlugin core) {
 		this.core = core;

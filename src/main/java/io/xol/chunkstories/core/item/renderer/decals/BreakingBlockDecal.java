@@ -1,6 +1,7 @@
 package io.xol.chunkstories.core.item.renderer.decals;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.ArrayList;
 
 import org.joml.Vector3dc;
@@ -271,16 +272,14 @@ public class BreakingBlockDecal {
 		public ByteBuffer cum() {
 			
 			ByteBuffer buffer = ByteBuffer.allocateDirect(4 * memesAreMyReality.size());//MemoryUtil.memAlloc(4 * memesAreMyReality.size());
+			buffer.order(ByteOrder.LITTLE_ENDIAN);
 			for(float f : memesAreMyReality) {
 				buffer.putFloat(f);
 			}
 			buffer.flip();
-			
-			//MemFreeByteBuffer insideJob = new MemFreeByteBuffer(buffer);
-			
 			memesAreMyReality.clear();
 			
-			return buffer;//insideJob;
+			return buffer;
 		}
 	}
 	
@@ -288,8 +287,6 @@ public class BreakingBlockDecal {
 		ShaderInterface decalsShader = renderingInterface.useShader("decal_cracking");
 
 		renderingInterface.getCamera().setupShader(decalsShader);
-		
-		//renderingInterface.bindTexture2D("zBuffer", worldRenderer.renderBuffers.zBuffer);
 		
 		renderingInterface.setCullingMode(CullingMode.DISABLED);
 		renderingInterface.setBlendMode(BlendMode.MIX);
@@ -314,7 +311,6 @@ public class BreakingBlockDecal {
 		
 		renderingInterface.flush();
 		
-
 		renderingInterface.getRenderTargetManager().setDepthMask(true);
 	}
 
