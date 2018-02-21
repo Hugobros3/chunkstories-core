@@ -8,8 +8,8 @@ import io.xol.chunkstories.api.client.ClientContent.TexturesLibrary;
 import io.xol.chunkstories.api.item.Item;
 import io.xol.chunkstories.api.item.ItemDefinition;
 import io.xol.chunkstories.api.item.inventory.ItemPile;
-import io.xol.chunkstories.api.item.renderer.ItemRenderer;
 import io.xol.chunkstories.api.rendering.RenderingInterface;
+import io.xol.chunkstories.api.rendering.item.ItemRenderer;
 import io.xol.chunkstories.api.world.World;
 
 //(c) 2015-2017 XolioWare Interactive
@@ -23,7 +23,7 @@ public class FlatIconItemRenderer extends DefaultItemRenderer
 	public FlatIconItemRenderer(Item item, ItemRenderer fallbackRenderer, ItemDefinition itemType)
 	{
 		super(item);
-		this.textures = ((ClientContent)item.getType().store().parent()).textures();
+		this.textures = ((ClientContent)item.getDefinition().store().parent()).textures();
 	}
 	
 	@Override

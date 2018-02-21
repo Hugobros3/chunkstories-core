@@ -5,6 +5,7 @@ import io.xol.chunkstories.api.entity.EntityBase;
 import io.xol.chunkstories.api.entity.EntityDefinition;
 import io.xol.chunkstories.api.entity.components.EntityComponentVelocity;
 import io.xol.chunkstories.api.item.inventory.ItemPile;
+import io.xol.chunkstories.api.physics.CollisionBox;
 
 import org.joml.Matrix4f;
 import org.joml.Vector3d;
@@ -73,7 +74,7 @@ public class EntityGroundItem extends EntityBase implements EntityRenderable
 			Voxel voxelIn = world.peekSafely(positionComponent.getLocation()).getVoxel();
 			boolean inWater = voxelIn.getDefinition().isLiquid();
 
-			double terminalVelocity = inWater ? -0.05 : -0.5;
+			double terminalVelocity = inWater ? -0.25 : -0.5;
 			if (velocity.y() > terminalVelocity && !this.isOnGround())
 				velocity.y = (velocity.y() - 0.016);
 			if (velocity.y() < terminalVelocity)
@@ -106,35 +107,8 @@ public class EntityGroundItem extends EntityBase implements EntityRenderable
 
 		if (world instanceof WorldClient) {
 			
-			if(!this.isOnGround())
+			if(this.isOnGround())
 			{
-				/*rotation += velocityComponent.getVelocity().length() * Math.random();
-				tilt = (float) Math2.mix(0.0, tilt + velocityComponent.getVelocity().length() * Math.random(),
-						Math2.clampd(velocity.length(), 0.0, 0.1) * 10.0);
-	
-				
-				Vector2d direction2d = new Vector2d(velocity.x(), velocity.z());
-	
-				if (direction2d.length() > 0.0) {
-					direction2d.normalize();
-					
-					Math.acos(direction2d.x());
-					Math.asin(direction2d.y());
-					double directionDegrees;
-					
-					//Y is sin by convention, if > 0 top part of the circle
-					if(direction2d.y() >= 0.0)
-					{
-						directionDegrees = -Math.acos(direction2d.x());
-					}
-					else
-						directionDegrees = Math.acos(direction2d.x());
-					
-					direction = (float)directionDegrees;
-					//direction = (float) -Math.toRadians(directionDegrees);
-				}*/
-			}
-			else {
 				rotation += 1.0f;
 				rotation %= 360;
 			}
@@ -168,7 +142,7 @@ public class EntityGroundItem extends EntityBase implements EntityRenderable
 					matrix.translate((float)loc.x, (float)(loc.y + Math.sin(Math.PI/180*e.rotation * 2) * 0.125 + 0.25), (float)loc.z);
 					//matrix.rotate((float)Math.PI/2, new Vector3f(1,0 ,0));
 					matrix.rotate((float)Math.PI/180*e.rotation, new Vector3f(0, 1, 0));
-					within.getItem().getType().getRenderer().renderItemInWorld(renderer, within, e.getWorld(), e.getLocation(), matrix);
+					within.getItem().getDefinition().getRenderer().renderItemInWorld(renderer, within, e.getWorld(), e.getLocation(), matrix);
 					//renderingInterface.flush();
 				}
 				else
@@ -195,4 +169,11 @@ public class EntityGroundItem extends EntityBase implements EntityRenderable
 	{
 		return entityRenderer;
 	}
+
+	@Override
+	public CollisionBox getBoundingBox() {
+		return new CollisionBox(0.5, 0.75, 0.5).translate(-0.25, 0.0, -0.25);
+	}
+	
+	
 }

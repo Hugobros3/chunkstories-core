@@ -6,8 +6,8 @@ import io.xol.chunkstories.api.client.ClientContent;
 import io.xol.chunkstories.api.client.ClientContent.TexturesLibrary;
 import io.xol.chunkstories.api.item.Item;
 import io.xol.chunkstories.api.item.inventory.ItemPile;
-import io.xol.chunkstories.api.item.renderer.ItemRenderer;
 import io.xol.chunkstories.api.rendering.RenderingInterface;
+import io.xol.chunkstories.api.rendering.item.ItemRenderer;
 import io.xol.chunkstories.api.rendering.mesh.ClientMeshLibrary;
 import io.xol.chunkstories.api.world.World;
 
@@ -44,8 +44,8 @@ public class ObjViewModelRenderer extends ItemRenderer
 		this.normalTextureName = normalTextureName;
 		this.materialTextureName = materialTextureName;
 		
-		this.textures = ((ClientContent)item.getType().store().parent()).textures();
-		this.models = ((ClientContent)item.getType().store().parent()).meshes();
+		this.textures = ((ClientContent)item.getDefinition().store().parent()).textures();
+		this.models = ((ClientContent)item.getDefinition().store().parent()).meshes();
 	}
 
 	@Override

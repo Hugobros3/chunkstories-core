@@ -17,14 +17,14 @@ import io.xol.chunkstories.api.rendering.pipeline.PipelineConfiguration.CullingM
 import io.xol.chunkstories.api.rendering.textures.Texture2D;
 import io.xol.chunkstories.api.rendering.vertex.VertexBuffer;
 import io.xol.chunkstories.api.rendering.vertex.VertexFormat;
+import io.xol.chunkstories.api.rendering.voxel.VoxelBakerCubic;
+import io.xol.chunkstories.api.rendering.voxel.VoxelBakerHighPoly;
+import io.xol.chunkstories.api.rendering.voxel.VoxelRenderer;
+import io.xol.chunkstories.api.rendering.world.chunk.ChunkMeshDataSubtypes.LodLevel;
+import io.xol.chunkstories.api.rendering.world.chunk.ChunkMeshDataSubtypes.ShadingType;
+import io.xol.chunkstories.api.rendering.world.chunk.ChunkRenderer;
+import io.xol.chunkstories.api.rendering.world.chunk.vertexlayout.BaseLayoutBaker;
 import io.xol.chunkstories.api.voxel.VoxelSides.Corners;
-import io.xol.chunkstories.api.voxel.models.ChunkRenderer;
-import io.xol.chunkstories.api.voxel.models.VoxelBakerCubic;
-import io.xol.chunkstories.api.voxel.models.VoxelBakerHighPoly;
-import io.xol.chunkstories.api.voxel.models.VoxelRenderer;
-import io.xol.chunkstories.api.voxel.models.layout.BaseLayoutBaker;
-import io.xol.chunkstories.api.voxel.models.ChunkMeshDataSubtypes.LodLevel;
-import io.xol.chunkstories.api.voxel.models.ChunkMeshDataSubtypes.ShadingType;
 import io.xol.chunkstories.api.world.WorldClient;
 import io.xol.chunkstories.api.world.cell.CellData;
 import io.xol.chunkstories.core.item.ItemMiningTool.MiningProgress;
@@ -169,7 +169,7 @@ public class BreakingBlockDecal {
 			voxelRenderer = new DefaultVoxelRenderer(ctx.getVoxel().store());
 		}
 		
-		voxelRenderer.renderInto(chunkRenderer, o2, ctx.getWorld().getChunkWorldCoordinates(miningProgress.loc), ctx);
+		voxelRenderer.bakeInto(chunkRenderer, o2, ctx.getWorld().getChunkWorldCoordinates(miningProgress.loc), ctx);
 		
 		ByteBuffer buffer = bbdvb.cum();
 		

@@ -2,6 +2,11 @@ package io.xol.chunkstories.core.item;
 
 import java.util.Iterator;
 
+import org.joml.Matrix4f;
+import org.joml.Vector3d;
+import org.joml.Vector3dc;
+import org.joml.Vector3f;
+
 import io.xol.chunkstories.api.Location;
 import io.xol.chunkstories.api.client.LocalPlayer;
 import io.xol.chunkstories.api.entity.Controller;
@@ -12,13 +17,9 @@ import io.xol.chunkstories.api.entity.interfaces.EntityControllable;
 import io.xol.chunkstories.api.input.Input;
 import io.xol.chunkstories.api.item.ItemDefinition;
 import io.xol.chunkstories.api.item.inventory.ItemPile;
-import io.xol.chunkstories.api.item.renderer.ItemRenderer;
-import org.joml.Matrix4f;
-import org.joml.Vector3d;
-import org.joml.Vector3dc;
-import org.joml.Vector3f;
 import io.xol.chunkstories.api.physics.CollisionBox;
 import io.xol.chunkstories.api.rendering.RenderingInterface;
+import io.xol.chunkstories.api.rendering.item.ItemRenderer;
 import io.xol.chunkstories.api.sound.SoundSource.Mode;
 import io.xol.chunkstories.api.world.World;
 import io.xol.chunkstories.api.world.WorldMaster;
@@ -63,11 +64,11 @@ public class ItemMeleeWeapon extends ItemWeapon
 	{
 		ItemRenderer itemRenderer;
 		
-		String modelName = getType().resolveProperty("modelObj", "none");
+		String modelName = getDefinition().resolveProperty("modelObj", "none");
 		if (!modelName.equals("none"))
-			itemRenderer = new ObjViewModelRenderer(this, fallbackRenderer, modelName, getType().resolveProperty("modelDiffuse", "none"));
+			itemRenderer = new ObjViewModelRenderer(this, fallbackRenderer, modelName, getDefinition().resolveProperty("modelDiffuse", "none"));
 		else
-			itemRenderer = new FlatIconItemRenderer(this, fallbackRenderer, getType());
+			itemRenderer = new FlatIconItemRenderer(this, fallbackRenderer, getDefinition());
 
 		itemRenderer = new MeleeWeaponRenderer(fallbackRenderer);
 		
@@ -150,7 +151,7 @@ public class ItemMeleeWeapon extends ItemWeapon
 					//TODO: Spawn an event to check if it's okay
 					
 					//Destroy it
-					peek.setVoxel(getType().store().parent().voxels().air());
+					peek.setVoxel(getDefinition().store().parent().voxels().air());
 					
 					for(int i = 0; i < 25; i++)
 					{

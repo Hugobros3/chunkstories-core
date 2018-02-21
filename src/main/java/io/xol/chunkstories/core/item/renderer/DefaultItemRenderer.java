@@ -11,9 +11,9 @@ import io.xol.chunkstories.api.client.ClientContent.TexturesLibrary;
 import io.xol.chunkstories.api.item.Item;
 import io.xol.chunkstories.api.item.ItemDefinition;
 import io.xol.chunkstories.api.item.inventory.ItemPile;
-import io.xol.chunkstories.api.item.renderer.ItemRenderer;
 import io.xol.chunkstories.api.rendering.Primitive;
 import io.xol.chunkstories.api.rendering.RenderingInterface;
+import io.xol.chunkstories.api.rendering.item.ItemRenderer;
 import io.xol.chunkstories.api.rendering.textures.Texture2D;
 import io.xol.chunkstories.api.rendering.vertex.VertexBuffer;
 import io.xol.chunkstories.api.rendering.vertex.VertexFormat;
@@ -31,7 +31,7 @@ public class DefaultItemRenderer extends ItemRenderer
 	public DefaultItemRenderer(Item item)
 	{
 		super(null);
-		this.itemType = item.getType();
+		this.itemType = item.getDefinition();
 		
 		this.textures = ((ClientContent)itemType.store().parent()).textures();
 	}
@@ -57,8 +57,8 @@ public class DefaultItemRenderer extends ItemRenderer
 		if(texture == null)
 			texture = textures.getTexture("items/icons/notex.png");
 		
-		int width = slotSize * pile.getItem().getType().getSlotsWidth();
-		int height = slotSize * pile.getItem().getType().getSlotsHeight();
+		int width = slotSize * pile.getItem().getDefinition().getSlotsWidth();
+		int height = slotSize * pile.getItem().getDefinition().getSlotsHeight();
 		renderingInterface.getGuiRenderer().drawBoxWindowsSpaceWithSize(screenPositionX, screenPositionY, width, height, 0, 1, 1, 0, texture, true, true, null);
 	}
 
@@ -71,7 +71,7 @@ public class DefaultItemRenderer extends ItemRenderer
 		handTransformation2.rotate((float) (Math.PI / 2f), new Vector3f(0.0f, 1.0f, 0.0f));
 		handTransformation2.translate(new Vector3f(-0.0f, 0.0f, 0.2f));
 		//handTransformation2.translate(new Vector3f(-0.00f, -0.15f, 0.0f));
-		handTransformation2.scale(new Vector3f(1.0f, 0.20f * pile.getItem().getType().getSlotsWidth(), 0.20f * pile.getItem().getType().getSlotsHeight()));
+		handTransformation2.scale(new Vector3f(1.0f, 0.20f * pile.getItem().getDefinition().getSlotsWidth(), 0.20f * pile.getItem().getDefinition().getSlotsHeight()));
 		renderingInterface.setObjectMatrix(handTransformation2);
 
 		textures.getTexture(pile.getTextureName()).setLinearFiltering(false);

@@ -15,10 +15,11 @@ import io.xol.chunkstories.api.exceptions.world.WorldException;
 import io.xol.chunkstories.api.input.InputsManager;
 import io.xol.chunkstories.api.item.Item;
 import io.xol.chunkstories.api.item.ItemDefinition;
+import io.xol.chunkstories.api.item.ItemVoxel;
 import io.xol.chunkstories.api.item.inventory.ItemPile;
-import io.xol.chunkstories.api.item.renderer.ItemRenderer;
 import io.xol.chunkstories.api.player.Player;
 import io.xol.chunkstories.api.rendering.RenderingInterface;
+import io.xol.chunkstories.api.rendering.item.ItemRenderer;
 import io.xol.chunkstories.api.sound.SoundSource.Mode;
 import io.xol.chunkstories.api.voxel.Voxel;
 import io.xol.chunkstories.api.voxel.materials.Material;
@@ -27,6 +28,7 @@ import io.xol.chunkstories.api.world.World.WorldCell;
 import io.xol.chunkstories.api.world.WorldMaster;
 import io.xol.chunkstories.api.world.cell.CellData;
 import io.xol.chunkstories.api.world.cell.FutureCell;
+import io.xol.chunkstories.core.entity.EntityGroundItem;
 
 //(c) 2015-2017 XolioWare Interactive
 //http://chunkstories.xyz
@@ -89,7 +91,7 @@ public class ItemMiningTool extends Item {
 								
 								FutureCell fvc = new FutureCell(ctx);
 								
-								fvc.setVoxel(this.getType().store().parent().voxels().air());
+								fvc.setVoxel(this.getDefinition().store().parent().voxels().air());
 								
 								//TODO should this event be a part of the world implem poke() method ?
 								//Check no one minds
@@ -104,8 +106,32 @@ public class ItemMiningTool extends Item {
 										rnd.set(progress.loc);
 										rnd.add(Math.random() * 0.98, Math.random() * 0.98, Math.random() * 0.98);
 										world.getParticlesManager().spawnParticleAtPosition("voxel_frag", rnd);
-										world.getSoundManager().playSoundEffect("sounds/gameplay/voxel_remove.ogg", Mode.NORMAL, progress.loc, 1.0f, 1.0f);
 									}
+									world.getSoundManager().playSoundEffect("sounds/gameplay/voxel_remove.ogg", Mode.NORMAL, progress.loc, 1.0f, 1.0f);
+									
+									Location itemSpawnLocation = new Location(world, progress.loc);
+									itemSpawnLocation.add(0.5, 0.0, 0.5);
+									ItemPile droppedItemPile = null;
+									
+									for(ItemPile pile : progress.context.getVoxel().getItems()) {
+										//Look for a basic match
+										if(droppedItemPile == null)
+											droppedItemPile = pile.duplicate();
+										
+										//Look for a hard match
+										if(pile.getItem() instanceof ItemVoxel) {
+											ItemVoxel pi = (ItemVoxel)pile.getItem();
+											if(pi.getVoxelMeta() == progress.context.getMetaData())
+												droppedItemPile = pile.duplicate();
+										}
+									}
+									
+									
+									EntityGroundItem thrownItem = (EntityGroundItem) getDefinition().store().parent().entities().getEntityTypeByName("groundItem").create(itemSpawnLocation);
+									thrownItem.positionComponent.setPosition(itemSpawnLocation);
+									thrownItem.velocityComponent.setVelocity(new Vector3d(Math.random() * 0.125 - 0.0625, 0.1, Math.random() * 0.125 - 0.0625));
+									thrownItem.setItemPile(droppedItemPile);
+									world.addEntity(thrownItem);
 									
 									try {
 										world.poke(fvc, entityModifier);
