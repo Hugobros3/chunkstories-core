@@ -16,6 +16,9 @@ description = 'The free base content chunkstories is built on.'
 group = 'io.xol.chunkstories'
 version = '125'
 
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
+
 ext {
 	apiRevisionBuiltAgainst = '116'
 	useEclipseCompiler = true
@@ -24,11 +27,13 @@ ext {
 buildscript {
 	repositories {
 		mavenCentral()
-		maven { url 'https://jitpack.io' }
+		maven { url "http://maven.xol.io/repository/public/" }
+		//maven { url 'https://jitpack.io' }
 	}
 
 	dependencies {
-		classpath 'com.github.johni0702:gradle-ecj-plugin:795736c7bd085c6ff3a5fbd3f5d2913c94fe589e'
+		//classpath 'com.github.johni0702:gradle-ecj-plugin:795736c7bd085c6ff3a5fbd3f5d2913c94fe589e'
+		classpath 'de.johni0702.gradle:gradle-ecj-plugin:1.1-JAVA9'
 	}
 }
 
