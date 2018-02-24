@@ -99,7 +99,7 @@ configurations {
 }
 
 dependencies {
-	deployerJars "org.apache.maven.wagon:wagon-ssh:2.12" //<-- fuck this fuck this fuck this
+	deployerJars "org.apache.maven.wagon:wagon-ssh:3.0.0"
 }
 
 //Create a properties.gradle with login credentials to use this.
