@@ -62,4 +62,5 @@ The local maven repository on your computer (.m2 folder) now contains a copy of 
 ### License
 
 The chunkstories-core **Java Code** is released under LGPL, see LICENSE.MD
-Thechunkstories-core **assets** (the rest) that aren't specified otherwise in ATTRIBUTION.md are released under Creative Commons NON-COMMERCIAL ATTRIBUTION REDISTRIBUABLE, meaning you can use them with your mods, hack them up and have fun, but you can't use them in commercial projects nor claim you made them. 
+
+The chunkstories-core **assets** (the rest) that aren't specified otherwise in ATTRIBUTION.md are released under Creative Commons NON-COMMERCIAL ATTRIBUTION REDISTRIBUABLE, meaning you can use them with your mods, hack them up and have fun, but you can't use them in commercial projects nor claim you made them. 
