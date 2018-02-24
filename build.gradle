@@ -30,9 +30,9 @@ repositories {
 	}
 }
 
-description = 'The free base content chunkstories is built on.'
+description = 'The base content chunkstories is built on.'
 group = 'io.xol.chunkstories'
-version = '125'
+version = '126'
 
 sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
