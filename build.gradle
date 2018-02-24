@@ -1,4 +1,22 @@
 // Apply the java plugin to add support for Java
+buildscript {
+	repositories {
+		mavenCentral()
+		maven { url "http://maven.xol.io/repository/public/" }
+		//maven { url 'https://jitpack.io' }
+	}
+
+	dependencies {
+		//classpath 'com.github.johni0702:gradle-ecj-plugin:795736c7bd085c6ff3a5fbd3f5d2913c94fe589e'
+		classpath 'de.johni0702.gradle:gradle-ecj-plugin:1.1-JAVA9'
+	}
+}
+
+plugins {
+    id "com.github.hierynomus.license" version "0.14.0"
+}
+
+
 apply plugin: 'java'
 apply plugin: 'java-library'
 apply plugin: 'maven'
@@ -24,28 +42,23 @@ ext {
 	useEclipseCompiler = true
 }
 
-buildscript {
-	repositories {
-		mavenCentral()
-		maven { url "http://maven.xol.io/repository/public/" }
-		//maven { url 'https://jitpack.io' }
-	}
-
-	dependencies {
-		//classpath 'com.github.johni0702:gradle-ecj-plugin:795736c7bd085c6ff3a5fbd3f5d2913c94fe589e'
-		classpath 'de.johni0702.gradle:gradle-ecj-plugin:1.1-JAVA9'
-	}
-}
-
 dependencies {
 	compile group: 'io.xol.chunkstories', name: 'api', version: apiRevisionBuiltAgainst
-	
 	compile group: 'io.xol.enklume', name: 'enklume', version: 100
 }
 
 if(ext.useEclipseCompiler) {
 	apply plugin: 'de.johni0702.ecj'
 	println "Using ECJ compiler"
+}
+
+license {
+    header rootProject.file('codequality/header-include-notice.txt')
+    strictCheck true
+	
+	mapping {
+        java='DOUBLESLASH_STYLE'
+    }
 }
 
 

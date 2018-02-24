@@ -1,3 +1,9 @@
+//
+// This file is a part of the Chunk Stories API codebase
+// Check out README.md for more information
+// Website: http://chunkstories.xyz
+//
+
 package io.xol.chunkstories.core.logic;
 
 import org.joml.Vector3d;
@@ -13,10 +19,6 @@ import io.xol.chunkstories.api.math.Math2;
 import io.xol.chunkstories.core.CoreContentPlugin;
 import io.xol.chunkstories.core.entity.EntityGroundItem;
 import io.xol.chunkstories.core.entity.EntityPlayer;
-
-//(c) 2015-2017 XolioWare Interactive
-//http://chunkstories.xyz
-//http://xol.io
 
 public class ItemsLogicListener implements Listener {
 	private final CoreContentPlugin core;

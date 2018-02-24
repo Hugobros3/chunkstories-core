@@ -1,3 +1,9 @@
+//
+// This file is a part of the Chunk Stories API codebase
+// Check out README.md for more information
+// Website: http://chunkstories.xyz
+//
+
 package io.xol.chunkstories.core;
 
 import io.xol.chunkstories.api.GameContext;
@@ -5,10 +11,6 @@ import io.xol.chunkstories.api.plugin.ChunkStoriesPlugin;
 import io.xol.chunkstories.api.plugin.PluginInformation;
 import io.xol.chunkstories.core.logic.ItemsLogicListener;
 import io.xol.chunkstories.core.logic.RenderingEventsListener;
-
-//(c) 2015-2017 XolioWare Interactive
-//http://chunkstories.xyz
-//http://xol.io
 
 /** 'Glue' for hooking core functions into the base engine */
 public class CoreContentPlugin extends ChunkStoriesPlugin {

@@ -1,3 +1,9 @@
+//
+// This file is a part of the Chunk Stories API codebase
+// Check out README.md for more information
+// Website: http://chunkstories.xyz
+//
+
 package io.xol.chunkstories.core.entity;
 
 import java.util.Iterator;
@@ -59,10 +65,6 @@ import io.xol.chunkstories.core.entity.components.EntityComponentSelectedItem;
 import io.xol.chunkstories.core.item.armor.ItemArmor;
 import io.xol.chunkstories.core.item.inventory.InventoryLocalCreativeMenu;
 import io.xol.chunkstories.core.voxel.VoxelClimbable;
-
-//(c) 2015-2017 XolioWare Interactive
-// http://chunkstories.xyz
-// http://xol.io
 
 /**
  * Core/Vanilla player, has all the functionality you'd want from it: creative/survival mode, flying and walking controller...

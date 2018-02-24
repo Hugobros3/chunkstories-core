@@ -1,3 +1,9 @@
+//
+// This file is a part of the Chunk Stories API codebase
+// Check out README.md for more information
+// Website: http://chunkstories.xyz
+//
+
 package io.xol.chunkstories.core.entity.ai;
 
 import java.util.Collection;
@@ -12,10 +18,6 @@ import io.xol.chunkstories.core.entity.EntityHumanoid;
 import io.xol.chunkstories.core.entity.EntityHumanoid.EntityHumanoidStance;
 import io.xol.chunkstories.core.entity.EntityPlayer;
 import io.xol.chunkstories.core.entity.EntityZombie;
-
-//(c) 2015-2017 XolioWare Interactive
-//http://chunkstories.xyz
-//http://xol.io
 
 public class ZombieAI extends GenericHumanoidAI
 {

@@ -1,3 +1,9 @@
+//
+// This file is a part of the Chunk Stories API codebase
+// Check out README.md for more information
+// Website: http://chunkstories.xyz
+//
+
 package io.xol.chunkstories.core.logic;
 
 import io.xol.chunkstories.api.events.EventHandler;
@@ -10,6 +16,7 @@ import io.xol.chunkstories.core.item.ItemMiningTool.MiningProgress;
 import io.xol.chunkstories.core.item.renderer.decals.BreakingBlockDecal;
 
 public class RenderingEventsListener implements Listener {
+	@SuppressWarnings("unused")
 	private final CoreContentPlugin core;
 	
 	public RenderingEventsListener(CoreContentPlugin core) {
