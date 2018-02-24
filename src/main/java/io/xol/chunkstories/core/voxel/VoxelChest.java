@@ -46,19 +46,16 @@ public class VoxelChest extends Voxel
 	@Override
 	public boolean handleInteraction(Entity entity, ChunkCell voxelContext, Input input)
 	{
-		//Open GUI
 		if(input.getName().equals("mouse.right") && voxelContext.getWorld() instanceof WorldMaster) {
 			//Only actual players can open that kind of stuff
 			if(entity instanceof EntityControllable) {
 				EntityControllable e = (EntityControllable)entity;
 				Controller c = e.getController();
 				
-				if(c instanceof Player) {
+				if(c instanceof Player && ((Player) c).getLocation().distance(voxelContext.getLocation()) <= 5) {
 					Player p = (Player)c;
 					
-					//System.out.println(getInventory(voxelContext).getWidth() + " : " + getInventory(voxelContext).getHeight());
 					p.openInventory(getInventory(voxelContext));
-					//p.openInventory(((EntityChest)this.getEntity(voxelContext)).getInventory());
 				}
 				
 			}
