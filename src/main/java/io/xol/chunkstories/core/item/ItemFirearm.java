@@ -1,6 +1,17 @@
+//
+// This file is a part of the Chunk Stories API codebase
+// Check out README.md for more information
+// Website: http://chunkstories.xyz
+//
+
 package io.xol.chunkstories.core.item;
 
 import java.util.Iterator;
+
+import org.joml.Matrix4f;
+import org.joml.Vector3d;
+import org.joml.Vector3dc;
+import org.joml.Vector4f;
 
 import io.xol.chunkstories.api.Location;
 import io.xol.chunkstories.api.client.LocalPlayer;
@@ -12,34 +23,25 @@ import io.xol.chunkstories.api.entity.components.EntityComponentRotation;
 import io.xol.chunkstories.api.entity.interfaces.EntityControllable;
 import io.xol.chunkstories.api.entity.interfaces.EntityCreative;
 import io.xol.chunkstories.api.input.Input;
-import io.xol.chunkstories.api.item.ItemType;
+import io.xol.chunkstories.api.item.ItemDefinition;
 import io.xol.chunkstories.api.item.interfaces.ItemCustomHoldingAnimation;
 import io.xol.chunkstories.api.item.interfaces.ItemOverlay;
 import io.xol.chunkstories.api.item.interfaces.ItemZoom;
 import io.xol.chunkstories.api.item.inventory.Inventory;
 import io.xol.chunkstories.api.item.inventory.ItemPile;
-import io.xol.chunkstories.api.item.renderer.ItemRenderer;
-import org.joml.Matrix4f;
-import org.joml.Vector3d;
-import org.joml.Vector3dc;
-import org.joml.Vector4f;
 import io.xol.chunkstories.api.physics.CollisionBox;
 import io.xol.chunkstories.api.rendering.RenderingInterface;
+import io.xol.chunkstories.api.rendering.item.ItemRenderer;
 import io.xol.chunkstories.api.rendering.text.FontRenderer.Font;
 import io.xol.chunkstories.api.sound.SoundSource.Mode;
 import io.xol.chunkstories.api.voxel.Voxel;
-import io.xol.chunkstories.api.world.EditableVoxelContext;
-import io.xol.chunkstories.api.world.VoxelContext;
 import io.xol.chunkstories.api.world.World;
+import io.xol.chunkstories.api.world.World.WorldCell;
 import io.xol.chunkstories.api.world.WorldClient;
 import io.xol.chunkstories.api.world.WorldMaster;
 import io.xol.chunkstories.core.entity.EntityPlayer;
 import io.xol.chunkstories.core.item.renderer.FlatIconItemRenderer;
 import io.xol.chunkstories.core.item.renderer.ObjViewModelRenderer;
-
-//(c) 2015-2017 XolioWare Interactive
-//http://chunkstories.xyz
-//http://xol.io
 
 public class ItemFirearm extends ItemWeapon implements ItemOverlay, ItemZoom, ItemCustomHoldingAnimation
 {
@@ -74,7 +76,7 @@ public class ItemFirearm extends ItemWeapon implements ItemOverlay, ItemZoom, It
 
 	private ItemPile currentMagazine;
 
-	public ItemFirearm(ItemType type)
+	public ItemFirearm(ItemDefinition type)
 	{
 		super(type);
 
@@ -109,11 +111,11 @@ public class ItemFirearm extends ItemWeapon implements ItemOverlay, ItemZoom, It
 	{
 		ItemRenderer itemRenderer;
 		
-		String modelName = getType().resolveProperty("modelObj", "none");
+		String modelName = getDefinition().resolveProperty("modelObj", "none");
 		if (!modelName.equals("none"))
-			itemRenderer = new ObjViewModelRenderer(this, fallbackRenderer, modelName, getType().resolveProperty("modelDiffuse", "none"));
+			itemRenderer = new ObjViewModelRenderer(this, fallbackRenderer, modelName, getDefinition().resolveProperty("modelDiffuse", "none"));
 		else
-			itemRenderer = new FlatIconItemRenderer(this, fallbackRenderer, getType());
+			itemRenderer = new FlatIconItemRenderer(this, fallbackRenderer, getDefinition());
 
 		if (scopedWeapon)
 			itemRenderer = new ScopedWeaponItemRenderer(itemRenderer);
@@ -280,18 +282,17 @@ public class ItemFirearm extends ItemWeapon implements ItemOverlay, ItemZoom, It
 					boolean brokeLastBlock = false;
 					while(user.getWorld() instanceof WorldMaster && shotBlock != null)
 					{
-						EditableVoxelContext peek = user.getWorld().peekSafely(shotBlock);
+						WorldCell peek = user.getWorld().peekSafely(shotBlock);
 						//int data = peek.getData();
 						Voxel voxel = peek.getVoxel();
 						
 						brokeLastBlock = false;
-						if(voxel.getId() != 0 && voxel.getMaterial().resolveProperty("bulletBreakable") != null && voxel.getMaterial().resolveProperty("bulletBreakable").equals("true"))
+						if(!voxel.isAir() && voxel.getMaterial().resolveProperty("bulletBreakable") != null && voxel.getMaterial().resolveProperty("bulletBreakable").equals("true"))
 						{
-							//Spawn an event to check if it's okay
+							//TODO Spawn an event to check if it's okay
 							
 							//Destroy it
-							peek.pokeSimple(0);
-							//user.getWorld().setVoxelData(shotBlock, 0);
+							peek.setVoxel(voxel.store().air());
 							
 							brokeLastBlock = true;
 							for(int i = 0; i < 25; i++)
@@ -331,14 +332,14 @@ public class ItemFirearm extends ItemWeapon implements ItemOverlay, ItemZoom, It
 
 							//shotBlock.setX(shotBlock.getX() + 1);
 							
-							VoxelContext peek = user.getWorld().peekSafely(shotBlock);
+							WorldCell peek = user.getWorld().peekSafely(shotBlock);
 							
 							//int data = user.getWorld().getVoxelData(shotBlock);
 							//Voxel voxel = VoxelsStore.get().getVoxelById(data);
 
 							//This seems fine
 
-							for (CollisionBox box : peek.getVoxel().getTranslatedCollisionBoxes(user.getWorld(), (int) (double) shotBlock.x(), (int) (double) shotBlock.y(), (int) (double) shotBlock.z()))
+							for (CollisionBox box : peek.getTranslatedCollisionBoxes())
 							{
 								Vector3dc thisLocation = box.lineIntersection(eyeLocation, direction);
 								if (thisLocation != null)

@@ -1,31 +1,41 @@
+//
+// This file is a part of the Chunk Stories API codebase
+// Check out README.md for more information
+// Website: http://chunkstories.xyz
+//
+
 package io.xol.chunkstories.core.generator;
 
 import java.util.Random;
 
-import io.xol.chunkstories.api.content.Content.WorldGenerators.WorldGeneratorType;
+import io.xol.chunkstories.api.content.Content.WorldGenerators.WorldGeneratorDefinition;
+import io.xol.chunkstories.api.voxel.Voxel;
 import io.xol.chunkstories.api.world.generator.environment.DefaultWorldEnvironment;
 import io.xol.chunkstories.api.world.World;
 import io.xol.chunkstories.api.world.generator.environment.WorldEnvironment;
 import io.xol.chunkstories.api.world.generator.WorldGenerator;
 import io.xol.chunkstories.api.world.chunk.Chunk;
 
-//(c) 2015-2017 XolioWare Interactive
-// http://chunkstories.xyz
-// http://xol.io
-
 public class FlatGenerator extends WorldGenerator
 {
 	DefaultWorldEnvironment worldEnv;
 	Random rnd = new Random();
 
-	public FlatGenerator(WorldGeneratorType type, World w)
+	public FlatGenerator(WorldGeneratorDefinition type, World world)
 	{
-		super(type, w);
-		ws = world.getSizeInChunks() * 32;
+		super(type, world);
+		worldsize = world.getSizeInChunks() * 32;
 		worldEnv = new DefaultWorldEnvironment(world);
+
+		this.GROUND_VOXEL = world.getGameContext().getContent().voxels().getVoxelByName("grass");
+		this.WALL_VOXEL = world.getGameContext().getContent().voxels().getVoxelByName("cobble");
+		this.WALL_TOP_VOXEL = world.getGameContext().getContent().voxels().getVoxelByName("ironGrill");
 	}
 
-	int ws;
+	int worldsize;
+	private final Voxel GROUND_VOXEL;
+	private final Voxel WALL_VOXEL;
+	private final Voxel WALL_TOP_VOXEL;
 
 	@Override
 	public Chunk generateChunk(Chunk chunk)
@@ -36,28 +46,25 @@ public class FlatGenerator extends WorldGenerator
 		
 		rnd.setSeed(cx * 32 + cz + 48716148);
 
-		//CubicChunk c = new CubicChunk(region, cx, cy, cz);
 		for (int x = 0; x < 32; x++)
 			for (int z = 0; z < 32; z++)
 			{
-				int type = 27;
-				//int v = getHeightAt(cx * 32 + x, cz * 32 + z);
-				int v = 21;
+				Voxel type = WALL_VOXEL; //cobble
+				
+				int v = 21; //base height
 				if ((cx * 32 + x) % 256 == 0 || (cz * 32 + z) % 256 == 0)
 				{
-					v = 30;
+					v = 30; //wall height
 				}
 				else
-					type = 2;
+					type = GROUND_VOXEL;
 				//int v = 250;
 				int y = cy * 32;
 				while (y < cy * 32 + 32 && y <= v)
 				{
-					if (y == 29)
-						type = 23;
 					if (y == 30)
-						type = 25;
-					chunk.pokeSimpleSilently(x, y, z, type);
+						type = WALL_TOP_VOXEL;
+					chunk.pokeSimpleSilently(x, y, z, type, -1, -1, 0);
 					y++;
 				}
 			}

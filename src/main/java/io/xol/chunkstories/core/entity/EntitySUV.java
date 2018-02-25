@@ -1,18 +1,20 @@
+//
+// This file is a part of the Chunk Stories API codebase
+// Check out README.md for more information
+// Website: http://chunkstories.xyz
+//
+
 package io.xol.chunkstories.core.entity;
 
 import io.xol.chunkstories.api.Location;
 import io.xol.chunkstories.api.entity.EntityBase;
-import io.xol.chunkstories.api.entity.EntityType;
-
-//(c) 2015-2017 XolioWare Interactive
-// http://chunkstories.xyz
-// http://xol.io
+import io.xol.chunkstories.api.entity.EntityDefinition;
 
 public class EntitySUV extends EntityBase// implements EntityRenderable
 {
 	int i = 0;
 
-	public EntitySUV(EntityType t, Location location)
+	public EntitySUV(EntityDefinition t, Location location)
 	{
 		super(t, location);
 		//anim = new BVHAnimation(new File("res/models/human.bvh"));

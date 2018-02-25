@@ -1,4 +1,22 @@
 // Apply the java plugin to add support for Java
+buildscript {
+	repositories {
+		mavenCentral()
+		maven { url "http://maven.xol.io/repository/public/" }
+		//maven { url 'https://jitpack.io' }
+	}
+
+	dependencies {
+		//classpath 'com.github.johni0702:gradle-ecj-plugin:795736c7bd085c6ff3a5fbd3f5d2913c94fe589e'
+		classpath 'de.johni0702.gradle:gradle-ecj-plugin:1.1-JAVA9'
+	}
+}
+
+plugins {
+    id "com.github.hierynomus.license" version "0.14.0"
+}
+
+
 apply plugin: 'java'
 apply plugin: 'java-library'
 apply plugin: 'maven'
@@ -12,35 +30,35 @@ repositories {
 	}
 }
 
-description = 'The free base content chunkstories is built on.'
+description = 'The base content chunkstories is built on.'
 group = 'io.xol.chunkstories'
-version = '124'
+version = '126'
+
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
 
 ext {
-	apiRevisionBuiltAgainst = '115'
+	apiRevisionBuiltAgainst = '117'
 	useEclipseCompiler = true
-}
-
-buildscript {
-	repositories {
-		mavenCentral()
-		maven { url 'https://jitpack.io' }
-	}
-
-	dependencies {
-		classpath 'com.github.johni0702:gradle-ecj-plugin:795736c7bd085c6ff3a5fbd3f5d2913c94fe589e'
-	}
 }
 
 dependencies {
 	compile group: 'io.xol.chunkstories', name: 'api', version: apiRevisionBuiltAgainst
-	
 	compile group: 'io.xol.enklume', name: 'enklume', version: 100
 }
 
 if(ext.useEclipseCompiler) {
 	apply plugin: 'de.johni0702.ecj'
 	println "Using ECJ compiler"
+}
+
+license {
+    header rootProject.file('codequality/header-include-notice.txt')
+    strictCheck true
+	
+	mapping {
+        java='DOUBLESLASH_STYLE'
+    }
 }
 
 
@@ -81,7 +99,7 @@ configurations {
 }
 
 dependencies {
-	deployerJars "org.apache.maven.wagon:wagon-ssh:2.12" //<-- fuck this fuck this fuck this
+	deployerJars "org.apache.maven.wagon:wagon-ssh:3.0.0"
 }
 
 //Create a properties.gradle with login credentials to use this.

@@ -1,3 +1,9 @@
+//
+// This file is a part of the Chunk Stories API codebase
+// Check out README.md for more information
+// Website: http://chunkstories.xyz
+//
+
 package io.xol.chunkstories.core.voxel.components;
 
 import java.io.DataInputStream;
@@ -13,18 +19,14 @@ import io.xol.chunkstories.api.rendering.text.TextMesh;
 import io.xol.chunkstories.api.rendering.textures.Texture2D;
 import io.xol.chunkstories.api.util.IterableIterator;
 import io.xol.chunkstories.api.voxel.components.VoxelComponentDynamicRenderer;
-import io.xol.chunkstories.api.voxel.components.VoxelComponents;
-import io.xol.chunkstories.api.world.chunk.Chunk.ChunkVoxelContext;
+import io.xol.chunkstories.api.world.cell.CellComponents;
+import io.xol.chunkstories.api.world.chunk.Chunk.ChunkCell;
 import io.xol.chunkstories.api.world.serialization.StreamSource;
 import io.xol.chunkstories.api.world.serialization.StreamTarget;
 
-//(c) 2015-2017 XolioWare Interactive
-//http://chunkstories.xyz
-//http://xol.io
-
 public class VoxelComponentSignText extends VoxelComponentDynamicRenderer
 {
-	public VoxelComponentSignText(VoxelComponents holder) {
+	public VoxelComponentSignText(CellComponents holder) {
 		super(holder);
 	}
 	
@@ -73,13 +75,13 @@ public class VoxelComponentSignText extends VoxelComponentDynamicRenderer
 		}
 		
 		@Override
-		public void renderVoxels(RenderingInterface renderingContext, IterableIterator<ChunkVoxelContext> renderableEntitiesIterator)
+		public void renderVoxels(RenderingInterface renderingContext, IterableIterator<ChunkCell> renderableEntitiesIterator)
 		{
 			setupRender(renderingContext);
 			
 			renderingContext.setObjectMatrix(null);
 	
-			for (ChunkVoxelContext context : renderableEntitiesIterator)//.getElementsInFrustrumOnly())
+			for (ChunkCell context : renderableEntitiesIterator)//.getElementsInFrustrumOnly())
 			{
 				if (renderingContext.getCamera().getCameraPosition().distance(context.getLocation()) > 32)
 					continue;

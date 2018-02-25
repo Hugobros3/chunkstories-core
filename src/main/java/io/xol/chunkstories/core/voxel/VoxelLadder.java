@@ -1,16 +1,22 @@
+//
+// This file is a part of the Chunk Stories API codebase
+// Check out README.md for more information
+// Website: http://chunkstories.xyz
+//
+
 package io.xol.chunkstories.core.voxel;
 
 import io.xol.chunkstories.api.physics.CollisionBox;
 import io.xol.chunkstories.api.voxel.Voxel;
-import io.xol.chunkstories.api.voxel.VoxelType;
+import io.xol.chunkstories.api.voxel.VoxelDefinition;
 import io.xol.chunkstories.api.voxel.models.VoxelModel;
-import io.xol.chunkstories.api.world.VoxelContext;
+import io.xol.chunkstories.api.world.cell.CellData;
 
 public class VoxelLadder extends Voxel implements VoxelClimbable
 {
 	VoxelModel[] models = new VoxelModel[4];
 
-	public VoxelLadder(VoxelType type)
+	public VoxelLadder(VoxelDefinition type)
 	{
 		super(type);
 		for (int i = 0; i < 4; i++)
@@ -18,7 +24,7 @@ public class VoxelLadder extends Voxel implements VoxelClimbable
 	}
 
 	@Override
-	public VoxelModel getVoxelRenderer(VoxelContext info)
+	public VoxelModel getVoxelRenderer(CellData info)
 	{
 		int meta = info.getMetaData();
 		
@@ -34,7 +40,7 @@ public class VoxelLadder extends Voxel implements VoxelClimbable
 	}
 
 	@Override
-	public CollisionBox[] getCollisionBoxes(VoxelContext info) {
+	public CollisionBox[] getCollisionBoxes(CellData info) {
 
 		int meta = info.getMetaData();
 		

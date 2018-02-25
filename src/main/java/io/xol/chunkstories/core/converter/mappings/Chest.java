@@ -1,11 +1,16 @@
+//
+// This file is a part of the Chunk Stories API codebase
+// Check out README.md for more information
+// Website: http://chunkstories.xyz
+//
+
 package io.xol.chunkstories.core.converter.mappings;
 
 import io.xol.chunkstories.api.converter.mappings.NonTrivialMapper;
-import io.xol.chunkstories.api.exceptions.world.WorldException;
 import io.xol.chunkstories.api.voxel.Voxel;
 import io.xol.chunkstories.api.world.World;
+import io.xol.chunkstories.api.world.cell.FutureCell;
 import io.xol.chunkstories.api.world.chunk.Chunk;
-import io.xol.chunkstories.core.voxel.VoxelChest;
 import io.xol.enklume.MinecraftRegion;
 
 public class Chest extends NonTrivialMapper {
@@ -22,7 +27,7 @@ public class Chest extends NonTrivialMapper {
 		Chunk chunk = csWorld.getChunkWorldCoordinates(csX, csY, csZ);
 		assert chunk != null;
 		
-		int baked = voxelID;
+		/*int baked = voxelID;
 		
 		if (voxel instanceof VoxelChest)
 			try {
@@ -34,7 +39,8 @@ public class Chest extends NonTrivialMapper {
 		else
 			System.out.println("fuck you 666");
 		
-		csWorld.pokeSimpleSilently(csX, csY, csZ, baked);
+		csWorld.pokeRawSilently(csX, csY, csZ, baked);*/
+		csWorld.pokeSimple(new FutureCell(csWorld, csX, csY, csZ, voxel));
 	}
 	
 }

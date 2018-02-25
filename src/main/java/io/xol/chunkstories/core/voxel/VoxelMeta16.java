@@ -1,23 +1,24 @@
+//
+// This file is a part of the Chunk Stories API codebase
+// Check out README.md for more information
+// Website: http://chunkstories.xyz
+//
+
 package io.xol.chunkstories.core.voxel;
 
 import io.xol.chunkstories.api.item.ItemVoxel;
 import io.xol.chunkstories.api.item.inventory.ItemPile;
 import io.xol.chunkstories.api.voxel.Voxel;
-import io.xol.chunkstories.api.voxel.VoxelFormat;
 import io.xol.chunkstories.api.voxel.VoxelSides;
-import io.xol.chunkstories.api.voxel.VoxelType;
+import io.xol.chunkstories.api.voxel.VoxelDefinition;
 import io.xol.chunkstories.api.voxel.textures.VoxelTexture;
-import io.xol.chunkstories.api.world.VoxelContext;
-
-//(c) 2015-2017 XolioWare Interactive
-//http://chunkstories.xyz
-//http://xol.io
+import io.xol.chunkstories.api.world.cell.CellData;
 
 public class VoxelMeta16 extends Voxel
 {
 	VoxelTexture colors[] = new VoxelTexture[16];
 
-	public VoxelMeta16(VoxelType type)
+	public VoxelMeta16(VoxelDefinition type)
 	{
 		super(type);
 		for (int i = 0; i < 16; i++)
@@ -25,13 +26,12 @@ public class VoxelMeta16 extends Voxel
 	}
 
 	@Override
-	public VoxelTexture getVoxelTexture(int data, VoxelSides side, VoxelContext info) // 0 for top, 1 bot,
+	public VoxelTexture getVoxelTexture(VoxelSides side, CellData info) // 0 for top, 1 bot,
 	// 2,3,4,5
 	// north/south/east/west
 	{
-		int meta = VoxelFormat.meta(data);
 		// System.out.println("swag");
-		return colors[meta];
+		return colors[info.getMetaData()];
 	}
 	
 	@Override

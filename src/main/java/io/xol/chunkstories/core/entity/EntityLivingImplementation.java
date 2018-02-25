@@ -1,3 +1,9 @@
+//
+// This file is a part of the Chunk Stories API codebase
+// Check out README.md for more information
+// Website: http://chunkstories.xyz
+//
+
 package io.xol.chunkstories.core.entity;
 
 import org.joml.Vector2d;
@@ -12,21 +18,17 @@ import io.xol.chunkstories.api.entity.DamageCause;
 import io.xol.chunkstories.api.entity.Entity;
 import io.xol.chunkstories.api.entity.EntityBase;
 import io.xol.chunkstories.api.entity.EntityLiving;
-import io.xol.chunkstories.api.entity.EntityType;
+import io.xol.chunkstories.api.entity.EntityDefinition;
 import io.xol.chunkstories.api.entity.components.EntityComponentRotation;
 import io.xol.chunkstories.api.entity.components.EntityComponentVelocity;
 import io.xol.chunkstories.api.entity.interfaces.EntityControllable;
 import io.xol.chunkstories.api.entity.interfaces.EntityFlying;
 import io.xol.chunkstories.api.entity.interfaces.EntityWithVelocity;
 import io.xol.chunkstories.api.events.entity.EntityDamageEvent;
-import io.xol.chunkstories.api.world.VoxelContext;
 import io.xol.chunkstories.api.world.WorldClient;
 import io.xol.chunkstories.api.world.WorldMaster;
+import io.xol.chunkstories.api.world.cell.CellData;
 import io.xol.chunkstories.core.entity.components.EntityComponentHealth;
-
-//(c) 2015-2017 XolioWare Interactive
-//http://chunkstories.xyz
-//http://xol.io
 
 public abstract class EntityLivingImplementation extends EntityBase implements EntityLiving, EntityWithVelocity
 {
@@ -48,7 +50,7 @@ public abstract class EntityLivingImplementation extends EntityBase implements E
 	protected double lastStandingHeight = Double.NaN;
 	protected boolean wasStandingLastTick = true;
 
-	public EntityLivingImplementation(EntityType t, Location location)
+	public EntityLivingImplementation(EntityDefinition t, Location location)
 	{
 		super(t, location);
 
@@ -327,8 +329,8 @@ public abstract class EntityLivingImplementation extends EntityBase implements E
 	}
 
 	public boolean isInWater() {
-		for(VoxelContext vctx : world.getVoxelsWithin(this.getTranslatedBoundingBox())) {
-			if(vctx.getVoxel().getType().isLiquid())
+		for(CellData cell : world.getVoxelsWithin(this.getTranslatedBoundingBox())) {
+			if(cell.getVoxel().getDefinition().isLiquid())
 				return true;
 		}
 		return false;

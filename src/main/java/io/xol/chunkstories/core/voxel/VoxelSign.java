@@ -1,62 +1,56 @@
+//
+// This file is a part of the Chunk Stories API codebase
+// Check out README.md for more information
+// Website: http://chunkstories.xyz
+//
+
 package io.xol.chunkstories.core.voxel;
 
 import io.xol.chunkstories.api.entity.Entity;
 import io.xol.chunkstories.api.events.voxel.WorldModificationCause;
-import io.xol.chunkstories.api.exceptions.world.WorldException;
 import io.xol.chunkstories.api.exceptions.world.voxel.IllegalBlockModificationException;
 import io.xol.chunkstories.api.input.Input;
+import io.xol.chunkstories.api.rendering.voxel.VoxelRenderer;
 
 import org.joml.Vector2f;
 import org.joml.Vector3d;
 
 import io.xol.chunkstories.api.voxel.Voxel;
 import io.xol.chunkstories.api.voxel.VoxelCustomIcon;
-import io.xol.chunkstories.api.voxel.VoxelDynamicallyRendered;
-import io.xol.chunkstories.api.voxel.VoxelFormat;
-import io.xol.chunkstories.api.voxel.VoxelInteractive;
-import io.xol.chunkstories.api.voxel.VoxelLogic;
-import io.xol.chunkstories.api.voxel.VoxelType;
-import io.xol.chunkstories.api.voxel.components.VoxelComponentDynamicRenderer;
-import io.xol.chunkstories.api.voxel.models.VoxelRenderer;
-import io.xol.chunkstories.api.world.VoxelContext;
-import io.xol.chunkstories.api.world.chunk.Chunk.ChunkVoxelContext;
+import io.xol.chunkstories.api.voxel.VoxelDefinition;
+
+import io.xol.chunkstories.api.world.cell.CellData;
+import io.xol.chunkstories.api.world.cell.FutureCell;
+import io.xol.chunkstories.api.world.chunk.Chunk.ChunkCell;
+import io.xol.chunkstories.api.world.chunk.Chunk.FreshChunkCell;
 import io.xol.chunkstories.core.voxel.components.VoxelComponentSignText;
 
-//(c) 2015-2017 XolioWare Interactive
-//http://chunkstories.xyz
-//http://xol.io
-
-public class VoxelSign extends Voxel implements VoxelInteractive, VoxelLogic, VoxelCustomIcon, VoxelDynamicallyRendered
+public class VoxelSign extends Voxel implements VoxelCustomIcon
 {
-	public VoxelSign(VoxelType type)
+	public VoxelSign(VoxelDefinition type)
 	{
 		super(type);
 	}
 
 	@Override
-	public boolean handleInteraction(Entity entity, ChunkVoxelContext voxelContext, Input input)
+	public boolean handleInteraction(Entity entity, ChunkCell voxelContext, Input input)
 	{
 		return false;
 	}
 	
 	@Override
-	public VoxelRenderer getVoxelRenderer(VoxelContext info)
+	public VoxelRenderer getVoxelRenderer(CellData info)
 	{
 		return super.getVoxelRenderer(info);
 	}
 		
 	@Override
-	public int onPlace(ChunkVoxelContext context, int voxelData, WorldModificationCause cause) throws IllegalBlockModificationException
+	public void onPlace(FutureCell cell, WorldModificationCause cause) throws IllegalBlockModificationException
 	{
-		context.components().put("signData", new VoxelComponentSignText(context.components()));
-		
-		//super.onPlace(context, voxelData, cause);
-		//World world = context.getWorld();
-		int x = context.getX();
-		int y = context.getY();
-		int z = context.getZ();
-		
-		//super.onPlace(world, x, y, z, voxelData, entity);
+		//We don't create the components here, as the cell isn't actually changed yet!
+		int x = cell.getX();
+		int y = cell.getY();
+		int z = cell.getZ();
 		
 		if(cause != null && cause instanceof Entity)
 		{
@@ -82,30 +76,24 @@ public class VoxelSign extends Voxel implements VoxelInteractive, VoxelLogic, Vo
 			//System.out.println(asAngle);
 			
 			int meta = (int)(16 * asAngle / 360);
-			voxelData = VoxelFormat.changeMeta(voxelData, meta);
+			cell.setMetaData(meta);
 		}
-		
-		return voxelData;
 	}
 
 	@Override
-	public void onRemove(ChunkVoxelContext context, WorldModificationCause cause) throws WorldException {
-		context.components().erase();
+	public void whenPlaced(FreshChunkCell cell) {
+		VoxelComponentSignText signTextComponent = new VoxelComponentSignText(cell.components());
+		cell.registerComponent("signData", signTextComponent);
 	}
-
-	@Override
-	public int onModification(ChunkVoxelContext context, int voxelData, WorldModificationCause cause)
-			throws WorldException {
-		return voxelData;
-	}
-
-	@Override
-	public VoxelComponentDynamicRenderer getDynamicRendererComponent(ChunkVoxelContext context) {
+	
+	/*@Override
+	public VoxelComponentDynamicRenderer getDynamicRendererComponent(ChunkCell context) {
 		return getSignData(context);
-	}
+	}*/
 
-	private VoxelComponentSignText getSignData(ChunkVoxelContext context) {
-		return (VoxelComponentSignText) context.components().get("signData");
+	public VoxelComponentSignText getSignData(ChunkCell context) {
+		VoxelComponentSignText signTextComponent = (VoxelComponentSignText) context.components().get("signData");
+		return signTextComponent;
 	}
 	
 }

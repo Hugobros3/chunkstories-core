@@ -1,14 +1,19 @@
+//
+// This file is a part of the Chunk Stories API codebase
+// Check out README.md for more information
+// Website: http://chunkstories.xyz
+//
+
 package io.xol.chunkstories.core.entity;
 
 import io.xol.chunkstories.api.Location;
 import io.xol.chunkstories.api.entity.EntityBase;
-import io.xol.chunkstories.api.entity.EntityType;
+import io.xol.chunkstories.api.entity.EntityDefinition;
 import io.xol.chunkstories.api.entity.components.EntityComponentVelocity;
 import io.xol.chunkstories.api.item.inventory.ItemPile;
-import io.xol.chunkstories.api.math.Math2;
+import io.xol.chunkstories.api.physics.CollisionBox;
 
 import org.joml.Matrix4f;
-import org.joml.Vector2d;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
 import org.joml.Vector3f;
@@ -16,16 +21,10 @@ import io.xol.chunkstories.api.rendering.RenderingInterface;
 import io.xol.chunkstories.api.rendering.entity.EntityRenderable;
 import io.xol.chunkstories.api.rendering.entity.EntityRenderer;
 import io.xol.chunkstories.api.rendering.entity.RenderingIterator;
-import io.xol.chunkstories.api.sound.SoundSource.Mode;
 import io.xol.chunkstories.api.voxel.Voxel;
-import io.xol.chunkstories.api.voxel.VoxelFormat;
-import io.xol.chunkstories.api.world.VoxelContext;
 import io.xol.chunkstories.api.world.WorldClient;
 import io.xol.chunkstories.api.world.WorldMaster;
-
-//(c) 2015-2017 XolioWare Interactive
-//http://chunkstories.xyz
-//http://xol.io
+import io.xol.chunkstories.api.world.cell.CellData;
 
 public class EntityGroundItem extends EntityBase implements EntityRenderable
 {
@@ -38,13 +37,13 @@ public class EntityGroundItem extends EntityBase implements EntityRenderable
 	private long spawnTime;
 	private final EntityGroundItemPileComponent itemPileWithin;
 	
-	public EntityGroundItem(EntityType t, Location location)
+	public EntityGroundItem(EntityDefinition t, Location location)
 	{
 		super(t, location);
 		itemPileWithin = new EntityGroundItemPileComponent(this);
 	}
 	
-	public EntityGroundItem(EntityType t, Location location, ItemPile itemPile)
+	public EntityGroundItem(EntityDefinition t, Location location, ItemPile itemPile)
 	{
 		super(t, location);
 		itemPileWithin = new EntityGroundItemPileComponent(this, itemPile);
@@ -75,9 +74,9 @@ public class EntityGroundItem extends EntityBase implements EntityRenderable
 
 		if (world instanceof WorldMaster) {
 			Voxel voxelIn = world.peekSafely(positionComponent.getLocation()).getVoxel();
-			boolean inWater = voxelIn.getType().isLiquid();
+			boolean inWater = voxelIn.getDefinition().isLiquid();
 
-			double terminalVelocity = inWater ? -0.05 : -0.5;
+			double terminalVelocity = inWater ? -0.25 : -0.5;
 			if (velocity.y() > terminalVelocity && !this.isOnGround())
 				velocity.y = (velocity.y() - 0.016);
 			if (velocity.y() < terminalVelocity)
@@ -110,35 +109,8 @@ public class EntityGroundItem extends EntityBase implements EntityRenderable
 
 		if (world instanceof WorldClient) {
 			
-			if(!this.isOnGround())
+			if(this.isOnGround())
 			{
-				/*rotation += velocityComponent.getVelocity().length() * Math.random();
-				tilt = (float) Math2.mix(0.0, tilt + velocityComponent.getVelocity().length() * Math.random(),
-						Math2.clampd(velocity.length(), 0.0, 0.1) * 10.0);
-	
-				
-				Vector2d direction2d = new Vector2d(velocity.x(), velocity.z());
-	
-				if (direction2d.length() > 0.0) {
-					direction2d.normalize();
-					
-					Math.acos(direction2d.x());
-					Math.asin(direction2d.y());
-					double directionDegrees;
-					
-					//Y is sin by convention, if > 0 top part of the circle
-					if(direction2d.y() >= 0.0)
-					{
-						directionDegrees = -Math.acos(direction2d.x());
-					}
-					else
-						directionDegrees = Math.acos(direction2d.x());
-					
-					direction = (float)directionDegrees;
-					//direction = (float) -Math.toRadians(directionDegrees);
-				}*/
-			}
-			else {
 				rotation += 1.0f;
 				rotation %= 360;
 			}
@@ -152,7 +124,7 @@ public class EntityGroundItem extends EntityBase implements EntityRenderable
 	static class EntityGroundItemRenderer implements EntityRenderer<EntityGroundItem> {
 		
 		@Override
-		public int renderEntities(RenderingInterface renderingInterface, RenderingIterator<EntityGroundItem> renderableEntitiesIterator)
+		public int renderEntities(RenderingInterface renderer, RenderingIterator<EntityGroundItem> renderableEntitiesIterator)
 		{
 			int i = 0;
 			
@@ -163,12 +135,8 @@ public class EntityGroundItem extends EntityBase implements EntityRenderable
 				ItemPile within = e.itemPileWithin.getItemPile();
 				if(within != null)
 				{
-					VoxelContext context = e.getWorld().peekSafely(e.getLocation());
-					int modelBlockData = context.getData();
-
-					int lightSky = VoxelFormat.sunlight(modelBlockData);
-					int lightBlock = VoxelFormat.blocklight(modelBlockData);
-					renderingInterface.currentShader().setUniform2f("worldLightIn", lightBlock, lightSky );
+					CellData cell = e.getWorld().peekSafely(e.getLocation());
+					renderer.currentShader().setUniform2f("worldLightIn", cell.getBlocklight(), cell.getSunlight());
 					
 					Matrix4f matrix = new Matrix4f();
 					
@@ -176,7 +144,7 @@ public class EntityGroundItem extends EntityBase implements EntityRenderable
 					matrix.translate((float)loc.x, (float)(loc.y + Math.sin(Math.PI/180*e.rotation * 2) * 0.125 + 0.25), (float)loc.z);
 					//matrix.rotate((float)Math.PI/2, new Vector3f(1,0 ,0));
 					matrix.rotate((float)Math.PI/180*e.rotation, new Vector3f(0, 1, 0));
-					within.getItem().getType().getRenderer().renderItemInWorld(renderingInterface, within, e.getWorld(), e.getLocation(), matrix);
+					within.getItem().getDefinition().getRenderer().renderItemInWorld(renderer, within, e.getWorld(), e.getLocation(), matrix);
 					//renderingInterface.flush();
 				}
 				else
@@ -203,4 +171,11 @@ public class EntityGroundItem extends EntityBase implements EntityRenderable
 	{
 		return entityRenderer;
 	}
+
+	@Override
+	public CollisionBox getBoundingBox() {
+		return new CollisionBox(0.5, 0.75, 0.5).translate(-0.25, 0.0, -0.25);
+	}
+	
+	
 }

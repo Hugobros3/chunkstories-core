@@ -78,11 +78,11 @@ float bayer4(vec2 a)   {return bayer2( .5*a)   * .25     + bayer2(a); }
 float bayer8(vec2 a)   {return bayer4( .5*a)   * .25     + bayer2(a); }
 float bayer16(vec2 a)  {return bayer4( .25*a)  * .0625   + bayer4(a); }
 
-vec4 ComputeVolumetricLight(vec4 worldSpacePosition, vec3 lightVec, vec3 eyeDirection){
+vec3 ComputeVolumetricLight(vec3 background, vec4 worldSpacePosition, vec3 lightVec, vec3 eyeDirection){
 	const int steps = 16;
 	const float oneOverSteps = 1.0 / float(steps);
 
-	vec3 startRay = (shadowMatrix * (untranslatedMVInv * vec4(0.0))).rgb;
+	vec3 startRay = mat3(shadowMatrix) * untranslatedMVInv[3].xyz;
 	vec3 endRay = (shadowMatrix * (untranslatedMVInv * worldSpacePosition)).rgb;
 
 	vec3 increment = normalize(startRay - endRay) * distance(startRay, endRay) * oneOverSteps;
@@ -95,7 +95,7 @@ vec4 ComputeVolumetricLight(vec4 worldSpacePosition, vec3 lightVec, vec3 eyeDire
 	for (int i = 0; i < steps; i++){
 		vec3 shadowCoord = accuratizeShadow(vec4(rayPosition, 0.0)).rgb + vec3(0.0, 0.0, 0.0001);
 
-		ray += texture(shadowMap, shadowCoord, 0.0) * weight;
+		ray += texture(shadowMap, shadowCoord, 0.0);
 
 		rayPosition += increment;
 	}
@@ -104,9 +104,9 @@ vec4 ComputeVolumetricLight(vec4 worldSpacePosition, vec3 lightVec, vec3 eyeDire
 	float lDotV = 1.0 - dot(normalize(lightVec), normalize(eyeDirection));
 	
 	vec3 sunLight_g = mix(getSkyAbsorption(skyColor, zenithDensity(lDotU + multiScatterPhase)), vec3(0.0), overcastFactor);//pow(sunColor, vec3(gamma));
-	float sunlightAmount = ray * shadowVisiblity * (0.2 / (lDotV));
+	float sunlightAmount = ray * shadowVisiblity * oneOverSteps * (1.0 / (lDotV*lDotV) * 0.02 ) * weight;
 
-	return vec4(jodieReinhardTonemap(clamp(sunLight_g * sunlightAmount, 0.0, 4096) * oneOverSteps), 0.0);
+	return sunlightAmount * sunLight_g;
 }
 
 float poltergeist(vec2 coordinate, float seed)
@@ -135,8 +135,8 @@ void main() {
 	compositeColor.rgb = mix(compositeColor.rgb, reflection.rgb, reflectionsAmount);
 	//Dynamic reflections
 	
-	compositeColor.rgb = mix(compositeColor.rgb, vec3(1.0), ComputeVolumetricLight(cameraSpacePosition, sunPos, eyeDirection).rgb);
-	
+	compositeColor.rgb += ComputeVolumetricLight(compositeColor.rgb, cameraSpacePosition, sunPos, eyeDirection);
+
 	//Applies bloom
 	<ifdef doBloom>
 	compositeColor.rgb += texture(bloomBuffer, finalCoords).rgb;
@@ -166,6 +166,8 @@ void main() {
 	
 	);
 	compositeColor.rgb *= mix(vec3(1.0), overlayColor, clamp(pauseOverlayFade, 0.0, 1.0));
+
+	compositeColor.rgb = pow(jodieReinhardTonemap(compositeColor.rgb * 6.0), vec3(gamma));
 	
 	//Ouputs
 	fragColor = compositeColor;

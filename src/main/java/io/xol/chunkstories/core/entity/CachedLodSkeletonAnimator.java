@@ -1,3 +1,9 @@
+//
+// This file is a part of the Chunk Stories API codebase
+// Check out README.md for more information
+// Website: http://chunkstories.xyz
+//
+
 package io.xol.chunkstories.core.entity;
 
 import java.util.HashMap;
@@ -8,7 +14,7 @@ import org.joml.Matrix4fc;
 import io.xol.chunkstories.api.animation.SkeletonAnimator;
 import io.xol.chunkstories.api.entity.Entity;
 import io.xol.chunkstories.api.rendering.RenderingInterface;
-import io.xol.chunkstories.api.rendering.WorldRenderer.RenderingPass;
+import io.xol.chunkstories.api.rendering.world.WorldRenderer.RenderingPass;
 import io.xol.chunkstories.api.world.WorldClient;
 	
 public class CachedLodSkeletonAnimator implements SkeletonAnimator

@@ -1,3 +1,9 @@
+//
+// This file is a part of the Chunk Stories API codebase
+// Check out README.md for more information
+// Website: http://chunkstories.xyz
+//
+
 package io.xol.chunkstories.core.item.inventory;
 
 import java.util.ArrayList;
@@ -8,10 +14,7 @@ import io.xol.chunkstories.api.content.Content.Voxels;
 import io.xol.chunkstories.api.item.inventory.BasicInventory;
 import io.xol.chunkstories.api.item.inventory.ItemPile;
 import io.xol.chunkstories.api.voxel.Voxel;
-
-//(c) 2015-2017 XolioWare Interactive
-//http://chunkstories.xyz
-//http://xol.io
+import io.xol.chunkstories.api.world.World;
 
 /** Creates a big inventory with all the possible building blocks */
 public class InventoryLocalCreativeMenu extends BasicInventory
@@ -19,10 +22,12 @@ public class InventoryLocalCreativeMenu extends BasicInventory
 	//You can't touch this inventory, only the constructor can
 	boolean initialized = false;
 	
-	public InventoryLocalCreativeMenu(Voxels voxels)
+	public InventoryLocalCreativeMenu(World world)
 	{
-		super(0, 0);
+		super(world, 0, 0);
 		List<ItemPile> allItems = new ArrayList<ItemPile>();
+		
+		Voxels voxels = world.getGameContext().getContent().voxels();
 		
 		if(voxels != null) {
 			Iterator<Voxel> i = voxels.all();
@@ -30,7 +35,7 @@ public class InventoryLocalCreativeMenu extends BasicInventory
 				Voxel voxel = i.next();
 				
 				//Ignore air
-				if(voxel.getId() == 0)
+				if(voxel.getDefinition().getName().equals("air"))
 					continue;
 				
 				for(ItemPile item : voxel.getItems())

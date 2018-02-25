@@ -1,20 +1,22 @@
+//
+// This file is a part of the Chunk Stories API codebase
+// Check out README.md for more information
+// Website: http://chunkstories.xyz
+//
+
 package io.xol.chunkstories.core.voxel;
 
 import io.xol.chunkstories.api.voxel.Voxel;
-import io.xol.chunkstories.api.voxel.VoxelType;
-import io.xol.chunkstories.api.world.VoxelContext;
+import io.xol.chunkstories.api.voxel.VoxelDefinition;
+import io.xol.chunkstories.api.world.cell.CellData;
 import io.xol.chunkstories.core.voxel.renderers.VoxelWaterRenderer;
-
-//(c) 2015-2017 XolioWare Interactive
-//http://chunkstories.xyz
-//http://xol.io
 
 public class VoxelLiquid extends Voxel
 {
 	VoxelWaterRenderer surface;
 	VoxelWaterRenderer inside;
 
-	public VoxelLiquid(VoxelType type)
+	public VoxelLiquid(VoxelDefinition type)
 	{
 		super(type);
 		inside = new VoxelWaterRenderer(store.models().getVoxelModelByName("water.inside"));
@@ -22,12 +24,13 @@ public class VoxelLiquid extends Voxel
 	}
 
 	@Override
-	public VoxelWaterRenderer getVoxelRenderer(VoxelContext info)
+	public VoxelWaterRenderer getVoxelRenderer(CellData info)
 	{
 		//Return the surface only if the top block isn't liquid
-		int data = info.getSideId(4);
-		if(!store.getVoxelById(data).getType().isLiquid())
+		if(!info.getNeightborVoxel(4).getDefinition().isLiquid()) {
 			return surface;
+		}
+		
 		else return inside;
 	}
 }

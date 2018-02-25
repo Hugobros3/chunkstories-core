@@ -1,3 +1,9 @@
+//
+// This file is a part of the Chunk Stories API codebase
+// Check out README.md for more information
+// Website: http://chunkstories.xyz
+//
+
 package io.xol.chunkstories.core.particles;
 
 import io.xol.chunkstories.api.Location;
@@ -6,20 +12,16 @@ import io.xol.chunkstories.api.client.LocalPlayer;
 import io.xol.chunkstories.api.content.Content;
 import io.xol.chunkstories.api.entity.Entity;
 import org.joml.Vector3f;
-import io.xol.chunkstories.api.particles.ParticleType;
+import io.xol.chunkstories.api.particles.ParticleTypeDefinition;
 import io.xol.chunkstories.api.particles.ParticleTypeHandler;
 import io.xol.chunkstories.api.particles.ParticlesRenderer;
 import io.xol.chunkstories.api.rendering.RenderingInterface;
 import io.xol.chunkstories.api.rendering.lightning.Light;
 import io.xol.chunkstories.api.world.World;
 
-//(c) 2015-2017 XolioWare Interactive
-// http://chunkstories.xyz
-// http://xol.io
-
 public class ParticleLightningStrike extends ParticleTypeHandler
 {
-	public ParticleLightningStrike(ParticleType type) {
+	public ParticleLightningStrike(ParticleTypeDefinition type) {
 		super(type);
 	}
 

@@ -1,6 +1,13 @@
+//
+// This file is a part of the Chunk Stories API codebase
+// Check out README.md for more information
+// Website: http://chunkstories.xyz
+//
+
 package io.xol.chunkstories.core.item.renderer.decals;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.ArrayList;
 
 import org.joml.Vector3dc;
@@ -17,16 +24,16 @@ import io.xol.chunkstories.api.rendering.pipeline.PipelineConfiguration.CullingM
 import io.xol.chunkstories.api.rendering.textures.Texture2D;
 import io.xol.chunkstories.api.rendering.vertex.VertexBuffer;
 import io.xol.chunkstories.api.rendering.vertex.VertexFormat;
+import io.xol.chunkstories.api.rendering.voxel.VoxelBakerCubic;
+import io.xol.chunkstories.api.rendering.voxel.VoxelBakerHighPoly;
+import io.xol.chunkstories.api.rendering.voxel.VoxelRenderer;
+import io.xol.chunkstories.api.rendering.world.chunk.ChunkMeshDataSubtypes.LodLevel;
+import io.xol.chunkstories.api.rendering.world.chunk.ChunkMeshDataSubtypes.ShadingType;
+import io.xol.chunkstories.api.rendering.world.chunk.ChunkRenderer;
+import io.xol.chunkstories.api.rendering.world.chunk.vertexlayout.BaseLayoutBaker;
 import io.xol.chunkstories.api.voxel.VoxelSides.Corners;
-import io.xol.chunkstories.api.voxel.models.ChunkRenderer;
-import io.xol.chunkstories.api.voxel.models.VoxelBakerCubic;
-import io.xol.chunkstories.api.voxel.models.VoxelBakerHighPoly;
-import io.xol.chunkstories.api.voxel.models.VoxelRenderer;
-import io.xol.chunkstories.api.voxel.models.layout.BaseLayoutBaker;
-import io.xol.chunkstories.api.voxel.models.ChunkMeshDataSubtypes.LodLevel;
-import io.xol.chunkstories.api.voxel.models.ChunkMeshDataSubtypes.ShadingType;
-import io.xol.chunkstories.api.world.VoxelContext;
 import io.xol.chunkstories.api.world.WorldClient;
+import io.xol.chunkstories.api.world.cell.CellData;
 import io.xol.chunkstories.core.item.ItemMiningTool.MiningProgress;
 import io.xol.chunkstories.core.voxel.renderers.DefaultVoxelRenderer;
 
@@ -39,7 +46,7 @@ public class BreakingBlockDecal {
 	
 	public BreakingBlockDecal(MiningProgress miningProgress, RenderingInterface renderingInterface) {
 		this.miningProgress = miningProgress;
-		VoxelContext ctx = miningProgress.loc.getWorld().peekSafely(miningProgress.loc);
+		CellData ctx = miningProgress.loc.getWorld().peekSafely(miningProgress.loc);
 		
 		BreakingBlockDecalVoxelBaker bbdvb = new BreakingBlockDecalVoxelBaker(((WorldClient) ctx.getWorld()).getClient().getContent(), miningProgress.loc);
 		
@@ -169,7 +176,7 @@ public class BreakingBlockDecal {
 			voxelRenderer = new DefaultVoxelRenderer(ctx.getVoxel().store());
 		}
 		
-		voxelRenderer.renderInto(chunkRenderer, o2, ctx.getWorld().getChunkWorldCoordinates(miningProgress.loc), ctx);
+		voxelRenderer.bakeInto(chunkRenderer, o2, ctx.getWorld().getChunkWorldCoordinates(miningProgress.loc), ctx);
 		
 		ByteBuffer buffer = bbdvb.cum();
 		
@@ -271,16 +278,14 @@ public class BreakingBlockDecal {
 		public ByteBuffer cum() {
 			
 			ByteBuffer buffer = ByteBuffer.allocateDirect(4 * memesAreMyReality.size());//MemoryUtil.memAlloc(4 * memesAreMyReality.size());
+			buffer.order(ByteOrder.LITTLE_ENDIAN);
 			for(float f : memesAreMyReality) {
 				buffer.putFloat(f);
 			}
 			buffer.flip();
-			
-			//MemFreeByteBuffer insideJob = new MemFreeByteBuffer(buffer);
-			
 			memesAreMyReality.clear();
 			
-			return buffer;//insideJob;
+			return buffer;
 		}
 	}
 	
@@ -288,8 +293,6 @@ public class BreakingBlockDecal {
 		ShaderInterface decalsShader = renderingInterface.useShader("decal_cracking");
 
 		renderingInterface.getCamera().setupShader(decalsShader);
-		
-		//renderingInterface.bindTexture2D("zBuffer", worldRenderer.renderBuffers.zBuffer);
 		
 		renderingInterface.setCullingMode(CullingMode.DISABLED);
 		renderingInterface.setBlendMode(BlendMode.MIX);
@@ -314,7 +317,6 @@ public class BreakingBlockDecal {
 		
 		renderingInterface.flush();
 		
-
 		renderingInterface.getRenderTargetManager().setDepthMask(true);
 	}
 

@@ -1,6 +1,17 @@
+//
+// This file is a part of the Chunk Stories API codebase
+// Check out README.md for more information
+// Website: http://chunkstories.xyz
+//
+
 package io.xol.chunkstories.core.item;
 
 import java.util.Iterator;
+
+import org.joml.Matrix4f;
+import org.joml.Vector3d;
+import org.joml.Vector3dc;
+import org.joml.Vector3f;
 
 import io.xol.chunkstories.api.Location;
 import io.xol.chunkstories.api.client.LocalPlayer;
@@ -10,27 +21,19 @@ import io.xol.chunkstories.api.entity.EntityLiving;
 import io.xol.chunkstories.api.entity.EntityLiving.HitBox;
 import io.xol.chunkstories.api.entity.interfaces.EntityControllable;
 import io.xol.chunkstories.api.input.Input;
-import io.xol.chunkstories.api.item.ItemType;
+import io.xol.chunkstories.api.item.ItemDefinition;
 import io.xol.chunkstories.api.item.inventory.ItemPile;
-import io.xol.chunkstories.api.item.renderer.ItemRenderer;
-import org.joml.Matrix4f;
-import org.joml.Vector3d;
-import org.joml.Vector3dc;
-import org.joml.Vector3f;
 import io.xol.chunkstories.api.physics.CollisionBox;
 import io.xol.chunkstories.api.rendering.RenderingInterface;
+import io.xol.chunkstories.api.rendering.item.ItemRenderer;
 import io.xol.chunkstories.api.sound.SoundSource.Mode;
-import io.xol.chunkstories.api.world.EditableVoxelContext;
-import io.xol.chunkstories.api.world.VoxelContext;
 import io.xol.chunkstories.api.world.World;
 import io.xol.chunkstories.api.world.WorldMaster;
+import io.xol.chunkstories.api.world.cell.CellData;
+import io.xol.chunkstories.api.world.cell.EditableCell;
 import io.xol.chunkstories.core.entity.EntityPlayer;
 import io.xol.chunkstories.core.item.renderer.FlatIconItemRenderer;
 import io.xol.chunkstories.core.item.renderer.ObjViewModelRenderer;
-
-//(c) 2015-2017 XolioWare Interactive
-//http://chunkstories.xyz
-//http://xol.io
 
 public class ItemMeleeWeapon extends ItemWeapon
 {
@@ -46,7 +49,7 @@ public class ItemMeleeWeapon extends ItemWeapon
 	boolean hasHitYet = false;
 	long cooldownEnd = 0L;
 
-	public ItemMeleeWeapon(ItemType type)
+	public ItemMeleeWeapon(ItemDefinition type)
 	{
 		super(type);
 
@@ -63,11 +66,11 @@ public class ItemMeleeWeapon extends ItemWeapon
 	{
 		ItemRenderer itemRenderer;
 		
-		String modelName = getType().resolveProperty("modelObj", "none");
+		String modelName = getDefinition().resolveProperty("modelObj", "none");
 		if (!modelName.equals("none"))
-			itemRenderer = new ObjViewModelRenderer(this, fallbackRenderer, modelName, getType().resolveProperty("modelDiffuse", "none"));
+			itemRenderer = new ObjViewModelRenderer(this, fallbackRenderer, modelName, getDefinition().resolveProperty("modelDiffuse", "none"));
 		else
-			itemRenderer = new FlatIconItemRenderer(this, fallbackRenderer, getType());
+			itemRenderer = new FlatIconItemRenderer(this, fallbackRenderer, getDefinition());
 
 		itemRenderer = new MeleeWeaponRenderer(fallbackRenderer);
 		
@@ -143,15 +146,15 @@ public class ItemMeleeWeapon extends ItemWeapon
 			//Loops to try and break blocks
 			while(owner.getWorld() instanceof WorldMaster && shotBlock != null)
 			{
-				EditableVoxelContext peek = owner.getWorld().peekSafely(shotBlock);
+				EditableCell peek = owner.getWorld().peekSafely(shotBlock);
 				
-				if(peek.getVoxel().getId() != 0 && peek.getVoxel().getMaterial().resolveProperty("bulletBreakable") != null && peek.getVoxel().getMaterial().resolveProperty("bulletBreakable").equals("true"))
+				if(!peek.getVoxel().isAir() && peek.getVoxel().getMaterial().resolveProperty("bulletBreakable") != null && peek.getVoxel().getMaterial().resolveProperty("bulletBreakable").equals("true"))
 				{
-					//Spawn an event to check if it's okay
+					//TODO: Spawn an event to check if it's okay
 					
 					//Destroy it
-					peek.pokeSimple(0);
-					//owner.getWorld().setVoxelData(shotBlock, 0);
+					peek.setVoxel(getDefinition().store().parent().voxels().air());
+					
 					for(int i = 0; i < 25; i++)
 					{
 						Vector3d smashedVoxelParticleDirection = new Vector3d(direction);
@@ -184,10 +187,10 @@ public class ItemMeleeWeapon extends ItemWeapon
 					Vector3d reflected = new Vector3d(direction);
 					reflected.sub(NxNbyI2x);
 
-					VoxelContext peek = owner.getWorld().peekSafely(shotBlock);
+					CellData peek = owner.getWorld().peekSafely(shotBlock);
 
 					//This seems fine
-					for (CollisionBox box : peek.getVoxel().getTranslatedCollisionBoxes(owner.getWorld(), (int) (double) shotBlock.x(), (int) (double) shotBlock.y(), (int) (double) shotBlock.z()))
+					for (CollisionBox box : peek.getTranslatedCollisionBoxes())
 					{
 						Vector3dc thisLocation = box.lineIntersection(eyeLocation, direction);
 						if (thisLocation != null)

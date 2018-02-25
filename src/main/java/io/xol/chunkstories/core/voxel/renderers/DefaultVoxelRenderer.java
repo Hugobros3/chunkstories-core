@@ -1,22 +1,24 @@
+//
+// This file is a part of the Chunk Stories API codebase
+// Check out README.md for more information
+// Website: http://chunkstories.xyz
+//
+
 package io.xol.chunkstories.core.voxel.renderers;
 
 import io.xol.chunkstories.api.content.Content.Voxels;
-
-//(c) 2015-2017 XolioWare Interactive
-//http://chunkstories.xyz
-//http://xol.io
+import io.xol.chunkstories.api.rendering.voxel.VoxelBakerCubic;
+import io.xol.chunkstories.api.rendering.voxel.VoxelRenderer;
+import io.xol.chunkstories.api.rendering.world.chunk.ChunkMeshDataSubtypes.LodLevel;
+import io.xol.chunkstories.api.rendering.world.chunk.ChunkMeshDataSubtypes.ShadingType;
+import io.xol.chunkstories.api.rendering.world.chunk.ChunkRenderer;
+import io.xol.chunkstories.api.rendering.world.chunk.ChunkRenderer.ChunkRenderContext;
 
 import io.xol.chunkstories.api.voxel.Voxel;
 import io.xol.chunkstories.api.voxel.VoxelSides;
 import io.xol.chunkstories.api.voxel.VoxelSides.Corners;
-import io.xol.chunkstories.api.voxel.models.ChunkRenderer;
-import io.xol.chunkstories.api.voxel.models.VoxelBakerCubic;
-import io.xol.chunkstories.api.voxel.models.VoxelRenderer;
-import io.xol.chunkstories.api.voxel.models.ChunkMeshDataSubtypes.LodLevel;
-import io.xol.chunkstories.api.voxel.models.ChunkMeshDataSubtypes.ShadingType;
-import io.xol.chunkstories.api.voxel.models.ChunkRenderer.ChunkRenderContext;
 import io.xol.chunkstories.api.voxel.textures.VoxelTexture;
-import io.xol.chunkstories.api.world.VoxelContext;
+import io.xol.chunkstories.api.world.cell.CellData;
 import io.xol.chunkstories.api.world.chunk.Chunk;
 
 /** Renders classic voxels as cubes ( and intelligently culls faces ) */
@@ -29,48 +31,47 @@ public class DefaultVoxelRenderer implements VoxelRenderer
 	}
 	
 	@Override
-	public int renderInto(ChunkRenderer chunkRenderer, ChunkRenderContext bakingContext, Chunk chunk, VoxelContext voxelInformations)
+	public int bakeInto(ChunkRenderer chunkRenderer, ChunkRenderContext bakingContext, Chunk chunk, CellData cell)
 	{
-		Voxel vox = voxelInformations.getVoxel();
-		int src = voxelInformations.getData();
+		Voxel vox = cell.getVoxel();
 		
-		int i = voxelInformations.getX() & 0x1F;
-		int k = voxelInformations.getY() & 0x1F;
-		int j = voxelInformations.getZ() & 0x1F;
+		int i = cell.getX() & 0x1F;
+		int k = cell.getY() & 0x1F;
+		int j = cell.getZ() & 0x1F;
 		
 		VoxelBakerCubic vbc = chunkRenderer.getLowpolyBakerFor(LodLevel.ANY, ShadingType.OPAQUE);
 		byte wavyVegetationFlag = 0;
 		
 		int vertices = 0;
 		
-		if (shallBuildWallArround(voxelInformations, 5) && (k != 0 || bakingContext.isBottomChunkLoaded()))
+		if (shallBuildWallArround(cell, 5) && (k != 0 || bakingContext.isBottomChunkLoaded()))
 		{
-			addQuadBottom(chunk, bakingContext, vbc, i, k, j, vox.getVoxelTexture(src, VoxelSides.BOTTOM, voxelInformations), wavyVegetationFlag);
+			addQuadBottom(chunk, bakingContext, vbc, i, k, j, vox.getVoxelTexture(VoxelSides.BOTTOM, cell), wavyVegetationFlag);
 			vertices += 6;
 		}
-		if (shallBuildWallArround(voxelInformations, 4) && (k != 31 || bakingContext.isTopChunkLoaded()))
+		if (shallBuildWallArround(cell, 4) && (k != 31 || bakingContext.isTopChunkLoaded()))
 		{
-			addQuadTop(chunk, bakingContext, vbc, i, k, j, vox.getVoxelTexture(src, VoxelSides.TOP, voxelInformations), wavyVegetationFlag);
+			addQuadTop(chunk, bakingContext, vbc, i, k, j, vox.getVoxelTexture(VoxelSides.TOP, cell), wavyVegetationFlag);
 			vertices += 6;
 		}
-		if (shallBuildWallArround(voxelInformations, 2) && (i != 31 || bakingContext.isRightChunkLoaded()))
+		if (shallBuildWallArround(cell, 2) && (i != 31 || bakingContext.isRightChunkLoaded()))
 		{
-			addQuadRight(chunk, bakingContext, vbc, i, k, j, vox.getVoxelTexture(src, VoxelSides.RIGHT, voxelInformations), wavyVegetationFlag);
+			addQuadRight(chunk, bakingContext, vbc, i, k, j, vox.getVoxelTexture(VoxelSides.RIGHT, cell), wavyVegetationFlag);
 			vertices += 6;
 		}
-		if (shallBuildWallArround(voxelInformations, 0) && (i != 0 || bakingContext.isLeftChunkLoaded()))
+		if (shallBuildWallArround(cell, 0) && (i != 0 || bakingContext.isLeftChunkLoaded()))
 		{
-			addQuadLeft(chunk, bakingContext, vbc, i, k, j, vox.getVoxelTexture(src, VoxelSides.LEFT, voxelInformations), wavyVegetationFlag);
+			addQuadLeft(chunk, bakingContext, vbc, i, k, j, vox.getVoxelTexture(VoxelSides.LEFT, cell), wavyVegetationFlag);
 			vertices += 6;
 		}
-		if (shallBuildWallArround(voxelInformations, 1) && (j != 31 || bakingContext.isFrontChunkLoaded()))
+		if (shallBuildWallArround(cell, 1) && (j != 31 || bakingContext.isFrontChunkLoaded()))
 		{
-			addQuadFront(chunk, bakingContext, vbc, i, k, j, vox.getVoxelTexture(src, VoxelSides.FRONT, voxelInformations), wavyVegetationFlag);
+			addQuadFront(chunk, bakingContext, vbc, i, k, j, vox.getVoxelTexture(VoxelSides.FRONT, cell), wavyVegetationFlag);
 			vertices += 6;
 		}
-		if (shallBuildWallArround(voxelInformations, 3) && (j != 0 || bakingContext.isBackChunkLoaded()))
+		if (shallBuildWallArround(cell, 3) && (j != 0 || bakingContext.isBackChunkLoaded()))
 		{
-			addQuadBack(chunk, bakingContext, vbc, i, k, j, vox.getVoxelTexture(src, VoxelSides.BACK, voxelInformations), wavyVegetationFlag);
+			addQuadBack(chunk, bakingContext, vbc, i, k, j, vox.getVoxelTexture(VoxelSides.BACK, cell), wavyVegetationFlag);
 			vertices += 6;
 		}
 		
@@ -303,17 +304,16 @@ public class DefaultVoxelRenderer implements VoxelRenderer
 		rbbf.endVertex();
 	}
 
-	protected boolean shallBuildWallArround(VoxelContext renderInfo, int face)
+	protected boolean shallBuildWallArround(CellData renderInfo, int face)
 	{
-		int facingId = renderInfo.getSideId(face);
-		Voxel facing = store.getVoxelById(facingId);
+		Voxel facing = renderInfo.getNeightborVoxel(face);
 		Voxel voxel = renderInfo.getVoxel();
 
-		if (voxel.getType().isLiquid() && !facing.getType().isLiquid())
+		if (voxel.getDefinition().isLiquid() && !facing.getDefinition().isLiquid())
 			return true;
 		
 		//Facing.isSideOpaque
-		if (/*!facing.getType().isOpaque() && */!facing.isFaceOpaque(VoxelSides.values()[face].getOppositeSide(), facingId) && (!voxel.sameKind(facing) || !voxel.getType().isSelfOpaque()))
+		if (!facing.isFaceOpaque(VoxelSides.values()[face].getOppositeSide(), renderInfo.getNeightborMetadata(face)) && (!voxel.sameKind(facing) || !voxel.getDefinition().isSelfOpaque()))
 			return true;
 		return false;
 	}

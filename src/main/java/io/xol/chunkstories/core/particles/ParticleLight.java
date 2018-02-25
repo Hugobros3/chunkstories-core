@@ -1,7 +1,13 @@
+//
+// This file is a part of the Chunk Stories API codebase
+// Check out README.md for more information
+// Website: http://chunkstories.xyz
+//
+
 package io.xol.chunkstories.core.particles;
 
 import org.joml.Vector3f;
-import io.xol.chunkstories.api.particles.ParticleType;
+import io.xol.chunkstories.api.particles.ParticleTypeDefinition;
 import io.xol.chunkstories.api.particles.ParticleTypeHandler;
 import io.xol.chunkstories.api.particles.ParticlesRenderer;
 import io.xol.chunkstories.api.rendering.RenderingInterface;
@@ -9,13 +15,9 @@ import io.xol.chunkstories.api.rendering.lightning.Light;
 import io.xol.chunkstories.api.world.World;
 import io.xol.chunkstories.core.particles.ParticleMuzzleFlash.MuzzleData;
 
-//(c) 2015-2017 XolioWare Interactive
-// http://chunkstories.xyz
-// http://xol.io
-
 public class ParticleLight extends ParticleTypeHandler
 {
-	public ParticleLight(ParticleType type) {
+	public ParticleLight(ParticleTypeDefinition type) {
 		super(type);
 		// TODO Auto-generated constructor stub
 	}

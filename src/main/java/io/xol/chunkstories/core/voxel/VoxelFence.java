@@ -1,33 +1,36 @@
+//
+// This file is a part of the Chunk Stories API codebase
+// Check out README.md for more information
+// Website: http://chunkstories.xyz
+//
+
 package io.xol.chunkstories.core.voxel;
 
 import io.xol.chunkstories.api.physics.CollisionBox;
 import io.xol.chunkstories.api.voxel.Voxel;
-import io.xol.chunkstories.api.voxel.VoxelType;
+import io.xol.chunkstories.api.voxel.VoxelDefinition;
 import io.xol.chunkstories.api.voxel.models.VoxelModel;
-import io.xol.chunkstories.api.world.VoxelContext;
-
-//(c) 2015-2017 XolioWare Interactive
-// http://chunkstories.xyz
-// http://xol.io
+import io.xol.chunkstories.api.world.cell.CellData;
 
 public class VoxelFence extends Voxel
 {
-	public VoxelFence(VoxelType type)
+	public VoxelFence(VoxelDefinition type)
 	{
 		super(type);
 	}
 
 	@Override
-	public VoxelModel getVoxelRenderer(VoxelContext info)
+	public VoxelModel getVoxelRenderer(CellData info)
 	{
-		Voxel vox = store.getVoxelById(info.getNeightborData(0));
-		boolean connectLeft = (vox.getType().isSolid() && vox.getType().isOpaque()) || vox.equals(this);
-		vox = store.getVoxelById(info.getNeightborData(1));
-		boolean connectFront = (vox.getType().isSolid() && vox.getType().isOpaque()) || vox.equals(this);
-		vox = store.getVoxelById(info.getNeightborData(2));
-		boolean connectRight = (vox.getType().isSolid() && vox.getType().isOpaque()) || vox.equals(this);
-		vox = store.getVoxelById(info.getNeightborData(3));
-		boolean connectBack = (vox.getType().isSolid() && vox.getType().isOpaque()) || vox.equals(this);
+		Voxel vox;
+		vox = info.getNeightborVoxel(0);
+		boolean connectLeft = (vox.getDefinition().isSolid() && vox.getDefinition().isOpaque()) || vox.equals(this);
+		vox = info.getNeightborVoxel(1);
+		boolean connectFront = (vox.getDefinition().isSolid() && vox.getDefinition().isOpaque()) || vox.equals(this);
+		vox = info.getNeightborVoxel(2);
+		boolean connectRight = (vox.getDefinition().isSolid() && vox.getDefinition().isOpaque()) || vox.equals(this);
+		vox = info.getNeightborVoxel(3);
+		boolean connectBack = (vox.getDefinition().isSolid() && vox.getDefinition().isOpaque()) || vox.equals(this);
 		
 		String type = "default";
 		if(connectLeft && connectFront && connectRight && connectBack)
@@ -65,20 +68,20 @@ public class VoxelFence extends Voxel
 	}
 	
 	@Override
-	public CollisionBox[] getCollisionBoxes(VoxelContext info)
+	public CollisionBox[] getCollisionBoxes(CellData info)
 	{
 		// System.out.println("kek");
 		CollisionBox[] boxes = new CollisionBox[] { new CollisionBox(0.3, 0.0, 0.3, 0.4, 1.0, 0.4) };
 
 		Voxel vox;
-		vox = store.getVoxelById(info.getNeightborData(0));
-		boolean connectLeft = vox.getType().isSolid() || vox.equals(this);
-		vox = store.getVoxelById(info.getNeightborData(1));
-		boolean connectFront = vox.getType().isSolid() || vox.equals(this);
-		vox = store.getVoxelById(info.getNeightborData(2));
-		boolean connectRight = vox.getType().isSolid() || vox.equals(this);
-		vox = store.getVoxelById(info.getNeightborData(3));
-		boolean connectBack = vox.getType().isSolid() || vox.equals(this);
+		vox = info.getNeightborVoxel(0);
+		boolean connectLeft = (vox.getDefinition().isSolid() && vox.getDefinition().isOpaque()) || vox.equals(this);
+		vox = info.getNeightborVoxel(1);
+		boolean connectFront = (vox.getDefinition().isSolid() && vox.getDefinition().isOpaque()) || vox.equals(this);
+		vox = info.getNeightborVoxel(2);
+		boolean connectRight = (vox.getDefinition().isSolid() && vox.getDefinition().isOpaque()) || vox.equals(this);
+		vox = info.getNeightborVoxel(3);
+		boolean connectBack = (vox.getDefinition().isSolid() && vox.getDefinition().isOpaque()) || vox.equals(this);
 
 		if (connectLeft && connectFront && connectRight && connectBack)
 		{

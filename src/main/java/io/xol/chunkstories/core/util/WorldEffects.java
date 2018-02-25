@@ -1,3 +1,9 @@
+//
+// This file is a part of the Chunk Stories API codebase
+// Check out README.md for more information
+// Website: http://chunkstories.xyz
+//
+
 package io.xol.chunkstories.core.util;
 
 import io.xol.chunkstories.api.Location;
@@ -8,10 +14,6 @@ import io.xol.chunkstories.api.world.World;
 import io.xol.chunkstories.api.world.WorldClient;
 import io.xol.chunkstories.api.world.WorldMaster;
 import io.xol.chunkstories.core.net.packets.PacketExplosionEffect;
-
-//(c) 2015-2017 XolioWare Interactive
-//http://chunkstories.xyz
-//http://xol.io
 
 /** Creates an explosion with particles and sounds */
 public class WorldEffects
@@ -24,7 +26,7 @@ public class WorldEffects
 		//Dispatch to users in MP
 		else if(world instanceof WorldMaster)
 		{
-			PacketExplosionEffect packet = new PacketExplosionEffect(center, radius, debrisSpeed, f);
+			PacketExplosionEffect packet = new PacketExplosionEffect(world, center, radius, debrisSpeed, f);
 			WorldMaster ws = (WorldMaster)world;
 			for(Player p : ws.getPlayers())
 			{

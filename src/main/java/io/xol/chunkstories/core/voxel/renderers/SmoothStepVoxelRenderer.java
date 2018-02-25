@@ -1,21 +1,25 @@
+//
+// This file is a part of the Chunk Stories API codebase
+// Check out README.md for more information
+// Website: http://chunkstories.xyz
+//
+
 package io.xol.chunkstories.core.voxel.renderers;
 
-//(c) 2015-2017 XolioWare Interactive
-//http://chunkstories.xyz
-//http://xol.io
+import io.xol.chunkstories.api.voxel.Voxel;
 
 import io.xol.chunkstories.api.voxel.VoxelFormat;
 import io.xol.chunkstories.api.voxel.VoxelSides;
-import io.xol.chunkstories.api.voxel.models.ChunkMeshDataSubtypes.LodLevel;
-import io.xol.chunkstories.api.voxel.models.ChunkMeshDataSubtypes.ShadingType;
-import io.xol.chunkstories.api.voxel.models.ChunkRenderer;
 import io.xol.chunkstories.api.voxel.models.VoxelModel;
-import io.xol.chunkstories.api.voxel.models.ChunkRenderer.ChunkRenderContext;
-import io.xol.chunkstories.api.voxel.models.VoxelBakerHighPoly;
-import io.xol.chunkstories.api.voxel.models.VoxelRenderer;
+import io.xol.chunkstories.api.rendering.voxel.VoxelBakerHighPoly;
+import io.xol.chunkstories.api.rendering.voxel.VoxelRenderer;
+import io.xol.chunkstories.api.rendering.world.chunk.ChunkMeshDataSubtypes.LodLevel;
+import io.xol.chunkstories.api.rendering.world.chunk.ChunkMeshDataSubtypes.ShadingType;
+import io.xol.chunkstories.api.rendering.world.chunk.ChunkRenderer;
+import io.xol.chunkstories.api.rendering.world.chunk.ChunkRenderer.ChunkRenderContext;
 import io.xol.chunkstories.api.voxel.textures.VoxelTexture;
-import io.xol.chunkstories.api.world.VoxelContext;
 import io.xol.chunkstories.api.world.World;
+import io.xol.chunkstories.api.world.cell.CellData;
 import io.xol.chunkstories.api.world.chunk.Chunk;
 import io.xol.chunkstories.core.voxel.Voxel8Steps;
 
@@ -31,13 +35,13 @@ public class SmoothStepVoxelRenderer implements VoxelRenderer {
 		this.steps = steps;
 	}
 	
-	private VoxelRenderer old(VoxelContext info) {
+	private VoxelRenderer old(CellData info) {
 		return steps[info.getMetaData() % 8];
 	}
 	
 	@Override
-	public int renderInto(ChunkRenderer chunkRenderer, ChunkRenderContext bakingContext, Chunk chunk,
-			VoxelContext voxelInformations) {
+	public int bakeInto(ChunkRenderer chunkRenderer, ChunkRenderContext bakingContext, Chunk chunk,
+			CellData voxelInformations) {
 		
 		int x = bakingContext.getRenderedVoxelPositionInChunkX();
 		int y = bakingContext.getRenderedVoxelPositionInChunkY();
@@ -65,7 +69,7 @@ public class SmoothStepVoxelRenderer implements VoxelRenderer {
 		//if(true)
 		//	return old(voxelInformations).renderInto(chunkRenderer, bakingContext, chunk, voxelInformations);
 		
-		VoxelTexture texture = voxel.getVoxelTexture(voxelInformations.getData(), VoxelSides.TOP, voxelInformations);
+		VoxelTexture texture = voxel.getVoxelTexture(VoxelSides.TOP, voxelInformations);
 		
 		baker.usingTexture(texture);
 		
@@ -74,7 +78,6 @@ public class SmoothStepVoxelRenderer implements VoxelRenderer {
 		//int textureT = texture.getAtlasT() + (z % texture.getTextureScale()) * offset;
 		
 		//final int max_step = 8;
-		int goodID = voxel.getId();
 		
 		float height[] = new float[9];
 		
@@ -82,13 +85,14 @@ public class SmoothStepVoxelRenderer implements VoxelRenderer {
 			bLoop:
 			for(int b = wz - 1; b <= wz + 1; b ++) {
 				for(int h = wy + 1; h >= wy - 1; h--) {
-					int data = world.peekSimple(a, h, b);
-					if(VoxelFormat.id(data) == goodID) {
-						height[(a - wx + 1) * 3 + b - wz + 1] = h - chunk.getChunkY() * 32 + 1/8f + VoxelFormat.meta(data) / 8f;
+					Voxel peek = world.peekSimple(a, h, b);
+					int raw = world.peekRaw(a, h, b);
+					if(voxel.sameKind(peek)) {
+						height[(a - wx + 1) * 3 + b - wz + 1] = h - chunk.getChunkY() * 32 + 1/8f + VoxelFormat.meta(raw) / 8f;
 						continue bLoop;
 					}
 				}
-				return old(voxelInformations).renderInto(chunkRenderer, bakingContext, chunk, voxelInformations);
+				return old(voxelInformations).bakeInto(chunkRenderer, bakingContext, chunk, voxelInformations);
 			}
 		
 		// X --->

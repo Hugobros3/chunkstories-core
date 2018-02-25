@@ -1,8 +1,13 @@
+//
+// This file is a part of the Chunk Stories API codebase
+// Check out README.md for more information
+// Website: http://chunkstories.xyz
+//
+
 package io.xol.chunkstories.core.converter.mappings;
 
 import io.xol.chunkstories.api.converter.mappings.NonTrivialMapper;
 import io.xol.chunkstories.api.voxel.Voxel;
-import io.xol.chunkstories.api.voxel.VoxelFormat;
 import io.xol.chunkstories.api.voxel.VoxelSides;
 import io.xol.chunkstories.api.world.World;
 import io.xol.chunkstories.api.world.chunk.Chunk;
@@ -31,12 +36,9 @@ public class Door extends NonTrivialMapper {
 			int upperMeta = region.getChunk(minecraftCuurrentChunkXinsideRegion, minecraftCuurrentChunkZinsideRegion).getBlockMeta(x, y + 1, z);
 			
 			int hingeSide = upperMeta & 0x01;
-			
 			int direction = minecraftMetaData & 0x3;
-			int baked = VoxelFormat.format(voxelID, VoxelDoor.computeMeta(open == 1, hingeSide == 1, VoxelSides.getSideMcDoor(direction)), 0, 0);
 			
-			csWorld.pokeSimpleSilently(csX, csY, csZ, baked);
-
+			csWorld.pokeSimple(csX, csY, csZ, voxel, -1, -1, VoxelDoor.computeMeta(open == 1, hingeSide == 1, VoxelSides.getSideMcDoor(direction)));
 		}
 		else
 			return;
