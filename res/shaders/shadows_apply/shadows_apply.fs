@@ -94,7 +94,9 @@ vec4 computeLight(vec4 inputColor2, vec3 normal, vec4 worldSpacePosition, vec2 v
 		
 	<ifdef shadows>
 	//Shadows sampling
-		vec4 coordinatesInShadowmap = accuratizeShadow(shadowMatrix * (untranslatedMVInv * worldSpacePosition));
+		vec4 shadowCoord = shadowMatrix * (untranslatedMVInv * worldSpacePosition);
+		float distFactor = getDistordFactor(shadowCoord.xy);
+		vec4 coordinatesInShadowmap = accuratizeShadow(shadowCoord);
 	
 		float clamped = 10 * clamp(NdotL, 0.0, 0.1);
 		
@@ -107,18 +109,15 @@ vec4 computeLight(vec4 inputColor2, vec3 normal, vec4 worldSpacePosition, vec2 v
 		//How much does the pixel is lit by directional light
 		float directionalLightning = clamp((NdotL * 1.1 - 0.1), 0.0, 1.0);
 		
-		if(!(coordinatesInShadowmap.x <= 0.0 || coordinatesInShadowmap.x >= 1.0 || coordinatesInShadowmap.y <= 0.0 || coordinatesInShadowmap.y >= 1.0  || coordinatesInShadowmap.z >= 1.0 || coordinatesInShadowmap.z <= -1.0))
-		{
 			//Bias to avoid shadow acne
-			float bias = clamp(0.0010*pow(1.0 * NdotL, 1.5) - 0.0*0.01075, 0.0010,0.0025 ) * clamp(16.0 * pow(length(coordinatesInShadowmap.xy - vec2(0.5)), 2.0), 1.0, 16.0);
+			float bias = distFactor/32768.0 * 64.0;
 			//Are we inside the shadowmap zone edge ?
 			edgeSmoother = 1.0-clamp(pow(max(0,abs(coordinatesInShadowmap.x-0.5) - 0.45)*20.0+max(0,abs(coordinatesInShadowmap.y-0.5) - 0.45)*20.0, 1.0), 0.0, 1.0);
 			
 			//
-			shadowIllumination += clamp((texture(shadowMap, vec3(coordinatesInShadowmap.xy, coordinatesInShadowmap.z-bias), 0.0) * 1.5 - 0.25), 0.0, 1.0);
-		}
+			shadowIllumination += clamp((texture(shadowMap, vec3(coordinatesInShadowmap.xy, coordinatesInShadowmap.z-bias), 0.0)), 0.0, 1.0);
 		
-		float sunlightAmount = ( directionalLightning * ( mix( shadowIllumination, voxelLight.y, 1-edgeSmoother) ) ) * shadowVisiblity;
+		float sunlightAmount = ( directionalLightning * shadowIllumination * ( mix( shadowIllumination, voxelLight.y, 1-edgeSmoother) )) * shadowVisiblity;
 		
 		finalLight += clamp(sunLight_g * sunlightAmount, 0.0, 4096);
 		finalLight += clamp(shadowLight_g * voxelSunlight, 0.0, 4096);
@@ -133,8 +132,6 @@ vec4 computeLight(vec4 inputColor2, vec3 normal, vec4 worldSpacePosition, vec2 v
 		flatShading += 0.35 * clamp(dot(/*vec3(0.0, 0.0, 0.0)*/sunPos, shadingDir), -0.5, 1.0);
 		flatShading += 0.25 * clamp(dot(/*vec3(0.0, 0.0, 1.0)*/sunPos, shadingDir), -0.5, 1.0);
 		flatShading += 0.5 * clamp(dot(/*vec3(0.0, 1.0, 0.0)*/sunPos, shadingDir), 0.0, 1.0);
-		
-		flatShading *= clamp(dot(sunPos, vec3(0.0, 1.0, 0.0)), 0.0, 1.0);
 		
 		finalLight += clamp(sunLight_g * flatShading * voxelSunlight, 0.0, 4096);
 		finalLight += clamp(shadowLight_g * voxelSunlight, 0.0, 4096);
