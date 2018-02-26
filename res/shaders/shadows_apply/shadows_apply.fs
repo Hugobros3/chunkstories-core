@@ -89,7 +89,6 @@ vec4 computeLight(vec4 inputColor2, vec3 normal, vec4 worldSpacePosition, vec2 v
 	
 	vec3 sunLight_g = sunLightColor * pi;//pow(sunColor, vec3(gamma));
 	vec3 shadowLight_g = getAtmosphericScatteringAmbient();//pow(shadowColor, vec3(gamma));
-	shadowLight_g *= textureGammaIn(lightColors, vec2(dayTime, 1.0)).rgb;
 		
 	<ifdef shadows>
 	//Shadows sampling

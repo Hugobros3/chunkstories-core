@@ -158,8 +158,7 @@ void main()
 	
 	//vec3 sunLight_g = pow(sunColor, vec3(gamma));
 	vec3 sunLight_g = sunLightColor * pi;//pow(sunColor, vec3(gamma));
-	vec3 shadowLight_g = getAtmosphericScatteringAmbient();//pow(shadowColor, vec3(gamma));
-	shadowLight_g *= textureGammaIn(lightColors, vec2(time, 1.0)).rgb;
+	vec3 shadowLight_g = getAtmosphericScatteringAmbient();
 	
 	vec3 finalLight = shadowLight_g;
 	finalLight += sunLight_g * sunlightAmount;

@@ -145,7 +145,11 @@ void main()
 	//Compute side illumination by sun
 	float NdotL = clamp(dot(normal, normalize(sunPos)), 0.0, 1.0);
 	float sunlightAmount = NdotL * shadowVisiblity;
-	vec3 finalLight = mix(pow(sunColor, vec3(gamma)), baseLight * pow(shadowColor, vec3(gamma)), (1.0 - sunlightAmount) * shadowStrength);
+	vec3 sunLight_g = sunLightColor * pi;//pow(sunColor, vec3(gamma));
+	vec3 shadowLight_g = getAtmosphericScatteringAmbient();
+	
+	vec3 finalLight = shadowLight_g;
+	finalLight += sunLight_g * sunlightAmount;
 	
 	// Simple lightning for lower end machines
 	<ifdef !shadows>
