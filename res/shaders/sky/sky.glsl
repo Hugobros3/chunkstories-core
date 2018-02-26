@@ -18,11 +18,14 @@ const vec3 upVec = vec3(0.0, 1.0, 0.0);
 #define pi PI
 
 #define aWeather	overcastFactor*overcastFactor			//0 is clear 1 is rainy
+
 #define rCoeff vec3(0.3,0.5,0.9)	//Rayleigh coefficient //You can edit this to your liking
 #define mCoeff mix(0.1, 2.5, aWeather)	//Mie coefficient //You can edit this to your liking
 #define mieSize mix(0.05, 1.0, aWeather)	//Mie Multiscatter Radius //You can edit this to your liking
 #define eR 800.0			//Earth radius (not particulary accurate) //You can edit this to your liking
 #define aR 0.25				//Atmosphere radius (also not accurate) //You can edit this to your liking
+#define scatterBrightness 1.0	//Brightness of the sky //You can edit this to your liking
+#define sunBrightness 50.0; //Brightness of the sunspot //You can edit this to your liking
 
 #define aRef(x,x2,y)(x*y+x2*y)		//Reflects incomming light
 #define aAbs(x,x2,y)exp2(-aRef(x,x2,y))	//Absorbs incomming light
@@ -41,6 +44,25 @@ float lDotU = dot(normalize(sunPos), vec3(0.0, -1.0, 0.0)); //float lDotV = dot(
 float opticalSunDepth = gDepth(lDotU);	//Get depth from lightpoint
 vec3 sunAbsorb    = aAbs(rCoeff, mCoeff, opticalSunDepth);
 vec3 sunLightColor = sunAbsorb;
+
+vec3 getAtmosphericScatteringAmbient(){
+	float uDotV = -1.0; //float lDotV = dot(l, v);
+	
+	float opticalDepth    = gDepth(uDotV);	//Get depth from viewpoint
+	
+	float phaseRayleigh = rPhase(lDotU);		//Rayleigh Phase
+	float phaseMie = mPhase(lDotU, opticalDepth);	//Mie Phase
+	
+	vec3 viewAbsorb   = aAbs(rCoeff, mCoeff, opticalDepth);
+	vec3 sunCoeff     = aRef(rCoeff, mCoeff, opticalSunDepth);
+	vec3 viewCoeff    = aRef(rCoeff, mCoeff, opticalDepth);
+	vec3 viewScatter  = aRef(rCoeff * phaseRayleigh, mCoeff * phaseMie, opticalDepth);
+	
+	vec3 finalScatter = aScatter(sunAbsorb, viewAbsorb, sunCoeff, viewCoeff, viewScatter); //Scatters all sunlight
+	vec3 result = (finalScatter * PI) * (2.0 * scatterBrightness);
+	
+	return result;
+}
 
 vec3 getAtmosphericScattering(vec3 v, vec3 sunVec, vec3 upVec){ //vec3 v, vec3 lp
 	sunVec = normalize(sunVec);
@@ -61,37 +83,9 @@ vec3 getAtmosphericScattering(vec3 v, vec3 sunVec, vec3 upVec){ //vec3 v, vec3 l
 	vec3 viewScatter  = aRef(rCoeff * phaseRayleigh, mCoeff * phaseMie, opticalDepth);
 	
 	vec3 finalScatter = aScatter(sunAbsorb, viewAbsorb, sunCoeff, viewCoeff, viewScatter); //Scatters all sunlight
-	
-	const float scatterBrightness = 1.0;
-	const float sunBrightness = 50.0; //Brightness of the sunspot
 	vec3 sunSpot = (calcSunSpot(lDotV) * viewAbsorb) * sunBrightness; //Sunspot
 	
-	vec3 result = (finalScatter + sunSpot) * PI * 2.0 * scatterBrightness;
-	
-	return result;
-}
-
-vec3 getAtmosphericScatteringAmbient(vec3 sunVec, vec3 upVec){
-	sunVec = normalize(sunVec);
-	upVec = normalize(upVec);
-	
-	float uDotV = -1.0; //float lDotV = dot(l, v);
-	
-	float opticalDepth    = gDepth(uDotV);	//Get depth from viewpoint
-	
-	float phaseRayleigh = rPhase(lDotU);		//Rayleigh Phase
-	float phaseMie = mPhase(lDotU, opticalDepth);	//Mie Phase
-	
-	vec3 viewAbsorb   = aAbs(rCoeff, mCoeff, opticalDepth);
-	vec3 sunCoeff     = aRef(rCoeff, mCoeff, opticalSunDepth);
-	vec3 viewCoeff    = aRef(rCoeff, mCoeff, opticalDepth);
-	vec3 viewScatter  = aRef(rCoeff * phaseRayleigh, mCoeff * phaseMie, opticalDepth);
-	
-	vec3 finalScatter = aScatter(sunAbsorb, viewAbsorb, sunCoeff, viewCoeff, viewScatter); //Scatters all sunlight
-	
-	const float scatterBrightness = 1.0;
-	
-	vec3 result = finalScatter * PI * 2.0 * scatterBrightness;
+	vec3 result = (finalScatter + sunSpot) * PI * (2.0 * scatterBrightness);
 	
 	return result;
 }
