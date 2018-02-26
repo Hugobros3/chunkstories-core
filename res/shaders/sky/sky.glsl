@@ -19,8 +19,8 @@ const vec3 upVec = vec3(0.0, 1.0, 0.0);
 
 #define aWeather	overcastFactor*overcastFactor			//0 is clear 1 is rainy
 #define rCoeff vec3(0.3,0.5,0.9)	//Rayleigh coefficient //You can edit this to your liking
-#define mCoeff mix(0.2, 2.5, aWeather)	//Mie coefficient //You can edit this to your liking
-#define mieSize mix(0.02, 1.0, aWeather)	//Mie Multiscatter Radius //You can edit this to your liking
+#define mCoeff mix(0.1, 2.5, aWeather)	//Mie coefficient //You can edit this to your liking
+#define mieSize mix(0.05, 1.0, aWeather)	//Mie Multiscatter Radius //You can edit this to your liking
 #define eR 800.0			//Earth radius (not particulary accurate) //You can edit this to your liking
 #define aR 0.25				//Atmosphere radius (also not accurate) //You can edit this to your liking
 

@@ -26,14 +26,26 @@ uniform float time;
 //Sky functions
 <include ../sky/sky.glsl>
 
+vec3 calculateCloudScattering(vec3 backColor, float density, vec3 v, vec3 l){
+	float vDotL = dot(v, l);
+	
+	float opticalDepth = density * mix(3.0, 0.1, pow(overcastFactor, 0.25));
+	float transMittance = exp2(-opticalDepth * mCoeff);
+	vec3 sunScattering = (gPhase(vDotL, 0.9) + 0.5) * mCoeff * opticalDepth * sunLightColor * transMittance;
+	vec3 skyScattering = backColor * mCoeff * opticalDepth * transMittance / pi;
+	vec3 scattering = sunScattering + skyScattering;
+	
+	return backColor * transMittance + scattering * pi;
+}
+
 void main()
 {
 	vec3 skyColor = getSkyColor(time, eyeDirection);
 	vec4 color = vec4(skyColor, 1.0);
 	
-	vec3 cloudsColor = getSkyTexture(vec2(time, 1.0)).rgb;
+	vec3 cloudsColor = calculateCloudScattering(color.rgb, alphaPassed, normalize(eyeDirection), normalize(sunPos));
 	
-	color.rgb += 0.125 * getSkyColor(time, eyeDirection) * clamp(alphaPassed, 0.0, 1.0);
+	color.rgb = cloudsColor;
 	
 	shadedFramebufferOut = color;
 }
