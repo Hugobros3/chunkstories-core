@@ -4,23 +4,12 @@
 vec4 getFogColor(float time, vec3 eyePosition)
 {	
 	
-	float dist = clamp(length(eyePosition)-fogStartDistance, 0.0, 4096.0);
-	const float LOG2 = 1.442695;
-	float density = 0.0025;
-	float fogFactor = 1.0 - exp2( -density * 
-					   density * 
-					   dist * 
-					   dist * 
-					   LOG2 );
-	fogFactor = dist / (fogEndDistance-fogStartDistance);
-	float fogIntensity = clamp(fogFactor, 0.0, 1.0);
+	float dist = clamp(length(eyePosition), 0.0, 4096.0) * 0.002;
+	float fogIntensity = 1.0 - exp2(-dist);	//Proper realistic fog distribution
 	
 	//vec3 blended = mix(skyColor / TAU, totalSky, clamp(( -0 + length(eyePosition)) / 256.0, 0.0, 1.0));
-	
-	vec3 closeFog = getAtmosphericScattering(upVec, sunPos, upVec);
-	vec3 farFog = getAtmosphericScattering(-upVec, sunPos, upVec);
 
-	vec3 fogColor = mix(closeFog, farFog, fogIntensity);
+	vec3 fogColor = getAtmosphericScatteringAmbient(sunPos, vec3(0.0, 1.0 - overcastFactor * 0.9, 0.0));
 
 	//blended = mix(backGroundColor, fogColor / TAU, fogIntensity / TAU);
 	

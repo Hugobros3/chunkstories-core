@@ -71,7 +71,7 @@ vec4 computeLight(vec4 inputColor2, vec3 normal, vec4 worldSpacePosition, vec2 v
 	inputColor.rgb = pow(inputColor2.rgb, vec3(gamma));
 
 	float NdotL = clamp(dot(normalize(normal), normalize(normalMatrix * sunPos )), 0.0, 1.0);
-	float lDotU = dot(normalize(sunPos), vec3(0.0, 1.0, 0.0));
+	float lDotU = dot(normalize(-sunPos), vec3(0.0, 1.0, 0.0));
 
 	float opacity = 0.0;
 
@@ -88,8 +88,8 @@ vec4 computeLight(vec4 inputColor2, vec3 normal, vec4 worldSpacePosition, vec2 v
 	float sunVisibility = clamp(1.0 - overcastFactor * 2.0, 0.0, 1.0);
 	float storminess = clamp(-1.0 + overcastFactor * 2.0, 0.0, 1.0);
 	
-	vec3 sunLight_g = mix(getSkyAbsorption(skyColor, zenithDensity(lDotU + multiScatterPhase)), vec3(0.0), overcastFactor);//pow(sunColor, vec3(gamma));
-	vec3 shadowLight_g = mix(skyColor, vec3(length(skyColor)), overcastFactor) / pi;//pow(shadowColor, vec3(gamma));
+	vec3 sunLight_g = sunLightColor * pi;//pow(sunColor, vec3(gamma));
+	vec3 shadowLight_g = getAtmosphericScatteringAmbient(sunPos, upVec) ;//pow(shadowColor, vec3(gamma));
 	shadowLight_g *= textureGammaIn(lightColors, vec2(dayTime, 1.0)).rgb;
 		
 	<ifdef shadows>
@@ -139,8 +139,6 @@ vec4 computeLight(vec4 inputColor2, vec3 normal, vec4 worldSpacePosition, vec2 v
 		finalLight += clamp(sunLight_g * flatShading * voxelSunlight, 0.0, 4096);
 		finalLight += clamp(shadowLight_g * voxelSunlight, 0.0, 4096);
 	<endif !shadows>
-		
-	finalLight *= (0.1 + 0.2 * sunVisibility + 0.8 * (1.0 - storminess));
 	
 	//Adds block light
 	finalLight += textureGammaIn(blockLightmap, vec2(voxelLight.x, 0.0)).rgb;

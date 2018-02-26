@@ -156,9 +156,11 @@ void main()
 	float sunVisibility = clamp(1.0 - overcastFactor * 2.0, 0.0, 1.0);
 	float storminess = clamp(-1.0 + overcastFactor * 2.0, 0.0, 1.0);
 	
+	float lDotU = dot(normalize(-sunPos), vec3(0.0, 1.0, 0.0));
+	
 	//vec3 sunLight_g = pow(sunColor, vec3(gamma));
-	vec3 sunLight_g = mix(getSkyAbsorption(skyColor, zenithDensity(NdotL + multiScatterPhase)), vec3(0.0), overcastFactor);//pow(sunColor, vec3(gamma));
-	vec3 shadowLight_g = mix(skyColor, vec3(length(skyColor)), overcastFactor) / pi;//pow(shadowColor, vec3(gamma));
+	vec3 sunLight_g = sunLightColor * pi;//pow(sunColor, vec3(gamma));
+	vec3 shadowLight_g = getAtmosphericScatteringAmbient(sunPos, upVec) ;//pow(shadowColor, vec3(gamma));
 	shadowLight_g *= textureGammaIn(lightColors, vec2(time, 1.0)).rgb;
 	
 	vec3 finalLight = shadowLight_g;

@@ -13,91 +13,87 @@
 
 */
 
-const float pi = 3.14159265359;
-
-const float invPi = 1.0 / pi;
-
-const float zenithOffset = -0.1;
-const float multiScatterPhase = 0.1;
-const float density = 0.7;
-
-const float anisotropicIntensity = 0.0; //Higher numbers result in more anisotropic scattering
-
-const vec3 skyColor = vec3(0.37, 0.55, 1.0) * (1.0 + anisotropicIntensity); //Make sure one of the conponents is never 0.0
-
 const vec3 upVec = vec3(0.0, 1.0, 0.0);
+#define PI 3.14159265359
+#define pi PI
 
-const float TAU = pi * 2;
+#define aWeather	overcastFactor			//0 is clear 1 is rainy
+#define rCoeff vec3(0.3,0.5,0.9)	//Rayleigh coefficient //You can edit this to your liking
+#define mCoeff mix(0.2, 5.0, aWeather)	//Mie coefficient //You can edit this to your liking
+#define mieSize mix(0.02, 2.0, aWeather)	//Mie Multiscatter Radius //You can edit this to your liking
+#define eR 1200.0			//Earth radius (not particulary accurate) //You can edit this to your liking
+#define aR 0.25				//Atmosphere radius (also not accurate) //You can edit this to your liking
 
-#define smooth(x) x*x*(3.0-2.0*x)
-#define zenithDensity(x) density / max(x * 2.0 - zenithOffset, 0.35e-2)
+#define aRef(x,x2,y)(x*y+x2*y)		//Reflects incomming light
+#define aAbs(x,x2,y)exp2(-aRef(x,x2,y))	//Absorbs incomming light
+#define d0Fix(x)abs(x+1.0e-32)		//Fixes devide by zero infinites
+#define sA(x,y,z,w)d0Fix(x-y)/d0Fix(z-w)	//Absorbs scattered light
+#define aScatter(x,y,z,w,s)sA(x,y,z,w)*s //Scatters reflected light
 
-vec3 getSkyAbsorption(vec3 x, float y){
+float gDepth(float x){const float d=eR+aR,eR2=eR*eR;float b=x*eR ;return sqrt(d*d+b*b-eR2)+b;}	//Calculates the distance between the camera and the edge of the atmosphere
+float rPhase(float x){return 0.375*(x*x+1.0);}								//Rayleigh phase function
+float gPhase(float x,float g){float g2 = g*g;return (1.0/4.0*PI)*((1.0-g2)/pow(1.0+g2-2.0*g*x,1.5));}	//Henyey greenstein phase function
+float mPhase(float x,float d){return gPhase(x,exp2(d*-mieSize));}						//Mie phase function
+
+float calcSunSpot(float x){const float sunSize = 0.9997; return smoothstep(sunSize, sunSize+0.00001,x);}	//Calculates sunspot
+
+float lDotU = dot(normalize(sunPos), vec3(0.0, -1.0, 0.0)); //float lDotV = dot(l, v);
+float opticalSunDepth = gDepth(lDotU);	//Get depth from lightpoint
+vec3 sunAbsorb    = aAbs(rCoeff, mCoeff, opticalSunDepth);
+vec3 sunLightColor = sunAbsorb;
+
+vec3 getAtmosphericScattering(vec3 v, vec3 sunVec, vec3 upVec){ //vec3 v, vec3 lp
+	sunVec = normalize(sunVec);
+	v = normalize(v);
+	upVec = normalize(upVec);
 	
-	vec3 absorption = x * y;
-	     absorption = pow(absorption, 1.0 - (y + absorption) * 0.5) / x / y;
+	float lDotV = dot(sunVec, v); //float lDotV = dot(l, v);
+	float uDotV = dot(upVec, -v); //float lDotV = dot(l, v);
 	
-	return absorption;
+	float opticalDepth    = gDepth(uDotV);	//Get depth from viewpoint
+	
+	float phaseRayleigh = rPhase(lDotV);		//Rayleigh Phase
+	float phaseMie = mPhase(lDotV, opticalDepth);	//Mie Phase
+	
+	vec3 viewAbsorb   = aAbs(rCoeff, mCoeff, opticalDepth);
+	vec3 sunCoeff     = aRef(rCoeff, mCoeff, opticalSunDepth);
+	vec3 viewCoeff    = aRef(rCoeff, mCoeff, opticalDepth);
+	vec3 viewScatter  = aRef(rCoeff * phaseRayleigh, mCoeff * phaseMie, opticalDepth);
+	
+	vec3 finalScatter = aScatter(sunAbsorb, viewAbsorb, sunCoeff, viewCoeff, viewScatter); //Scatters all sunlight
+	
+	const float scatterBrightness = 1.0;
+	const float sunBrightness = 50.0; //Brightness of the sunspot
+	vec3 sunSpot = (calcSunSpot(lDotV) * viewAbsorb) * sunBrightness; //Sunspot
+	
+	vec3 result = (finalScatter + sunSpot) * PI * 2.0 * scatterBrightness;
+	
+	return result;
 }
 
-float getSunPoint(float angle){
-	return smoothstep(0.001, 0.0005, angle) * 50.0;
-}
-
-float getRayleigMultiplier(float angle){
-	return 0.45 + pow(1.0 - angle, 2.0) * 0.2;
-}
-
-float getMie(float angle){
-	float disk = clamp(1.0 - pow(angle, 0.02), 0.0, 1.0);
-		  disk *= disk;
+vec3 getAtmosphericScatteringAmbient(vec3 sunVec, vec3 upVec){
+	sunVec = normalize(sunVec);
+	upVec = normalize(upVec);
 	
-	return smooth(disk) * pi * 262.0;
-}
-
-vec3 jodieReinhardTonemap(vec3 c){
-    float l = dot(c, vec3(0.2126, 0.7152, 0.0722));
-    vec3 tc = c / (c + 1.0);
-
-    return mix(c / (l + 1.0), tc, tc);
-}
-
-const float skyExp = 4.0;
-
-vec3 getAtmosphericScattering(vec3 fPos, vec3 lightVec, vec3 upVec){
-	vec3 viewVec = normalize(fPos);
+	float uDotV = -1.0; //float lDotV = dot(l, v);
 	
-	float sunVisibility = clamp(1.0 - overcastFactor * 2.0, 0.0, 1.0);
-	float storminess = clamp(-1.0 + overcastFactor * 2.0, 0.0, 1.0);
-
-	//Make sure all of the other vectors are in viewspace and normalized.
-
-	float vDotL = 1.0 - dot(viewVec, normalize(lightVec));
-	float vDotU = dot(viewVec, upVec);
-	float lDotU = dot(normalize(lightVec), upVec);
-		
-	float zenith = zenithDensity(vDotU);
-	float sunPointDistMult =  clamp(length(max(lDotU + multiScatterPhase - zenithOffset, 0.0)), 0.0, 1.0);
+	float opticalDepth    = gDepth(uDotV);	//Get depth from viewpoint
 	
-	float rayleighMult = getRayleigMultiplier(vDotL);
+	float phaseRayleigh = rPhase(lDotU);		//Rayleigh Phase
+	float phaseMie = mPhase(lDotU, opticalDepth);	//Mie Phase
 	
-	vec3 absorption = getSkyAbsorption(skyColor, zenith);
-    vec3 sunAbsorption = getSkyAbsorption(skyColor, zenithDensity(lDotU + multiScatterPhase));
-	vec3 sky = skyColor * zenith * rayleighMult;
-	vec3 sun = getSunPoint(vDotL) * absorption;
-	vec3 mie = getMie(vDotL) * sunAbsorption;
+	vec3 viewAbsorb   = aAbs(rCoeff, mCoeff, opticalDepth);
+	vec3 sunCoeff     = aRef(rCoeff, mCoeff, opticalSunDepth);
+	vec3 viewCoeff    = aRef(rCoeff, mCoeff, opticalDepth);
+	vec3 viewScatter  = aRef(rCoeff * phaseRayleigh, mCoeff * phaseMie, opticalDepth);
 	
-	vec3 totalSky = mix(sky * absorption, sky / (sky + 0.5), sunPointDistMult);
-         totalSky += sunVisibility * mie;
-	     totalSky *= sunAbsorption * 0.5 + 0.5 * length(sunAbsorption);
-		 totalSky *= pi;
-		 totalSky = jodieReinhardTonemap(totalSky);
-		 totalSky += 10.0 * sunVisibility * sun * pi;
-		 totalSky = pow(totalSky, vec3(0.25 + 2.0 * (1.0 - overcastFactor)));
-         //totalSky = pow(totalSky, vec3(2.2)); //Back to linear
+	vec3 finalScatter = aScatter(sunAbsorb, viewAbsorb, sunCoeff, viewCoeff, viewScatter); //Scatters all sunlight
 	
-	//return vec3(0.2);
-	return clamp(totalSky * (0.1 + 0.4 * sunVisibility + 0.5 * (1.0 - storminess)), 0.0, 1000.0);//;
+	const float scatterBrightness = 1.0;
+	
+	vec3 result = finalScatter * PI * 2.0 * scatterBrightness;
+	
+	return result;
 }
 
 //Internal method to obtain pre-mixed sun gradient color
