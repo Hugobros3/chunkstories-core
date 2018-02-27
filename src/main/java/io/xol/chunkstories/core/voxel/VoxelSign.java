@@ -10,7 +10,7 @@ import io.xol.chunkstories.api.entity.Entity;
 import io.xol.chunkstories.api.events.voxel.WorldModificationCause;
 import io.xol.chunkstories.api.exceptions.world.voxel.IllegalBlockModificationException;
 import io.xol.chunkstories.api.input.Input;
-import io.xol.chunkstories.api.rendering.voxel.VoxelRenderer;
+import io.xol.chunkstories.api.rendering.voxel.VoxelDynamicRenderer;
 
 import org.joml.Vector2f;
 import org.joml.Vector3d;
@@ -24,12 +24,21 @@ import io.xol.chunkstories.api.world.cell.FutureCell;
 import io.xol.chunkstories.api.world.chunk.Chunk.ChunkCell;
 import io.xol.chunkstories.api.world.chunk.Chunk.FreshChunkCell;
 import io.xol.chunkstories.core.voxel.components.VoxelComponentSignText;
+import io.xol.chunkstories.core.voxel.renderers.SignRenderer;
 
+/** Signs are voxels you can write stuff on */
+//TODO implement a gui when placing a sign to actually set the text
+//currently only the map converter can make signs have non-default text
+//TODO expose the gui to the api to enable this
 public class VoxelSign extends Voxel implements VoxelCustomIcon
 {
+	final SignRenderer signRenderer;
+	
 	public VoxelSign(VoxelDefinition type)
 	{
 		super(type);
+		
+		signRenderer = new SignRenderer(voxelRenderer);
 	}
 
 	@Override
@@ -39,9 +48,9 @@ public class VoxelSign extends Voxel implements VoxelCustomIcon
 	}
 	
 	@Override
-	public VoxelRenderer getVoxelRenderer(CellData info)
+	public VoxelDynamicRenderer getVoxelRenderer(CellData info)
 	{
-		return super.getVoxelRenderer(info);
+		return signRenderer;
 	}
 		
 	@Override
@@ -85,12 +94,8 @@ public class VoxelSign extends Voxel implements VoxelCustomIcon
 		VoxelComponentSignText signTextComponent = new VoxelComponentSignText(cell.components());
 		cell.registerComponent("signData", signTextComponent);
 	}
-	
-	/*@Override
-	public VoxelComponentDynamicRenderer getDynamicRendererComponent(ChunkCell context) {
-		return getSignData(context);
-	}*/
 
+	/** Gets the sign component from a chunkcell, assuming it is indeed a sign cell */
 	public VoxelComponentSignText getSignData(ChunkCell context) {
 		VoxelComponentSignText signTextComponent = (VoxelComponentSignText) context.components().get("signData");
 		return signTextComponent;
