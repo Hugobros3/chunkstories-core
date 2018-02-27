@@ -25,7 +25,7 @@ const vec3 upVec = vec3(0.0, 1.0, 0.0);
 #define eR 800.0			//Earth radius (not particulary accurate) //You can edit this to your liking
 #define aR 0.25				//Atmosphere radius (also not accurate) //You can edit this to your liking
 #define scatterBrightness 1.0	//Brightness of the sky //You can edit this to your liking
-#define sunBrightness 50.0; //Brightness of the sunspot //You can edit this to your liking
+#define sunBrightness 70.0; //Brightness of the sunspot //You can edit this to your liking
 
 #define aRef(x,x2,y)(x*y+x2*y)		//Reflects incomming light
 #define aAbs(x,x2,y)exp2(-aRef(x,x2,y))	//Absorbs incomming light
