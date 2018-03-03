@@ -334,7 +334,7 @@ bool shadow(in vec3 rayPos, in vec3 rayDir) {
 	return false;
 }
 
-const vec3 SUN_LIGHT_COLOUR = vec3(2.0, 2.0, 1.5) * 2.5;
+const vec3 SUN_LIGHT_COLOUR = vec3(2.0, 2.0, 1.5) * 1.0;
 
 void gi(in vec3 rayPos, in vec3 rayDir, out vec3 colour) {
 	ivec3 mapPos = ivec3(floor(rayPos + 0.));
@@ -344,12 +344,13 @@ void gi(in vec3 rayPos, in vec3 rayDir, out vec3 colour) {
 	ivec3 rayStep = ivec3(sign(rayDir) + 0.);
 	vec3 sideDist = (sign(rayDir) * (vec3(mapPos) - rayPos) + (sign(rayDir) * 0.5) + 0.5) * deltaDist; 
 	
+	
 	bvec3 mask;
 	
     int i;
-	for (i = 0; i < 30; i++) {
+	for (i = 0; i < 32; i++) {
         if (getVoxel(mapPos)){
-            colour = pow(texture(currentChunk, vec3(mapPos) / voxel_sizef).rgb, vec3(2.1));
+            colour = pow(texture(currentChunk, vec3(mapPos) / voxel_sizef).rgb, vec3(gamma));
 			break;
         }
             
@@ -360,15 +361,20 @@ void gi(in vec3 rayPos, in vec3 rayDir, out vec3 colour) {
         mapPos += ivec3(mask) * rayStep;
 	}
 	
-	float distance_traced = pow(0. + (initPos.x - mapPos.x) * (initPos.x - mapPos.x) + (initPos.y - mapPos.y) * (initPos.y - mapPos.y) + (initPos.z - mapPos.z) * (initPos.z - mapPos.z), 0.5);
+	//float distance_traced = pow(0. + (initPos.x - mapPos.x) * (initPos.x - mapPos.x) + (initPos.y - mapPos.y) * (initPos.y - mapPos.y) + (initPos.z - mapPos.z) * (initPos.z - mapPos.z), 0.5);
 	vec3 hit_pos = lineIntersection(mapPos - vec3(0.001), mapPos + vec3(1.001), rayPos, rayDir);
 	
-	if(i == 30)
-		colour = SUN_LIGHT_COLOUR;
+	vec3 sunLight_g = sunLightColor * pi;//pow(sunColor, vec3(gamma));
+	vec3 shadowLight_g = getAtmosphericScatteringAmbient();//pow(shadowColor, vec3(gamma));
 	
-	//colour *= clamp(dot(sunPos, rayDir), 0.5, 1.0);
+	vec3 light = vec3(0.0);
+	if(i == 32)
+		light += shadowLight_g;
+	light += shadow(vec3(hit_pos), normalize(sunPos)) ? vec3(0) : sunLight_g;
+	colour *= light;
 	
-	colour *= shadow(vec3(hit_pos), normalize(sunPos)) ? vec3(0.0) : SUN_LIGHT_COLOUR;
+	if(texture(currentChunk, vec3(mapPos) / voxel_sizef).a >= 2.0 / 255.0)
+		colour += pow(texture(currentChunk, vec3(mapPos) / voxel_sizef).rgb, vec3(gamma));
 }
 
 void gi2(in vec3 rayPos, in vec3 rayDir, out vec3 colour) {
@@ -382,7 +388,7 @@ void gi2(in vec3 rayPos, in vec3 rayDir, out vec3 colour) {
 	bvec3 mask;
 	
     int i;
-	for (i = 0; i < 30; i++) {
+	for (i = 0; i < 32; i++) {
         if (getVoxel(mapPos)){
             colour = texture(currentChunk, vec3(mapPos) / voxel_sizef).rgb;
 			break;
@@ -398,8 +404,14 @@ void gi2(in vec3 rayPos, in vec3 rayDir, out vec3 colour) {
 	float distance_traced = pow(0. + (initPos.x - mapPos.x) * (initPos.x - mapPos.x) + (initPos.y - mapPos.y) * (initPos.y - mapPos.y) + (initPos.z - mapPos.z) * (initPos.z - mapPos.z), 0.5);
 	vec3 hit_pos = lineIntersection(mapPos - vec3(0.001), mapPos + vec3(1.001), rayPos, rayDir);
 	
-	if(i == 30)
-		colour = SUN_LIGHT_COLOUR;
+	vec3 sunLight_g = sunLightColor * pi;//pow(sunColor, vec3(gamma));
+	vec3 shadowLight_g = getAtmosphericScatteringAmbient();//pow(shadowColor, vec3(gamma));
+	
+	vec3 light = vec3(0.0);
+	if(i == 32)
+		light += shadowLight_g;
+	light += shadow(vec3(hit_pos), normalize(sunPos)) ? vec3(0) : sunLight_g;
+	colour *= light;
 	
 	//colour *= clamp(dot(sunPos, rayDir), 0.5, 1.0);
 	
@@ -407,7 +419,7 @@ void gi2(in vec3 rayPos, in vec3 rayDir, out vec3 colour) {
 	float ry = snoise(gl_FragCoord.yx * rx * 1.15);
 	float rz = snoise(gl_FragCoord.xy * ry + 321.1);
 	
-	vec3 rng = vec3(2.0 * rx - 1.0, 2.0 * ry - 1.0, 2.0 * rz - 1.0);
+	vec3 rng = vec3(rx, ry, rz);
 	rng = normalize(rng);
 	
 	vec3 scratch = vec3(0.);
@@ -457,13 +469,15 @@ void main()
 		color *= vec3(0.75);
 	}
     
-	//color *= shadow(vec3(rayPos), eyeDirection) ? vec3(0.5) : vec3(1.0);
+	//color *= shadow(vec3(hit_pos), normalize(sunPos)) ? vec3(0.5) : vec3(1.0);
 	
-	if(i == MAX_RAY_STEPS)
-        color.rgb = vec3(0.5, 0.5, 1.0); //getSkyColor(dayTime, eyeDirection);
-	else {
+	if(i == MAX_RAY_STEPS) {
+        //color.rgb = vec3(0.5, 0.5, 1.0); //
+		color.rgb = getSkyColor(dayTime, normalize(eyeDirection));
+		//color.rgb = texture(shadedBuffer, texCoord).rgb;
+	} else {
 	
-		int samples = 5;
+		int samples = 20;
 		vec3 acc = vec3(0.);
 		vec3 contrib = vec3(1.0);
 		
@@ -474,7 +488,7 @@ void main()
 			float rz = snoise(gl_FragCoord.xy * ry + 321.1);
 			seed = rz;
 			
-			vec3 rng = vec3(2.0 * rx - 1.0, 2.0 * ry - 1.0, 2.0 * rz - 1.0);
+			vec3 rng = vec3(rx, ry, rz);
 			rng = normalize(rng);
 			
 			gi(hit_pos, rng, contrib);
@@ -485,14 +499,17 @@ void main()
 			
 			//acc += shadow(vec3(hit_pos), normalize(mix(normalize(sunPos), rng, 0.25))) ? vec3(0.3, 0.3, 0.6) : vec3(1.0);
 		}
-		acc /= float(pow(samples, 1.5));
+		acc /= float(pow(samples, 1.0));
 		
 		color *= acc;
+		
+		if(texture(currentChunk, vec3(mapPos) / voxel_sizef).a >= 2.0 / 255.0)
+			color += pow(texture(currentChunk, vec3(mapPos) / voxel_sizef).rgb, vec3(gamma));
     }
 	
 	fragColor.a = 1.0;
-	fragColor.rgb = pow(color, vec3(1.0/2.1));
-	
+	fragColor.rgb = pow(color, vec3(gammaInv));
+	fragColor.rgb = pow(jodieReinhardTonemap(fragColor.rgb * 5.0), vec3(gamma));
 	
 	<ifdef debugGBuffers>
 	fragColor = getDebugShit(texCoord);
