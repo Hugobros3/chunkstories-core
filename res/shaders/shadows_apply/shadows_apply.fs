@@ -45,6 +45,7 @@ uniform sampler2DShadow shadowMap;
 uniform mat4 shadowMatrix;
 
 uniform float time;
+uniform float animationTimer;
 
 //Fog
 uniform float fogStartDistance;
@@ -63,36 +64,43 @@ out vec4 fragColor;
 <include ../lib/transformations.glsl>
 <include ../lib/shadowTricks.glsl>
 <include ../lib/normalmapping.glsl>
+<include gi.glsl>
 //<include ../lib/ssr.glsl>
 
-vec4 computeLight(vec4 inputColor2, vec3 normal, vec4 worldSpacePosition, vec2 voxelLight)
-{
-	vec4 inputColor = vec4(0.0, 0.0, 0.0, 0.0);
-	inputColor.rgb = pow(inputColor2.rgb, vec3(gamma));
-
-	float NdotL = clamp(dot(normalize(normal), normalize(normalMatrix * sunPos )), 0.0, 1.0);
-
-	float opacity = 0.0;
-
-	//Declaration here
-	vec3 finalLight = vec3(0.0);
+void main() {
+    vec4 cameraSpacePosition = convertScreenSpaceToCameraSpace(screenCoord, depthBuffer);
+	
+	vec3 pixelNormal = decodeNormal(texture(normalBuffer, screenCoord));
+	vec4 albedoColor = texture(albedoBuffer, screenCoord);
+	
+	//Discard fragments using alpha
+	if(albedoColor.a <= 0.0)
+		discard;
+	
+	vec4 worldSpacePosition = modelViewMatrixInv * cameraSpacePosition;
+	vec3 normalWorldSpace = normalize(normalMatrixInv * pixelNormal);
+	vec2 voxelLight = texture(voxelLightBuffer, screenCoord).xy;
+	
+	vec3 lightColor = vec3(0.0);
+	
+	float NdotL = clamp(dot(normalize(normalWorldSpace), normalize(sunPos)), 0.0, 1.0);
 	
 	//Voxel light input, modified linearly according to time of day
 	vec3 voxelSunlight = textureGammaIn(blockLightmap, vec2(0.0, voxelLight.y)).rgb;
-	//voxelSunlight *= textureGammaIn(lightColors, vec2(dayTime, 1.0)).rgb;
-		
-	//vec3 sunAbsorption = getSkyAbsorption(skyColor, zenithDensity(lDotU + multiScatterPhase));
-
 	
-	float sunVisibility = clamp(1.0 - overcastFactor * 2.0, 0.0, 1.0);
-	float storminess = clamp(-1.0 + overcastFactor * 2.0, 0.0, 1.0);
+	//float sunVisibility = clamp(1.0 - overcastFactor * 2.0, 0.0, 1.0);
+	//float storminess = clamp(-1.0 + overcastFactor * 2.0, 0.0, 1.0);
+	
+	vec4 gi = giMain(worldSpacePosition, normalWorldSpace, screenCoord);
+	//lightColor.rgb = mix(lightColor.rgb, lightColor.rgb * gi.rgb, gi.a);
+	lightColor.rgb += gi.rgb * 2.0;
 	
 	vec3 sunLight_g = sunLightColor * pi;//pow(sunColor, vec3(gamma));
 	vec3 shadowLight_g = getAtmosphericScatteringAmbient();//pow(shadowColor, vec3(gamma));
 		
 	<ifdef shadows>
 	//Shadows sampling
-		vec4 shadowCoord = shadowMatrix * (untranslatedMVInv * worldSpacePosition);
+		vec4 shadowCoord = shadowMatrix * (untranslatedMVInv * cameraSpacePosition);
 		float distFactor = getDistordFactor(shadowCoord.xy);
 		vec4 coordinatesInShadowmap = accuratizeShadow(shadowCoord);
 	
@@ -112,60 +120,40 @@ vec4 computeLight(vec4 inputColor2, vec3 normal, vec4 worldSpacePosition, vec2 v
 			//Are we inside the shadowmap zone edge ?
 			edgeSmoother = 1.0-clamp(pow(max(0,abs(coordinatesInShadowmap.x-0.5) - 0.45)*20.0+max(0,abs(coordinatesInShadowmap.y-0.5) - 0.45)*20.0, 1.0), 0.0, 1.0);
 			
-			//
 			shadowIllumination += clamp((texture(shadowMap, vec3(coordinatesInShadowmap.xy, coordinatesInShadowmap.z-bias), 0.0)), 0.0, 1.0);
 		
 		float sunlightAmount = ( directionalLightning * shadowIllumination * ( mix( shadowIllumination, voxelLight.y, 1-edgeSmoother) )) * shadowVisiblity;
 		
-		finalLight += clamp(sunLight_g * sunlightAmount, 0.0, 4096);
-		finalLight += clamp(shadowLight_g * voxelSunlight, 0.0, 4096);
-		
-		//finalLight = mix(sunLight_g, voxelSunlight * shadowLight_g, (1.0 - sunlightAmount));
+		lightColor += clamp(sunLight_g * sunlightAmount, 0.0, 4096);
+		lightColor += gi.a * clamp(shadowLight_g * voxelSunlight, 0.0, 4096);
 		
 	<endif shadows>
 	<ifdef !shadows>
 		// Simple lightning for lower end machines
 		float flatShading = 0.0;
-		vec3 shadingDir = normalize(normalMatrixInv * normal);
+		vec3 shadingDir = normalWorldSpace;
 		flatShading += 0.35 * clamp(dot(/*vec3(0.0, 0.0, 0.0)*/sunPos, shadingDir), -0.5, 1.0);
 		flatShading += 0.25 * clamp(dot(/*vec3(0.0, 0.0, 1.0)*/sunPos, shadingDir), -0.5, 1.0);
 		flatShading += 0.5 * clamp(dot(/*vec3(0.0, 1.0, 0.0)*/sunPos, shadingDir), 0.0, 1.0);
 		
-		finalLight += clamp(sunLight_g * flatShading * voxelSunlight, 0.0, 4096);
-		finalLight += clamp(shadowLight_g * voxelSunlight, 0.0, 4096);
+		lightColor += clamp(sunLight_g * flatShading * voxelSunlight, 0.0, 4096);
+		lightColor += clamp(shadowLight_g * voxelSunlight, 0.0, 4096);
 	<endif !shadows>
 	
 	//Adds block light
-	finalLight += textureGammaIn(blockLightmap, vec2(voxelLight.x, 0.0)).rgb;
+	lightColor += textureGammaIn(blockLightmap, vec2(voxelLight.x, 0.0)).rgb;
 	
-	//Multiplies the albedo
-	inputColor.rgb *= finalLight;
-	
-	// Emmissive materials
-	//TODO
-	//finalLight += inputColor.rgb * 5.0 * meta.z;
-	
-	return inputColor;
-}
+	//gamma-correct the albedo color
+	albedoColor.rgb = pow(albedoColor.rgb, vec3(gamma));
 
-void main() {
+	//Multiplies the albedo by the light color
+	vec4 shadedColor = vec4(albedoColor.rgb * lightColor.rgb, 1.0);
 	
-	
-    vec4 cameraSpacePosition = convertScreenSpaceToCameraSpace(screenCoord, depthBuffer);
-	
-	vec3 pixelNormal = decodeNormal(texture(normalBuffer, screenCoord));
-	vec4 shadingColor = texture(albedoBuffer, screenCoord);
-	
-	//Discard fragments using alpha
-	if(shadingColor.a > 0.0)
-		shadingColor = computeLight(shadingColor, pixelNormal, cameraSpacePosition, texture(voxelLightBuffer, screenCoord).xy);
-	else
-		discard;
-	
-	// Apply fog
-	
+	//Apply the fog
 	vec4 fogColor = getFogColor(dayTime, ((modelViewMatrixInv * cameraSpacePosition).xyz - camPos).xyz);
 	
-	fragColor = mix(shadingColor, vec4(fogColor.xyz, 1.0), fogColor.a);
+	fragColor = mix(shadedColor, vec4(fogColor.xyz, 1.0), fogColor.a);
 	fragColor.w = 1.0;
+	
+	//fragColor = vec4(gi.rgb, 1.0);
 }
