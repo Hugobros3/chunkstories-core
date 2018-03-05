@@ -24,6 +24,9 @@ uniform vec3 sunPos;
 uniform float overcastFactor;
 uniform float dayTime;
 
+
+uniform sampler2D giBuffer;
+
 uniform sampler2D lightColors;
 uniform sampler2D blockLightmap;
 uniform sampler2D ssaoBuffer;
@@ -38,6 +41,7 @@ uniform mat3 normalMatrixInv;
 uniform mat4 untranslatedMV;
 uniform mat4 untranslatedMVInv;
 uniform vec3 camPos;
+uniform vec2 screenViewportSize;
 
 //Shadow mapping
 uniform float shadowVisiblity; // Used for night transitions, hides shadows
@@ -64,8 +68,49 @@ out vec4 fragColor;
 <include ../lib/transformations.glsl>
 <include ../lib/shadowTricks.glsl>
 <include ../lib/normalmapping.glsl>
-<include gi.glsl>
+//<include gi.glsl>
 //<include ../lib/ssr.glsl>
+
+vec4 bilateralTexture(sampler2D sample, vec2 position, vec3 normal, float lod){
+
+    const vec2 offset[4] = vec2[4](
+        vec2(1.0, 0.0),
+        vec2(0.0, 1.0),
+        vec2(-1.0, 0.0),
+        vec2(0.0, -1.0)
+    );
+
+    float totalWeight = 0.0;
+    vec4 result = vec4(0.0);
+
+    float linearDepth = linearizeDepth(texture(depthBuffer, position).r);
+    vec2 offsetMult = 1.0 / vec2(screenViewportSize.x, screenViewportSize.y);
+
+    for (int i = 0; i < 4; i++){
+
+        vec2 coord = offset[i] * offsetMult + position;
+
+        vec3 offsetNormal = decodeNormal(texture(normalBuffer, coord));// texture(normalBuffer, coord, lod).rgb * 2.0 - 1.0;
+        float normalWeight = pow(abs(dot(offsetNormal, normal)), 32);
+
+        float offsetDepth = linearizeDepth(texture(depthBuffer, coord).r);
+        float depthWeight = 1.0 / (abs(linearDepth - offsetDepth) + 1e-8);
+
+        float weight = normalWeight * depthWeight;
+
+        result = texture(sample, coord) * weight + result;
+
+        totalWeight += weight;
+    }
+
+    result /= totalWeight;
+	
+	if(totalWeight <= 0.0f)
+		return texture(sample, position);
+		//return vec4(1.0, 0.0, 1.0, 1.0);
+
+    return max(result, 0.0);
+}
 
 void main() {
     vec4 cameraSpacePosition = convertScreenSpaceToCameraSpace(screenCoord, depthBuffer);
@@ -91,8 +136,10 @@ void main() {
 	//float sunVisibility = clamp(1.0 - overcastFactor * 2.0, 0.0, 1.0);
 	//float storminess = clamp(-1.0 + overcastFactor * 2.0, 0.0, 1.0);
 	
-	vec4 gi = giMain(worldSpacePosition, normalWorldSpace, screenCoord);
-	//lightColor.rgb = mix(lightColor.rgb, lightColor.rgb * gi.rgb, gi.a);
+	vec4 gi = vec4(0.0, 0.0, 0.0, 1.0);
+	gi = texture(giBuffer, screenCoord);
+	//gi = bilateralTexture(giBuffer, screenCoord, pixelNormal, 0.0);
+	
 	lightColor.rgb += gi.rgb * 2.0;
 	
 	vec3 sunLight_g = sunLightColor * pi;//pow(sunColor, vec3(gamma));
@@ -156,4 +203,5 @@ void main() {
 	fragColor.w = 1.0;
 	
 	//fragColor = vec4(gi.rgb, 1.0);
+	//fragColor = vec4(vec3(gi.a), 1.0);
 }
