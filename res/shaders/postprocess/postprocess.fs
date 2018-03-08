@@ -147,7 +147,7 @@ void main() {
 	//Dynamic reflections
 	
 	//Volumetric light
-	compositeColor.rgb += ComputeVolumetricLight(compositeColor.rgb, cameraSpacePosition, sunPos, eyeDirection);
+	compositeColor.rgb += clamp(ComputeVolumetricLight(compositeColor.rgb, cameraSpacePosition, sunPos, eyeDirection), 0.0, 1.0);
 
 	//GI
 	/*
@@ -162,7 +162,7 @@ void main() {
 	<endif doBloom>
 	
 	//Darkens further pixels underwater
-	compositeColor = mix(compositeColor, vec4(waterColor.rgb * getSkyColor(dayTime, vec3(0.0, -1.0, 0.0)), 1.0), underwater * clamp(length(cameraSpacePosition) / 32.0, 0.0, 1.0));
+	//compositeColor = mix(compositeColor, vec4(waterColor.rgb * getSkyColor(dayTime, vec3(0.0, -1.0, 0.0)), 1.0), clamp(length(cameraSpacePosition) / 32.0, 0.0, 1.0) * underwater);
 	
 	// Eye adapatation
 	compositeColor *= apertureModifier;

@@ -9,27 +9,19 @@ uniform sampler2D albedoBuffer;
 uniform sampler2D normalBuffer;
 uniform sampler2D voxelLightBuffer;
 
-//Reflections stuff
-uniform samplerCube environmentCubemap;
-
 //Passed variables
 in vec2 screenCoord;
 in vec3 eyeDirection;
 
 //Sky data
-uniform sampler2D sunSetRiseTexture;
-uniform sampler2D skyTextureSunny;
-uniform sampler2D skyTextureRaining;
 uniform vec3 sunPos;
 uniform float overcastFactor;
 uniform float dayTime;
 
+uniform float accumulatedSamples;
 
-uniform sampler2D giBuffer;
-
-uniform sampler2D lightColors;
+//uniform sampler2D giBuffer;
 uniform sampler2D blockLightmap;
-uniform sampler2D ssaoBuffer;
 
 //Common camera matrices & uniforms
 uniform mat4 projectionMatrix;
@@ -136,8 +128,9 @@ void main() {
 	//float sunVisibility = clamp(1.0 - overcastFactor * 2.0, 0.0, 1.0);
 	//float storminess = clamp(-1.0 + overcastFactor * 2.0, 0.0, 1.0);
 	
-	vec4 gi = vec4(0.0, 0.0, 0.0, 1.0);
-	gi = texture(giBuffer, screenCoord);
+	vec4 gi = vec4(0.0, 0.0, 0.0, 0.0);
+	//gi = texture(giBuffer, screenCoord) / accumulatedSamples;
+	gi.a = 1.0 - gi.a;
 	//gi = bilateralTexture(giBuffer, screenCoord, pixelNormal, 0.0);
 	
 	lightColor.rgb += gi.rgb * 2.0;
@@ -178,13 +171,12 @@ void main() {
 	<ifdef !shadows>
 		// Simple lightning for lower end machines
 		float flatShading = 0.0;
-		vec3 shadingDir = normalWorldSpace;
-		flatShading += 0.35 * clamp(dot(/*vec3(0.0, 0.0, 0.0)*/sunPos, shadingDir), -0.5, 1.0);
-		flatShading += 0.25 * clamp(dot(/*vec3(0.0, 0.0, 1.0)*/sunPos, shadingDir), -0.5, 1.0);
-		flatShading += 0.5 * clamp(dot(/*vec3(0.0, 1.0, 0.0)*/sunPos, shadingDir), 0.0, 1.0);
+		flatShading += 0.35 * clamp(dot(/*vec3(0.0, 0.0, 0.0)*/sunPos, normalWorldSpace), -0.5, 1.0);
+		flatShading += 0.25 * clamp(dot(/*vec3(0.0, 0.0, 1.0)*/sunPos, normalWorldSpace), -0.5, 1.0);
+		flatShading += 0.5 * clamp(dot(/*vec3(0.0, 1.0, 0.0)*/sunPos, normalWorldSpace), 0.0, 1.0);
 		
 		lightColor += clamp(sunLight_g * flatShading * voxelSunlight, 0.0, 4096);
-		lightColor += clamp(shadowLight_g * voxelSunlight, 0.0, 4096);
+		lightColor += gi.a * clamp(shadowLight_g * voxelSunlight, 0.0, 4096);
 	<endif !shadows>
 	
 	//Adds block light

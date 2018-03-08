@@ -78,19 +78,22 @@ void main() {
 	
 	vec3 dist = abs(worldSpacePosition.xyz - camPos.xyz);
 	if(dist.x >= 48 || dist.y >= 48 || dist.z >= 48) {
-		fragColor = vec4(0.0, 0.0, 0.0, 1.0);
+		fragColor = vec4(0.0, 0.0, 0.0, 0.0);
 		return;
 	}
 		
 	
 	vec4 gi = giMain(worldSpacePosition, normalWorldSpace, screenCoord);
+	gi.a = 1.0 - gi.a;
 	
 	if(keepPreviousData == 1) {
 		vec4 previousGi = texture(previousBuffer, screenCoord);
 		float accTime = 0.05;
 		
-		gi = (gi * accTime + previousGi * (1.0 - accTime));
+		gi = gi + previousGi;
+		//gi = (gi * accTime + previousGi * (1.0 - accTime));
 	}
+	
 	
 	fragColor = gi;
 }

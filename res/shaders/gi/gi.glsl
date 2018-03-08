@@ -2,7 +2,7 @@ const int MAX_RAY_STEPS = 64;
 const int MAX_RAY_STEPS_SHADOW = 72;
 const int MAX_RAY_STEPS_GI = 72;
 
-const int GI_SAMPLES = 4;
+const int GI_SAMPLES = 2;
 
 uniform sampler3D currentChunk;
 
@@ -173,15 +173,16 @@ vec4 giMain(vec4 worldSpacePosition, vec3 normalWorldSpace, vec2 texCoord)
 	vec3 rayPos = vec3(mod(worldSpacePosition.x - voxelOffset.x, voxel_sizef), mod(worldSpacePosition.y - voxelOffset.y, voxel_sizef), mod(worldSpacePosition.z - voxelOffset.z, voxel_sizef));
 	rayPos += normalWorldSpace * 0.1;
 	
-	float seed = snoise(gl_FragCoord.xy * animationTimer + vec2(321.1, 30.5));
+	float seed = snoise(vec2(animationTimer + 321.1, 30.5));
+	
 	for(int sample = 0; sample < GI_SAMPLES; sample++) {
-		/*float rx = -1.0 + 2.0 * bayer16(gl_FragCoord.xy * seed + 64.2 + sample + seed);
-		float ry = -1.0 + 2.0 * bayer16(gl_FragCoord.yx * rx * rx * animationTimer * 1.0);
-		float rz = -1.0 + 2.0 * bayer16(gl_FragCoord.xy * ry + animationTimer * rx + 321.1);*/
+		/*float rx = -1.0 + 2.0 * bayer16(gl_FragCoord.xy * seed + sample + seed);
+		float ry = -1.0 + 2.0 * bayer16(gl_FragCoord.yx * seed);
+		float rz = -1.0 + 2.0 * bayer16(gl_FragCoord.xy * ry + animationTimer * rx + 1.0);*/
 		
-		/*float rx = -1.0 + 2.0 * bayer32(worldSpacePosition.xy*0 + gl_FragCoord.xy + vec2(seed + animationTimer * 0.05, sample)); //snoise(gl_FragCoord.xy * seed + 64.2 + sample + seed);
-		float ry = -1.0 + 2.0 * bayer32(worldSpacePosition.yz*0 + gl_FragCoord.yx + vec2(sample, rx)); //snoise(gl_FragCoord.yx * rx * animationTimer * 1.15);
-		float rz = -1.0 + 2.0 * bayer32(worldSpacePosition.zx*0 + gl_FragCoord.xy + vec2(ry + 500, sample)); //snoise(gl_FragCoord.xy * ry + 321.1);*/
+		/*float rx = -1.0 + 2.0 * bayer32(worldSpacePosition.xy*0 + gl_FragCoord.xy + vec2(seed * 0.05, sample)); //snoise(gl_FragCoord.xy * seed + 64.2 + sample + seed);
+		float ry = -1.0 + 2.0 * bayer32(worldSpacePosition.yz*0 + gl_FragCoord.yx + vec2(sample, seed)); //snoise(gl_FragCoord.yx * rx * animationTimer * 1.15);
+		float rz = -1.0 + 2.0 * bayer32(worldSpacePosition.zx*0 + gl_FragCoord.xy + vec2(seed + 500, sample)); //snoise(gl_FragCoord.xy * ry + 321.1);*/
 		
 		float rx = snoise(gl_FragCoord.xy * seed + 64.2 + sample + seed);
 		float ry = snoise(gl_FragCoord.yx * rx * animationTimer * 1.15);
@@ -199,7 +200,6 @@ vec4 giMain(vec4 worldSpacePosition, vec3 normalWorldSpace, vec2 texCoord)
 		//gi(hit_pos, rng, contrib);
 		gi(rayPos.xyz, rng, contrib);
 		acc += max(contrib, 0.0);
-		
 	}
 	
 	acc /= float(GI_SAMPLES);
@@ -208,6 +208,5 @@ vec4 giMain(vec4 worldSpacePosition, vec3 normalWorldSpace, vec2 texCoord)
 	//if(texture(currentChunk, vec3(mapPos) / voxel_sizef).a >= 2.0 / 255.0)
 	//	color.rgb += pow(texture(currentChunk, vec3(mapPos) / voxel_sizef).rgb, vec3(gamma));
     
-	
 	return color;
 }

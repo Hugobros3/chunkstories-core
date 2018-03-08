@@ -12,18 +12,18 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
+
 import io.xol.chunkstories.api.Location;
 import io.xol.chunkstories.api.entity.DamageCause;
 import io.xol.chunkstories.api.entity.Entity;
-import io.xol.chunkstories.api.entity.EntityLiving;
 import io.xol.chunkstories.api.entity.EntityDefinition;
+import io.xol.chunkstories.api.entity.EntityLiving;
 import io.xol.chunkstories.api.entity.components.EntityComponent;
 import io.xol.chunkstories.api.entity.interfaces.EntityWithSelectedItem;
 import io.xol.chunkstories.api.item.inventory.ItemPile;
-import org.joml.Matrix4f;
-import org.joml.Vector3f;
 import io.xol.chunkstories.api.rendering.RenderingInterface;
-import io.xol.chunkstories.api.rendering.world.WorldRenderer.RenderingPass;
 import io.xol.chunkstories.api.rendering.entity.EntityRenderable;
 import io.xol.chunkstories.api.rendering.entity.EntityRenderer;
 import io.xol.chunkstories.api.rendering.entity.RenderingIterator;
@@ -164,7 +164,7 @@ public class EntityZombie extends EntityHumanoid
 			{
 				Location location = entity.getPredictedLocation();
 
-				if (renderer.getWorldRenderer().getCurrentRenderingPass() == RenderingPass.SHADOW && location.distance(renderer.getCamera().getCameraPosition()) > 15f)
+				if (renderer.getWorldRenderer().getRenderingPipeline().getCurrentPass().name.startsWith("shadow") && location.distance(renderer.getCamera().getCameraPosition()) > 15f)
 					continue;
 
 				CellData cell = entity.getWorld().peekSafely(entity.getLocation());
@@ -192,7 +192,7 @@ public class EntityZombie extends EntityHumanoid
 			for (EntityHumanoid entity : renderableEntitiesIterator)
 			{
 				//don't render items in hand when far
-				if (renderer.getWorldRenderer().getCurrentRenderingPass() == RenderingPass.SHADOW && entity.getLocation().distance(renderer.getCamera().getCameraPosition()) > 15f)
+				if (renderer.getWorldRenderer().getRenderingPipeline().getCurrentPass().name.startsWith("shadow") && entity.getLocation().distance(renderer.getCamera().getCameraPosition()) > 15f)
 					continue;
 
 				ItemPile selectedItemPile = null;

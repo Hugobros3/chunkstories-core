@@ -8,6 +8,10 @@ package io.xol.chunkstories.core.entity;
 
 import java.util.Arrays;
 
+import org.joml.Matrix4f;
+import org.joml.Vector3d;
+import org.joml.Vector3f;
+
 import io.xol.chunkstories.api.Location;
 import io.xol.chunkstories.api.animation.CompoundAnimationHelper;
 import io.xol.chunkstories.api.animation.SkeletalAnimation;
@@ -20,12 +24,8 @@ import io.xol.chunkstories.api.item.Item;
 import io.xol.chunkstories.api.item.ItemVoxel;
 import io.xol.chunkstories.api.item.interfaces.ItemCustomHoldingAnimation;
 import io.xol.chunkstories.api.item.inventory.ItemPile;
-import org.joml.Matrix4f;
-import org.joml.Vector3d;
-import org.joml.Vector3f;
 import io.xol.chunkstories.api.physics.CollisionBox;
 import io.xol.chunkstories.api.rendering.RenderingInterface;
-import io.xol.chunkstories.api.rendering.world.WorldRenderer.RenderingPass;
 import io.xol.chunkstories.api.rendering.entity.EntityRenderable;
 import io.xol.chunkstories.api.rendering.entity.EntityRenderer;
 import io.xol.chunkstories.api.rendering.entity.RenderingIterator;
@@ -197,7 +197,7 @@ public abstract class EntityHumanoid extends EntityLivingImplementation
 		{
 			if (EntityHumanoid.this.equals(((WorldClient)getWorld()).getClient().getPlayer().getControlledEntity()))
 			{
-				if (renderingContext.getWorldRenderer().getCurrentRenderingPass() == RenderingPass.SHADOW)
+				if (renderingContext.getWorldRenderer().getRenderingPipeline().getCurrentPass().name.startsWith("shadow"))
 					return false;
 
 				ItemPile selectedItem = null;
@@ -247,7 +247,7 @@ public abstract class EntityHumanoid extends EntityLivingImplementation
 			{
 				Location location = entity.getPredictedLocation();
 
-				if (renderer.getWorldRenderer().getCurrentRenderingPass() == RenderingPass.SHADOW && location.distance(renderer.getCamera().getCameraPosition()) > 15f)
+				if (renderer.getWorldRenderer().getRenderingPipeline().getCurrentPass().name.startsWith("shadow") && location.distance(renderer.getCamera().getCameraPosition()) > 15f)
 					continue;
 
 				CellData cell = entity.getWorld().peekSafely(entity.getLocation());
@@ -270,7 +270,7 @@ public abstract class EntityHumanoid extends EntityLivingImplementation
 			for (EntityHumanoid entity : renderableEntitiesIterator)
 			{
 
-				if (renderer.getWorldRenderer().getCurrentRenderingPass() == RenderingPass.SHADOW && entity.getLocation().distance(renderer.getCamera().getCameraPosition()) > 15f)
+				if (renderer.getWorldRenderer().getRenderingPipeline().getCurrentPass().name.startsWith("shadow") && entity.getLocation().distance(renderer.getCamera().getCameraPosition()) > 15f)
 					continue;
 
 				ItemPile selectedItemPile = null;

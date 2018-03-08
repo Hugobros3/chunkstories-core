@@ -14,7 +14,6 @@ import org.joml.Matrix4fc;
 import io.xol.chunkstories.api.animation.SkeletonAnimator;
 import io.xol.chunkstories.api.entity.Entity;
 import io.xol.chunkstories.api.rendering.RenderingInterface;
-import io.xol.chunkstories.api.rendering.world.WorldRenderer.RenderingPass;
 import io.xol.chunkstories.api.world.WorldClient;
 	
 public class CachedLodSkeletonAnimator implements SkeletonAnimator
@@ -46,7 +45,7 @@ public class CachedLodSkeletonAnimator implements SkeletonAnimator
 			if (distance > lodEnd)
 				lodDivisor *= 4;
 		}
-		if (renderingContext.getWorldRenderer().getCurrentRenderingPass() == RenderingPass.SHADOW)
+		if (renderingContext.getWorldRenderer().getRenderingPipeline().getCurrentPass().name.startsWith("shadow"))
 			lodDivisor *= 2;
 
 		targetFps /= lodDivisor;

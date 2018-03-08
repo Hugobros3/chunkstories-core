@@ -10,7 +10,7 @@ import io.xol.chunkstories.api.GameContext;
 import io.xol.chunkstories.api.plugin.ChunkStoriesPlugin;
 import io.xol.chunkstories.api.plugin.PluginInformation;
 import io.xol.chunkstories.core.logic.ItemsLogicListener;
-import io.xol.chunkstories.core.logic.RenderingEventsListener;
+import io.xol.chunkstories.core.rendering.RenderingEventsListener;
 
 /** 'Glue' for hooking core functions into the base engine */
 public class CoreContentPlugin extends ChunkStoriesPlugin {

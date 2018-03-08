@@ -8,23 +8,30 @@ package io.xol.chunkstories.core.entity;
 
 import java.util.Iterator;
 
+import org.joml.Matrix4f;
+import org.joml.Vector3d;
+import org.joml.Vector3dc;
+import org.joml.Vector3f;
+import org.joml.Vector3fc;
+import org.joml.Vector4f;
+
 import io.xol.chunkstories.api.Location;
 import io.xol.chunkstories.api.client.LocalPlayer;
+import io.xol.chunkstories.api.entity.Controller;
+import io.xol.chunkstories.api.entity.DamageCause;
+import io.xol.chunkstories.api.entity.Entity;
+import io.xol.chunkstories.api.entity.EntityDefinition;
 import io.xol.chunkstories.api.entity.components.EntityComponentController;
 import io.xol.chunkstories.api.entity.components.EntityComponentCreativeMode;
 import io.xol.chunkstories.api.entity.components.EntityComponentFlying;
 import io.xol.chunkstories.api.entity.components.EntityComponentInventory;
 import io.xol.chunkstories.api.entity.components.EntityComponentName;
-import io.xol.chunkstories.api.entity.Controller;
-import io.xol.chunkstories.api.entity.DamageCause;
-import io.xol.chunkstories.api.entity.Entity;
-import io.xol.chunkstories.api.entity.EntityDefinition;
 import io.xol.chunkstories.api.entity.interfaces.EntityControllable;
 import io.xol.chunkstories.api.entity.interfaces.EntityCreative;
 import io.xol.chunkstories.api.entity.interfaces.EntityFeedable;
 import io.xol.chunkstories.api.entity.interfaces.EntityFlying;
-import io.xol.chunkstories.api.entity.interfaces.EntityOverlay;
 import io.xol.chunkstories.api.entity.interfaces.EntityNameable;
+import io.xol.chunkstories.api.entity.interfaces.EntityOverlay;
 import io.xol.chunkstories.api.entity.interfaces.EntityWithInventory;
 import io.xol.chunkstories.api.entity.interfaces.EntityWithSelectedItem;
 import io.xol.chunkstories.api.entity.interfaces.EntityWorldModifier;
@@ -37,17 +44,9 @@ import io.xol.chunkstories.api.item.interfaces.ItemZoom;
 import io.xol.chunkstories.api.item.inventory.Inventory;
 import io.xol.chunkstories.api.item.inventory.ItemPile;
 import io.xol.chunkstories.api.math.Math2;
-
-import org.joml.Matrix4f;
-import org.joml.Vector3d;
-import org.joml.Vector3dc;
-import org.joml.Vector3f;
-import org.joml.Vector3fc;
-import org.joml.Vector4f;
 import io.xol.chunkstories.api.physics.CollisionBox;
 import io.xol.chunkstories.api.player.Player;
 import io.xol.chunkstories.api.rendering.RenderingInterface;
-import io.xol.chunkstories.api.rendering.world.WorldRenderer.RenderingPass;
 import io.xol.chunkstories.api.rendering.entity.EntityRenderable;
 import io.xol.chunkstories.api.rendering.entity.EntityRenderer;
 import io.xol.chunkstories.api.rendering.entity.RenderingIterator;
@@ -558,7 +557,7 @@ EntityWorldModifier
 				loc3f.set((float)location.x(), (float)location.y(), (float)location.z());
 				pre3f.set((float)entity.getPredictedLocation().x(), (float)entity.getPredictedLocation().y(), (float)entity.getPredictedLocation().z());
 
-				if (!(renderingContext.getWorldRenderer().getCurrentRenderingPass() == RenderingPass.SHADOW && location.distance(renderingContext.getCamera().getCameraPosition()) > 15f))
+				if (!(renderingContext.getWorldRenderer().getRenderingPipeline().getCurrentPass().name.startsWith("shadow") && location.distance(renderingContext.getCamera().getCameraPosition()) > 15f))
 				{
 					entity.cachedSkeleton.lodUpdate(renderingContext);
 
