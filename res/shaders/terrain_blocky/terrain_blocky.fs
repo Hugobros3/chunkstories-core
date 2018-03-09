@@ -151,7 +151,7 @@ void main()
 	
 	//Compute side illumination by sun
 	float NdotL = clamp(dot(normal, normalize(sunPos)), 0.0, 1.0);
-	float sunlightAmount = NdotL * shadowVisiblity;
+	float sunlightAmount = NdotL * clamp(sunPos.y, 0.0, 1.0);
 	
 	float sunVisibility = clamp(1.0 - overcastFactor * 2.0, 0.0, 1.0);
 	float storminess = clamp(-1.0 + overcastFactor * 2.0, 0.0, 1.0);

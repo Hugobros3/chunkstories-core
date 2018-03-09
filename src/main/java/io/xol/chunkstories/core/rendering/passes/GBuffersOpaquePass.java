@@ -1,11 +1,5 @@
 package io.xol.chunkstories.core.rendering.passes;
 
-import static io.xol.chunkstories.api.rendering.textures.TextureFormat.RED_8;
-import static io.xol.chunkstories.api.rendering.textures.TextureFormat.RED_8UI;
-import static io.xol.chunkstories.api.rendering.textures.TextureFormat.RGBA_8BPP;
-import static io.xol.chunkstories.api.rendering.textures.TextureFormat.RGB_8;
-import static io.xol.chunkstories.api.rendering.textures.TextureFormat.RG_8;
-
 import java.util.Map;
 
 import org.joml.Matrix4f;
@@ -22,6 +16,7 @@ import io.xol.chunkstories.api.rendering.target.RenderTargetAttachementsConfigur
 import io.xol.chunkstories.api.rendering.textures.Texture;
 import io.xol.chunkstories.api.rendering.textures.Texture2D;
 import io.xol.chunkstories.api.rendering.textures.Texture2DRenderTarget;
+import io.xol.chunkstories.api.rendering.textures.TextureFormat;
 import io.xol.chunkstories.api.rendering.world.WorldRenderer;
 import io.xol.chunkstories.api.world.World;
 
@@ -30,7 +25,7 @@ public class GBuffersOpaquePass extends RenderPass {
 	final WorldRenderer worldRenderer;
 	final World world;
 	
-	public final Texture2DRenderTarget rbAlbedo, rbNormal, rbVoxelLight, rbSpecularity, rbMaterial;
+	public final Texture2DRenderTarget albedoBuffer, normalBuffer, voxelLightBuffer, speculairtyBuffer, materialsBuffer;
 	
 	private RenderTargetAttachementsConfiguration fbo;
 	private Texture2DRenderTarget rbZBuffer;
@@ -41,24 +36,24 @@ public class GBuffersOpaquePass extends RenderPass {
 		this.world = worldRenderer.getWorld();
 
 		GameWindow gameWindow = pipeline.getRenderingInterface().getWindow();
-		rbAlbedo = pipeline.getRenderingInterface().newTexture2D(RGBA_8BPP, gameWindow.getWidth(), gameWindow.getHeight());
-		rbNormal = pipeline.getRenderingInterface().newTexture2D(RGB_8, gameWindow.getWidth(), gameWindow.getHeight());
-		rbVoxelLight = pipeline.getRenderingInterface().newTexture2D(RG_8, gameWindow.getWidth(), gameWindow.getHeight());
-		rbSpecularity = pipeline.getRenderingInterface().newTexture2D(RED_8, gameWindow.getWidth(), gameWindow.getHeight());
-		rbMaterial = pipeline.getRenderingInterface().newTexture2D(RED_8UI, gameWindow.getWidth(), gameWindow.getHeight());
+		albedoBuffer = pipeline.getRenderingInterface().newTexture2D(TextureFormat.RGBA_8BPP, gameWindow.getWidth(), gameWindow.getHeight());
+		normalBuffer = pipeline.getRenderingInterface().newTexture2D(TextureFormat.RGB_8, gameWindow.getWidth(), gameWindow.getHeight());
+		voxelLightBuffer = pipeline.getRenderingInterface().newTexture2D(TextureFormat.RG_8, gameWindow.getWidth(), gameWindow.getHeight());
+		speculairtyBuffer = pipeline.getRenderingInterface().newTexture2D(TextureFormat.RED_8, gameWindow.getWidth(), gameWindow.getHeight());
+		materialsBuffer = pipeline.getRenderingInterface().newTexture2D(TextureFormat.RED_8UI, gameWindow.getWidth(), gameWindow.getHeight());
 		
-		this.resolvedOutputs.put("albedo", rbAlbedo);
-		this.resolvedOutputs.put("normals", rbNormal);
-		this.resolvedOutputs.put("voxelLight", rbVoxelLight);
-		this.resolvedOutputs.put("specularity", rbSpecularity);
-		this.resolvedOutputs.put("material", rbMaterial);
+		this.resolvedOutputs.put("albedo", albedoBuffer);
+		this.resolvedOutputs.put("normals", normalBuffer);
+		this.resolvedOutputs.put("voxelLight", voxelLightBuffer);
+		this.resolvedOutputs.put("specularity", speculairtyBuffer);
+		this.resolvedOutputs.put("material", materialsBuffer);
 	}
 
 	@Override
 	public void resolvedInputs(Map<String, Texture> inputs) {
 		rbZBuffer = (Texture2DRenderTarget) inputs.get("zBuffer");
 		
-		fbo = pipeline.getRenderingInterface().getRenderTargetManager().newConfiguration(rbZBuffer, rbAlbedo, rbNormal, rbVoxelLight, rbSpecularity, rbMaterial);
+		fbo = pipeline.getRenderingInterface().getRenderTargetManager().newConfiguration(rbZBuffer, albedoBuffer, normalBuffer, voxelLightBuffer, speculairtyBuffer, materialsBuffer);
 	}
 
 	@Override
@@ -121,6 +116,29 @@ public class GBuffersOpaquePass extends RenderPass {
 			renderingInterface.setObjectMatrix(new Matrix4f());
 			
 			worldRenderer.getChunksRenderer().renderChunks(renderingInterface);
+			
+			// Select shader
+			ShaderInterface entitiesShader = renderingInterface.useShader("entities");
+
+			entitiesShader.setUniform1f("viewDistance", renderingInterface.getClient().renderingConfig().getViewDistance());
+			//entitiesShader.setUniform1f("shadowVisiblity", shadower.getShadowVisibility());
+
+			renderingInterface.bindTexture2D("lightColors", renderingInterface.textures().getTexture("./textures/environement/light.png"));
+			entitiesShader.setUniform3f("blockColor", 1f, 1f, 1f);
+			entitiesShader.setUniform1f("time", worldRenderer.getAnimationTimer());
+
+			entitiesShader.setUniform1f("overcastFactor", world.getWeather());
+			entitiesShader.setUniform1f("wetness", world.getGenerator().getEnvironment().getWorldWetness(renderingInterface.getCamera().getCameraPosition()));
+
+			renderingInterface.currentShader().setUniform1f("useColorIn", 0.0f);
+			renderingInterface.currentShader().setUniform1f("useNormalIn", 1.0f);
+
+			renderingInterface.getCamera().setupShader(entitiesShader);
+
+			worldRenderer.getChunksRenderer().renderChunksExtras(renderingInterface);
+			worldRenderer.getEntitiesRenderer().renderEntities(renderingInterface);
+			
+			worldRenderer.getParticlesRenderer().renderParticles(renderingInterface);
 		}
 	}
 

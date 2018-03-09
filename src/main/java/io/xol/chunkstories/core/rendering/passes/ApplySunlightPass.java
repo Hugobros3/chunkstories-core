@@ -1,8 +1,5 @@
 package io.xol.chunkstories.core.rendering.passes;
 
-import static io.xol.chunkstories.api.rendering.textures.TextureFormat.DEPTH_RENDERBUFFER;
-import static io.xol.chunkstories.api.rendering.textures.TextureFormat.RGB_HDR;
-
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -28,11 +25,15 @@ public class ApplySunlightPass extends RenderPass {
 	
 	Texture2D albedoBuffer, normalBuffer, voxelLightBuffer, zBuffer;
 	
-	public ApplySunlightPass(RenderingPipeline pipeline, String name, String[] requires, String[] exports) {
+	final ShadowPass shadowPass;
+	
+	public ApplySunlightPass(RenderingPipeline pipeline, String name, String[] requires, String[] exports, ShadowPass shadowPass) {
 		super(pipeline, name, requires, exports);
 		
 		this.worldRenderer = pipeline.getWorldRenderer();
 		this.world = worldRenderer.getWorld();
+		
+		this.shadowPass = shadowPass;
 	}
 
 	@Override
@@ -90,15 +91,14 @@ public class ApplySunlightPass extends RenderPass {
 
 		//renderingContext.bindCubemap("environmentCubemap", renderBuffers.rbEnvironmentMap);
 
-		/*if(sun_shadowMap != null)
-		{
-			renderingContext.bindTexture2D("shadowMap", rbShadowMap);
+		if(renderer.renderingConfig().isDoShadows()) {
+			renderer.bindTexture2D("shadowMap", (Texture2D) shadowPass.resolvedOutputs.get("shadowMap"));
 			
-			applyShadowsShader.setUniform1f("shadowMapResolution", RenderingConfig.shadowMapResolutions);
-			applyShadowsShader.setUniform1f("shadowVisiblity", shadower.getShadowVisibility());
+			applyShadowsShader.setUniform1f("shadowMapResolution", ((Texture2D) shadowPass.resolvedOutputs.get("shadowMap")).getWidth());
+			applyShadowsShader.setUniform1f("shadowVisiblity", shadowPass.getShadowVisibility());
 			
-			applyShadowsShader.setUniformMatrix4f("shadowMatrix", sun_shadowMap.getShadowTransformationMatrix());
-		}*/
+			applyShadowsShader.setUniformMatrix4f("shadowMatrix", shadowPass.getShadowMatrix());
+		}
 
 		// Matrices for screen-space transformations
 		renderer.getCamera().setupShader(applyShadowsShader);

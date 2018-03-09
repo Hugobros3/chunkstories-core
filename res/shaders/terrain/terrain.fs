@@ -144,7 +144,7 @@ void main()
 	
 	//Compute side illumination by sun
 	float NdotL = clamp(dot(normal, normalize(sunPos)), 0.0, 1.0);
-	float sunlightAmount = NdotL * shadowVisiblity;
+	float sunlightAmount = NdotL * clamp(sunPos.y, 0.0, 1.0);
 	vec3 sunLight_g = sunLightColor * pi;//pow(sunColor, vec3(gamma));
 	vec3 shadowLight_g = getAtmosphericScatteringAmbient();
 	

@@ -7,16 +7,15 @@ import io.xol.chunkstories.api.rendering.GameWindow;
 import io.xol.chunkstories.api.rendering.RenderPass;
 import io.xol.chunkstories.api.rendering.RenderingInterface;
 import io.xol.chunkstories.api.rendering.RenderingPipeline;
-import io.xol.chunkstories.api.rendering.pipeline.ShaderInterface;
 import io.xol.chunkstories.api.rendering.pipeline.PipelineConfiguration.BlendMode;
 import io.xol.chunkstories.api.rendering.pipeline.PipelineConfiguration.DepthTestMode;
+import io.xol.chunkstories.api.rendering.pipeline.ShaderInterface;
 import io.xol.chunkstories.api.rendering.target.RenderTargetAttachementsConfiguration;
 import io.xol.chunkstories.api.rendering.textures.Texture;
 import io.xol.chunkstories.api.rendering.textures.Texture2D;
 import io.xol.chunkstories.api.rendering.textures.Texture2DRenderTarget;
 import io.xol.chunkstories.api.rendering.textures.TextureFormat;
 import io.xol.chunkstories.api.rendering.world.WorldRenderer;
-import io.xol.chunkstories.api.voxel.Voxel;
 import io.xol.chunkstories.api.world.World;
 
 public class PostProcessPass extends RenderPass {
@@ -26,15 +25,20 @@ public class PostProcessPass extends RenderPass {
 	
 	RenderTargetAttachementsConfiguration fbo = null;
 	Texture2D shadedBuffer = null;
+	Texture2D zBuffer = null;
+	
 	Texture2DRenderTarget postProcessed;
 	
-	public PostProcessPass(RenderingPipeline pipeline, String name, String[] requires) {
+	final ShadowPass shadowPass;
+	
+	public PostProcessPass(RenderingPipeline pipeline, String name, String[] requires, ShadowPass shadowPass) {
 		super(pipeline, name, requires, new String[] {"finalBuffer"});
 		this.worldRenderer = pipeline.getWorldRenderer();
 		this.world = worldRenderer.getWorld();
 
-		GameWindow gameWindow = pipeline.getRenderingInterface().getWindow();
+		this.shadowPass = shadowPass;
 		
+		GameWindow gameWindow = pipeline.getRenderingInterface().getWindow();
 		postProcessed = pipeline.getRenderingInterface().newTexture2D(TextureFormat.RGB_8, gameWindow.getWidth(), gameWindow.getHeight());
 		fbo = pipeline.getRenderingInterface().getRenderTargetManager().newConfiguration(null, postProcessed);
 	}
@@ -44,32 +48,34 @@ public class PostProcessPass extends RenderPass {
 		
 		//We need the shadedBuffer buffer from the previous passes
 		this.shadedBuffer = (Texture2D) inputs.get("shadedBuffer");
+		this.zBuffer = (Texture2D) inputs.get("zBuffer");
 	}
 
 	@Override
-	public void render(RenderingInterface renderingContext) {
+	public void render(RenderingInterface renderer) {
 		if(shadedBuffer != null) {
-			renderingContext.getRenderTargetManager().setConfiguration(fbo);
-			renderingContext.getRenderTargetManager().clearBoundRenderTargetAll();
+			renderer.getRenderTargetManager().setConfiguration(fbo);
+			renderer.getRenderTargetManager().clearBoundRenderTargetAll();
 			
 			//TODO mix in the reflections earlier ?
 			//Texture2D bloomRendered = RenderingConfig.doBloom ? bloomRenderer.renderBloom(renderingContext) : null;
 			
-			Layer layer = renderingContext.getWindow().getLayer();
+			Layer layer = renderer.getWindow().getLayer();
 			
 			float pauseFade = 0.0f; //(layer instanceof Ingame) ? ((Ingame)layer).getPauseOverlayFade() : 0;
 			
 			pauseFade = layer.getClass().getName().contains("Ingame") ? 0 : 1;
 			
 			// We render to the screen.
-			renderingContext.getRenderTargetManager().setConfiguration(null);
+			renderer.getRenderTargetManager().setConfiguration(null);
 
-			renderingContext.setDepthTestMode(DepthTestMode.DISABLED);
-			renderingContext.setBlendMode(BlendMode.DISABLED);
+			renderer.setDepthTestMode(DepthTestMode.DISABLED);
+			renderer.setBlendMode(BlendMode.DISABLED);
 
-			ShaderInterface postProcess = renderingContext.useShader("postprocess");
+			ShaderInterface postProcess = renderer.useShader("postprocess");
 			
-			renderingContext.bindTexture2D("shadedBuffer", shadedBuffer);
+			renderer.bindTexture2D("shadedBuffer", shadedBuffer);
+			renderer.bindTexture2D("zBuffer", zBuffer);
 			
 			/*renderingContext.bindTexture2D("albedoBuffer", renderBuffers.rbAlbedo);
 			renderingContext.bindTexture2D("depthBuffer", renderBuffers.rbZBuffer);
@@ -86,7 +92,7 @@ public class PostProcessPass extends RenderPass {
 			renderingContext.bindTexture2D("ssaoBuffer", renderBuffers.rbSSAO);
 			renderingContext.bindTexture2D("debugBuffer", renderBuffers.rbReflections);*/
 			
-			renderingContext.bindTexture2D("pauseOverlayTexture", renderingContext.textures().getTexture("./textures/gui/darker.png"));
+			renderer.bindTexture2D("pauseOverlayTexture", renderer.textures().getTexture("./textures/gui/darker.png"));
 
 			//TODO make an underwater pass
 			//Voxel vox = world.peekSafely(renderingContext.getCamera().getCameraPosition()).getVoxel();
@@ -96,18 +102,24 @@ public class PostProcessPass extends RenderPass {
 			postProcess.setUniform1f("animationTimer", worldRenderer.getAnimationTimer()); //TODO
 			postProcess.setUniform1f("pauseOverlayFade", pauseFade);
 
-			/*postProcess.setUniform1f("shadowVisiblity", shadower.getShadowVisibility());
-			if(sun_shadowMap != null) {
-				postProcess.setUniformMatrix4f("shadowMatrix", sun_shadowMap.getShadowTransformationMatrix());
-			}*/
+			
+			if(renderer.renderingConfig().isDoShadows()) {
+				renderer.bindTexture2D("shadowMap", (Texture2D) shadowPass.resolvedOutputs.get("shadowMap"));
+				//System.out.println((Texture2D) shadowPass.resolvedOutputs.get("shadowMap"));
 				
-			renderingContext.getCamera().setupShader(postProcess);
+				postProcess.setUniform1f("shadowMapResolution", ((Texture2D) shadowPass.resolvedOutputs.get("shadowMap")).getWidth());
+				postProcess.setUniform1f("shadowVisiblity", shadowPass.getShadowVisibility());
+				
+				postProcess.setUniformMatrix4f("shadowMatrix", shadowPass.getShadowMatrix());
+			}
+				
+			renderer.getCamera().setupShader(postProcess);
 			//skyRenderer.setupShader(postProcess);
 
 			postProcess.setUniform1f("apertureModifier", 1.0f);
 
-			renderingContext.drawFSQuad();
-			renderingContext.flush();
+			renderer.drawFSQuad();
+			renderer.flush();
 		}
 	}
 

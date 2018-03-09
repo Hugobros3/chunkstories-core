@@ -44,7 +44,7 @@ void main(){
 	}
 	<endif dynamicGrass>
 	
-	if(isUsingInstancedData > 0)
+	/*if(isUsingInstancedData > 0)
 	{
 		mat4 matrixInstanced = mat4(texelFetch(instancedDataSampler, ivec2(mod(gl_InstanceID * 8, 32), (gl_InstanceID * 8) / 32), 0),
 									texelFetch(instancedDataSampler, ivec2(mod(gl_InstanceID * 8 + 1, 32), (gl_InstanceID * 8 + 1) / 32), 0),
@@ -57,7 +57,7 @@ void main(){
 	else
 	{
 		
-	}
+	}*/
 		
 	gl_Position = accuratizeShadowIn(depthMVP * v);
 }

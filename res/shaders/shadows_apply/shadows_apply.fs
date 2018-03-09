@@ -162,7 +162,7 @@ void main() {
 			
 			shadowIllumination += clamp((texture(shadowMap, vec3(coordinatesInShadowmap.xy, coordinatesInShadowmap.z-bias), 0.0)), 0.0, 1.0);
 		
-		float sunlightAmount = ( directionalLightning * shadowIllumination * ( mix( shadowIllumination, voxelLight.y, 1-edgeSmoother) )) * shadowVisiblity;
+		float sunlightAmount = ( directionalLightning * shadowIllumination * ( mix( shadowIllumination, voxelLight.y, 1-edgeSmoother) )) * clamp(sunPos.y, 0.0, 1.0);
 		
 		lightColor += clamp(sunLight_g * sunlightAmount, 0.0, 4096);
 		lightColor += gi.a * clamp(shadowLight_g * voxelSunlight, 0.0, 4096);

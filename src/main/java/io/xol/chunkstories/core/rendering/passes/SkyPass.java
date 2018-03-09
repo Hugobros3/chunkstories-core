@@ -1,7 +1,5 @@
 package io.xol.chunkstories.core.rendering.passes;
 
-import static io.xol.chunkstories.api.rendering.textures.TextureFormat.*;
-
 import java.util.Map;
 
 import io.xol.chunkstories.api.rendering.GameWindow;
@@ -11,6 +9,7 @@ import io.xol.chunkstories.api.rendering.RenderingPipeline;
 import io.xol.chunkstories.api.rendering.target.RenderTargetAttachementsConfiguration;
 import io.xol.chunkstories.api.rendering.textures.Texture;
 import io.xol.chunkstories.api.rendering.textures.Texture2DRenderTarget;
+import io.xol.chunkstories.api.rendering.textures.TextureFormat;
 import io.xol.chunkstories.api.rendering.world.SkyRenderer;
 
 public class SkyPass extends RenderPass {
@@ -27,8 +26,8 @@ public class SkyPass extends RenderPass {
 		this.skyRenderer = skyRenderer;
 		
 		GameWindow gameWindow = pipeline.getRenderingInterface().getWindow();
-		this.rbShaded = pipeline.getRenderingInterface().newTexture2D(RGB_HDR, gameWindow.getWidth(), gameWindow.getHeight());
-		this.rbZBuffer = pipeline.getRenderingInterface().newTexture2D(DEPTH_RENDERBUFFER, gameWindow.getWidth(), gameWindow.getHeight());
+		this.rbShaded = pipeline.getRenderingInterface().newTexture2D(TextureFormat.RGB_HDR, gameWindow.getWidth(), gameWindow.getHeight());
+		this.rbZBuffer = pipeline.getRenderingInterface().newTexture2D(TextureFormat.DEPTH_RENDERBUFFER, gameWindow.getWidth(), gameWindow.getHeight());
 		
 		this.fbo = pipeline.getRenderingInterface().getRenderTargetManager().newConfiguration(rbZBuffer, rbShaded);
 		

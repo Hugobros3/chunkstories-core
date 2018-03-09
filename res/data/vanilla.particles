@@ -1,19 +1,19 @@
 particle voxel_frag
 	handlerClass: io.xol.chunkstories.core.particles.ParticleVoxelFragment
 	billboardSize: 0.06125
-	renderTime: gbuffer
+	renderPass: gBuffers
 end
 
 particle blood
 	handlerClass: io.xol.chunkstories.core.particles.ParticleBlood
-	renderTime: gbuffer
+	renderPass: gBuffers
 	billboardSize: 0.1
 	albedoTexture: ./textures/particles/blood.png
 end
 
 particle muzzle
 	handlerClass: io.xol.chunkstories.core.particles.ParticleMuzzleFlash
-	renderTime: never
+	renderPass: lights
 	billboardSize: 0.0
 end
 
@@ -22,20 +22,20 @@ particle smoke
 	billboardSize: 1.0
 	shaderName: particles_ab
 	albedoTexture: ./textures/particles/grey_smoke.png
-	renderTime: forward
+	renderPass: forward
 end
 
 particle spotlight
 	handlerClass: io.xol.chunkstories.core.particles.ParticleSetupLight
 	billboardSize: 3.0
-	renderTime: gbuffer
+	renderPass: gBuffers
 	albedoTexture: ./textures/light.png
 end
 
 particle light
 	handlerClass: io.xol.chunkstories.core.particles.ParticleLight
 	billboardSize: 0.0
-	renderTime: never
+	renderPass: lights
 	albedoTexture: ./res/textures/particle.png
 end
 
@@ -43,14 +43,14 @@ particle snow
 	handlerClass: io.xol.chunkstories.core.particles.ParticleSnow
 	billboardSize: 0.06125
 	albedoTexture: ./textures/particles/snow.png
-	renderTime: forward
+	renderPass: forward
 end
 
 particle fire
 	handlerClass: io.xol.chunkstories.core.particles.ParticleFire
 	billboardSize: 2.0
 	shaderName: particles_fire
-	renderTime: forward
+	renderPass: forward
 	albedoTexture: ./textures/particles/white_smoke.png
 end
 
@@ -59,20 +59,20 @@ particle fire_light
 	billboardSize: 1.0
 	albedoTexture: ./textures/particles/white_smoke.png
 	shaderName: particles_fire
-	renderTime: never
+	renderPass: lights
 end
 
 particle lightning_strike_illumination
 	handlerClass: io.xol.chunkstories.core.particles.ParticleLightningStrike
 	billboardSize: 0.0
-	renderTime: never
+	renderPass: lights
 end
 
 particle fire_small
 	handlerClass: io.xol.chunkstories.core.particles.ParticleFire
 	billboardSize: 0.3
 	shaderName: particles_fire
-	renderTime: forward
+	renderPass: forward
 	albedoTexture: ./textures/particles/white_smoke.png
 	destroyOnCollision: false
 	ignoreCollisions: true
@@ -83,5 +83,5 @@ particle black_smoke
 	billboardSize: 1.5
 	shaderName: particles_ab
 	albedoTexture: ./textures/particles/black_smoke.png
-	renderTime: forward
+	renderPass: forward
 end
