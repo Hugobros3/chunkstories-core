@@ -5,8 +5,8 @@
 */
 
 //G-buffer samplers
-uniform sampler2D diffuseBuffer;
-uniform sampler2D depthBuffer;
+uniform sampler2D albedoBuffer;
+uniform sampler2D zBuffer;
 uniform sampler2D normalBuffer;
 
 //Pixel texture position
@@ -50,7 +50,7 @@ void main() {
 	//Get reflectivity of surface
 	float spec = texture(normalBuffer, screenCoord).z;
 	
-	vec3 pixelPositionCamera = convertScreenSpaceToCameraSpace(screenCoord, depthBuffer).xyz;
+	vec3 pixelPositionCamera = convertScreenSpaceToCameraSpace(screenCoord, zBuffer).xyz;
 	
 	//Discard if too far from camera
 	//if(length(pixelPositionCamera) > 512.0)
@@ -89,5 +89,5 @@ void main() {
 		}
 		totalLight += max(lightAmount, 0.0);
 	}
-	fragColor = totalLight * textureGammaIn(diffuseBuffer, screenCoord);
+	fragColor = totalLight * textureGammaIn(albedoBuffer, screenCoord);
 }

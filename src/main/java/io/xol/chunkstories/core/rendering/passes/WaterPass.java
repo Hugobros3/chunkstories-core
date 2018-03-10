@@ -121,7 +121,7 @@ public class WaterPass extends RenderPass {
 
 	@Override
 	public void onScreenResize(int width, int height) {
-		
+		waterRefractionFbo.resize(width, height);
 	}
 
 }

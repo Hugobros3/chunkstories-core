@@ -37,9 +37,6 @@ public class ApplySunlightPass extends RenderPass {
 
 	@Override
 	public void onResolvedInputs() {
-		for(Entry<String, Texture> e : resolvedInputs.entrySet())
-			System.out.println(e.getKey() + ":" + e.getValue());
-		
 		this.shadedBuffer = (Texture2DRenderTarget) resolvedInputs.get("shadedBuffer");
 		this.fbo = pipeline.getRenderingInterface().getRenderTargetManager().newConfiguration(null, shadedBuffer);
 		

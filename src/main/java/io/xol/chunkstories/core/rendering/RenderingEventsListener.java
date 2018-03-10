@@ -21,6 +21,7 @@ import io.xol.chunkstories.core.item.renderer.decals.BreakingBlockDecal;
 import io.xol.chunkstories.core.rendering.passes.ApplySunlightPass;
 import io.xol.chunkstories.core.rendering.passes.BloomPass;
 import io.xol.chunkstories.core.rendering.passes.DecalsPass;
+import io.xol.chunkstories.core.rendering.passes.DefferedLightsPass;
 import io.xol.chunkstories.core.rendering.passes.FarTerrainPass;
 import io.xol.chunkstories.core.rendering.passes.GBuffersOpaquePass;
 import io.xol.chunkstories.core.rendering.passes.PostProcessPass;
@@ -79,9 +80,14 @@ public class RenderingEventsListener implements Listener {
 				sunShadowPass);
 		pipeline.registerRenderPass(applySunlight);	
 
+		DefferedLightsPass lightsPass = new DefferedLightsPass(pipeline, "lights", 
+				new String[]{"applySunlight.shadedBuffer!", "water.albedoBuffer", "water.normalBuffer", "water.zBuffer"}, 
+				new String[]{});
+		pipeline.registerRenderPass(lightsPass);	
+		
 		// far terrain needs the shaded buffer from sky and outputs it, as well with a zbuffer
 		FarTerrainPass farTerrain = new FarTerrainPass(pipeline, "farTerrain", 
-				new String[]{"applySunlight.shadedBuffer!", "gBuffers.specularityBuffer!", "gBuffers.zBuffer!"}, 
+				new String[]{"lights.shadedBuffer!", "gBuffers.specularityBuffer!", "gBuffers.zBuffer!"}, 
 				new String[]{"shadedBuffer", "zBuffer", "specularityBuffer"} );
 		pipeline.registerRenderPass(farTerrain);
 		
