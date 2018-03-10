@@ -11,8 +11,8 @@ import java.nio.ByteBuffer;
 import io.xol.chunkstories.api.math.random.SeededSimplexNoiseGenerator;
 import io.xol.chunkstories.api.rendering.Primitive;
 import io.xol.chunkstories.api.rendering.RenderingInterface;
-import io.xol.chunkstories.api.rendering.pipeline.ShaderInterface;
-import io.xol.chunkstories.api.rendering.pipeline.PipelineConfiguration.CullingMode;
+import io.xol.chunkstories.api.rendering.pipeline.Shader;
+import io.xol.chunkstories.api.rendering.pipeline.StateMachine.CullingMode;
 import io.xol.chunkstories.api.rendering.textures.Texture2D;
 import io.xol.chunkstories.api.rendering.vertex.VertexBuffer;
 import io.xol.chunkstories.api.rendering.vertex.VertexFormat;
@@ -216,7 +216,7 @@ public class CloudsRenderer
 		renderingContext.getCamera().setupShader(renderingContext.currentShader());
 		skyRenderer.setupShader(renderingContext.currentShader());
 		renderingContext.currentShader().setUniform3f("sunPos", skyRenderer.getSunPosition());
-		ShaderInterface cloudsShader = renderingContext.currentShader();
+		Shader cloudsShader = renderingContext.currentShader();
 		
 		Texture2D glowTexture = renderingContext.textures().getTexture("./textures/environement/glow.png");
 		Texture2D skyTextureSunny = renderingContext.textures().getTexture("./textures/environement/sky.png");

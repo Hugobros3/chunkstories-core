@@ -6,16 +6,12 @@
 
 package io.xol.chunkstories.core.rendering;
 
-import java.util.Map;
-
 import io.xol.chunkstories.api.events.EventHandler;
 import io.xol.chunkstories.api.events.Listener;
 import io.xol.chunkstories.api.events.rendering.RenderingPipelineInitEvent;
 import io.xol.chunkstories.api.events.rendering.WorldRenderingDecalsEvent;
-import io.xol.chunkstories.api.rendering.RenderPass;
 import io.xol.chunkstories.api.rendering.RenderingInterface;
 import io.xol.chunkstories.api.rendering.RenderingPipeline;
-import io.xol.chunkstories.api.rendering.textures.Texture;
 import io.xol.chunkstories.api.rendering.world.SkyRenderer;
 import io.xol.chunkstories.api.rendering.world.WorldRenderer;
 import io.xol.chunkstories.core.CoreContentPlugin;
@@ -37,29 +33,6 @@ public class RenderingEventsListener implements Listener {
 	
 	public RenderingEventsListener(CoreContentPlugin core) {
 		this.core = core;
-	}
-
-	class FakeRenderPass extends RenderPass {
-
-		public FakeRenderPass(RenderingPipeline pipeline, String name, String[] requires, String[] exports) {
-			super(pipeline, name, requires, exports);
-		}
-
-		@Override
-		public void resolvedInputs(Map<String, Texture> inputs) {
-			
-		}
-
-		@Override
-		public void render(RenderingInterface renderer) {
-			
-		}
-
-		@Override
-		public void onScreenResize(int w, int h) {
-			
-		}
-		
 	}
 	
 	@EventHandler

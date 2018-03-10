@@ -5,7 +5,7 @@ import java.util.Map;
 import io.xol.chunkstories.api.rendering.RenderPass;
 import io.xol.chunkstories.api.rendering.RenderingInterface;
 import io.xol.chunkstories.api.rendering.RenderingPipeline;
-import io.xol.chunkstories.api.rendering.target.RenderTargetAttachementsConfiguration;
+import io.xol.chunkstories.api.rendering.target.RenderTargetsConfiguration;
 import io.xol.chunkstories.api.rendering.textures.Texture;
 import io.xol.chunkstories.api.rendering.textures.Texture2DRenderTarget;
 import io.xol.chunkstories.api.rendering.world.WorldRenderer;
@@ -20,7 +20,7 @@ public class FarTerrainPass extends RenderPass {
 	Texture2DRenderTarget specularBuffer = null;
 	Texture2DRenderTarget zBuffer;
 	
-	RenderTargetAttachementsConfiguration fbo = null;
+	RenderTargetsConfiguration fbo = null;
 	
 	public FarTerrainPass(RenderingPipeline pipeline, String name, String[] requires, String[] exports) {
 		super(pipeline, name, requires, exports);

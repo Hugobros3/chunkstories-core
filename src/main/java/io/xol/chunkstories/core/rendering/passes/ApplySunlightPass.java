@@ -6,10 +6,10 @@ import java.util.Map.Entry;
 import io.xol.chunkstories.api.rendering.RenderPass;
 import io.xol.chunkstories.api.rendering.RenderingInterface;
 import io.xol.chunkstories.api.rendering.RenderingPipeline;
-import io.xol.chunkstories.api.rendering.pipeline.PipelineConfiguration.BlendMode;
-import io.xol.chunkstories.api.rendering.pipeline.PipelineConfiguration.DepthTestMode;
-import io.xol.chunkstories.api.rendering.pipeline.ShaderInterface;
-import io.xol.chunkstories.api.rendering.target.RenderTargetAttachementsConfiguration;
+import io.xol.chunkstories.api.rendering.pipeline.StateMachine.BlendMode;
+import io.xol.chunkstories.api.rendering.pipeline.StateMachine.DepthTestMode;
+import io.xol.chunkstories.api.rendering.pipeline.Shader;
+import io.xol.chunkstories.api.rendering.target.RenderTargetsConfiguration;
 import io.xol.chunkstories.api.rendering.textures.Texture;
 import io.xol.chunkstories.api.rendering.textures.Texture2D;
 import io.xol.chunkstories.api.rendering.textures.Texture2DRenderTarget;
@@ -20,7 +20,7 @@ public class ApplySunlightPass extends RenderPass {
 
 	final WorldRenderer worldRenderer;
 	final World world;
-	RenderTargetAttachementsConfiguration fbo = null;
+	RenderTargetsConfiguration fbo = null;
 	Texture2DRenderTarget shadedBuffer = null;
 	
 	Texture2D albedoBuffer, normalBuffer, voxelLightBuffer, zBuffer;
@@ -53,7 +53,7 @@ public class ApplySunlightPass extends RenderPass {
 
 	@Override
 	public void render(RenderingInterface renderer) {
-		ShaderInterface applyShadowsShader = renderer.useShader("shadows_apply");
+		Shader applyShadowsShader = renderer.useShader("shadows_apply");
 
 		world.getGenerator().getEnvironment().setupShadowColors(renderer, applyShadowsShader);
 

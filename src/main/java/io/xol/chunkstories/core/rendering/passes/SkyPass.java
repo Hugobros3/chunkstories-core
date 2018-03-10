@@ -6,7 +6,7 @@ import io.xol.chunkstories.api.rendering.GameWindow;
 import io.xol.chunkstories.api.rendering.RenderPass;
 import io.xol.chunkstories.api.rendering.RenderingInterface;
 import io.xol.chunkstories.api.rendering.RenderingPipeline;
-import io.xol.chunkstories.api.rendering.target.RenderTargetAttachementsConfiguration;
+import io.xol.chunkstories.api.rendering.target.RenderTargetsConfiguration;
 import io.xol.chunkstories.api.rendering.textures.Texture;
 import io.xol.chunkstories.api.rendering.textures.Texture2DRenderTarget;
 import io.xol.chunkstories.api.rendering.textures.TextureFormat;
@@ -18,7 +18,7 @@ public class SkyPass extends RenderPass {
 	
 	public final Texture2DRenderTarget rbShaded;
 	public final Texture2DRenderTarget rbZBuffer;
-	public final RenderTargetAttachementsConfiguration fbo;
+	public final RenderTargetsConfiguration fbo;
 	
 	public SkyPass(RenderingPipeline pipeline, String name, SkyRenderer skyRenderer) {
 		super(pipeline, name, new String[]{}, new String[] {"shadedBuffer, zBuffer!"});
@@ -50,7 +50,7 @@ public class SkyPass extends RenderPass {
 
 	@Override
 	public void onScreenResize(int w, int h) {
-		this.fbo.resizeFBO(w, h);
+		this.fbo.resize(w, h);
 	}
 
 }

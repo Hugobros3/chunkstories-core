@@ -18,7 +18,7 @@ import io.xol.chunkstories.api.particles.ParticleTypeHandler;
 import io.xol.chunkstories.api.particles.ParticlesRenderer;
 import io.xol.chunkstories.api.rendering.RenderingInterface;
 import io.xol.chunkstories.api.rendering.lightning.Light;
-import io.xol.chunkstories.api.rendering.pipeline.PipelineConfiguration.BlendMode;
+import io.xol.chunkstories.api.rendering.pipeline.StateMachine.BlendMode;
 import io.xol.chunkstories.api.world.World;
 
 public class ParticleFireLight extends ParticleTypeHandler

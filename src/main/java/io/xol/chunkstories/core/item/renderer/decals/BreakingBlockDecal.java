@@ -18,9 +18,9 @@ import io.xol.chunkstories.api.Location;
 import io.xol.chunkstories.api.client.ClientContent;
 import io.xol.chunkstories.api.rendering.Primitive;
 import io.xol.chunkstories.api.rendering.RenderingInterface;
-import io.xol.chunkstories.api.rendering.pipeline.ShaderInterface;
-import io.xol.chunkstories.api.rendering.pipeline.PipelineConfiguration.BlendMode;
-import io.xol.chunkstories.api.rendering.pipeline.PipelineConfiguration.CullingMode;
+import io.xol.chunkstories.api.rendering.pipeline.Shader;
+import io.xol.chunkstories.api.rendering.pipeline.StateMachine.BlendMode;
+import io.xol.chunkstories.api.rendering.pipeline.StateMachine.CullingMode;
 import io.xol.chunkstories.api.rendering.textures.Texture2D;
 import io.xol.chunkstories.api.rendering.vertex.VertexBuffer;
 import io.xol.chunkstories.api.rendering.vertex.VertexFormat;
@@ -290,7 +290,7 @@ public class BreakingBlockDecal {
 	}
 	
 	public void render(RenderingInterface renderingInterface) {
-		ShaderInterface decalsShader = renderingInterface.useShader("decal_cracking");
+		Shader decalsShader = renderingInterface.useShader("decal_cracking");
 
 		renderingInterface.getCamera().setupShader(decalsShader);
 		
@@ -314,8 +314,6 @@ public class BreakingBlockDecal {
 		renderingInterface.bindAttribute("texCoordIn", vertexBuffer.asAttributeSource(VertexFormat.FLOAT, 2, 4 * (3 + 2), 4 * 3));
 		
 		renderingInterface.draw(Primitive.TRIANGLE, 0, size);
-		
-		renderingInterface.flush();
 		
 		renderingInterface.getRenderTargetManager().setDepthMask(true);
 	}

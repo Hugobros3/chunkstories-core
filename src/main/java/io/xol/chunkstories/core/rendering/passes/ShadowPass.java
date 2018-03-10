@@ -16,11 +16,11 @@ import io.xol.chunkstories.api.rendering.GameWindow;
 import io.xol.chunkstories.api.rendering.RenderPass;
 import io.xol.chunkstories.api.rendering.RenderingInterface;
 import io.xol.chunkstories.api.rendering.RenderingPipeline;
-import io.xol.chunkstories.api.rendering.pipeline.PipelineConfiguration.BlendMode;
-import io.xol.chunkstories.api.rendering.pipeline.PipelineConfiguration.CullingMode;
-import io.xol.chunkstories.api.rendering.pipeline.PipelineConfiguration.DepthTestMode;
-import io.xol.chunkstories.api.rendering.target.RenderTargetAttachementsConfiguration;
-import io.xol.chunkstories.api.rendering.pipeline.ShaderInterface;
+import io.xol.chunkstories.api.rendering.pipeline.StateMachine.BlendMode;
+import io.xol.chunkstories.api.rendering.pipeline.StateMachine.CullingMode;
+import io.xol.chunkstories.api.rendering.pipeline.StateMachine.DepthTestMode;
+import io.xol.chunkstories.api.rendering.target.RenderTargetsConfiguration;
+import io.xol.chunkstories.api.rendering.pipeline.Shader;
 import io.xol.chunkstories.api.rendering.textures.Texture;
 import io.xol.chunkstories.api.rendering.textures.Texture2D;
 import io.xol.chunkstories.api.rendering.textures.Texture2DRenderTarget;
@@ -36,7 +36,7 @@ public class ShadowPass extends RenderPass
 	
 	final SkyRenderer skyRenderer;
 	
-	RenderTargetAttachementsConfiguration fbo = null;
+	RenderTargetsConfiguration fbo = null;
 	Texture2DRenderTarget shadowDepthTexture;
 
 	private Matrix4f shadowMatrix;
@@ -65,7 +65,7 @@ public class ShadowPass extends RenderPass
 		//Resize the texture if needed
 		int shadowMapTextureSize = renderingContext.renderingConfig().getShadowMapResolutions();
 		if(shadowDepthTexture.getWidth() != shadowMapTextureSize) {
-			fbo.resizeFBO(shadowMapTextureSize, shadowMapTextureSize);
+			fbo.resize(shadowMapTextureSize, shadowMapTextureSize);
 		}
 		
 		//The size of the shadow range depends on the shadowmap resolution
@@ -101,7 +101,7 @@ public class ShadowPass extends RenderPass
 		renderingContext.getRenderTargetManager().setConfiguration(fbo);
 		renderingContext.getRenderTargetManager().clearBoundRenderTargetZ(1.0f);
 
-		ShaderInterface shadowsPassShader = renderingContext.useShader("shadows");
+		Shader shadowsPassShader = renderingContext.useShader("shadows");
 		
 		shadowsPassShader.setUniform1f("animationTimer", worldRenderer.getAnimationTimer());
 		shadowsPassShader.setUniformMatrix4f("depthMVP", shadowMVP);

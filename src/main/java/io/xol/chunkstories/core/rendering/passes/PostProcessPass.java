@@ -7,10 +7,10 @@ import io.xol.chunkstories.api.rendering.GameWindow;
 import io.xol.chunkstories.api.rendering.RenderPass;
 import io.xol.chunkstories.api.rendering.RenderingInterface;
 import io.xol.chunkstories.api.rendering.RenderingPipeline;
-import io.xol.chunkstories.api.rendering.pipeline.PipelineConfiguration.BlendMode;
-import io.xol.chunkstories.api.rendering.pipeline.PipelineConfiguration.DepthTestMode;
-import io.xol.chunkstories.api.rendering.pipeline.ShaderInterface;
-import io.xol.chunkstories.api.rendering.target.RenderTargetAttachementsConfiguration;
+import io.xol.chunkstories.api.rendering.pipeline.StateMachine.BlendMode;
+import io.xol.chunkstories.api.rendering.pipeline.StateMachine.DepthTestMode;
+import io.xol.chunkstories.api.rendering.pipeline.Shader;
+import io.xol.chunkstories.api.rendering.target.RenderTargetsConfiguration;
 import io.xol.chunkstories.api.rendering.textures.Texture;
 import io.xol.chunkstories.api.rendering.textures.Texture2D;
 import io.xol.chunkstories.api.rendering.textures.Texture2DRenderTarget;
@@ -23,7 +23,7 @@ public class PostProcessPass extends RenderPass {
 	final WorldRenderer worldRenderer;
 	final World world;
 	
-	RenderTargetAttachementsConfiguration fbo = null;
+	RenderTargetsConfiguration fbo = null;
 	Texture2D shadedBuffer = null;
 	Texture2D zBuffer = null;
 	
@@ -72,7 +72,7 @@ public class PostProcessPass extends RenderPass {
 			renderer.setDepthTestMode(DepthTestMode.DISABLED);
 			renderer.setBlendMode(BlendMode.DISABLED);
 
-			ShaderInterface postProcess = renderer.useShader("postprocess");
+			Shader postProcess = renderer.useShader("postprocess");
 			
 			renderer.bindTexture2D("shadedBuffer", shadedBuffer);
 			renderer.bindTexture2D("zBuffer", zBuffer);
@@ -119,7 +119,6 @@ public class PostProcessPass extends RenderPass {
 			postProcess.setUniform1f("apertureModifier", 1.0f);
 
 			renderer.drawFSQuad();
-			renderer.flush();
 		}
 	}
 

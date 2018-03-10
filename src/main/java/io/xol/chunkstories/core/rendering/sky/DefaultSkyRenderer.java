@@ -14,10 +14,10 @@ import org.joml.Vector3f;
 import io.xol.chunkstories.api.math.Math2;
 import io.xol.chunkstories.api.rendering.Primitive;
 import io.xol.chunkstories.api.rendering.RenderingInterface;
-import io.xol.chunkstories.api.rendering.pipeline.PipelineConfiguration.BlendMode;
-import io.xol.chunkstories.api.rendering.pipeline.PipelineConfiguration.CullingMode;
-import io.xol.chunkstories.api.rendering.pipeline.PipelineConfiguration.DepthTestMode;
-import io.xol.chunkstories.api.rendering.pipeline.ShaderInterface;
+import io.xol.chunkstories.api.rendering.pipeline.StateMachine.BlendMode;
+import io.xol.chunkstories.api.rendering.pipeline.StateMachine.CullingMode;
+import io.xol.chunkstories.api.rendering.pipeline.StateMachine.DepthTestMode;
+import io.xol.chunkstories.api.rendering.pipeline.Shader;
 import io.xol.chunkstories.api.rendering.vertex.VertexBuffer;
 import io.xol.chunkstories.api.rendering.vertex.VertexFormat;
 import io.xol.chunkstories.api.rendering.world.SkyRenderer;
@@ -67,7 +67,7 @@ public class DefaultSkyRenderer implements SkyRenderer
 
 		Vector3f sunPosVector = getSunPosition();
 
-		ShaderInterface skyShader = renderingContext.useShader("sky");
+		Shader skyShader = renderingContext.useShader("sky");
 		
 		/*renderingContext.bindTexture2D("cloudsNoise", TexturesHandler.getTexture("./textures/environement/cloudsStatic.png"));
 		
@@ -101,7 +101,7 @@ public class DefaultSkyRenderer implements SkyRenderer
 
 		renderingContext.setBlendMode(BlendMode.MIX);
 		
-		ShaderInterface starsShader = renderingContext.useShader("stars");
+		Shader starsShader = renderingContext.useShader("stars");
 		
 		starsShader.setUniform3f("sunPos", sunPosVector.x(), sunPosVector.y(), sunPosVector.z());
 		starsShader.setUniform3f("color", 1f, 1f, 1f);
@@ -136,7 +136,6 @@ public class DefaultSkyRenderer implements SkyRenderer
 		renderingContext.draw(Primitive.POINT, 0, NB_STARS);
 		
 		renderingContext.getRenderTargetManager().setDepthMask(true);
-		renderingContext.flush();
 		
 		renderingContext.setBlendMode(BlendMode.DISABLED);
 		renderingContext.setDepthTestMode(DepthTestMode.LESS_OR_EQUAL);
@@ -144,7 +143,7 @@ public class DefaultSkyRenderer implements SkyRenderer
 		cloudsRenderer.renderClouds(renderingContext);
 	}
 
-	public void setupShader(ShaderInterface shaderInterface)
+	public void setupShader(Shader shaderInterface)
 	{
 		float fogFactor = Math.min(Math.max(0.0f, world.getWeather() - 0.4f) / 0.1f, 1.0f);
 		
