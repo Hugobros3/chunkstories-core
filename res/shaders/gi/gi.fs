@@ -110,7 +110,7 @@ void main() {
 	vec4 reprojectedPosition = previousProjectionMatrix * oldCameraSpacePosition;
     reprojectedPosition /= reprojectedPosition.w;
 	
-	reprojectedPosition.xy = reprojectedPosition.xy * 0.5 + vec2(0.5);
+	reprojectedPosition.xyz = reprojectedPosition.xyz * 0.5 + vec3(0.5);
 	
 	//if(keepPreviousData == 1) {
 	vec4 previousGi = texture(previousBuffer, reprojectedPosition.xy);
@@ -123,17 +123,16 @@ void main() {
 	
 	float depthDiff = (abs(linearDepth - offsetDepth));
 	
-	float similarity = clamp(1.0 - pow(linearDepth - offsetDepth, 16.0), 0.0, 1.0);
-	similarity *= clamp(1.0 - length(reprojectedPosition.xy - screenCoord.xy), 0.0, 1.0);
+	float similarity = clamp(1.0 - pow(4 * max(abs(linearDepth - offsetDepth) - 1.0, 0.0), 2.0), 0.0, 1.0);
+	similarity *= clamp(1.0 - 0.5 * length(reprojectedPosition.xyz - vec3(screenCoord.xy, texture(zBuffer, screenCoord).r)), 0.0, 1.0);
 	
-	similarity = clamp(similarity, 0.0, 0.95 + clamp(confidence / 100, 0.0, 0.025));
-	if(reprojectedPosition.x > 1.0 || reprojectedPosition.y < 0.0 || reprojectedPosition.y > 1.0) {
+	//similarity = clamp(similarity, 0.0, 0.95 + clamp(confidence / 100, 0.0, 0.025));
+	if(reprojectedPosition.x < 0.0 || reprojectedPosition.x > 1.0 || reprojectedPosition.y < 0.0 || reprojectedPosition.y > 1.0) {
 		outputConfidence = 1.0;
 	} else {
-		outputConfidence = 1.0 + similarity * confidence;//((1.0-similarity) + confidence * (similarity));
-		gi = (gi * (1.0 - similarity) + previousGi * (similarity));
+		outputConfidence = 1.0 + confidence * similarity;
+		gi = (gi * (1.0) + previousGi * similarity * confidence) / outputConfidence;
 	}
-	
 	
 	fragColor = gi;
 	gl_FragDepth = texture(zBuffer, screenCoord).x;

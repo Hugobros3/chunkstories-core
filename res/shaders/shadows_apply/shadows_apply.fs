@@ -150,12 +150,12 @@ void main() {
 	
 	float confidence = texture(giConfidence, screenCoord).x;
 	
-	gi = texture(giBuffer, screenCoord) / confidence;
+	gi = texture(giBuffer, screenCoord) / 1.0;
 	//gi.a = 0.0;
 	gi = bilateralTexture(giBuffer, screenCoord, pixelNormal, 0.0) / 1.0;
 	gi.a = 1.0 - gi.a;
 	
-	lightColor.rgb += gi.rgb * 2.0;
+	lightColor.rgb += gi.rgb * pi;
 	
 	vec3 sunLight_g = sunLightColor * pi;//pow(sunColor, vec3(gamma));
 	vec3 shadowLight_g = getAtmosphericScatteringAmbient();//pow(shadowColor, vec3(gamma));

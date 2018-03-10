@@ -41,10 +41,10 @@ public class DefaultSkyRenderer implements SkyRenderer
 
 	public Vector3f getSunPosition() {
 		float sunAzimuth = (float) ((dayTime + 0.75) * 360.0f * (Math.PI / 180.0));
-		float sunElevation = (float) (45 * (Math.PI / 180.0));
+		float sunElevation = (float) (0 + 90 * (Math.PI / 180.0));
 
-		Vector3f lookAt = new Vector3f(-0.5f + (float) (Math.sin(sunElevation) * Math.cos(sunAzimuth)), (float) (Math.sin(sunAzimuth)),
-				(float) (Math.cos(sunElevation) * Math.cos(sunAzimuth)));
+		Vector3f lookAt = new Vector3f(0.5f + (float) (Math.sin(sunElevation) * Math.cos(sunAzimuth)), (float) (Math.sin(sunAzimuth)),
+				0.3f + (float) (Math.cos(sunElevation) * Math.cos(sunAzimuth)));
 		return lookAt.normalize();
 	}
 	
