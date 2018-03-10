@@ -31,7 +31,7 @@ uniform sampler2D normalTextureDeep;
 uniform float shadowVisiblity; // Used for night transitions ( w/o shadows as you know )
 
 //Water
-uniform float time;
+uniform float animationTimer;
 // Screen space reflections
 uniform vec2 screenSize;
 
@@ -67,11 +67,11 @@ void main(){
 	vec3 normal = vec3(0.0, 0.0, 1.0);
 	
 	vec3 normalMap = 1.0 * vec3(0.0, 0.0, 1.0);
-	//normalMap += 0.5 * mixedTextures(lightMapCoords.a, (vertexPassed.xz/5.0+vec2(0.0,time)/50.0)/15.0);
-	normalMap += 0.8 * mixedTextures(lightMapCoords.a, (vertexPassed.xz/2.0+vec2(-time,-2.0*time)/150.0)/2.0);
-	normalMap *= mixedTextures(lightMapCoords.a, (vertexPassed.zx*0.8-vec2(400.0, 45.0 * sin(-time/5.0)+time/25.0)/350.0)/10.0) + 0.3 * mixedTextures(lightMapCoords.a, (vertexPassed.xz/16.0+vec2(-time,-3.0*time)/150.0)/2.0);
-	normalMap += 0.5 * mixedTextures(lightMapCoords.a, (vertexPassed.zx*0.8+vec2(400.0, sin(-time/5.0)+time/25.0)/350.0)/10.0);
-	normalMap += 0.25 * mixedTextures(lightMapCoords.a, (vertexPassed.zx*0.1+vec2(400.0, sin(-time/5.0)-time/25.0)/250.0)/15.0);
+	//normalMap += 0.5 * mixedTextures(lightMapCoords.a, (vertexPassed.xz/5.0+vec2(0.0,animationTimer)/50.0)/15.0);
+	normalMap += 0.8 * mixedTextures(lightMapCoords.a, (vertexPassed.xz/2.0+vec2(-animationTimer,-2.0*animationTimer)/150.0)/2.0);
+	normalMap *= mixedTextures(lightMapCoords.a, (vertexPassed.zx*0.8-vec2(400.0, 45.0 * sin(-animationTimer/5.0)+animationTimer/25.0)/350.0)/10.0) + 0.3 * mixedTextures(lightMapCoords.a, (vertexPassed.xz/16.0+vec2(-animationTimer,-3.0*animationTimer)/150.0)/2.0);
+	normalMap += 0.5 * mixedTextures(lightMapCoords.a, (vertexPassed.zx*0.8+vec2(400.0, sin(-animationTimer/5.0)+animationTimer/25.0)/350.0)/10.0);
+	normalMap += 0.25 * mixedTextures(lightMapCoords.a, (vertexPassed.zx*0.1+vec2(400.0, sin(-animationTimer/5.0)-animationTimer/25.0)/250.0)/15.0);
 	
 	normalMap = normalize(normalMap);
 	

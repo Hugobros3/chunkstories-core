@@ -27,6 +27,7 @@ import io.xol.chunkstories.core.rendering.passes.PostProcessPass;
 import io.xol.chunkstories.core.rendering.passes.ReflectionsPass;
 import io.xol.chunkstories.core.rendering.passes.ShadowPass;
 import io.xol.chunkstories.core.rendering.passes.SkyPass;
+import io.xol.chunkstories.core.rendering.passes.WaterPass;
 import io.xol.chunkstories.core.rendering.sky.DefaultSkyRenderer;
 
 public class RenderingEventsListener implements Listener {
@@ -57,6 +58,13 @@ public class RenderingEventsListener implements Listener {
 		
 		DecalsPass decals = new DecalsPass(pipeline, "decals", new String[] {"gBuffers.albedoBuffer!", "gBuffers.zBuffer"}, new String[] {});
 		pipeline.registerRenderPass(decals);
+		
+		WaterPass waterPass = new WaterPass(pipeline, "water", 
+				new String[]{"decals.albedoBuffer", "gBuffers.normalBuffer", "gBuffers.voxelLightBuffer", "gBuffers.specularityBuffer", "gBuffers.materialsBuffer", 
+				"gBuffers.zBuffer"}, 
+				new String[]{"albedoBuffer", "normalBuffer", "voxelLightBuffer", "specularityBuffer", "materialsBuffer", "zBuffer" }
+			, sky);
+		pipeline.registerRenderPass(waterPass);
 
 		// a shadowmap pass requires no previous buffer and just outputs a shadowmap	
 		ShadowPass sunShadowPass = new ShadowPass(pipeline, "shadowsSun",  new String[]{}, new String[]{"shadowMap"}, sky);
@@ -65,8 +73,8 @@ public class RenderingEventsListener implements Listener {
 
 		// aka shadows_apply in the current code, it takes the gbuffers and applies the shadowmapping to them, then outputs to the shaded pixels buffers already filled with the far terrain pixels
 		ApplySunlightPass applySunlight = new ApplySunlightPass(pipeline, "applySunlight", 
-				new String[]{"decals.albedoBuffer", "gBuffers.normalBuffer", "gBuffers.voxelLightBuffer", "gBuffers.specularityBuffer", "gBuffers.materialsBuffer", 
-						"gBuffers.zBuffer", "shadowsSun.shadowMap", "sky.shadedBuffer!"}, 
+				new String[]{"water.albedoBuffer", "water.normalBuffer", "water.voxelLightBuffer", "water.specularityBuffer", "water.materialsBuffer", 
+						"water.zBuffer", "shadowsSun.shadowMap", "sky.shadedBuffer!"}, 
 				new String[]{"shadedBuffer"},
 				sunShadowPass);
 		pipeline.registerRenderPass(applySunlight);	

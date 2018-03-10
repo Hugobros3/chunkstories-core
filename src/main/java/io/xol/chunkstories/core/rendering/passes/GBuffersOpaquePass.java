@@ -49,14 +49,12 @@ public class GBuffersOpaquePass extends RenderPass {
 	@Override
 	public void onResolvedInputs() {
 		rbZBuffer = (Texture2DRenderTarget) resolvedInputs.get("zBuffer");
-		
 		fbo = pipeline.getRenderingInterface().getRenderTargetManager().newConfiguration(rbZBuffer, albedoBuffer, normalBuffer, voxelLightBuffer, specularityBuffer, materialsBuffer);
 	}
 
 	@Override
 	public void render(RenderingInterface renderingInterface) {
 		if(fbo != null) {
-			//System.out.println("bah go");
 			GameWindow gameWindow = pipeline.getRenderingInterface().getWindow();
 			
 			renderingInterface.getRenderTargetManager().setConfiguration(fbo);
@@ -69,13 +67,9 @@ public class GBuffersOpaquePass extends RenderPass {
 			
 			Shader opaqueBlocksShader = renderingInterface.useShader("blocks_opaque");
 			
-			Texture2D blocksAlbedoTexture;
-			Texture2D blocksNormalTexture;
-			Texture2D blocksMaterialTexture;
-			
-			blocksAlbedoTexture = gameWindow.getClient().getContent().voxels().textures().getDiffuseAtlasTexture();
-			blocksNormalTexture = gameWindow.getClient().getContent().voxels().textures().getNormalAtlasTexture();
-			blocksMaterialTexture = gameWindow.getClient().getContent().voxels().textures().getMaterialAtlasTexture();
+			Texture2D blocksAlbedoTexture = gameWindow.getClient().getContent().voxels().textures().getDiffuseAtlasTexture();
+			Texture2D blocksNormalTexture = gameWindow.getClient().getContent().voxels().textures().getNormalAtlasTexture();
+			Texture2D blocksMaterialTexture = gameWindow.getClient().getContent().voxels().textures().getMaterialAtlasTexture();
 			
 			renderingInterface.bindAlbedoTexture(blocksAlbedoTexture);
 			renderingInterface.bindNormalTexture(blocksNormalTexture);

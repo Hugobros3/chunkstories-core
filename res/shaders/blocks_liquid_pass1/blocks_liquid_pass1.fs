@@ -26,7 +26,7 @@ uniform sampler2D lightColors; // Sampler to lightmap
 uniform float shadowVisiblity; // Used for night transitions ( w/o shadows as you know )
 
 //Water
-uniform float time;
+uniform float animationTimer;
 // Screen space reflections
 uniform vec2 screenSize;
 
@@ -47,7 +47,6 @@ const float shadowStrength = 0.75;
 
 uniform sampler2D readbackAlbedoBufferTemp;
 uniform sampler2D readbackVoxelLightBufferTemp;
-uniform sampler2D readbackSpecularityBufferTemp;
 uniform sampler2D readbackDepthBufferTemp;
 
 uniform vec2 shadedBufferDimensions;
