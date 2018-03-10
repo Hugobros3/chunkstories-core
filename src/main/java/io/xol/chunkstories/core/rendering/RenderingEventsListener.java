@@ -20,6 +20,7 @@ import io.xol.chunkstories.core.item.ItemMiningTool.MiningProgress;
 import io.xol.chunkstories.core.item.renderer.decals.BreakingBlockDecal;
 import io.xol.chunkstories.core.rendering.passes.ApplySunlightPass;
 import io.xol.chunkstories.core.rendering.passes.BloomPass;
+import io.xol.chunkstories.core.rendering.passes.DecalsPass;
 import io.xol.chunkstories.core.rendering.passes.FarTerrainPass;
 import io.xol.chunkstories.core.rendering.passes.GBuffersOpaquePass;
 import io.xol.chunkstories.core.rendering.passes.PostProcessPass;
@@ -52,8 +53,10 @@ public class RenderingEventsListener implements Listener {
 		GBuffersOpaquePass gBuffers = new GBuffersOpaquePass(pipeline, "gBuffers", 
 				new String[]{"sky.zBuffer!"}, 
 				new String[]{"albedoBuffer", "normalBuffer", "voxelLightBuffer", "specularityBuffer", "materialsBuffer", "zBuffer" } );
-		
 		pipeline.registerRenderPass(gBuffers);
+		
+		DecalsPass decals = new DecalsPass(pipeline, "decals", new String[] {"gBuffers.albedoBuffer!", "gBuffers.zBuffer"}, new String[] {});
+		pipeline.registerRenderPass(decals);
 
 		// a shadowmap pass requires no previous buffer and just outputs a shadowmap	
 		ShadowPass sunShadowPass = new ShadowPass(pipeline, "shadowsSun",  new String[]{}, new String[]{"shadowMap"}, sky);
@@ -62,7 +65,7 @@ public class RenderingEventsListener implements Listener {
 
 		// aka shadows_apply in the current code, it takes the gbuffers and applies the shadowmapping to them, then outputs to the shaded pixels buffers already filled with the far terrain pixels
 		ApplySunlightPass applySunlight = new ApplySunlightPass(pipeline, "applySunlight", 
-				new String[]{"gBuffers.albedoBuffer", "gBuffers.normalBuffer", "gBuffers.voxelLightBuffer", "gBuffers.specularityBuffer", "gBuffers.materialsBuffer", 
+				new String[]{"decals.albedoBuffer", "gBuffers.normalBuffer", "gBuffers.voxelLightBuffer", "gBuffers.specularityBuffer", "gBuffers.materialsBuffer", 
 						"gBuffers.zBuffer", "shadowsSun.shadowMap", "sky.shadedBuffer!"}, 
 				new String[]{"shadedBuffer"},
 				sunShadowPass);
