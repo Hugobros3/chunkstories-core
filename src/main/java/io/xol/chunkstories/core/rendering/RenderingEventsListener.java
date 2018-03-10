@@ -23,6 +23,7 @@ import io.xol.chunkstories.core.rendering.passes.BloomPass;
 import io.xol.chunkstories.core.rendering.passes.FarTerrainPass;
 import io.xol.chunkstories.core.rendering.passes.GBuffersOpaquePass;
 import io.xol.chunkstories.core.rendering.passes.PostProcessPass;
+import io.xol.chunkstories.core.rendering.passes.ReflectionsPass;
 import io.xol.chunkstories.core.rendering.passes.ShadowPass;
 import io.xol.chunkstories.core.rendering.passes.SkyPass;
 import io.xol.chunkstories.core.rendering.sky.DefaultSkyRenderer;
@@ -70,15 +71,20 @@ public class RenderingEventsListener implements Listener {
 		// far terrain needs the shaded buffer from sky and outputs it, as well with a zbuffer
 		FarTerrainPass farTerrain = new FarTerrainPass(pipeline, "farTerrain", 
 				new String[]{"applySunlight.shadedBuffer!", "gBuffers.specularityBuffer!", "gBuffers.zBuffer!"}, 
-				new String[]{"shadedBuffer", "zBuffer"} );
+				new String[]{"shadedBuffer", "zBuffer", "specularityBuffer"} );
 		pipeline.registerRenderPass(farTerrain);
 		
 		BloomPass bloomPass = new BloomPass(pipeline, "bloom", new String[] {"farTerrain.shadedBuffer"}, new String[] {"bloomBuffer"});
 		pipeline.registerRenderPass(bloomPass);
 		
+		ReflectionsPass reflections = new ReflectionsPass(pipeline, "reflections", 
+				new String[]{"farTerrain.shadedBuffer", "gBuffers.normalBuffer", "gBuffers.voxelLightBuffer", "farTerrain.specularityBuffer",
+							"farTerrain.zBuffer"}, new String[] {"reflectionsBuffer"}, sky);
+		pipeline.registerRenderPass(reflections);
+		
 		 // the pass declared as 'final' is considered the last one and it's outputs are shown to the screen
 		pipeline.registerRenderPass(new PostProcessPass(pipeline, "final", 
-				new String[] {"farTerrain.shadedBuffer", "farTerrain.zBuffer", "bloom.bloomBuffer"},
+				new String[] {"farTerrain.shadedBuffer", "farTerrain.zBuffer", "bloom.bloomBuffer", "reflections.reflectionsBuffer", "farTerrain.specularityBuffer"},
 				sunShadowPass) );
 	}
 

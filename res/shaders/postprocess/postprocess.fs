@@ -1,18 +1,18 @@
 #version 330
 uniform sampler2D shadedBuffer;
 uniform sampler2D zBuffer;
+uniform sampler2D specularityBuffer;
 
 /*uniform sampler2D albedoBuffer;
 uniform sampler2D normalBuffer;
 uniform sampler2D voxelLightBuffer;
-uniform sampler2D specularityBuffer;
-//uniform usampler2D materialBuffer;
+uniform usampler2D materialBuffer;
 uniform sampler2D debugBuffer;*/
 
 uniform sampler2DShadow shadowMap;
 
 uniform sampler2D bloomBuffer;
-//uniform sampler2D reflectionsBuffer;
+uniform sampler2D reflectionsBuffer;
 
 uniform sampler2D pauseOverlayTexture;
 uniform float pauseOverlayFade;
@@ -137,10 +137,10 @@ void main() {
 	compositeColor = mix(compositeColor, compositeColor * waterColor, underwater);
 	
 	//Applies reflections
-	/*float reflectionsAmount = texture(specularityBuffer, finalCoords).x;
+	float reflectionsAmount = texture(specularityBuffer, finalCoords).x;
 	
 	vec4 reflection = texture(reflectionsBuffer, finalCoords);
-	compositeColor.rgb = mix(compositeColor.rgb, reflection.rgb, reflectionsAmount);*/
+	compositeColor.rgb = mix(compositeColor.rgb, reflection.rgb, reflectionsAmount);
 	
 	//Dynamic reflections
 	

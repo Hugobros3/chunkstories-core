@@ -3,10 +3,11 @@
 // http://chunkstories.xyz
 // http://xol.io
 
-uniform sampler2D depthBuffer;
+uniform sampler2D zBuffer;
+
+uniform sampler2D shadedBuffer;
 
 uniform sampler2D voxelLightBuffer;
-uniform sampler2D shadedBuffer;
 uniform sampler2D normalBuffer;
 uniform sampler2D specularityBuffer;
 
@@ -17,9 +18,6 @@ uniform samplerCube environmentCubemap;
 in vec2 screenCoord;
 
 //Sky data
-uniform sampler2D sunSetRiseTexture;
-uniform sampler2D skyTextureSunny;
-uniform sampler2D skyTextureRaining;
 uniform vec3 sunPos;
 uniform float overcastFactor;
 
@@ -65,7 +63,7 @@ uniform float fogEndDistance;
 out vec4 fragColor;
 
 void main() {
-    vec4 cameraSpacePosition = convertScreenSpaceToCameraSpace(screenCoord, depthBuffer);
+    vec4 cameraSpacePosition = convertScreenSpaceToCameraSpace(screenCoord, zBuffer);
 	
 	vec3 pixelNormal = decodeNormal(texture(normalBuffer, screenCoord));
 	float spec = texture(specularityBuffer, screenCoord).x;
@@ -73,7 +71,7 @@ void main() {
 	//Discard fragments using alpha
 	if(texture(shadedBuffer, screenCoord).a > 0.0 && spec > 0.0)
 	{
-		fragColor = clamp(computeReflectedPixel(depthBuffer, shadedBuffer, environmentCubemap, screenCoord, cameraSpacePosition.xyz, pixelNormal, texture(voxelLightBuffer, screenCoord).y), 0.0, 1000);
+		fragColor = clamp(computeReflectedPixel(zBuffer, shadedBuffer, environmentCubemap, screenCoord, cameraSpacePosition.xyz, pixelNormal, texture(voxelLightBuffer, screenCoord).y), 0.0, 1000);
 	}
 	else
 		discard;
