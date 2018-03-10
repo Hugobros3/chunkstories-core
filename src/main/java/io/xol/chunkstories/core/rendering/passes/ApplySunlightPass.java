@@ -1,14 +1,13 @@
 package io.xol.chunkstories.core.rendering.passes;
 
-import java.util.Map;
 import java.util.Map.Entry;
 
-import io.xol.chunkstories.api.rendering.RenderPass;
 import io.xol.chunkstories.api.rendering.RenderingInterface;
-import io.xol.chunkstories.api.rendering.RenderingPipeline;
-import io.xol.chunkstories.api.rendering.pipeline.StateMachine.BlendMode;
-import io.xol.chunkstories.api.rendering.pipeline.StateMachine.DepthTestMode;
-import io.xol.chunkstories.api.rendering.pipeline.Shader;
+import io.xol.chunkstories.api.rendering.StateMachine.BlendMode;
+import io.xol.chunkstories.api.rendering.StateMachine.DepthTestMode;
+import io.xol.chunkstories.api.rendering.pass.RenderPass;
+import io.xol.chunkstories.api.rendering.pass.RenderPasses;
+import io.xol.chunkstories.api.rendering.shader.Shader;
 import io.xol.chunkstories.api.rendering.target.RenderTargetsConfiguration;
 import io.xol.chunkstories.api.rendering.textures.Texture;
 import io.xol.chunkstories.api.rendering.textures.Texture2D;
@@ -23,11 +22,11 @@ public class ApplySunlightPass extends RenderPass {
 	RenderTargetsConfiguration fbo = null;
 	Texture2DRenderTarget shadedBuffer = null;
 	
-	Texture2D albedoBuffer, normalBuffer, voxelLightBuffer, zBuffer;
+	//Texture2D albedoBuffer, normalBuffer, voxelLightBuffer, zBuffer;
 	
 	final ShadowPass shadowPass;
 	
-	public ApplySunlightPass(RenderingPipeline pipeline, String name, String[] requires, String[] exports, ShadowPass shadowPass) {
+	public ApplySunlightPass(RenderPasses pipeline, String name, String[] requires, String[] exports, ShadowPass shadowPass) {
 		super(pipeline, name, requires, exports);
 		
 		this.worldRenderer = pipeline.getWorldRenderer();
@@ -37,18 +36,18 @@ public class ApplySunlightPass extends RenderPass {
 	}
 
 	@Override
-	public void resolvedInputs(Map<String, Texture> inputs) {
-		for(Entry<String, Texture> e : inputs.entrySet())
+	public void onResolvedInputs() {
+		for(Entry<String, Texture> e : resolvedInputs.entrySet())
 			System.out.println(e.getKey() + ":" + e.getValue());
 		
-		this.shadedBuffer = (Texture2DRenderTarget) inputs.get("shadedBuffer");
+		this.shadedBuffer = (Texture2DRenderTarget) resolvedInputs.get("shadedBuffer");
 		this.fbo = pipeline.getRenderingInterface().getRenderTargetManager().newConfiguration(null, shadedBuffer);
 		
-		this.albedoBuffer = (Texture2DRenderTarget) inputs.get("albedo");	
-		this.normalBuffer = (Texture2DRenderTarget) inputs.get("normals");	
-		this.voxelLightBuffer = (Texture2DRenderTarget) inputs.get("voxelLight");
+		/*this.albedoBuffer = (Texture2DRenderTarget) resolvedInputs.get("albedoBuffer");	
+		this.normalBuffer = (Texture2DRenderTarget) resolvedInputs.get("normals");	
+		this.voxelLightBuffer = (Texture2DRenderTarget) resolvedInputs.get("voxelLight");
 		
-		this.zBuffer = (Texture2DRenderTarget) inputs.get("zBuffer");	
+		this.zBuffer = (Texture2DRenderTarget) resolvedInputs.get("zBuffer");*/	
 	}
 
 	@Override
@@ -73,7 +72,7 @@ public class ApplySunlightPass extends RenderPass {
 
 		applyShadowsShader.setUniform1f("brightnessMultiplier", lightMultiplier);
 
-		if(albedoBuffer == normalBuffer || albedoBuffer == zBuffer)
+		/*if(albedoBuffer == normalBuffer || albedoBuffer == zBuffer)
 			System.out.println("well fuck"+normalBuffer);
 		
 		renderer.bindTexture2D("albedoBuffer", albedoBuffer);
@@ -81,7 +80,7 @@ public class ApplySunlightPass extends RenderPass {
 		renderer.bindTexture2D("normalBuffer", normalBuffer);
 		//TODO materials
 		//renderingContext.bindTexture2D("specularityBuffer", renderBuffers.rbSpecularity);
-		renderer.bindTexture2D("voxelLightBuffer", voxelLightBuffer);
+		renderer.bindTexture2D("voxelLightBuffer", voxelLightBuffer);*/
 
 
 		renderer.bindTexture2D("blockLightmap", renderer.textures().getTexture("./textures/environement/light.png"));

@@ -6,22 +6,19 @@
 
 package io.xol.chunkstories.core.rendering.passes;
 
-import java.util.Map;
-
 import org.joml.Matrix4f;
 import org.joml.Vector3dc;
 import org.joml.Vector3f;
 
 import io.xol.chunkstories.api.rendering.GameWindow;
-import io.xol.chunkstories.api.rendering.RenderPass;
 import io.xol.chunkstories.api.rendering.RenderingInterface;
-import io.xol.chunkstories.api.rendering.RenderingPipeline;
-import io.xol.chunkstories.api.rendering.pipeline.StateMachine.BlendMode;
-import io.xol.chunkstories.api.rendering.pipeline.StateMachine.CullingMode;
-import io.xol.chunkstories.api.rendering.pipeline.StateMachine.DepthTestMode;
+import io.xol.chunkstories.api.rendering.StateMachine.BlendMode;
+import io.xol.chunkstories.api.rendering.StateMachine.CullingMode;
+import io.xol.chunkstories.api.rendering.StateMachine.DepthTestMode;
+import io.xol.chunkstories.api.rendering.pass.RenderPass;
+import io.xol.chunkstories.api.rendering.pass.RenderPasses;
+import io.xol.chunkstories.api.rendering.shader.Shader;
 import io.xol.chunkstories.api.rendering.target.RenderTargetsConfiguration;
-import io.xol.chunkstories.api.rendering.pipeline.Shader;
-import io.xol.chunkstories.api.rendering.textures.Texture;
 import io.xol.chunkstories.api.rendering.textures.Texture2D;
 import io.xol.chunkstories.api.rendering.textures.Texture2DRenderTarget;
 import io.xol.chunkstories.api.rendering.textures.TextureFormat;
@@ -41,7 +38,7 @@ public class ShadowPass extends RenderPass
 
 	private Matrix4f shadowMatrix;
 	
-	public ShadowPass(RenderingPipeline pipeline, String name, String[] requires, String[] exports, SkyRenderer skyRenderer)
+	public ShadowPass(RenderPasses pipeline, String name, String[] requires, String[] exports, SkyRenderer skyRenderer)
 	{
 		super(pipeline, name, requires, exports);
 		this.worldRenderer = pipeline.getWorldRenderer();
@@ -140,7 +137,7 @@ public class ShadowPass extends RenderPass
 	}
 
 	@Override
-	public void resolvedInputs(Map<String, Texture> inputs) {
+	public void onResolvedInputs() {
 		
 	}
 

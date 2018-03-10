@@ -6,12 +6,13 @@
 
 package io.xol.chunkstories.core.particles;
 
+import org.joml.Vector3f;
+
 import io.xol.chunkstories.api.Location;
 import io.xol.chunkstories.api.client.ClientContent;
 import io.xol.chunkstories.api.client.LocalPlayer;
 import io.xol.chunkstories.api.content.Content;
 import io.xol.chunkstories.api.entity.Entity;
-import org.joml.Vector3f;
 import io.xol.chunkstories.api.particles.ParticleTypeDefinition;
 import io.xol.chunkstories.api.particles.ParticleTypeHandler;
 import io.xol.chunkstories.api.particles.ParticlesRenderer;

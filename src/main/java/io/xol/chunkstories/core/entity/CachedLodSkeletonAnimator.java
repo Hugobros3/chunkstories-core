@@ -45,7 +45,7 @@ public class CachedLodSkeletonAnimator implements SkeletonAnimator
 			if (distance > lodEnd)
 				lodDivisor *= 4;
 		}
-		if (renderingContext.getWorldRenderer().getRenderingPipeline().getCurrentPass().name.startsWith("shadow"))
+		if (renderingContext.getCurrentPass().name.startsWith("shadow"))
 			lodDivisor *= 2;
 
 		targetFps /= lodDivisor;

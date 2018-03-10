@@ -557,7 +557,7 @@ EntityWorldModifier
 				loc3f.set((float)location.x(), (float)location.y(), (float)location.z());
 				pre3f.set((float)entity.getPredictedLocation().x(), (float)entity.getPredictedLocation().y(), (float)entity.getPredictedLocation().z());
 
-				if (!(renderingContext.getWorldRenderer().getRenderingPipeline().getCurrentPass().name.startsWith("shadow") && location.distance(renderingContext.getCamera().getCameraPosition()) > 15f))
+				if (!(renderingContext.getCurrentPass().name.startsWith("shadow") && location.distance(renderingContext.getCamera().getCameraPosition()) > 15f))
 				{
 					entity.cachedSkeleton.lodUpdate(renderingContext);
 

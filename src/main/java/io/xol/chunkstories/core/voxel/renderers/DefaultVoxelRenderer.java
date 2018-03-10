@@ -13,7 +13,6 @@ import io.xol.chunkstories.api.rendering.world.chunk.ChunkMeshDataSubtypes.LodLe
 import io.xol.chunkstories.api.rendering.world.chunk.ChunkMeshDataSubtypes.ShadingType;
 import io.xol.chunkstories.api.rendering.world.chunk.ChunkRenderer;
 import io.xol.chunkstories.api.rendering.world.chunk.ChunkRenderer.ChunkRenderContext;
-
 import io.xol.chunkstories.api.voxel.Voxel;
 import io.xol.chunkstories.api.voxel.VoxelSides;
 import io.xol.chunkstories.api.voxel.VoxelSides.Corners;

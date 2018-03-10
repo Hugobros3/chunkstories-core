@@ -6,19 +6,19 @@
 
 package io.xol.chunkstories.core.particles;
 
-import io.xol.chunkstories.api.math.Math2;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;
 
+import io.xol.chunkstories.api.math.Math2;
 import io.xol.chunkstories.api.particles.ParticleDataWithVelocity;
 import io.xol.chunkstories.api.particles.ParticleTypeDefinition;
 import io.xol.chunkstories.api.particles.ParticleTypeHandler;
 import io.xol.chunkstories.api.particles.ParticlesRenderer;
 import io.xol.chunkstories.api.rendering.RenderingInterface;
+import io.xol.chunkstories.api.rendering.StateMachine.BlendMode;
 import io.xol.chunkstories.api.rendering.lightning.Light;
-import io.xol.chunkstories.api.rendering.pipeline.StateMachine.BlendMode;
 import io.xol.chunkstories.api.world.World;
 
 public class ParticleFireLight extends ParticleTypeHandler

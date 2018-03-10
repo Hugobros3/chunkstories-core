@@ -197,7 +197,7 @@ public abstract class EntityHumanoid extends EntityLivingImplementation
 		{
 			if (EntityHumanoid.this.equals(((WorldClient)getWorld()).getClient().getPlayer().getControlledEntity()))
 			{
-				if (renderingContext.getWorldRenderer().getRenderingPipeline().getCurrentPass().name.startsWith("shadow"))
+				if (renderingContext.getCurrentPass().name.startsWith("shadow"))
 					return false;
 
 				ItemPile selectedItem = null;
@@ -247,7 +247,7 @@ public abstract class EntityHumanoid extends EntityLivingImplementation
 			{
 				Location location = entity.getPredictedLocation();
 
-				if (renderer.getWorldRenderer().getRenderingPipeline().getCurrentPass().name.startsWith("shadow") && location.distance(renderer.getCamera().getCameraPosition()) > 15f)
+				if (renderer.getCurrentPass().name.startsWith("shadow") && location.distance(renderer.getCamera().getCameraPosition()) > 15f)
 					continue;
 
 				CellData cell = entity.getWorld().peekSafely(entity.getLocation());
@@ -270,7 +270,7 @@ public abstract class EntityHumanoid extends EntityLivingImplementation
 			for (EntityHumanoid entity : renderableEntitiesIterator)
 			{
 
-				if (renderer.getWorldRenderer().getRenderingPipeline().getCurrentPass().name.startsWith("shadow") && entity.getLocation().distance(renderer.getCamera().getCameraPosition()) > 15f)
+				if (renderer.getCurrentPass().name.startsWith("shadow") && entity.getLocation().distance(renderer.getCamera().getCameraPosition()) > 15f)
 					continue;
 
 				ItemPile selectedItemPile = null;

@@ -7,6 +7,7 @@
 package io.xol.chunkstories.core.particles;
 
 import org.joml.Vector3f;
+
 import io.xol.chunkstories.api.particles.ParticleTypeDefinition;
 import io.xol.chunkstories.api.particles.ParticleTypeHandler;
 import io.xol.chunkstories.api.particles.ParticlesRenderer;

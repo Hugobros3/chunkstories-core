@@ -1,12 +1,9 @@
 package io.xol.chunkstories.core.rendering.passes;
 
-import java.util.Map;
-
-import io.xol.chunkstories.api.rendering.RenderPass;
 import io.xol.chunkstories.api.rendering.RenderingInterface;
-import io.xol.chunkstories.api.rendering.RenderingPipeline;
+import io.xol.chunkstories.api.rendering.pass.RenderPass;
+import io.xol.chunkstories.api.rendering.pass.RenderPasses;
 import io.xol.chunkstories.api.rendering.target.RenderTargetsConfiguration;
-import io.xol.chunkstories.api.rendering.textures.Texture;
 import io.xol.chunkstories.api.rendering.textures.Texture2DRenderTarget;
 import io.xol.chunkstories.api.rendering.world.WorldRenderer;
 import io.xol.chunkstories.api.world.World;
@@ -22,7 +19,7 @@ public class FarTerrainPass extends RenderPass {
 	
 	RenderTargetsConfiguration fbo = null;
 	
-	public FarTerrainPass(RenderingPipeline pipeline, String name, String[] requires, String[] exports) {
+	public FarTerrainPass(RenderPasses pipeline, String name, String[] requires, String[] exports) {
 		super(pipeline, name, requires, exports);
 		
 		this.worldRenderer = pipeline.getWorldRenderer();
@@ -30,10 +27,10 @@ public class FarTerrainPass extends RenderPass {
 	}
 
 	@Override
-	public void resolvedInputs(Map<String, Texture> inputs) {
-		this.zBuffer = (Texture2DRenderTarget) inputs.get("zBuffer");	
-		this.shadedBuffer = (Texture2DRenderTarget) inputs.get("shadedBuffer");
-		this.specularBuffer = (Texture2DRenderTarget) inputs.get("specularity");
+	public void onResolvedInputs() {
+		this.zBuffer = (Texture2DRenderTarget) resolvedInputs.get("zBuffer");	
+		this.shadedBuffer = (Texture2DRenderTarget) resolvedInputs.get("shadedBuffer");
+		this.specularBuffer = (Texture2DRenderTarget) resolvedInputs.get("specularityBuffer");
 		
 		this.fbo = pipeline.getRenderingInterface().getRenderTargetManager().newConfiguration(zBuffer, shadedBuffer, specularBuffer);
 	}

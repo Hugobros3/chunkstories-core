@@ -3,7 +3,7 @@
 // http://chunkstories.xyz
 // http://xol.io
 
-uniform sampler2D depthBuffer;
+uniform sampler2D zBuffer;
 
 uniform sampler2D albedoBuffer;
 uniform sampler2D normalBuffer;
@@ -75,7 +75,7 @@ vec4 bilateralTexture(sampler2D sample, vec2 position, vec3 normal, float lod){
     float totalWeight = 0.0;
     vec4 result = vec4(0.0);
 
-    float linearDepth = linearizeDepth(texture(depthBuffer, position).r);
+    float linearDepth = linearizeDepth(texture(zBuffer, position).r);
     vec2 offsetMult = 1.0 / vec2(screenViewportSize.x, screenViewportSize.y);
 
     for (int i = 0; i < 4; i++){
@@ -85,7 +85,7 @@ vec4 bilateralTexture(sampler2D sample, vec2 position, vec3 normal, float lod){
         vec3 offsetNormal = decodeNormal(texture(normalBuffer, coord));// texture(normalBuffer, coord, lod).rgb * 2.0 - 1.0;
         float normalWeight = pow(abs(dot(offsetNormal, normal)), 32);
 
-        float offsetDepth = linearizeDepth(texture(depthBuffer, coord).r);
+        float offsetDepth = linearizeDepth(texture(zBuffer, coord).r);
         float depthWeight = 1.0 / (abs(linearDepth - offsetDepth) + 1e-8);
 
         float weight = normalWeight * depthWeight;
@@ -105,7 +105,7 @@ vec4 bilateralTexture(sampler2D sample, vec2 position, vec3 normal, float lod){
 }
 
 void main() {
-    vec4 cameraSpacePosition = convertScreenSpaceToCameraSpace(screenCoord, depthBuffer);
+    vec4 cameraSpacePosition = convertScreenSpaceToCameraSpace(screenCoord, zBuffer);
 	
 	vec3 pixelNormal = decodeNormal(texture(normalBuffer, screenCoord));
 	vec4 albedoColor = texture(albedoBuffer, screenCoord);

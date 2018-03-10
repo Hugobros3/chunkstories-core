@@ -6,8 +6,9 @@
 
 package io.xol.chunkstories.core.util;
 
-import io.xol.chunkstories.api.Location;
 import org.joml.Vector3d;
+
+import io.xol.chunkstories.api.Location;
 import io.xol.chunkstories.api.player.Player;
 import io.xol.chunkstories.api.sound.SoundSource.Mode;
 import io.xol.chunkstories.api.world.World;

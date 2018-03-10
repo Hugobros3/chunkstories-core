@@ -1,13 +1,10 @@
 package io.xol.chunkstories.core.rendering.passes;
 
-import java.util.Map;
-
 import io.xol.chunkstories.api.rendering.GameWindow;
-import io.xol.chunkstories.api.rendering.RenderPass;
 import io.xol.chunkstories.api.rendering.RenderingInterface;
-import io.xol.chunkstories.api.rendering.RenderingPipeline;
+import io.xol.chunkstories.api.rendering.pass.RenderPass;
+import io.xol.chunkstories.api.rendering.pass.RenderPasses;
 import io.xol.chunkstories.api.rendering.target.RenderTargetsConfiguration;
-import io.xol.chunkstories.api.rendering.textures.Texture;
 import io.xol.chunkstories.api.rendering.textures.Texture2DRenderTarget;
 import io.xol.chunkstories.api.rendering.textures.TextureFormat;
 import io.xol.chunkstories.api.rendering.world.SkyRenderer;
@@ -20,7 +17,7 @@ public class SkyPass extends RenderPass {
 	public final Texture2DRenderTarget rbZBuffer;
 	public final RenderTargetsConfiguration fbo;
 	
-	public SkyPass(RenderingPipeline pipeline, String name, SkyRenderer skyRenderer) {
+	public SkyPass(RenderPasses pipeline, String name, SkyRenderer skyRenderer) {
 		super(pipeline, name, new String[]{}, new String[] {"shadedBuffer, zBuffer!"});
 		
 		this.skyRenderer = skyRenderer;
@@ -36,7 +33,7 @@ public class SkyPass extends RenderPass {
 	}
 
 	@Override
-	public void resolvedInputs(Map<String, Texture> inputs) {
+	public void onResolvedInputs() {
 		
 	}
 

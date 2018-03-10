@@ -7,6 +7,7 @@
 package io.xol.chunkstories.core.item.renderer;
 
 import org.joml.Matrix4f;
+
 import io.xol.chunkstories.api.Location;
 import io.xol.chunkstories.api.client.ClientContent;
 import io.xol.chunkstories.api.client.ClientContent.TexturesLibrary;

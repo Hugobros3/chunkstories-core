@@ -164,7 +164,7 @@ public class EntityZombie extends EntityHumanoid
 			{
 				Location location = entity.getPredictedLocation();
 
-				if (renderer.getWorldRenderer().getRenderingPipeline().getCurrentPass().name.startsWith("shadow") && location.distance(renderer.getCamera().getCameraPosition()) > 15f)
+				if (renderer.getCurrentPass().name.startsWith("shadow") && location.distance(renderer.getCamera().getCameraPosition()) > 15f)
 					continue;
 
 				CellData cell = entity.getWorld().peekSafely(entity.getLocation());
@@ -192,7 +192,7 @@ public class EntityZombie extends EntityHumanoid
 			for (EntityHumanoid entity : renderableEntitiesIterator)
 			{
 				//don't render items in hand when far
-				if (renderer.getWorldRenderer().getRenderingPipeline().getCurrentPass().name.startsWith("shadow") && entity.getLocation().distance(renderer.getCamera().getCameraPosition()) > 15f)
+				if (renderer.getCurrentPass().name.startsWith("shadow") && entity.getLocation().distance(renderer.getCamera().getCameraPosition()) > 15f)
 					continue;
 
 				ItemPile selectedItemPile = null;

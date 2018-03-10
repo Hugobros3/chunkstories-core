@@ -10,11 +10,11 @@ import java.util.Random;
 
 import io.xol.chunkstories.api.content.Content.WorldGenerators.WorldGeneratorDefinition;
 import io.xol.chunkstories.api.voxel.Voxel;
-import io.xol.chunkstories.api.world.generator.environment.DefaultWorldEnvironment;
 import io.xol.chunkstories.api.world.World;
-import io.xol.chunkstories.api.world.generator.environment.WorldEnvironment;
-import io.xol.chunkstories.api.world.generator.WorldGenerator;
 import io.xol.chunkstories.api.world.chunk.Chunk;
+import io.xol.chunkstories.api.world.generator.WorldGenerator;
+import io.xol.chunkstories.api.world.generator.environment.DefaultWorldEnvironment;
+import io.xol.chunkstories.api.world.generator.environment.WorldEnvironment;
 
 public class FlatGenerator extends WorldGenerator
 {

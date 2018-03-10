@@ -9,8 +9,8 @@ package io.xol.chunkstories.core.voxel;
 import io.xol.chunkstories.api.item.ItemVoxel;
 import io.xol.chunkstories.api.item.inventory.ItemPile;
 import io.xol.chunkstories.api.voxel.Voxel;
-import io.xol.chunkstories.api.voxel.VoxelSides;
 import io.xol.chunkstories.api.voxel.VoxelDefinition;
+import io.xol.chunkstories.api.voxel.VoxelSides;
 import io.xol.chunkstories.api.voxel.textures.VoxelTexture;
 import io.xol.chunkstories.api.world.cell.CellData;
 
