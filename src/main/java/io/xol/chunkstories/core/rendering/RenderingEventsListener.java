@@ -23,12 +23,14 @@ import io.xol.chunkstories.core.rendering.passes.BloomPass;
 import io.xol.chunkstories.core.rendering.passes.DecalsPass;
 import io.xol.chunkstories.core.rendering.passes.DefferedLightsPass;
 import io.xol.chunkstories.core.rendering.passes.FarTerrainPass;
+import io.xol.chunkstories.core.rendering.passes.ForwardPass;
 import io.xol.chunkstories.core.rendering.passes.GBuffersOpaquePass;
 import io.xol.chunkstories.core.rendering.passes.PostProcessPass;
 import io.xol.chunkstories.core.rendering.passes.ReflectionsPass;
 import io.xol.chunkstories.core.rendering.passes.ShadowPass;
 import io.xol.chunkstories.core.rendering.passes.SkyPass;
 import io.xol.chunkstories.core.rendering.passes.WaterPass;
+import io.xol.chunkstories.core.rendering.passes.gi.GiPass;
 import io.xol.chunkstories.core.rendering.sky.DefaultSkyRenderer;
 
 public class RenderingEventsListener implements Listener {
@@ -72,6 +74,9 @@ public class RenderingEventsListener implements Listener {
 		// note we could generalize the shadowmappass to not only the sun but also the moon, point and spotlights
 		pipeline.registerRenderPass(sunShadowPass);
 
+		GiPass giPass = new GiPass(pipeline, "gi", new String[] {"water.albedoBuffer", "water.normalBuffer", "water.zBuffer"}, new String[] {"giBuffer"});
+		pipeline.registerRenderPass(giPass);
+		
 		// aka shadows_apply in the current code, it takes the gbuffers and applies the shadowmapping to them, then outputs to the shaded pixels buffers already filled with the far terrain pixels
 		ApplySunlightPass applySunlight = new ApplySunlightPass(pipeline, "applySunlight", 
 				new String[]{"water.albedoBuffer", "water.normalBuffer", "water.voxelLightBuffer", "water.specularityBuffer", "water.materialsBuffer", 
@@ -94,6 +99,11 @@ public class RenderingEventsListener implements Listener {
 		BloomPass bloomPass = new BloomPass(pipeline, "bloom", new String[] {"farTerrain.shadedBuffer"}, new String[] {"bloomBuffer"});
 		pipeline.registerRenderPass(bloomPass);
 		
+		ForwardPass forward = new ForwardPass(pipeline, "forward", 
+				new String[]{"farTerrain.shadedBuffer!"}, 
+				new String[]{});
+		pipeline.registerRenderPass(forward);
+		
 		ReflectionsPass reflections = new ReflectionsPass(pipeline, "reflections", 
 				new String[]{"farTerrain.shadedBuffer", "gBuffers.normalBuffer", "gBuffers.voxelLightBuffer", "farTerrain.specularityBuffer",
 							"farTerrain.zBuffer"}, new String[] {"reflectionsBuffer"}, sky);
@@ -101,7 +111,7 @@ public class RenderingEventsListener implements Listener {
 		
 		 // the pass declared as 'final' is considered the last one and it's outputs are shown to the screen
 		pipeline.registerRenderPass(new PostProcessPass(pipeline, "final", 
-				new String[] {"farTerrain.shadedBuffer", "farTerrain.zBuffer", "bloom.bloomBuffer", "reflections.reflectionsBuffer", "farTerrain.specularityBuffer"},
+				new String[] {"gi.giBuffer", "forward.shadedBuffer", "farTerrain.zBuffer", "bloom.bloomBuffer", "reflections.reflectionsBuffer", "farTerrain.specularityBuffer"},
 				sunShadowPass) );
 	}
 

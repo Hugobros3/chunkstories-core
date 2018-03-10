@@ -20,7 +20,9 @@ uniform float dayTime;
 
 uniform float accumulatedSamples;
 
-//uniform sampler2D giBuffer;
+uniform sampler2D giBuffer;
+uniform sampler2D giConfidence;
+
 uniform sampler2D blockLightmap;
 
 //Common camera matrices & uniforms
@@ -72,15 +74,31 @@ vec4 bilateralTexture(sampler2D sample, vec2 position, vec3 normal, float lod){
         vec2(0.0, -1.0)
     );
 
+	const int NUM_TAPS = 12;
+	
+	vec2 fTaps_Poisson[NUM_TAPS];
+	fTaps_Poisson[0]  = vec2(-.326,-.406);
+	fTaps_Poisson[1]  = vec2(-.840,-.074);
+	fTaps_Poisson[2]  = vec2(-.696, .457);
+	fTaps_Poisson[3]  = vec2(-.203, .621);
+	fTaps_Poisson[4]  = vec2( .962,-.195);
+	fTaps_Poisson[5]  = vec2( .473,-.480);
+	fTaps_Poisson[6]  = vec2( .519, .767);
+	fTaps_Poisson[7]  = vec2( .185,-.893);
+	fTaps_Poisson[8]  = vec2( .507, .064);
+	fTaps_Poisson[9]  = vec2( .896, .412);
+	fTaps_Poisson[10] = vec2(-.322,-.933);
+	fTaps_Poisson[11] = vec2(-.792,-.598);
+	
     float totalWeight = 0.0;
     vec4 result = vec4(0.0);
 
     float linearDepth = linearizeDepth(texture(zBuffer, position).r);
     vec2 offsetMult = 1.0 / vec2(screenViewportSize.x, screenViewportSize.y);
 
-    for (int i = 0; i < 4; i++){
+    for (int i = 0; i < NUM_TAPS; i++){
 
-        vec2 coord = offset[i] * offsetMult + position;
+        vec2 coord = (float(i + 1)) * fTaps_Poisson[i] * offsetMult + position;
 
         vec3 offsetNormal = decodeNormal(texture(normalBuffer, coord));// texture(normalBuffer, coord, lod).rgb * 2.0 - 1.0;
         float normalWeight = pow(abs(dot(offsetNormal, normal)), 32);
@@ -88,7 +106,7 @@ vec4 bilateralTexture(sampler2D sample, vec2 position, vec3 normal, float lod){
         float offsetDepth = linearizeDepth(texture(zBuffer, coord).r);
         float depthWeight = 1.0 / (abs(linearDepth - offsetDepth) + 1e-8);
 
-        float weight = normalWeight * depthWeight;
+        float weight = (float(i + 1)) * normalWeight * depthWeight;
 
         result = texture(sample, coord) * weight + result;
 
@@ -129,9 +147,13 @@ void main() {
 	//float storminess = clamp(-1.0 + overcastFactor * 2.0, 0.0, 1.0);
 	
 	vec4 gi = vec4(0.0, 0.0, 0.0, 0.0);
-	//gi = texture(giBuffer, screenCoord) / accumulatedSamples;
+	
+	float confidence = texture(giConfidence, screenCoord).x;
+	
+	gi = texture(giBuffer, screenCoord) / confidence;
+	//gi.a = 0.0;
+	gi = bilateralTexture(giBuffer, screenCoord, pixelNormal, 0.0) / 1.0;
 	gi.a = 1.0 - gi.a;
-	//gi = bilateralTexture(giBuffer, screenCoord, pixelNormal, 0.0);
 	
 	lightColor.rgb += gi.rgb * 2.0;
 	

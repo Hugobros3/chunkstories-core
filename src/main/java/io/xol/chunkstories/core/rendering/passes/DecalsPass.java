@@ -3,6 +3,7 @@ package io.xol.chunkstories.core.rendering.passes;
 import io.xol.chunkstories.api.rendering.RenderingInterface;
 import io.xol.chunkstories.api.rendering.StateMachine.BlendMode;
 import io.xol.chunkstories.api.rendering.StateMachine.CullingMode;
+import io.xol.chunkstories.api.rendering.StateMachine.DepthTestMode;
 import io.xol.chunkstories.api.rendering.pass.RenderPass;
 import io.xol.chunkstories.api.rendering.pass.RenderPasses;
 import io.xol.chunkstories.api.rendering.shader.Shader;
@@ -17,6 +18,7 @@ public class DecalsPass extends RenderPass {
 	final World world;
 
 	Texture2DRenderTarget albedoBuffer = null;
+	Texture2DRenderTarget zBuffer = null;
 	RenderTargetsConfiguration fbo = null;
 	
 	public DecalsPass(RenderPasses pipeline, String name, String[] requires, String[] exports) {
@@ -29,7 +31,8 @@ public class DecalsPass extends RenderPass {
 	@Override
 	public void onResolvedInputs() {
 		this.albedoBuffer = (Texture2DRenderTarget) resolvedInputs.get("albedoBuffer");
-		this.fbo = pipeline.getRenderingInterface().getRenderTargetManager().newConfiguration(null, albedoBuffer);
+		this.zBuffer = (Texture2DRenderTarget) resolvedInputs.get("zBuffer");
+		this.fbo = pipeline.getRenderingInterface().getRenderTargetManager().newConfiguration(zBuffer, albedoBuffer);
 		
 		this.resolvedOutputs.put("albedoBuffer", albedoBuffer);
 	}
@@ -37,8 +40,10 @@ public class DecalsPass extends RenderPass {
 	@Override
 	public void render(RenderingInterface renderer) {
 		renderer.getRenderTargetManager().setConfiguration(fbo);
+		
 		renderer.setBlendMode(BlendMode.MIX);
 		renderer.setCullingMode(CullingMode.DISABLED);
+		renderer.setDepthTestMode(DepthTestMode.LESS_OR_EQUAL);
 
 		Shader decalsShader = renderer.useShader("decals");
 		renderer.getCamera().setupShader(decalsShader);

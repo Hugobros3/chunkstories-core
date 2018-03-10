@@ -35,13 +35,6 @@ public class DefferedLightsPass extends RenderPass {
 
 		Shader lightShader = renderer.useShader("light");
 
-		//Required info
-		/*renderer.bindTexture2D("zBuffer", this.renderBuffers.rbZBuffer);
-		renderer.bindTexture2D("albedoBuffer", this.renderBuffers.rbAlbedo);
-		renderer.bindTexture2D("normalBuffer", this.renderBuffers.rbNormal);*/
-
-		//System.out.println("wow");
-		//Parameters
 		lightShader.setUniform1f("powFactor", 5f);
 		renderer.getCamera().setupShader(lightShader);
 		//Blend parameters
@@ -59,8 +52,7 @@ public class DefferedLightsPass extends RenderPass {
 
 	@Override
 	public void onScreenResize(int width, int height) {
-		// TODO Auto-generated method stub
-
+		
 	}
 
 }
