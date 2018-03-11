@@ -56,7 +56,7 @@ public class RenderingEventsListener implements Listener {
 		// gbuffer uses the zBuffer and outputs albedo/normal/materials
 		GBuffersOpaquePass gBuffers = new GBuffersOpaquePass(pipeline, "gBuffers", 
 				new String[]{"sky.zBuffer!"}, 
-				new String[]{"albedoBuffer", "normalBuffer", "voxelLightBuffer", "specularityBuffer", "materialsBuffer", "zBuffer" } );
+				new String[]{"albedoBuffer", "normalBuffer", "voxelLightBuffer", "specularityBuffer", "materialsBuffer", /*"zBuffer"*/ } );
 		pipeline.registerRenderPass(gBuffers);
 		
 		DecalsPass decals = new DecalsPass(pipeline, "decals", new String[] {"gBuffers.albedoBuffer!", "gBuffers.zBuffer"}, new String[] {});
@@ -65,7 +65,7 @@ public class RenderingEventsListener implements Listener {
 		WaterPass waterPass = new WaterPass(pipeline, "water", 
 				new String[]{"decals.albedoBuffer", "gBuffers.normalBuffer", "gBuffers.voxelLightBuffer", "gBuffers.specularityBuffer", "gBuffers.materialsBuffer", 
 				"gBuffers.zBuffer"}, 
-				new String[]{"albedoBuffer", "normalBuffer", "voxelLightBuffer", "specularityBuffer", "materialsBuffer", "zBuffer" }
+				new String[]{/*"albedoBuffer", "normalBuffer", "voxelLightBuffer", "specularityBuffer", "materialsBuffer", "zBuffer"*/ }
 			, sky);
 		pipeline.registerRenderPass(waterPass);
 
@@ -81,7 +81,7 @@ public class RenderingEventsListener implements Listener {
 		ApplySunlightPass applySunlight = new ApplySunlightPass(pipeline, "applySunlight", 
 				new String[]{"water.albedoBuffer", "water.normalBuffer", "water.voxelLightBuffer", "water.specularityBuffer", "water.materialsBuffer", 
 						"water.zBuffer", "shadowsSun.shadowMap", "sky.shadedBuffer!"}, 
-				new String[]{"shadedBuffer"},
+				new String[]{/*"shadedBuffer"*/},
 				sunShadowPass);
 		pipeline.registerRenderPass(applySunlight);	
 
@@ -93,14 +93,14 @@ public class RenderingEventsListener implements Listener {
 		// far terrain needs the shaded buffer from sky and outputs it, as well with a zbuffer
 		FarTerrainPass farTerrain = new FarTerrainPass(pipeline, "farTerrain", 
 				new String[]{"lights.shadedBuffer!", "gBuffers.specularityBuffer!", "gBuffers.zBuffer!"}, 
-				new String[]{"shadedBuffer", "zBuffer", "specularityBuffer"} );
+				new String[]{/*"shadedBuffer", "zBuffer", "specularityBuffer"*/} );
 		pipeline.registerRenderPass(farTerrain);
 		
 		BloomPass bloomPass = new BloomPass(pipeline, "bloom", new String[] {"farTerrain.shadedBuffer"}, new String[] {"bloomBuffer"});
 		pipeline.registerRenderPass(bloomPass);
 		
 		ForwardPass forward = new ForwardPass(pipeline, "forward", 
-				new String[]{"farTerrain.shadedBuffer!"}, 
+				new String[]{"farTerrain.shadedBuffer!", "farTerrain.zBuffer!"}, 
 				new String[]{});
 		pipeline.registerRenderPass(forward);
 		

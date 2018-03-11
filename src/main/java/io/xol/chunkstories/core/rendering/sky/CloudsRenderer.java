@@ -7,6 +7,7 @@
 package io.xol.chunkstories.core.rendering.sky;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 import io.xol.chunkstories.api.math.random.SeededSimplexNoiseGenerator;
 import io.xol.chunkstories.api.rendering.Primitive;
@@ -66,6 +67,7 @@ public class CloudsRenderer
 		
 		// 64 patches of 2 triangles of 3 points of 3 coordinates of 4 byte floats + 3x4 bytes floats + float
 		ByteBuffer bbuf = ByteBuffer.allocateDirect( 4 * width * width * 2 * 3 * ( 4 * 3 + 4 * 3 + 4));
+		bbuf.order(ByteOrder.LITTLE_ENDIAN);
 		
 		int octaves = 6;
 		

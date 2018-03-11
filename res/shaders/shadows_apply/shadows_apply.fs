@@ -155,7 +155,7 @@ void main() {
 	gi = bilateralTexture(giBuffer, screenCoord, pixelNormal, 0.0) / 1.0;
 	gi.a = 1.0 - gi.a;
 	
-	lightColor.rgb += gi.rgb * pi;
+	lightColor.rgb += gi.rgb;
 	
 	vec3 sunLight_g = sunLightColor * pi;//pow(sunColor, vec3(gamma));
 	vec3 shadowLight_g = getAtmosphericScatteringAmbient();//pow(shadowColor, vec3(gamma));
