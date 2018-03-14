@@ -50,20 +50,20 @@ uniform float fogStartDistance;
 uniform float fogEndDistance;
 
 //Gamma constants
-<include ../lib/gamma.glsl>
+#include ../lib/gamma.glsl
 
 uniform vec3 shadowColor;
 uniform vec3 sunColor;
 
 out vec4 fragColor;
 
-<include ../sky/sky.glsl>
-<include ../sky/fog.glsl>
-<include ../lib/transformations.glsl>
-<include ../lib/shadowTricks.glsl>
-<include ../lib/normalmapping.glsl>
-//<include gi.glsl>
-//<include ../lib/ssr.glsl>
+#include ../sky/sky.glsl
+#include ../sky/fog.glsl
+#include ../lib/transformations.glsl
+#include ../lib/shadowTricks.glsl
+#include ../lib/normalmapping.glsl
+//#include gi.glsl
+//#include ../lib/ssr.glsl
 
 vec4 bilateralTexture(sampler2D sample, vec2 position, vec3 normal, float lod){
 
@@ -146,21 +146,21 @@ void main() {
 	//float sunVisibility = clamp(1.0 - overcastFactor * 2.0, 0.0, 1.0);
 	//float storminess = clamp(-1.0 + overcastFactor * 2.0, 0.0, 1.0);
 	
-	vec4 gi = vec4(0.0, 0.0, 0.0, 0.0);
+	vec4 gi = vec4(0.0, 0.0, 0.0, 1.0);
 	
+	#ifdef globalIllumination
 	float confidence = texture(giConfidence, screenCoord).x;
-	
 	gi = texture(giBuffer, screenCoord) / 1.0;
-	//gi.a = 0.0;
 	gi = bilateralTexture(giBuffer, screenCoord, pixelNormal, 0.0) / 1.0;
 	gi.a = 1.0 - gi.a;
 	
 	lightColor.rgb += gi.rgb;
+	#endif
 	
 	vec3 sunLight_g = sunLightColor * pi;//pow(sunColor, vec3(gamma));
 	vec3 shadowLight_g = getAtmosphericScatteringAmbient();//pow(shadowColor, vec3(gamma));
 		
-	<ifdef shadows>
+	#ifdef shadows
 	//Shadows sampling
 		vec4 shadowCoord = shadowMatrix * (untranslatedMVInv * cameraSpacePosition);
 		float distFactor = getDistordFactor(shadowCoord.xy);
@@ -188,9 +188,7 @@ void main() {
 		
 		lightColor += clamp(sunLight_g * sunlightAmount, 0.0, 4096);
 		lightColor += gi.a * clamp(shadowLight_g * voxelSunlight, 0.0, 4096);
-		
-	<endif shadows>
-	<ifdef !shadows>
+	#else
 		// Simple lightning for lower end machines
 		float flatShading = 0.0;
 		flatShading += 0.35 * clamp(dot(/*vec3(0.0, 0.0, 0.0)*/sunPos, normalWorldSpace), -0.5, 1.0);
@@ -199,7 +197,7 @@ void main() {
 		
 		lightColor += clamp(sunLight_g * flatShading * voxelSunlight, 0.0, 4096);
 		lightColor += gi.a * clamp(shadowLight_g * voxelSunlight, 0.0, 4096);
-	<endif !shadows>
+	#endif
 	
 	//Adds block light
 	lightColor += textureGammaIn(blockLightmap, vec2(voxelLight.x, 0.0)).rgb;

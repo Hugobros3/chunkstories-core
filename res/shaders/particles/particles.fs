@@ -44,7 +44,7 @@ out vec2 outVoxelLight;
 out float outSpecularity;
 out uint outMaterial;
 
-<include ../lib/normalmapping.glsl>
+#include ../lib/normalmapping.glsl
 
 void main(){
 	//Basic texture color

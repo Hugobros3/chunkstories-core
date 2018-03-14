@@ -11,9 +11,9 @@ vec4 computeReflectedPixel(sampler2D depthBuffer, sampler2D colorBuffer, sampler
 	vec4 color = vec4(0.0);
 	
 	//SSR stepping goes here
-	<ifdef doRealtimeReflections>
+	#ifdef realtimeReflections
 	color = raytrace(depthBuffer, colorBuffer, cameraSpacePosition, cameraSpaceVector);
-	<endif doRealtimeReflections>
+	#endif
 	
 	vec3 normSkyDirection = normalMatrixInv * cameraSpaceVector;
 		
@@ -21,9 +21,9 @@ vec4 computeReflectedPixel(sampler2D depthBuffer, sampler2D colorBuffer, sampler
 	
 	if(color.a == 0.0)
 	{
-		<ifdef doDynamicCubemaps>
+		#ifdef doDynamicCubemaps
 		skyColor = texture(fallbackCubemap, vec3(normSkyDirection.x, -normSkyDirection.y, -normSkyDirection.z)).rgb;
-		<endif doDynamicCubemaps>
+		#endif
 	
 		skyColor *= showSkybox;
 		color.rgb = skyColor;

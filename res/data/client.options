@@ -1,0 +1,135 @@
+# In this file we define the options available to the client
+
+# Rendering options
+
+option client.rendering.viewDistance
+	type: choice
+	choices: 64, 96, 128, 144, 160, 192, 256, 320, 384, 512, 768
+	default: 192
+end
+
+option client.rendering.realtimeReflections
+	type: toggle
+	default: true
+	reloadGraph: true
+	reloadShaders: true
+end
+
+option client.rendering.globalIllumination
+	type: toggle
+	default: true
+	reloadGraph: true
+	reloadShaders: true
+end
+
+option client.rendering.shadows
+	type: toggle
+	default: true
+	reloadGraph: true
+	reloadShaders: true
+end
+
+option client.rendering.shadowsResolution
+	type: choice
+	choices: 512, 1024, 2048, 4096
+	default: 1024
+end
+
+option client.rendering.hqTerrain
+	type: toggle
+	default: true
+	reloadShaders: true
+end
+
+option client.rendering.bloom
+	type: toggle
+	default: true
+	reloadGraph: true
+	reloadShaders: true
+end
+
+# Video
+
+option client.video.fov
+	type: scale
+	min: 45
+	max: 180
+	default: 90
+	granularity: 1.0
+end
+
+option client.video.fullScreen
+	type: toggle
+	default: false
+end
+
+option client.video.framerateCap
+	type: choice
+	choices: 30, 60, 120, 240, -1
+	default: 60
+end
+
+# Input options
+
+option client.input.mouseSensitivity
+	type: scale
+	min: 0.5
+	max: 2.0
+	granularity: 0.05
+	default: 1.0
+end
+
+# Game options
+
+option client.game.workersThreads
+	type: choice
+	choices: auto, 2, 4, 6, 8, 12, 16, 32, 64
+	default: auto
+end
+
+# game.language goes here, programatically added tho
+
+option client.game.log-policy
+	type: choice
+	choices: send, dont
+	default: undefined
+end
+
+# Debug nonsense
+
+option client.debug.debugGBuffers
+	type: toggle
+	default: false
+	requireDebugPrivileges: true
+end
+
+option client.debug.physicsVisualization
+	type: toggle
+	default: false
+	requireDebugPrivileges: true
+end
+
+option client.debug.showDebugInfo
+	type: toggle
+	default: false
+end
+
+option client.debug.frametimeGraph
+	type: toggle
+	default: false
+end
+
+option client.login.auto
+	type: string
+	default: ko
+end
+
+option client.login.username
+	type: string
+	default: 
+end
+
+option client.login.password
+	type: string
+	default: 
+end

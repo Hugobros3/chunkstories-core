@@ -46,10 +46,10 @@ uniform sampler2D readbackShadedBufferTemp;
 uniform float underwater;
 
 //Gamma constants
-<include ../lib/gamma.glsl>
-<include ../lib/transformations.glsl>
+#include ../lib/gamma.glsl
+#include ../lib/transformations.glsl
 
-<include ../lib/normalmapping.glsl>
+#include ../lib/normalmapping.glsl
 
 vec3 mixedTextures(float blend, vec2 coords)
 {

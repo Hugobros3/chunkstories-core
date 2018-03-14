@@ -21,10 +21,10 @@ uniform vec3 sunPos;
 uniform float time;
 
 //Gamma constants
-<include ../lib/gamma.glsl>
+#include ../lib/gamma.glsl
 
 //Sky functions
-<include ../sky/sky.glsl>
+#include ../sky/sky.glsl
 
 void main()
 {

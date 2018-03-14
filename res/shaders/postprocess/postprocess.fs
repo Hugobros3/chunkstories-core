@@ -51,12 +51,12 @@ const float gammaInv = 0.45454545454;
 
 const vec4 waterColor = vec4(0.2, 0.4, 0.45, 1.0);
 
-<include ../lib/transformations.glsl>
-<include ../lib/shadowTricks.glsl>
-<include dither.glsl>
-<include ../lib/normalmapping.glsl>
-<include ../lib/noise.glsl>
-<include ../sky/sky.glsl>
+#include ../lib/transformations.glsl
+#include ../lib/shadowTricks.glsl
+#include dither.glsl
+#include ../lib/normalmapping.glsl
+#include ../lib/noise.glsl
+#include ../sky/sky.glsl
 
 vec4 getDebugShit(vec2 coords);
 
@@ -155,9 +155,9 @@ void main() {
 	*/
 	
 	//Applies bloom
-	<ifdef doBloom>
+	#ifdef doBloom
 	compositeColor.rgb += pow(texture(bloomBuffer, finalCoords).rgb, vec3(gamma)) * pi;
-	<endif doBloom>
+	#endif
 	
 	//Darkens further pixels underwater
 	compositeColor = mix(compositeColor, vec4(waterColor.rgb * getSkyColor(dayTime, vec3(0.0, -1.0, 0.0)), 1.0), clamp(length(cameraSpacePosition) / 32.0, 0.0, 1.0) * underwater);
@@ -190,9 +190,9 @@ void main() {
 	fragColor = compositeColor;
 	
 	//Debug flag
-	<ifdef debugGBuffers>
+	#ifdef debugGBuffers
 	//fragColor = getDebugShit(texCoord);
-	<endif debugGBuffers>
+	#endif
 }
 
 //Draws divided screen with debug buffers
@@ -222,11 +222,11 @@ void main() {
 		{
 			shit = vec4(texture(voxelLightBuffer, sampleCoords).xy, texture(specularityBuffer, sampleCoords).r, 1.0);
 			
-			<ifdef dynamicGrass>
+			#ifdef dynamicGrass
 			
 			shit = texture(debugBuffer, sampleCoords, 80.0);
 			shit = pow(texture(debugBuffer, sampleCoords, 0.0), vec4(gammaInv));
-			<endif dynamicGrass>
+			#endif
 			shit = vec4(texture(shadowMap, vec3(sampleCoords, 0.0)), 0.0, 0.0, 1.0);
 		}
 	}

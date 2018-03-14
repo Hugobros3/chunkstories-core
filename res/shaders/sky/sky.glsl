@@ -3,7 +3,7 @@
 // http://chunkstories.xyz
 // http://xol.io
 
-<include ../lib/noise2D.glsl>
+#include ../lib/noise2D.glsl
 
 /*
 

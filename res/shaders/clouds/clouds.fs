@@ -21,10 +21,10 @@ uniform float overcastFactor;
 uniform float time;
 
 //Gamma constants
-<include ../lib/gamma.glsl>
+#include ../lib/gamma.glsl
 
 //Sky functions
-<include ../sky/sky.glsl>
+#include ../sky/sky.glsl
 
 vec3 calculateCloudScattering(vec3 backColor, float density, vec3 v, vec3 l){
 	float vDotL = dot(v, l);

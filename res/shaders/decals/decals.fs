@@ -30,8 +30,8 @@ uniform mat3 normalMatrix;
 uniform mat3 normalMatrixInv;
 
 //Gamma constants
-<include ../lib/gamma.glsl>
-<include ../lib/normalmapping.glsl>
+#include ../lib/gamma.glsl
+#include ../lib/normalmapping.glsl
 
 out vec4 outDiffuseColor;
 

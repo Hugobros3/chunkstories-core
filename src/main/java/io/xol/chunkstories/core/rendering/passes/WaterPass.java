@@ -76,7 +76,7 @@ public class WaterPass extends RenderPass {
 		{
 			Shader liquidBlocksShader = renderer.useShader("blocks_liquid_pass" + pass);
 
-			liquidBlocksShader.setUniform1f("viewDistance", renderer.renderingConfig().getViewDistance());
+			liquidBlocksShader.setUniform1f("viewDistance", world.getClient().getConfiguration().getIntOption("client.rendering.viewDistance"));
 
 			renderer.bindTexture2D("normalTextureDeep", renderer.textures().getTexture("./textures/water/deep.png"));
 			renderer.bindTexture2D("normalTextureShallow", renderer.textures().getTexture("./textures/water/shallow.png"));

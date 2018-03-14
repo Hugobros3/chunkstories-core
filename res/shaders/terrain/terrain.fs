@@ -62,12 +62,12 @@ uniform vec3 sunPos;
 uniform float overcastFactor;
 
 //Gamma constants
-<include ../lib/gamma.glsl>
+#include ../lib/gamma.glsl
 
 //World mesh culling
 uniform float ignoreWorldCulling;
 
-<include ../sky/sky.glsl>
+#include ../sky/sky.glsl
 
 uint access(usampler2DArray tex, vec2 coords) {
 	if(coords.x <= 1.0) {
@@ -150,19 +150,7 @@ void main()
 	
 	vec3 finalLight = shadowLight_g;
 	finalLight += sunLight_g * sunlightAmount;
-	
-	// Simple lightning for lower end machines
-	<ifdef !shadows>
-		float faceDarkening = 0.0;
-		vec3 shadingDir = normal;
-		
-		//Some face darken more than others
-		faceDarkening += 0.25 * abs(dot(vec3(1.0, 0.0, 0.0), shadingDir));
-		faceDarkening += 0.45 * abs(dot(vec3(0.0, 0.0, 1.0), shadingDir));
-		faceDarkening += 0.6 * clamp(dot(vec3(0.0, -1.0, 0.0), shadingDir), 0.0, 1.0);
-		
-		finalLight = mix(baseLight, vec3(0.0), faceDarkening);
-	<endif !shadows>
+
 
 	//Merges diffuse and lightning
 	vec3 finalColor = diffuseColor.rgb * finalLight;
@@ -175,9 +163,9 @@ void main()
 		vec3 reflected = getSkyColor(time, normalize(reflect(eyeDirection, normal)));
 		
 		//Sample cubemap if enabled
-		<ifdef doDynamicCubemaps>
+		#ifdef doDynamicCubemaps
 		reflected = texture(environmentCubemap, vec3(reflectionVector.x, -reflectionVector.y, -reflectionVector.z)).rgb;
-		<endif doDynamicCubemaps>
+		#endif
 		
 		//Add sunlight reflection
 		float sunSpecularReflection = specularity * 100.0 * pow(clamp(dot(normalize(reflect(normalMatrix * eyeDirection,normalMatrix * normal)),normalize(normalMatrix * sunPos)), 0.0, 1.0),750.0);

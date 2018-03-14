@@ -56,7 +56,7 @@ uniform float fogStartDistance;
 uniform float fogEndDistance;
 
 //Gamma constants
-<include ../lib/gamma.glsl>
+#include ../lib/gamma.glsl
 
 uniform vec3 shadowColor;
 uniform vec3 sunColor;
@@ -65,13 +65,13 @@ out float gl_FragDepth;
 out vec4 fragColor;
 out float outputConfidence;
 
-<include ../sky/sky.glsl>
-//<include ../sky/fog.glsl>
-<include ../lib/transformations.glsl>
-//<include ../lib/shadowTricks.glsl>
-<include ../lib/normalmapping.glsl>
-<include gi.glsl>
-//<include ../lib/ssr.glsl>
+#include ../sky/sky.glsl
+//#include ../sky/fog.glsl
+#include ../lib/transformations.glsl
+//#include ../lib/shadowTricks.glsl
+#include ../lib/normalmapping.glsl
+#include gi.glsl
+//#include ../lib/ssr.glsl
 
 void main() {
     

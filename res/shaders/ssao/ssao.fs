@@ -24,7 +24,7 @@ uniform float viewHeight;
 
 uniform int kernelsPerFragment;
 
-<include ../lib/transformations.glsl>
+#include ../lib/transformations.glsl
 
 out vec4 fragColor;
 

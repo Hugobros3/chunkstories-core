@@ -35,9 +35,9 @@ uniform int lightsToRender;
 out vec4 fragColor;
 
 //Gamma constants
-<include ../lib/gamma.glsl>
-<include ../lib/transformations.glsl>
-<include ../lib/normalmapping.glsl>
+#include ../lib/gamma.glsl
+#include ../lib/transformations.glsl
+#include ../lib/normalmapping.glsl
 
 void main() {
 	//Accumulator buffer

@@ -50,13 +50,13 @@ uniform sampler2D readbackVoxelLightBufferTemp;
 uniform sampler2D readbackDepthBufferTemp;
 
 uniform vec2 shadedBufferDimensions;
-uniform float viewDistance;
+//uniform float viewDistance;
 
 uniform float underwater;
 
 //Gamma constants
-<include ../lib/gamma.glsl>
-<include ../lib/transformations.glsl>
+#include ../lib/gamma.glsl
+#include ../lib/transformations.glsl
 
 const vec4 waterColor = vec4(0.2, 0.4, 0.45, 1.0);
 

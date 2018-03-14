@@ -55,7 +55,7 @@ out vec2 outVoxelLight;
 out float outSpecularity;
 out uint outMaterial;
 
-<include ../lib/normalmapping.glsl>
+#include ../lib/normalmapping.glsl
 
 void main(){
 	
@@ -91,10 +91,11 @@ void main(){
 	
 	//Rain makes shit glint
 	float spec = rainWetness * fresnelTerm;
-	<ifdef perPixelFresnel>
+	
+	//#ifdef perPixelFresnel
 	float dynamicFresnelTerm = 0.0 + 1.0 * clamp(0.7 + dot(normalize(eye), vec3(inNormal)), 0.0, 1.0);
 	spec = rainWetness * dynamicFresnelTerm;
-	<endif perPixelFresnel>
+	//#endif
 	
 	vec3 finalColor = baseColor*blockColor;
 	

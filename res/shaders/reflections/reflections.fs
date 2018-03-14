@@ -52,13 +52,13 @@ uniform float fogStartDistance;
 uniform float fogEndDistance;
 
 //Gamma constants
-<include ../lib/gamma.glsl>
+#include ../lib/gamma.glsl
 
-<include ../sky/sky.glsl>
-<include ../lib/transformations.glsl> 
-<include ../lib/shadowTricks.glsl>
-<include ../lib/normalmapping.glsl>
-<include ../lib/ssr.glsl>
+#include ../sky/sky.glsl
+#include ../lib/transformations.glsl
+#include ../lib/shadowTricks.glsl
+#include ../lib/normalmapping.glsl
+#include ../lib/ssr.glsl
 
 out vec4 fragColor;
 

@@ -50,10 +50,10 @@ uniform sampler2D readbackShadedBufferTemp;
 uniform float underwater;
 
 //Gamma constants
-<include ../lib/gamma.glsl>
-<include ../lib/transformations.glsl>
+#include ../lib/gamma.glsl
+#include ../lib/transformations.glsl
 
-<include ../lib/normalmapping.glsl>
+#include ../lib/normalmapping.glsl
 
 vec3 mixedTextures(float blend, vec2 coords)
 {
@@ -94,10 +94,10 @@ void main(){
 	float spec = fresnelTerm;
 	vec4 worldspaceFragment = convertScreenSpaceToCameraSpace(coords, gl_FragCoord.z);
 	
-	<ifdef perPixelFresnel>
+	//#ifdef perPixelFresnel
 	float dynamicFresnelTerm = 0.2 + 0.8 * clamp(0.7 + dot(normalize(worldspaceFragment.xyz), normal), 0.0, 1.0);
 	spec = dynamicFresnelTerm;
-	<endif perPixelFresnel>
+	//#endif
 	
 	vec4 baseColor = texture(readbackShadedBufferTemp, gl_FragCoord.xy / screenSize);
 	

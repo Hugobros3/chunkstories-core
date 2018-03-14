@@ -50,14 +50,12 @@ void main(){
 	
 	vec4 vertex = objectMatrix * vec4(vertexIn.xyz, 1.0);
 	
-	<ifdef dynamicGrass>
-		float movingness = normalIn.w;
-		if(movingness > 0)
-		{
-			vertex.x += sin(time + vertex.z + vertex.y / 2.0) * 0.1;
-			vertex.z += cos(time + vertex.x*1.5 + 0.3) * 0.1;
-		}
-	<endif dynamicGrass>
+	float movingness = normalIn.w;
+	if(movingness > 0)
+	{
+		vertex.x += sin(time + vertex.z + vertex.y / 2.0) * 0.1;
+		vertex.z += cos(time + vertex.x*1.5 + 0.3) * 0.1;
+	}
 	
 	vertexPassed = vertex;
 	normalPassed =  (normalIn.xyz-0.5)*2.0;

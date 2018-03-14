@@ -36,7 +36,7 @@ public class CachedLodSkeletonAnimator implements SkeletonAnimator
 	public void lodUpdate(RenderingInterface renderingContext)
 	{
 		double distance = entity.getLocation().distance(renderingContext.getCamera().getCameraPosition());
-		double targetFps = renderingContext.renderingConfig().getAnimationCacheFrameRate();
+		double targetFps = 60;//renderingContext.renderingConfig().getAnimationCacheFrameRate();
 
 		int lodDivisor = 1;
 		if (distance > lodStart)

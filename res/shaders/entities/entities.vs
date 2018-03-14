@@ -30,7 +30,6 @@ uniform float time;
 uniform vec3 camPos;
 
 uniform float vegetation;
-uniform float viewDistance;
 uniform mat4 projectionMatrix;
 uniform mat4 projectionMatrixInv;
 

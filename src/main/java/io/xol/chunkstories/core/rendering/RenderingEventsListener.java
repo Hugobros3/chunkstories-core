@@ -6,14 +6,17 @@
 
 package io.xol.chunkstories.core.rendering;
 
+import io.xol.chunkstories.api.client.ClientInterface;
 import io.xol.chunkstories.api.events.EventHandler;
 import io.xol.chunkstories.api.events.Listener;
+import io.xol.chunkstories.api.events.config.OptionSetEvent;
 import io.xol.chunkstories.api.events.rendering.RenderPassesInitEvent;
 import io.xol.chunkstories.api.events.rendering.WorldRenderingDecalsEvent;
 import io.xol.chunkstories.api.rendering.RenderingInterface;
 import io.xol.chunkstories.api.rendering.pass.RenderPasses;
 import io.xol.chunkstories.api.rendering.world.SkyRenderer;
 import io.xol.chunkstories.api.rendering.world.WorldRenderer;
+import io.xol.chunkstories.api.world.WorldClient;
 import io.xol.chunkstories.core.CoreContentPlugin;
 import io.xol.chunkstories.core.item.ItemMiningTool;
 import io.xol.chunkstories.core.item.ItemMiningTool.MiningProgress;
@@ -37,9 +40,27 @@ public class RenderingEventsListener implements Listener {
 	
 	@SuppressWarnings("unused")
 	private final CoreContentPlugin core;
+	private final ClientInterface client;
 	
-	public RenderingEventsListener(CoreContentPlugin core) {
+	public RenderingEventsListener(CoreContentPlugin core, ClientInterface client) {
 		this.core = core;
+		this.client = client;
+	}
+	
+	@EventHandler
+	public void onOptionSet(OptionSetEvent event) {
+		if(event.getOption().getName().startsWith("client.rendering")) {
+			if(event.getOption().resolveProperty("reloadGraph", "false").equals("true")) {
+				WorldClient world = client.getWorld();
+				if(world != null) {
+					world.getWorldRenderer().renderPasses().reloadPasses();
+				}
+			}
+			
+			if(event.getOption().resolveProperty("reloadShaders", "false").equals("true")) {
+				client.getRenderingInterface().shaders().reloadAll();
+			}
+		}
 	}
 	
 	@EventHandler
@@ -74,8 +95,11 @@ public class RenderingEventsListener implements Listener {
 		// note we could generalize the shadowmappass to not only the sun but also the moon, point and spotlights
 		pipeline.registerRenderPass(sunShadowPass);
 
-		GiPass giPass = new GiPass(pipeline, "gi", new String[] {"water.albedoBuffer", "water.normalBuffer", "water.zBuffer"}, new String[] {"giBuffer"});
-		pipeline.registerRenderPass(giPass);
+		boolean gi = client.getConfiguration().getBooleanOption("client.rendering.globalIllumination");
+		if(gi) {
+			GiPass giPass = new GiPass(pipeline, "gi", new String[] {"water.albedoBuffer", "water.normalBuffer", "water.zBuffer"}, new String[] {"giBuffer"});
+			pipeline.registerRenderPass(giPass);
+		}
 		
 		// aka shadows_apply in the current code, it takes the gbuffers and applies the shadowmapping to them, then outputs to the shaded pixels buffers already filled with the far terrain pixels
 		ApplySunlightPass applySunlight = new ApplySunlightPass(pipeline, "applySunlight", 
@@ -110,9 +134,14 @@ public class RenderingEventsListener implements Listener {
 		pipeline.registerRenderPass(reflections);
 		
 		 // the pass declared as 'final' is considered the last one and it's outputs are shown to the screen
-		pipeline.registerRenderPass(new PostProcessPass(pipeline, "final", 
-				new String[] {"gi.giBuffer", "forward.shadedBuffer", "farTerrain.zBuffer", "bloom.bloomBuffer", "reflections.reflectionsBuffer", "farTerrain.specularityBuffer"},
-				sunShadowPass) );
+		PostProcessPass postprocess = new PostProcessPass(pipeline, "final", 
+				new String[] {"forward.shadedBuffer", "farTerrain.zBuffer", "bloom.bloomBuffer", "reflections.reflectionsBuffer", "farTerrain.specularityBuffer"},
+				sunShadowPass);
+		
+		if(gi)
+			postprocess.requires.add("gi.giBuffer");
+		
+		pipeline.registerRenderPass(postprocess);
 	}
 
 	

@@ -19,8 +19,8 @@ uniform float sunTime;
 uniform vec3 sunPos;
 uniform float dayTime;
 uniform float overcastFactor;
-<include ../sky/sky.glsl>
-<include ../sky/fog.glsl>
+#include ../sky/sky.glsl
+#include ../sky/fog.glsl
 
 uniform sampler2D sunlightCycle;
 

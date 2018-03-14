@@ -60,7 +60,7 @@ public class ShadowPass extends RenderPass
 		GameWindow gameWindow = pipeline.getRenderingInterface().getWindow();
 
 		//Resize the texture if needed
-		int shadowMapTextureSize = renderingContext.renderingConfig().getShadowMapResolutions();
+		int shadowMapTextureSize = renderingContext.getClient().getConfiguration().getIntOption("client.rendering.shadowsResolution");
 		if(shadowDepthTexture.getWidth() != shadowMapTextureSize) {
 			fbo.resize(shadowMapTextureSize, shadowMapTextureSize);
 		}

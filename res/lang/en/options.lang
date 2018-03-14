@@ -2,47 +2,50 @@ options.title Options Menu
 
 Rendering Rendering
 
-viewDistance View distance
-doRealtimeReflections Local reflections
-doDynamicCubemaps Global reflections
-doShadows Enable shadows
-shadowMapResolutions Shadows Quality
-dynamicGrass Animated grass
-hqTerrain Distant terrain quality
+client.rendering.viewDistance View distance
+client.rendering.realtimeReflections Local reflections
+client.rendering.dynamicCubemaps Global reflections
+client.rendering.shadows Enable shadows
+client.rendering.shadowsResolution Shadows Quality
+client.rendering.hqTerrain Distant terrain quality
 quality.low Low
 quality.high High
-doBloom Bloom effect
-framerate Frame limiter
+client.rendering.bloom Bloom effect
+client.rendering.globalIllumination Global Illumination
 
 Video Video
 
-fov Field of view
-fullScreen Fullscreen
-fullScreenResolution Fullscreen resolution
-language Language
+client.video.fov Field of view
+client.video.fullScreen Fullscreen
+client.video.fullScreenResolution Fullscreen resolution
+client.video.framerateCap Frame limiter
+
+client.game.log-policy Send log reports
+client.game.workersThreads Worker Threads
+client.game.language Language
 
 Controls Controls
 
-mouseSensitivity Mouse sensitivity
-bind.use Use
-bind.back Back
-bind.run Run
-bind.inventory Inventory
-bind.enter Enter
-bind.jump Jump
-bind.forward Forward
-bind.right Right
-bind.left Left
-bind.exit Pause
-bind.chat Open chat
-bind.crouch Crouch
+client.input.mouseSensitivity Mouse sensitivity
+client.input.client.bind.use Use
+client.input.bind.back Back
+client.input.bind.run Run
+client.input.bind.inventory Inventory
+client.input.bind.enter Enter
+client.input.bind.jump Jump
+client.input.bind.forward Forward
+client.input.bind.right Right
+client.input.bind.left Left
+client.input.bind.exit Pause
+client.input.bind.chat Open chat
+client.input.bind.crouch Crouch
+client.input.bind.use Use
 
 Sound Sound
 
 Debug Debug
 
-log-policy Send log reports
-frametimeGraph Performance graph
-showDebugInfo Show debug info
-debugGBuffers Debug render buffers
-physicsVisualization Physics debug
+client.debug.frametimeGraph Performance graph
+client.debug.showDebugInfo Show debug info
+client.debug.debugGBuffers Debug render buffers
+client.debug.physicsVisualization Physics debug

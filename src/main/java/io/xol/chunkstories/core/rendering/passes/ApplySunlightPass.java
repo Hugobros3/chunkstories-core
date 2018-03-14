@@ -1,7 +1,5 @@
 package io.xol.chunkstories.core.rendering.passes;
 
-import java.util.Map.Entry;
-
 import io.xol.chunkstories.api.rendering.RenderingInterface;
 import io.xol.chunkstories.api.rendering.StateMachine.BlendMode;
 import io.xol.chunkstories.api.rendering.StateMachine.DepthTestMode;
@@ -9,7 +7,6 @@ import io.xol.chunkstories.api.rendering.pass.RenderPass;
 import io.xol.chunkstories.api.rendering.pass.RenderPasses;
 import io.xol.chunkstories.api.rendering.shader.Shader;
 import io.xol.chunkstories.api.rendering.target.RenderTargetsConfiguration;
-import io.xol.chunkstories.api.rendering.textures.Texture;
 import io.xol.chunkstories.api.rendering.textures.Texture2D;
 import io.xol.chunkstories.api.rendering.textures.Texture2DRenderTarget;
 import io.xol.chunkstories.api.rendering.world.WorldRenderer;
@@ -97,7 +94,7 @@ public class ApplySunlightPass extends RenderPass {
 
 		//renderingContext.bindCubemap("environmentCubemap", renderBuffers.rbEnvironmentMap);
 
-		if(renderer.renderingConfig().isDoShadows()) {
+		if(renderer.getClient().getConfiguration().getBooleanOption("client.rendering.shadows")) {
 			renderer.bindTexture2D("shadowMap", (Texture2D) shadowPass.resolvedOutputs.get("shadowMap"));
 			
 			applyShadowsShader.setUniform1f("shadowMapResolution", ((Texture2D) shadowPass.resolvedOutputs.get("shadowMap")).getWidth());

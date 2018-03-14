@@ -111,7 +111,7 @@ public class GBuffersOpaquePass extends RenderPass {
 			// Select shader
 			Shader entitiesShader = renderingInterface.useShader("entities");
 
-			entitiesShader.setUniform1f("viewDistance", renderingInterface.getClient().renderingConfig().getViewDistance());
+			entitiesShader.setUniform1f("viewDistance", renderingInterface.getClient().getConfiguration().getIntOption("client.rendering.viewDistance"));
 			//entitiesShader.setUniform1f("shadowVisiblity", shadower.getShadowVisibility());
 
 			renderingInterface.bindTexture2D("lightColors", renderingInterface.textures().getTexture("./textures/environement/light.png"));

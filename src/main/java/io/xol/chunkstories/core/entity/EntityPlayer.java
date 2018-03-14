@@ -152,8 +152,8 @@ EntityWorldModifier
 			modifier = 1.0 / item.getZoomFactor();
 		}
 		
-		rotH += dx * modifier / 3f * controller.getClient().renderingConfig().getMouseSensitivity();
-		rotV -= dy * modifier / 3f * controller.getClient().renderingConfig().getMouseSensitivity();
+		rotH += dx * modifier / 3f * controller.getClient().getConfiguration().getDoubleOption("client.input.mouseSensitivity");
+		rotV -= dy * modifier / 3f * controller.getClient().getConfiguration().getDoubleOption("client.input.mouseSensitivity");
 		this.getEntityRotationComponent().setRotation(rotH, rotV);
 		
 		controller.getInputsManager().getMouse().setMouseCursorLocation(controller.getWindow().getWidth() / 2.0, controller.getWindow().getHeight() / 2.0);
@@ -456,7 +456,7 @@ EntityWorldModifier
 				modifier = 1.0f / item.getZoomFactor();
 			}
 
-			rd.getCamera().setFOV(modifier * (float) (rd.renderingConfig().getFov()//RenderingConfig.fov
+			rd.getCamera().setFOV(modifier * (float) (rd.getClient().getConfiguration().getDoubleOption("client.video.fov")
 					+ ((getVelocityComponent().getVelocity().x() * getVelocityComponent().getVelocity().x() + getVelocityComponent().getVelocity().z() * getVelocityComponent().getVelocity().z()) > 0.07 * 0.07
 							? ((getVelocityComponent().getVelocity().x() * getVelocityComponent().getVelocity().x() + getVelocityComponent().getVelocity().z() * getVelocityComponent().getVelocity().z()) - 0.07 * 0.07) * 500 : 0)));
 			

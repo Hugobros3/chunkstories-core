@@ -35,10 +35,10 @@ uniform mat3 normalMatrixInv;
 uniform float mapSize;
 
 //Gamma constants
-<include ../lib/gamma.glsl>
-<include ../lib/transformations.glsl>
+#include ../lib/gamma.glsl
+#include ../lib/transformations.glsl
 
-<include ../lib/normalmapping.glsl>
+#include ../lib/normalmapping.glsl
 
 out vec4 outDiffuseColor;
 out vec3 outNormal;
@@ -79,10 +79,10 @@ void main(){
 
 	float specularity = (material.g + rainWetness) * fresnelTerm;
 	//We use a fancier equation if enabled
-	<ifdef perPixelFresnel>
+	//#ifdef perPixelFresnel
 		float dynamicFresnelTerm = 0.0 + 1.0 * clamp(0.7 + dot(normalMatrix * normalize(eyeDirection), vec3(normal)), 0.0, 1.0);
 		specularity = (material.g + rainWetness) * dynamicFresnelTerm;
-	<endif perPixelFresnel>
+	//#endif
 	
 	//A fancy GBuffer setup we got here
 	outDiffuseColor = vec4(surfaceDiffuseColor, 1.0);

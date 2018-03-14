@@ -23,7 +23,7 @@ uniform float useVoxelCoordinates;
 uniform float isUsingInstancedData;
 uniform sampler2D instancedDataSampler;
 
-<include ../lib/shadowTricks.glsl>
+#include ../lib/shadowTricks.glsl
 
 void main(){
 
@@ -36,13 +36,13 @@ void main(){
 	vec4 v = objectMatrix * vec4(vertexIn.xyz, 1);
 	
 	float movingness = normalIn.w * allowForWavyStuff;
-	<ifdef dynamicGrass>
+	#ifdef dynamicGrass
 	if(movingness > 0)
 	{
 		v.x += sin(time + v.z + v.y / 2.0) * 0.1;
 		v.z += cos(time + v.x*1.5 + 0.3) * 0.1;
 	}
-	<endif dynamicGrass>
+	#endif
 	
 	/*if(isUsingInstancedData > 0)
 	{

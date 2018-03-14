@@ -34,7 +34,6 @@ uniform mat3 objectMatrixNormal;
 uniform float vegetation;
 
 uniform float yAngle;
-uniform float viewDistance;
 
 //Common camera matrices & uniforms
 uniform mat4 projectionMatrix;
