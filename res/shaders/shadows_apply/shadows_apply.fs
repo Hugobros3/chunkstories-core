@@ -150,7 +150,7 @@ void main() {
 	
 	#ifdef globalIllumination
 	float confidence = texture(giConfidence, screenCoord).x;
-	gi = texture(giBuffer, screenCoord) / 1.0;
+	//gi = texture(giBuffer, screenCoord) / 1.0;
 	gi = bilateralTexture(giBuffer, screenCoord, pixelNormal, 0.0) / 1.0;
 	gi.a = 1.0 - gi.a;
 	
@@ -206,13 +206,8 @@ void main() {
 	albedoColor.rgb = pow(albedoColor.rgb, vec3(gamma));
 
 	//Multiplies the albedo by the light color
-	vec4 shadedColor = vec4(albedoColor.rgb * lightColor.rgb, 1.0);
+	fragColor = vec4(albedoColor.rgb * lightColor.rgb, 1.0);
 	
-	//Apply the fog
-	vec4 fogColor = getFogColor(dayTime, ((modelViewMatrixInv * cameraSpacePosition).xyz - camPos).xyz);
-	
-	fragColor = mix(shadedColor, vec4(fogColor.xyz, 1.0), fogColor.a);
-	fragColor.w = 1.0;
 	
 	//fragColor = vec4(gi.rgb, 1.0);
 	//fragColor = vec4(vec3(gi.a), 1.0);

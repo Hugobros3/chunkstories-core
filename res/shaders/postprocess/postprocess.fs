@@ -3,8 +3,8 @@ uniform sampler2D shadedBuffer;
 uniform sampler2D zBuffer;
 uniform sampler2D specularityBuffer;
 
-/*uniform sampler2D albedoBuffer;
-uniform sampler2D normalBuffer;
+uniform sampler2D albedoBuffer;
+/*uniform sampler2D normalBuffer;
 uniform sampler2D voxelLightBuffer;
 uniform usampler2D materialBuffer;
 uniform sampler2D debugBuffer;*/
@@ -57,6 +57,7 @@ const vec4 waterColor = vec4(0.2, 0.4, 0.45, 1.0);
 #include ../lib/normalmapping.glsl
 #include ../lib/noise.glsl
 #include ../sky/sky.glsl
+#include ../sky/fog.glsl
 
 vec4 getDebugShit(vec2 coords);
 
@@ -142,7 +143,13 @@ void main() {
 	vec4 reflection = texture(reflectionsBuffer, finalCoords);
 	compositeColor.rgb = mix(compositeColor.rgb, reflection.rgb, reflectionsAmount);
 	
-	//Dynamic reflections
+	//Apply the fog
+	if(texture(zBuffer, finalCoords).r < 1.0) {
+		vec4 fogColor = getFogColor(dayTime, ((modelViewMatrixInv * cameraSpacePosition).xyz - camPos).xyz);
+		compositeColor = mix(compositeColor, vec4(fogColor.xyz, 1.0), fogColor.a);
+	}
+	
+	//fragColor.w = 1.0;
 	
 	//Volumetric light
 	compositeColor.rgb += clamp(ComputeVolumetricLight(compositeColor.rgb, cameraSpacePosition, sunPos, eyeDirection), 0.0, 1.0);
@@ -155,7 +162,7 @@ void main() {
 	*/
 	
 	//Applies bloom
-	#ifdef doBloom
+	#ifdef bloom
 	compositeColor.rgb += pow(texture(bloomBuffer, finalCoords).rgb, vec3(gamma)) * pi;
 	#endif
 	

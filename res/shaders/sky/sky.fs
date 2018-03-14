@@ -25,9 +25,10 @@ uniform float time;
 
 //Sky functions
 #include ../sky/sky.glsl
+#include ../sky/fog.glsl
 
 void main()
 {
 	//Straight output of library's method
-	shadedFramebufferOut = vec4(getSkyColor(time, eyeDirection), 1.0);
+	shadedFramebufferOut = vec4(mix(getSkyColor(time, eyeDirection), getFogColor(time, 2000 * normalize(vec3(eyeDirection.x  + 1.0, 0.0, eyeDirection.z))).rgb, clamp(-300 * eyeDirection.y, 0.0, 1.0)), 1.0);
 }

@@ -19,7 +19,8 @@ out vec4 shadedFramebufferOut;
 out float noSpecularOut;
 
 //Textures
-uniform sampler2D normalTexture; // Water surface
+uniform sampler2D waterNormalShallow; // Water surface
+uniform sampler2D waterNormalDeep; // Water surface
 
 uniform usampler2DArray heights; // Heightmap
 uniform usampler2DArray topVoxels; // Block ids
@@ -71,8 +72,17 @@ uniform float ignoreWorldCulling;
 uniform float fogStartDistance;
 uniform float fogEndDistance;
 
+uniform float animationTimer;
+
 #include ../sky/sky.glsl
 #include ../sky/fog.glsl
+#include ../lib/normalmapping.glsl
+
+vec3 mixedTextures(vec2 coords)
+{
+	return texture(waterNormalShallow, coords).rgb * 2.0 - vec3(1.0);
+	//return mix(texture(normalTextureShallow, coords).rgb, texture(normalTextureDeep, coords * 0.125).rgb, 0) * 2.0 - vec3(1.0);
+}
 
 /*uint access(usampler2DArray tex, vec2 coords) {
 	if(coords.x <= 1.0) {
@@ -94,6 +104,8 @@ uniform float fogEndDistance;
 	
 	return 250u;
 }*/
+
+#include ../water/surface.glsl
 
 void main()
 {
@@ -122,25 +134,12 @@ void main()
 	if(voxelId == 512u)
 	{
 		diffuseColor.rgb = pow(vec3(51 / 255.0, 105 / 255.0, 110 / 255.0), vec3(gamma));
-	
-		//Build water texture
-		vec3 nt = 1.0*(texture(normalTexture,(vertexPassed.xz/5.0+vec2(0.0,time)/50.0)/15.0).rgb*2.0-1.0);
-		nt += 1.0*(texture(normalTexture,(vertexPassed.xz/2.0+vec2(-time,-2.0*time)/150.0)/2.0).rgb*2.0-1.0);
-		nt += 0.5*(texture(normalTexture,(vertexPassed.zx*0.8+vec2(400.0, sin(-time/5.0)+time/25.0)/350.0)/10.0).rgb*2.0-1.0);
-		nt += 0.25*(texture(normalTexture,(vertexPassed.zx*0.1+vec2(400.0, sin(-time/5.0)-time/25.0)/250.0)/15.0).rgb*2.0-1.0);
 		
-		nt = normalize(nt);
-		
-		//Merge it a bit with the usual direction
-		float i = 0.5;
-		normal.x += nt.r*i;
-		normal.z += nt.g*i;
-		normal.y += nt.b*i;
-		
-		normal = normalize(normal);
+		normal = perturb_normal(normalPassed, eyeDirection, vertexPassed.xz, normalize(water()));
+		//normal = normalize(normalMatrix * normal);
 		
 		//Set wet
-		float fresnelTerm = 0.2 + 0.8 * clamp(0.7 + dot(normalize(vertexPassed.xyz - camPos), normalPassed), 0.0, 1.0);
+		float fresnelTerm = 0.2 + 0.8 * clamp(0.7 + dot(normalize(vertexPassed.xyz - camPos), normal), 0.0, 1.0);
 	
 		specularity = pow(fresnelTerm, gamma);
 	}
@@ -192,6 +191,6 @@ void main()
 	vec4 fogColor = getFogColor(time, vertexPassed.xyz - camPos);
 	
 	//Mix in fog 
-	shadedFramebufferOut = mix(vec4(finalColor, 1.0), vec4(fogColor.xyz, 1.0), fogColor.a);
+	shadedFramebufferOut = mix(vec4(finalColor, 1.0), vec4(fogColor.xyz, 1.0), fogColor.a * 0.0);
 	noSpecularOut = 0.0;
 }

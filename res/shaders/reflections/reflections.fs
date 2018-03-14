@@ -65,6 +65,8 @@ out vec4 fragColor;
 void main() {
     vec4 cameraSpacePosition = convertScreenSpaceToCameraSpace(screenCoord, zBuffer);
 	
+	//cameraSpacePosition.xyz / cameraSpacePosition.w;
+	
 	vec3 pixelNormal = decodeNormal(texture(normalBuffer, screenCoord));
 	float spec = texture(specularityBuffer, screenCoord).x;
 	

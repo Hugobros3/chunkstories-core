@@ -100,7 +100,7 @@ public class PostProcessPass extends RenderPass {
 			postProcess.setUniform1f("pauseOverlayFade", pauseFade);
 
 			
-			if(renderer.getClient().getConfiguration().getBooleanOption("client.rendering.shadows")) {
+			if(shadowPass != null && renderer.getClient().getConfiguration().getBooleanOption("client.rendering.shadows")) {
 				renderer.bindTexture2D("shadowMap", (Texture2D) shadowPass.resolvedOutputs.get("shadowMap"));
 				//System.out.println((Texture2D) shadowPass.resolvedOutputs.get("shadowMap"));
 				

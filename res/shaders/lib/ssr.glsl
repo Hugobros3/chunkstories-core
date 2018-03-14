@@ -5,8 +5,11 @@ vec4 computeReflectedPixel(sampler2D depthBuffer, sampler2D colorBuffer, sampler
     vec2 screenSpacePosition2D = screenSpaceCoords;
 	
     vec3 cameraSpaceViewDir = normalize(cameraSpacePosition);
-    vec3 cameraSpaceVector = normalize(reflect(cameraSpaceViewDir, pixelNormal));
+    vec3 cameraSpaceVector = normalize(reflect(cameraSpaceViewDir, pixelNormal));//normalMatrix * vec3(0.0, 1.0, 0.0)));
     
+	//if(dot(pixelNormal, cameraSpaceVector) < 0)
+	//	cameraSpaceVector = pixelNormal;
+	
 	// Is the reflection pointing in the right direction ?
 	vec4 color = vec4(0.0);
 	
@@ -43,10 +46,10 @@ vec4 nvec4(vec3 pos) {
 }
 
 //don't touch these lines if you don't know what you do!
-const int maxf = 3;				//number of refinements
+const int maxf = 5;				//number of refinements
 const float stp = 1.5;			//size of one step for raytracing algorithm
-const float ref = 0.025;		//refinement multiplier
-const float inc = 2.2;			//increasement factor at each step
+const float ref = 0.055;		//refinement multiplier
+const float inc = 1.8;			//increasement factor at each step
 
 float cdist(vec2 coord) {
 	return max(abs(coord.x-0.5),abs(coord.y-0.5))*2.0;
@@ -66,7 +69,8 @@ vec4 raytrace(sampler2D depthBuffer, sampler2D colorBuffer, vec3 fragpos, vec3 r
 	vec3 tvector = vector;
 	int sr = 0;
 
-	for(int i=0;i<18;i++){
+	int i;
+	for(i=0;i<25;i++){
 		pos = nvec3(projectionMatrix * nvec4(fragpos)) * 0.5 + 0.5;
 
 		if(pos.x < 0 || pos.x > 1 || pos.y < 0 || pos.y > 1 || pos.z < 0 || pos.z > 1.0) break;
@@ -101,5 +105,11 @@ vec4 raytrace(sampler2D depthBuffer, sampler2D colorBuffer, vec3 fragpos, vec3 r
 	color.a = texture(colorBuffer, pos.st).a * color.a;
 	color.rgb = texture(colorBuffer, pos.st).rgb;
 
+	//if(i < 4)
+	//	color = vec4(1.0, 0.0, 0.0, 1.0);
+	
+	//color = vec4(float(i) / 50.0);
+	//color.a = 1.0;
+	
 	return color;
 }

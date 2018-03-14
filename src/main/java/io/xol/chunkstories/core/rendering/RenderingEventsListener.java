@@ -90,10 +90,15 @@ public class RenderingEventsListener implements Listener {
 			, sky);
 		pipeline.registerRenderPass(waterPass);
 
+		boolean shadows = client.getConfiguration().getBooleanOption("client.rendering.shadows");
 		// a shadowmap pass requires no previous buffer and just outputs a shadowmap	
-		ShadowPass sunShadowPass = new ShadowPass(pipeline, "shadowsSun",  new String[]{}, new String[]{"shadowMap"}, sky);
-		// note we could generalize the shadowmappass to not only the sun but also the moon, point and spotlights
-		pipeline.registerRenderPass(sunShadowPass);
+		ShadowPass sunShadowPass = null;
+		
+		if(shadows) {
+			sunShadowPass = new ShadowPass(pipeline, "shadowsSun",  new String[]{}, new String[]{"shadowMap"}, sky);
+			// note we could generalize the shadowmappass to not only the sun but also the moon, point and spotlights
+			pipeline.registerRenderPass(sunShadowPass);
+		}
 
 		boolean gi = client.getConfiguration().getBooleanOption("client.rendering.globalIllumination");
 		if(gi) {
@@ -104,9 +109,12 @@ public class RenderingEventsListener implements Listener {
 		// aka shadows_apply in the current code, it takes the gbuffers and applies the shadowmapping to them, then outputs to the shaded pixels buffers already filled with the far terrain pixels
 		ApplySunlightPass applySunlight = new ApplySunlightPass(pipeline, "applySunlight", 
 				new String[]{"water.albedoBuffer", "water.normalBuffer", "water.voxelLightBuffer", "water.specularityBuffer", "water.materialsBuffer", 
-						"water.zBuffer", "shadowsSun.shadowMap", "sky.shadedBuffer!"}, 
+						"water.zBuffer", "sky.shadedBuffer!"}, 
 				new String[]{/*"shadedBuffer"*/},
 				sunShadowPass);
+		
+		if(shadows)
+			applySunlight.requires.add("shadowsSun.shadowMap");
 		pipeline.registerRenderPass(applySunlight);	
 
 		DefferedLightsPass lightsPass = new DefferedLightsPass(pipeline, "lights", 
@@ -135,7 +143,7 @@ public class RenderingEventsListener implements Listener {
 		
 		 // the pass declared as 'final' is considered the last one and it's outputs are shown to the screen
 		PostProcessPass postprocess = new PostProcessPass(pipeline, "final", 
-				new String[] {"forward.shadedBuffer", "farTerrain.zBuffer", "bloom.bloomBuffer", "reflections.reflectionsBuffer", "farTerrain.specularityBuffer"},
+				new String[] {"water.albedoBuffer", "forward.shadedBuffer", "farTerrain.zBuffer", "bloom.bloomBuffer", "reflections.reflectionsBuffer", "farTerrain.specularityBuffer"},
 				sunShadowPass);
 		
 		if(gi)
