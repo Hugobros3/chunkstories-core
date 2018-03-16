@@ -173,12 +173,10 @@ void main() {
 	compositeColor *= apertureModifier;
 	
 	//Gamma-corrects stuff
-	compositeColor.rgb = pow(compositeColor.rgb, vec3(gammaInv));
 	
-	//Dither the final pixelcolour
-	vec3 its2 = compositeColor.rgb;
-    vec3 rnd2 = screenSpaceDither( gl_FragCoord.xy );
-    compositeColor.rgb = its2 + rnd2.xyz;
+	compositeColor.rgb = pow(compositeColor.rgb, vec3(gammaInv));
+
+	compositeColor.rgb = pow(jodieReinhardTonemap(compositeColor.rgb * 5.0), vec3(gamma));
 	
 	//Applies pause overlay
 	vec3 overlayColor = texture(pauseOverlayTexture, pauseOverlayCoords).rgb;
@@ -190,8 +188,11 @@ void main() {
 	
 	);
 	compositeColor.rgb *= mix(vec3(1.0), overlayColor, clamp(pauseOverlayFade, 0.0, 1.0));
-
-	compositeColor.rgb = pow(jodieReinhardTonemap(compositeColor.rgb * 5.0), vec3(gamma));
+	
+	//Dither the final pixelcolour
+	vec3 its2 = compositeColor.rgb;
+    vec3 rnd2 = screenSpaceDither( gl_FragCoord.xy );
+    compositeColor.rgb = its2 + rnd2.xyz;
 	
 	//Ouputs
 	fragColor = compositeColor;
