@@ -704,6 +704,9 @@ EntityWorldModifier
 							WorldCell cell = world.peekSafely(blockLocation);
 							FutureCell future = new FutureCell(cell);
 							future.setVoxel(this.getDefinition().store().parent().voxels().air());
+							future.setBlocklight(0);
+							future.setSunlight(0);
+							future.setMetaData(0);
 							
 							PlayerVoxelModificationEvent event = new PlayerVoxelModificationEvent(cell, future, EntityCreative.CREATIVE_MODE, player);
 							
@@ -712,7 +715,16 @@ EntityWorldModifier
 							
 							if(event.isCancelled())
 								return true;
-						
+							
+							Vector3d rnd = new Vector3d();
+							for (int k = 0; k < 40; k++) {
+								rnd.set(blockLocation);
+								rnd.add(Math.random() * 0.98, Math.random() * 0.98, Math.random() * 0.98);
+								world.getParticlesManager().spawnParticleAtPosition("voxel_frag", rnd);
+							}
+							world.getSoundManager().playSoundEffect("sounds/gameplay/voxel_remove.ogg", Mode.NORMAL, blockLocation, 1.0f, 1.0f);
+
+							
 							try {
 								world.poke(future, this);
 								//world.poke((int)blockLocation.x, (int)blockLocation.y, (int)blockLocation.z, null, 0, 0, 0, this);
