@@ -146,7 +146,7 @@ void gi(in vec3 rayPos, in vec3 rayDir, out vec4 colour) {
 	colour.rgb *= light;
 	
 	if(texture(currentChunk, vec3(mapPos) / voxel_sizef).a >= 2.0 / 255.0)
-		colour.rgb += pow(texture(currentChunk, vec3(mapPos) / voxel_sizef).rgb, vec3(gamma));
+		colour.rgb += 1.0 * pow(texture(currentChunk, vec3(mapPos) / voxel_sizef).rgb, vec3(gamma));
 	
 	colour.a = ao;
 }

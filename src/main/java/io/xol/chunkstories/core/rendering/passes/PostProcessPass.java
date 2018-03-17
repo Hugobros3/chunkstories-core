@@ -46,13 +46,15 @@ public class PostProcessPass extends RenderPass {
 		//We need the shadedBuffer buffer from the previous passes
 		this.shadedBuffer = (Texture2D) resolvedInputs.get("shadedBuffer");
 		this.zBuffer = (Texture2D) resolvedInputs.get("zBuffer");
+		
+		this.resolvedOutputs.put("finalBuffer", postProcessed);
 	}
 
 	@Override
 	public void render(RenderingInterface renderer) {
 		if(shadedBuffer != null) {
 			renderer.getRenderTargetManager().setConfiguration(fbo);
-			renderer.getRenderTargetManager().clearBoundRenderTargetAll();
+			//renderer.getRenderTargetManager().clearBoundRenderTargetAll();
 			
 			//TODO mix in the reflections earlier ?
 			//Texture2D bloomRendered = RenderingConfig.doBloom ? bloomRenderer.renderBloom(renderingContext) : null;
@@ -64,7 +66,7 @@ public class PostProcessPass extends RenderPass {
 			pauseFade = layer.getClass().getName().contains("Ingame") ? 0 : 1;
 			
 			// We render to the screen.
-			renderer.getRenderTargetManager().setConfiguration(null);
+			//renderer.getRenderTargetManager().setConfiguration(null);
 
 			renderer.setDepthTestMode(DepthTestMode.DISABLED);
 			renderer.setBlendMode(BlendMode.DISABLED);
@@ -73,21 +75,6 @@ public class PostProcessPass extends RenderPass {
 			
 			renderer.bindTexture2D("shadedBuffer", shadedBuffer);
 			renderer.bindTexture2D("zBuffer", zBuffer);
-			
-			/*renderingContext.bindTexture2D("albedoBuffer", renderBuffers.rbAlbedo);
-			renderingContext.bindTexture2D("depthBuffer", renderBuffers.rbZBuffer);
-			renderingContext.bindTexture2D("normalBuffer", renderBuffers.rbNormal);
-			renderingContext.bindTexture2D("voxelLightBuffer", renderBuffers.rbVoxelLight);
-			renderingContext.bindTexture2D("specularityBuffer", renderBuffers.rbSpecularity);
-			renderingContext.bindTexture2D("materialBuffer", renderBuffers.rbMaterial);
-			renderingContext.bindTexture2D("shadowMap", renderBuffers.rbShadowMap);
-			renderingContext.bindTexture2D("reflectionsBuffer", renderBuffers.rbReflections);
-			renderingContext.bindCubemap("environmentMap", renderBuffers.rbEnvironmentMap);
-			//If we enable bloom
-			if(bloomRendered != null)
-				renderingContext.bindTexture2D("bloomBuffer", bloomRendered);
-			renderingContext.bindTexture2D("ssaoBuffer", renderBuffers.rbSSAO);
-			renderingContext.bindTexture2D("debugBuffer", renderBuffers.rbReflections);*/
 			
 			renderer.bindTexture2D("pauseOverlayTexture", renderer.textures().getTexture("./textures/gui/darker.png"));
 
@@ -112,16 +99,14 @@ public class PostProcessPass extends RenderPass {
 				
 			renderer.getCamera().setupShader(postProcess);
 			worldRenderer.getSkyRenderer().setupShader(postProcess);
-
-			postProcess.setUniform1f("apertureModifier", 1.0f);
-
+			
 			renderer.drawFSQuad();
 		}
 	}
 
 	@Override
 	public void onScreenResize(int w, int h) {
-		
+		fbo.resize(w, h);
 	}
 
 }

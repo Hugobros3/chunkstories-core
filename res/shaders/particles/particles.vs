@@ -20,7 +20,7 @@ uniform vec3 objectPosition;
 
 uniform float vegetation;
 out float chunkFade;
-uniform float viewDistance;
+//uniform float viewDistance;
 
 out vec4 modelview;
 

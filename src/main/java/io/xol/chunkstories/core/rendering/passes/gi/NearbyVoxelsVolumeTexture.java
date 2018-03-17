@@ -8,6 +8,7 @@ package io.xol.chunkstories.core.rendering.passes.gi;
 
 import java.nio.ByteBuffer;
 
+import org.joml.Vector3f;
 import org.joml.Vector4f;
 
 import io.xol.chunkstories.api.rendering.RenderingInterface;
@@ -90,7 +91,7 @@ public class NearbyVoxelsVolumeTexture {
 										
 										if(voxel.isAir() || voxel.getName().startsWith("glass") || 
 												 voxel instanceof VoxelPane || 
-												!voxel.getDefinition().isSolid() && !voxel.getDefinition().isLiquid()) {
+												(!voxel.getDefinition().isSolid() && !voxel.getDefinition().isLiquid() && voxel.getDefinition().getEmittedLightLevel() == 0)) {
 											bb.put(empty);
 										} else {
 											col.set(voxel.getVoxelTexture(VoxelSides.TOP, cell).getColor());
@@ -98,10 +99,28 @@ public class NearbyVoxelsVolumeTexture {
 												col.mul(new Vector4f(0.1f, 0.5f, 0.1f, 1.0f));
 											}
 											
-											bb.put((byte)(int)(col.x() * 255));
-											bb.put((byte)(int)(col.y() * 255));
-											bb.put((byte)(int)(col.z() * 255));
-											bb.put(voxel.getDefinition().getEmittedLightLevel() > 0 ? (byte) 20 : (byte) 1);
+											if(voxel.getDefinition().getEmittedLightLevel() > 0) {
+												
+												Vector4f emits = new Vector4f(1.0f, 1.0f, 1.0f, 1.0f);
+													
+												float alpha = col.w;
+												//if(alpha <= 0.0f)
+													alpha = 1.0f;
+													
+												if(voxel.getName().contains("torch"))
+													alpha = 2f;
+												
+												bb.put((byte)(int)Math.max(0.0, col.x() * 255.0 * alpha));
+												bb.put((byte)(int)Math.max(0.0, col.y() * 255.0 * alpha));
+												bb.put((byte)(int)Math.max(0.0, col.z() * 255.0 * alpha));
+												bb.put((byte) 20);
+											} else {
+
+												bb.put((byte)(int)(col.x() * 255));
+												bb.put((byte)(int)(col.y() * 255));
+												bb.put((byte)(int)(col.z() * 255));
+												bb.put((byte) 1);
+											}
 										} 
 									}
 								}

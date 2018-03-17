@@ -163,7 +163,7 @@ void main() {
 	
 	//Applies bloom
 	#ifdef bloom
-	compositeColor.rgb += pow(texture(bloomBuffer, finalCoords).rgb, vec3(gamma)) * pi;
+	compositeColor.rgb += pow(texture(bloomBuffer, finalCoords).rgb, vec3(1.0)) * pi;
 	#endif
 	
 	//Darkens further pixels underwater
@@ -174,9 +174,9 @@ void main() {
 	
 	//Gamma-corrects stuff
 	
-	compositeColor.rgb = pow(compositeColor.rgb, vec3(gammaInv));
+	//compositeColor.rgb = pow(compositeColor.rgb, vec3(gammaInv));
 
-	compositeColor.rgb = pow(jodieReinhardTonemap(compositeColor.rgb * 5.0), vec3(gamma));
+	compositeColor.rgb = pow(jodieReinhardTonemap(compositeColor.rgb * 1.0), vec3(gammaInv));
 	
 	//Applies pause overlay
 	vec3 overlayColor = texture(pauseOverlayTexture, pauseOverlayCoords).rgb;

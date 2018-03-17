@@ -44,9 +44,6 @@ public class BloomPass extends RenderPass {
 
 	@Override
 	public void render(RenderingInterface renderer) {
-		/*worldRenderer.renderBuffers.rbShaded.setLinearFiltering(true);
-		worldRenderer.renderBuffers.rbBloom.setLinearFiltering(true);
-		worldRenderer.renderBuffers.rbBlurTemp.setLinearFiltering(true);*/
 
 		bloomBuffer.setLinearFiltering(true);
 		
@@ -54,8 +51,9 @@ public class BloomPass extends RenderPass {
 		renderer.setBlendMode(BlendMode.DISABLED);
 		
 		Shader bloomShader = renderer.useShader("bloom");
-
-		bloomShader.setUniform1f("apertureModifier", 1.0f);
+		renderer.getCamera().setupShader(bloomShader);
+		
+		//bloomShader.setUniform1f("apertureModifier", 1.0f);
 		bloomShader.setUniform2f("screenSize", renderer.getWindow().getWidth() / 2f, renderer.getWindow().getHeight() / 2f);
 
 		renderer.getRenderTargetManager().setConfiguration(fboBloom);
