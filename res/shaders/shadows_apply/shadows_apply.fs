@@ -144,12 +144,15 @@ void main() {
 	#define vl_bias 0.05
 	
 	//Voxel light input, modified linearly according to time of day
-	//vec3 voxelSunlight = textureGammaIn(blockLightmap, vec2(0.0, voxelLight.y)).rgb;
 	
 	float sl_distance = (1.0 - voxelLight.y) + vl_bias;
 	float sl_distanceSquared = sl_distance * sl_distance;
 	float sl_invSquared = 1.0 / sl_distanceSquared;
+	#ifdef shadows
+	vec3 voxelSunlight = textureGammaIn(blockLightmap, vec2(0.0, voxelLight.y)).rgb;
+	#else
 	vec3 voxelSunlight = 0.005 * clamp(sl_invSquared - 1.0 / (1.0 + vl_bias), 0.0, 100.0) * vec3(1.0);// * pow(torchColor, vec3(gamma));
+	#endif
 	
 	
 	//float sunVisibility = clamp(1.0 - overcastFactor * 2.0, 0.0, 1.0);

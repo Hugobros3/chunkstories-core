@@ -69,7 +69,7 @@ public class VoxelLeavesLod extends Voxel
 		
 		public void renderLodVersion(ChunkRenderer chunkRenderer, ChunkRenderContext bakingContext, Chunk chunk, CellData voxelInformations, LodLevel lodLevel)
 		{
-			//Voxel vox = voxelInformations.getVoxel();
+			Voxel vox = voxelInformations.getVoxel();
 			//int src = voxelInformations.getData();
 			
 			int i = voxelInformations.getX() & 0x1F;
@@ -77,7 +77,7 @@ public class VoxelLeavesLod extends Voxel
 			int j = voxelInformations.getZ() & 0x1F;
 			
 			VoxelBakerCubic rawRBBF = chunkRenderer.getLowpolyBakerFor(lodLevel, ShadingType.OPAQUE);
-			byte extraByte = 0;
+			byte extraByte = (byte) (vox.getDefinition().resolveProperty("affectedByWind", "false").equals("true") ? 3 : 0);
 			if (shallBuildWallArround(voxelInformations, 5, lodLevel))
 			{
 				if (k != 0 || bakingContext.isBottomChunkLoaded())

@@ -23,6 +23,9 @@ uniform float sunIntensity;
 
 uniform float wetness;
 uniform float time;
+uniform float animationTimer;
+
+uniform float overcastFactor;
 
 //Common camera matrices & uniforms
 uniform mat4 projectionMatrix;
@@ -44,6 +47,8 @@ uniform vec3 camPos;
 uniform mat4 objectMatrix;
 uniform mat3 objectMatrixNormal;
 
+#define stormyness clamp(overcastFactor * 2.0 - 1.0, 0.0, 1.0)
+
 void main(){
 	//Usual variable passing
 	texCoordPassed = texCoordIn;
@@ -53,8 +58,8 @@ void main(){
 	float movingness = normalIn.w;
 	if(movingness > 0)
 	{
-		vertex.x += sin(time + vertex.z + vertex.y / 2.0) * 0.1;
-		vertex.z += cos(time + vertex.x*1.5 + 0.3) * 0.1;
+		vertex.x += sin(animationTimer * (0.25 + stormyness * 0.35) + vertex.z + vertex.y / 2.0) * ( 0.05 + stormyness * 0.1);
+		vertex.z += cos(animationTimer * (0.35 + stormyness * 0.25) + vertex.x*1.5 + 0.3) * ( 0.05 + stormyness * 0.1);
 	}
 	
 	vertexPassed = vertex;
@@ -66,7 +71,7 @@ void main(){
 	
 	//Compute lightmap coords
 	rainWetness = wetness*clamp((colorIn.g * 16.0 - 0.85)*16,0,1.0);
-	worldLight = vec2(colorIn.r * 17.0, colorIn.g * 17.0)*(1.0 - colorIn.b * 65.75 * 0.25);
+	worldLight = clamp(vec2(colorIn.r * 15.0, colorIn.g * 15.0) * (1.0 - colorIn.b * 65.75 * 0.25), 0.0, 1.0);
 	
 	gl_Position = modelViewProjectionMatrix * vertex;
 	

@@ -100,9 +100,11 @@ public class GBuffersOpaquePass extends RenderPass {
 			opaqueBlocksShader.setUniform1f("overcastFactor", world.getWeather());
 			opaqueBlocksShader.setUniform1f("wetness", world.getGenerator().getEnvironment().getWorldWetness(renderingInterface.getCamera().getCameraPosition()));
 			opaqueBlocksShader.setUniform1f("time", worldRenderer.getAnimationTimer());
+			opaqueBlocksShader.setUniform1f("animationTimer", worldRenderer.getAnimationTimer());
 
 			opaqueBlocksShader.setUniform2f("screenSize", gameWindow.getWidth(), gameWindow.getHeight());
 			renderingInterface.getCamera().setupShader(opaqueBlocksShader);
+			
 
 			renderingInterface.setObjectMatrix(new Matrix4f());
 			
