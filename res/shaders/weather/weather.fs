@@ -11,6 +11,7 @@ uniform mat4 modelViewMatrixInv;
 
 uniform mat3 normalMatrix;
 uniform mat3 normalMatrixInv;
+uniform vec3 camUp;
 
 out vec4 fragColor;
 uniform float sunTime;

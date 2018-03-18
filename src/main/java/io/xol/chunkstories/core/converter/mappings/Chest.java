@@ -40,7 +40,7 @@ public class Chest extends NonTrivialMapper {
 			System.out.println("fuck you 666");
 		
 		csWorld.pokeRawSilently(csX, csY, csZ, baked);*/
-		csWorld.pokeSimple(new FutureCell(csWorld, csX, csY, csZ, voxel));
+		csWorld.pokeSimpleSilently(new FutureCell(csWorld, csX, csY, csZ, voxel));
 	}
 	
 }

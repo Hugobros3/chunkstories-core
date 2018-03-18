@@ -83,6 +83,9 @@ public class SignRenderer implements VoxelDynamicRenderer {
 				signTextComponent.renderData = renderingContext.getFontRenderer().newTextMeshObject(renderingContext.getFontRenderer().defaultFont(), signTextComponent.cachedText);
 			}
 			
+			//signTextComponent.setSignText("fuck");
+			//System.out.println("cachedText:"+signTextComponent.getSignText());
+			
 			// Display it
 			mutrix.translate(new Vector3f(0.0f, 1.15f, 0.055f));
 			renderingContext.setObjectMatrix(mutrix);

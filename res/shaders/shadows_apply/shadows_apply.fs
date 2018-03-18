@@ -35,6 +35,7 @@ uniform mat3 normalMatrixInv;
 uniform mat4 untranslatedMV;
 uniform mat4 untranslatedMVInv;
 uniform vec3 camPos;
+uniform vec3 camUp;
 uniform vec2 screenViewportSize;
 
 //Shadow mapping
@@ -140,8 +141,16 @@ void main() {
 	
 	float NdotL = clamp(dot(normalize(normalWorldSpace), normalize(sunPos)), 0.0, 1.0);
 	
+	#define vl_bias 0.05
+	
 	//Voxel light input, modified linearly according to time of day
-	vec3 voxelSunlight = textureGammaIn(blockLightmap, vec2(0.0, voxelLight.y)).rgb;
+	//vec3 voxelSunlight = textureGammaIn(blockLightmap, vec2(0.0, voxelLight.y)).rgb;
+	
+	float sl_distance = (1.0 - voxelLight.y) + vl_bias;
+	float sl_distanceSquared = sl_distance * sl_distance;
+	float sl_invSquared = 1.0 / sl_distanceSquared;
+	vec3 voxelSunlight = 0.005 * clamp(sl_invSquared - 1.0 / (1.0 + vl_bias), 0.0, 100.0) * vec3(1.0);// * pow(torchColor, vec3(gamma));
+	
 	
 	//float sunVisibility = clamp(1.0 - overcastFactor * 2.0, 0.0, 1.0);
 	//float storminess = clamp(-1.0 + overcastFactor * 2.0, 0.0, 1.0);
@@ -200,7 +209,17 @@ void main() {
 	#endif
 	
 	//Adds block light
-	lightColor += textureGammaIn(blockLightmap, vec2(voxelLight.x, 0.0)).rgb;
+	vec3 torchColor = vec3(255.0 / 255.0, 239.0 / 255.0, 43.0 / 140.0);
+	
+	//lightColor += vec3(0.25 * pow(voxelLight.x, 4.0));//
+	//lightColor += 0.25 * textureGammaIn(blockLightmap, vec2(voxelLight.x, 0.0)).rgb;
+	//lightColor += 0.25 * voxelLight.x * voxelLight.x * voxelLight.x * voxelLight.x * pow(torchColor, vec3(gamma));
+	//lightColor += 0.25 * textureGammaIn(blockLightmap, vec2(voxelLight.x * voxelLight.x, 0.0)).rgb;
+	
+	float vl_distance = (1.0 - voxelLight.x) + vl_bias;
+	float vl_distanceSquared = vl_distance * vl_distance;
+	float vl_invSquared = 1.0 / vl_distanceSquared;
+	lightColor += 0.005 * clamp(vl_invSquared - 1.0 / (1.0 + vl_bias), 0.0, 100.0) * pow(torchColor, vec3(gamma));
 	
 	//gamma-correct the albedo color
 	albedoColor.rgb = pow(albedoColor.rgb, vec3(gamma));

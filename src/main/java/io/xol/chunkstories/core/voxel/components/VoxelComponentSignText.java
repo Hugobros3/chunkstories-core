@@ -25,19 +25,19 @@ public class VoxelComponentSignText extends VoxelComponent
 	public String cachedText = null; //set to whatever renderData represents
 	public TextMesh renderData = null; //contains a mesh representing the text written on the sign
 
-	String signText =  "In soviet belgium\n"
+	String signText =  "";/*"In soviet belgium\n"
 			+ "#FFFF00Waffles are yellow\n"
 			+ "#FFFF00Fries are yellow\n"
-			+ "Ketchup is #FF0000red";
+			+ "Ketchup is #FF0000red";*/
 	
 	public String getSignText()
 	{
 		return signText;
 	}
 
-	public void setSignText(String name)
+	public void setSignText(String signText)
 	{
-		this.signText = name;
+		this.signText = signText;
 	}
 
 	@Override

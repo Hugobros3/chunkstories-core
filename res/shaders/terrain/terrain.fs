@@ -53,6 +53,7 @@ uniform mat3 normalMatrix;
 uniform mat3 normalMatrixInv;
 
 uniform vec3 camPos;
+uniform vec3 camUp;
 
 //Sky data
 uniform sampler2D sunSetRiseTexture;

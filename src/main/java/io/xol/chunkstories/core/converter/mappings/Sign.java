@@ -61,7 +61,9 @@ public class Sign extends NonTrivialMapper {
 			}
 			
 			csWorld.pokeRawSilently(csX, csY, csZ, baked);*/
-			csWorld.pokeSimple(new FutureCell(csWorld, csX, csY, csZ, voxel));
+			FutureCell future = new FutureCell(csWorld, csX, csY, csZ, voxel);
+			future.setMetaData(minecraftMetaData);
+			csWorld.pokeSimple(future);
 			
 			try {
 				translateSignText(csWorld.peek(csX, csY, csZ).components().get("signData"), region.getChunk(minecraftCuurrentChunkXinsideRegion, minecraftCuurrentChunkZinsideRegion), x, y, z);
@@ -83,52 +85,45 @@ public class Sign extends NonTrivialMapper {
 		
 		NBTList entitiesList = (NBTList) root.getTag("Level.TileEntities");
 		
-		for (NBTag element : entitiesList.elements)
-		{
-			NBTCompound entity = (NBTCompound) element;
-			NBTString entityId = (NBTString) entity.getTag("id");
+		//Check it exists and is of the right kind
+		if(target != null && target instanceof VoxelComponentSignText) {
+			VoxelComponentSignText signTextComponent = (VoxelComponentSignText)target;
+			signTextComponent.setSignText("<corresponding sign not found :(>");
 			
-			int tileX = ((NBTInt)entity.getTag("x")).data;
-			int tileY = ((NBTInt)entity.getTag("y")).data;
-			int tileZ = ((NBTInt)entity.getTag("z")).data;
-
-			//System.out.println("Looking up sign data for A:"+tileX+":"+tileY+":"+tileZ);
-			//System.out.println("Looking up sign data for B:"+x+":"+y+":"+z);
-			if(tileX % 16 != x || tileY != y || tileZ % 16 != z) {
-				continue;
-			}
-			
-			//System.out.println("Found sign data for "+x+":"+y+":"+z);
-			
-			if (entityId.data.toLowerCase().equals("chest"))
+			for (NBTag element : entitiesList.elements)
 			{
-				//Actually we don't bother converting the items
-			}
-			else if (entityId.data.toLowerCase().equals("sign") || entityId.data.toLowerCase().equals("minecraft:sign"))
-			{
-				String text1 = SignParseUtil.parseSignData(((NBTString)entity.getTag("Text1")).data);
-				String text2 = SignParseUtil.parseSignData(((NBTString)entity.getTag("Text2")).data);
-				String text3 = SignParseUtil.parseSignData(((NBTString)entity.getTag("Text3")).data);
-				String text4 = SignParseUtil.parseSignData(((NBTString)entity.getTag("Text4")).data);
+				NBTCompound entity = (NBTCompound) element;
+				NBTString entityId = (NBTString) entity.getTag("id");
 				
-				//Check it exists and is of the right kind
-				if(target != null && target instanceof VoxelComponentSignText) {
-					VoxelComponentSignText signTextComponent = (VoxelComponentSignText)target;
-
+				int tileX = ((NBTInt)entity.getTag("x")).data;
+				int tileY = ((NBTInt)entity.getTag("y")).data;
+				int tileZ = ((NBTInt)entity.getTag("z")).data;
+				
+				if (entityId.data.toLowerCase().equals("sign") || entityId.data.toLowerCase().equals("minecraft:sign"))
+				{
+					//System.out.println("Looking up sign data for A:"+tileX+":"+tileY+":"+tileZ);
+					//System.out.println("Looking up sign data for B:"+x+":"+y+":"+z);
+					if((tileX & 0xF) != x || tileY != y || (tileZ & 0xF) != z) {
+						continue;
+					}
+					
+					String text1 = SignParseUtil.parseSignData(((NBTString)entity.getTag("Text1")).data);
+					String text2 = SignParseUtil.parseSignData(((NBTString)entity.getTag("Text2")).data);
+					String text3 = SignParseUtil.parseSignData(((NBTString)entity.getTag("Text3")).data);
+					String text4 = SignParseUtil.parseSignData(((NBTString)entity.getTag("Text4")).data);
+					
 					String textComplete = text1 + "\n" + text2 + "\n" + text3 + "\n" + text4;
 					signTextComponent.setSignText(textComplete);
 					
-					//System.out.println("OK: "+textComplete);
+					System.out.println("OK: "+textComplete);
 					break;
+					
+					//((EntitySign) ((VoxelSign) voxel).getEntity(exported.peekSafely(csCoordinatesX, csCoordinatesY, csCoordinatesZ))).setText(textComplete);
+					
 				}
-				else
-					assert false; // or die
-				
-				//((EntitySign) ((VoxelSign) voxel).getEntity(exported.peekSafely(csCoordinatesX, csCoordinatesY, csCoordinatesZ))).setText(textComplete);
-				
+				//else
+				//	System.out.println("Found "+entityId.data);
 			}
-			//else
-			//	System.out.println("Found "+entityId.data);
 		}
 	}
 	

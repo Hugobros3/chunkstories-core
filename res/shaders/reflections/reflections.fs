@@ -35,6 +35,7 @@ uniform mat3 normalMatrixInv;
 uniform mat4 untranslatedMV;
 uniform mat4 untranslatedMVInv;
 uniform vec3 camPos;
+uniform vec3 camUp;
 
 //Shadow mapping
 uniform float shadowVisiblity; // Used for night transitions, hides shadows

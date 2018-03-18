@@ -16,6 +16,7 @@ uniform sampler2D skyTextureRaining;
 uniform sampler2D sunSetRiseTexture;
 uniform float overcastFactor;
 uniform vec3 sunPos;
+uniform vec3 camUp;
 
 //World
 uniform float time;

@@ -34,6 +34,7 @@ uniform mat4 modelViewMatrixInv;
 uniform mat3 normalMatrix;
 uniform mat3 normalMatrixInv;
 uniform vec3 camPos;
+uniform vec3 camUp;
 
 //Sky data
 uniform vec3 sunPos;
@@ -176,7 +177,7 @@ void main() {
 	
 	//compositeColor.rgb = pow(compositeColor.rgb, vec3(gammaInv));
 
-	compositeColor.rgb = pow(jodieReinhardTonemap(compositeColor.rgb * 1.0), vec3(gammaInv));
+	compositeColor.rgb = pow(jodieReinhardTonemap(compositeColor.rgb), vec3(gammaInv));
 	
 	//Applies pause overlay
 	vec3 overlayColor = texture(pauseOverlayTexture, pauseOverlayCoords).rgb;

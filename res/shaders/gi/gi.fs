@@ -65,6 +65,7 @@ out float gl_FragDepth;
 out vec4 fragColor;
 out float outputConfidence;
 
+uniform vec3 camUp;
 #include ../sky/sky.glsl
 //#include ../sky/fog.glsl
 #include ../lib/transformations.glsl
