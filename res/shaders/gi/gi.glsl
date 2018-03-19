@@ -85,18 +85,16 @@ bool shadow(in vec3 rayPos, in vec3 rayDir) {
 	vec3 sideDist = (sign(rayDir) * (vec3(mapPosz) - rayPos) + (sign(rayDir) * 0.5) + 0.5) * deltaDist; 
 	
 	bvec3 mask;
-	
-    int i;
-	for (i = 0; i < MAX_RAY_STEPS_SHADOW; i++) {
-        if (getVoxel(mapPosz)){
-            return true;
-        }
-            
-        //Thanks kzy for the suggestion!
-        mask = lessThanEqual(sideDist.xyz, min(sideDist.yzx, sideDist.zxy));	
 
-        sideDist += vec3(mask) * deltaDist;
-        mapPosz += ivec3(mask) * rayStep;
+	int i;
+	for (i = 0; i < MAX_RAY_STEPS_SHADOW; i++) {
+		if (getVoxel(mapPosz)){
+		    return true;
+		}
+		mask = lessThanEqual(sideDist.xyz, min(sideDist.yzx, sideDist.zxy));	
+
+		sideDist += vec3(mask) * deltaDist;
+		mapPosz += ivec3(mask) * rayStep;
 	}
 	
 	return false;
@@ -114,24 +112,32 @@ void gi(in vec3 rayPos, in vec3 rayDir, out vec4 colour) {
 	
 	float ao = 1.0;
 	
-    int i;
+	int i;
 	for (i = 0; i < MAX_RAY_STEPS_GI; i++) {
-        if (getVoxel(mapPos) && i > 0){
-            colour = texture(currentChunk, vec3(mapPos) / voxel_sizef);
-			ao = 0.15; //1.0 - clamp((i) / 5.0, 0.0, 1.0);
-			//colour.rgb = pow(colour.rgb, vec3(gamma));
+		if (getVoxel(mapPos) && i > 0){
+			colour = texture(currentChunk, vec3(mapPos) / voxel_sizef);
+			ao = 0.15;
 			break;
-        }
-            
-        //Thanks kzy for the suggestion!
-        mask = lessThanEqual(sideDist.xyz, min(sideDist.yzx, sideDist.zxy));	
+		}
+		mask = lessThanEqual(sideDist.xyz, min(sideDist.yzx, sideDist.zxy));	
 
-        sideDist += vec3(mask) * deltaDist;
-        mapPos += ivec3(mask) * rayStep;
+		sideDist += vec3(mask) * deltaDist;
+		mapPos += ivec3(mask) * rayStep;
 	}
+	//Computing the hit position
+	vec3 hit_pos;
+
+	//for each cube face we might have hit, this has it's position
+	vec3 faceHitPos = mapPos + clamp(-rayStep, 0.0, 1.0);
+	vec3 distanceTraveled = abs(rayPos - faceHitPos); //we derive the distance travaled in each direction
+
+	vec3 axisScaling = distanceTraveled / rayDir; // for each direction we computes a scaling factor
+	float axisScaled = dot(vec3(mask), axisScaling); // we actually only cares about the collision axis
 	
-	//float distance_traced = pow(0. + (initPos.x - mapPos.x) * (initPos.x - mapPos.x) + (initPos.y - mapPos.y) * (initPos.y - mapPos.y) + (initPos.z - mapPos.z) * (initPos.z - mapPos.z), 0.5);
-	vec3 hit_pos = lineIntersection(mapPos - vec3(0.001), mapPos + vec3(1.001), rayPos, rayDir);
+	hit_pos = rayPos + rayDir * axisScaled;
+	
+	//crappy method
+	//hit_pos = lineIntersection(mapPos - vec3(0.001), mapPos + vec3(1.001), rayPos, rayDir);
 	
 	vec3 sunLight_g = sunLightColor * pi;
 	vec3 shadowLight_g = getAtmosphericScatteringAmbient();
@@ -140,11 +146,13 @@ void gi(in vec3 rayPos, in vec3 rayDir, out vec4 colour) {
 	if(i == MAX_RAY_STEPS_GI) {
 		light += shadowLight_g;
 		colour = vec4(0.0, 0.0, 0.0, 1.0);
-		//return;
 	}
+
+	//what if we sampled the shadowmap there HUMMMM
 	light += shadow(vec3(hit_pos), normalize(sunPos)) ? vec3(0) : sunLight_g;
 	colour.rgb *= light;
 	
+	//add light if the hitpoint happens to be an emmissive block
 	if(texture(currentChunk, vec3(mapPos) / voxel_sizef).a >= 2.0 / 255.0)
 		colour.rgb += 1.0 * pow(texture(currentChunk, vec3(mapPos) / voxel_sizef).rgb, vec3(gamma));
 	
@@ -170,8 +178,9 @@ vec4 giMain(vec4 worldSpacePosition, vec3 normalWorldSpace, vec2 texCoord)
 	vec4 acc = vec4(0.);
 	vec4 contrib = vec4(0.0);
 	
+	//map the world space position into the 3d texture
 	vec3 rayPos = vec3(mod(worldSpacePosition.x - voxelOffset.x, voxel_sizef), mod(worldSpacePosition.y - voxelOffset.y, voxel_sizef), mod(worldSpacePosition.z - voxelOffset.z, voxel_sizef));
-	rayPos += normalWorldSpace * 0.1;
+	rayPos += normalWorldSpace * 0.1; // offsets it by the normal vector a bit so it doesn't get stuck in a wall
 	
 	float seed = snoise(vec2(animationTimer + 321.1, 30.5));
 	

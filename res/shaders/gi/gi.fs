@@ -61,7 +61,6 @@ uniform float fogEndDistance;
 uniform vec3 shadowColor;
 uniform vec3 sunColor;
 
-out float gl_FragDepth;
 out vec4 fragColor;
 out float outputConfidence;
 

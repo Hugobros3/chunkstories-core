@@ -231,6 +231,6 @@ void main() {
 	fragColor = vec4(albedoColor.rgb * lightColor.rgb, 1.0);
 	
 	
-	//fragColor = vec4(gi.rgb, 1.0);
+	fragColor = vec4(gi.rgb, 1.0);
 	//fragColor = vec4(vec3(gi.a), 1.0);
 }
