@@ -111,27 +111,17 @@ public class ItemMiningTool extends Item {
 
 									Location itemSpawnLocation = new Location(world, progress.loc);
 									itemSpawnLocation.add(0.5, 0.0, 0.5);
-									ItemPile droppedItemPile = null;
-
-									for (ItemPile pile : progress.context.getVoxel().getItems()) {
-										// Look for a basic match
-										if (droppedItemPile == null)
-											droppedItemPile = pile.duplicate();
-
-										// Look for a hard match
-										if (pile.getItem() instanceof ItemVoxel) {
-											ItemVoxel pi = (ItemVoxel) pile.getItem();
-											if (pi.getVoxelMeta() == progress.context.getMetaData())
-												droppedItemPile = pile.duplicate();
-										}
+									
+									//ItemPile droppedItemPile = null;
+									for(ItemPile droppedItemPile : cell.getVoxel().getLoot(cell, (WorldModificationCause) entityControllable)) {
+	
+										EntityGroundItem thrownItem = (EntityGroundItem) getDefinition().store().parent().entities()
+												.getEntityDefinition("groundItem").create(itemSpawnLocation);
+										thrownItem.positionComponent.setPosition(itemSpawnLocation);
+										thrownItem.velocityComponent.setVelocity(new Vector3d(Math.random() * 0.125 - 0.0625, 0.1, Math.random() * 0.125 - 0.0625));
+										thrownItem.setItemPile(droppedItemPile);
+										world.addEntity(thrownItem);
 									}
-
-									EntityGroundItem thrownItem = (EntityGroundItem) getDefinition().store().parent().entities()
-											.getEntityDefinition("groundItem").create(itemSpawnLocation);
-									thrownItem.positionComponent.setPosition(itemSpawnLocation);
-									thrownItem.velocityComponent.setVelocity(new Vector3d(Math.random() * 0.125 - 0.0625, 0.1, Math.random() * 0.125 - 0.0625));
-									thrownItem.setItemPile(droppedItemPile);
-									world.addEntity(thrownItem);
 
 									try {
 										world.poke(future, (WorldModificationCause) entityControllable);
