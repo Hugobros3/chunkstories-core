@@ -102,7 +102,7 @@ void main() {
 	}
 	
 	vec4 gi = giMain(worldSpacePosition, normalWorldSpace, screenCoord);
-	gi.a = 1.0 - gi.a;
+	//gi.a = 1.0 - gi.a;
 	
 	vec4 oldCameraSpacePosition = previousModelViewMatrix * worldSpacePosition;
 	//oldCameraSpacePosition.w = 1.0;

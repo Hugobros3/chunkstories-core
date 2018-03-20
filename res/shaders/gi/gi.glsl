@@ -1,6 +1,6 @@
-const int MAX_RAY_STEPS = 64;
+const int MAX_RAY_STEPS = 48;
 const int MAX_RAY_STEPS_SHADOW = 72;
-const int MAX_RAY_STEPS_GI = 72;
+const int MAX_RAY_STEPS_GI = 48;
 
 const int GI_SAMPLES = 2;
 
@@ -110,13 +110,13 @@ void gi(in vec3 rayPos, in vec3 rayDir, out vec4 colour) {
 	
 	bvec3 mask;
 	
-	float ao = 1.0;
+	float ao = 0.0;
 	
 	int i;
 	for (i = 0; i < MAX_RAY_STEPS_GI; i++) {
 		if (getVoxel(mapPos) && i > 0){
 			colour = texture(currentChunk, vec3(mapPos) / voxel_sizef);
-			ao = 0.15;
+			ao = 0.85;
 			break;
 		}
 		mask = lessThanEqual(sideDist.xyz, min(sideDist.yzx, sideDist.zxy));	
@@ -128,13 +128,13 @@ void gi(in vec3 rayPos, in vec3 rayDir, out vec4 colour) {
 	vec3 hit_pos;
 
 	//for each cube face we might have hit, this has it's position
-	vec3 faceHitPos = mapPos + clamp(-rayStep, 0.0, 1.0);
+	vec3 faceHitPos = mapPos + clamp(-rayStep * 2.0, vec3(-0.001), vec3(1.001));
 	vec3 distanceTraveled = abs(rayPos - faceHitPos); //we derive the distance travaled in each direction
 
 	vec3 axisScaling = distanceTraveled / rayDir; // for each direction we computes a scaling factor
 	float axisScaled = dot(vec3(mask), axisScaling); // we actually only cares about the collision axis
 	
-	hit_pos = rayPos + rayDir * axisScaled;
+	hit_pos = rayPos + rayDir * abs(axisScaled);
 	
 	//crappy method
 	//hit_pos = lineIntersection(mapPos - vec3(0.001), mapPos + vec3(1.001), rayPos, rayDir);
@@ -145,11 +145,11 @@ void gi(in vec3 rayPos, in vec3 rayDir, out vec4 colour) {
 	vec3 light = vec3(0.0);
 	if(i == MAX_RAY_STEPS_GI) {
 		light += shadowLight_g;
-		colour = vec4(0.0, 0.0, 0.0, 1.0);
+		colour = vec4(0.0, 0.0, 0.0, 0.0);
 	}
 
 	//what if we sampled the shadowmap there HUMMMM
-	light += shadow(vec3(hit_pos), normalize(sunPos)) ? vec3(0) : sunLight_g;
+	light += float(!shadow(vec3(hit_pos), normalize(sunPos))) * sunLight_g * clamp(dot(-normalize(sunPos), vec3(mask) * sign(rayDir)), 0.0, 1.0);
 	colour.rgb *= light;
 	
 	//add light if the hitpoint happens to be an emmissive block

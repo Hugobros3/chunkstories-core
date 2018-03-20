@@ -153,7 +153,7 @@ void main() {
 	//fragColor.w = 1.0;
 	
 	//Volumetric light
-	compositeColor.rgb += clamp(ComputeVolumetricLight(compositeColor.rgb, cameraSpacePosition, sunPos, eyeDirection), 0.0, 1.0);
+	compositeColor.rgb += clamp(10.0 * ComputeVolumetricLight(compositeColor.rgb, cameraSpacePosition, sunPos, eyeDirection), 0.0, 10.0);
 
 	//GI
 	/*

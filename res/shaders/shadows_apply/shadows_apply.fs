@@ -98,7 +98,6 @@ vec4 bilateralTexture(sampler2D sample, vec2 position, vec3 normal, float lod){
     vec2 offsetMult = 1.0 / vec2(screenViewportSize.x, screenViewportSize.y);
 
     for (int i = 0; i < NUM_TAPS; i++){
-
         vec2 coord = (float(i + 1)) * fTaps_Poisson[i] * offsetMult + position;
 
         vec3 offsetNormal = decodeNormal(texture(normalBuffer, coord));// texture(normalBuffer, coord, lod).rgb * 2.0 - 1.0;
@@ -149,7 +148,8 @@ void main() {
 	float sl_distanceSquared = sl_distance * sl_distance;
 	float sl_invSquared = 1.0 / sl_distanceSquared;
 	#ifdef shadows
-	vec3 voxelSunlight = textureGammaIn(blockLightmap, vec2(0.0, voxelLight.y)).rgb;
+	//vec3 voxelSunlight = textureGammaIn(blockLightmap, vec2(0.0, voxelLight.y)).rgb;
+	vec3 voxelSunlight = 0.02 * clamp(sl_invSquared - 1.0 / (1.0 + vl_bias), 0.0, 100.0) * vec3(1.0);// * pow(torchColor, vec3(gamma));
 	#else
 	vec3 voxelSunlight = 0.005 * clamp(sl_invSquared - 1.0 / (1.0 + vl_bias), 0.0, 100.0) * vec3(1.0);// * pow(torchColor, vec3(gamma));
 	#endif
@@ -158,15 +158,15 @@ void main() {
 	//float sunVisibility = clamp(1.0 - overcastFactor * 2.0, 0.0, 1.0);
 	//float storminess = clamp(-1.0 + overcastFactor * 2.0, 0.0, 1.0);
 	
-	vec4 gi = vec4(0.0, 0.0, 0.0, 1.0);
+	vec4 gi = vec4(0.0, 0.0, 0.0, 0.0);
 	
 	#ifdef globalIllumination
 	float confidence = texture(giConfidence, screenCoord).x;
 	//gi = texture(giBuffer, screenCoord) / 1.0;
 	gi = bilateralTexture(giBuffer, screenCoord, pixelNormal, 0.0) / 1.0;
-	gi.a = 1.0 - gi.a;
+	//gi.a = 1.0 - gi.a;
 	
-	lightColor.rgb += gi.rgb;
+	lightColor.rgb += gi.rgb * 2.0;
 	#endif
 	
 	vec3 sunLight_g = sunLightColor * pi;//pow(sunColor, vec3(gamma));
@@ -199,7 +199,7 @@ void main() {
 		float sunlightAmount = ( directionalLightning * shadowIllumination * ( mix( shadowIllumination, voxelLight.y, 1-edgeSmoother) )) * clamp(sunPos.y, 0.0, 1.0);
 		
 		lightColor += clamp(sunLight_g * sunlightAmount, 0.0, 4096);
-		lightColor += gi.a * clamp(shadowLight_g * voxelSunlight, 0.0, 4096);
+		lightColor += (1.0 - gi.a) * clamp(shadowLight_g * voxelSunlight, 0.0, 4096);
 	#else
 		// Simple lightning for lower end machines
 		float flatShading = 0.0;
@@ -208,7 +208,7 @@ void main() {
 		flatShading += 0.5 * clamp(dot(/*vec3(0.0, 1.0, 0.0)*/sunPos, normalWorldSpace), 0.0, 1.0);
 		
 		lightColor += clamp(sunLight_g * flatShading * voxelSunlight, 0.0, 4096);
-		lightColor += gi.a * clamp(shadowLight_g * voxelSunlight, 0.0, 4096);
+		lightColor += (1.0 - gi.a) * clamp(shadowLight_g * voxelSunlight, 0.0, 4096);
 	#endif
 	
 	//Adds block light
@@ -231,6 +231,6 @@ void main() {
 	fragColor = vec4(albedoColor.rgb * lightColor.rgb, 1.0);
 	
 	
-	fragColor = vec4(gi.rgb, 1.0);
+	//fragColor = vec4(gi.rgb, 1.0);
 	//fragColor = vec4(vec3(gi.a), 1.0);
 }

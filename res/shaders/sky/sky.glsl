@@ -44,7 +44,7 @@ float lDotU = dot(normalize(sunPos), vec3(0.0, -1.0, 0.0)); //float lDotV = dot(
 float opticalSunDepth = gDepth(lDotU);	//Get depth from lightpoint
 vec3 sunAbsorb    = aAbs(rCoeff, mCoeff, opticalSunDepth);
 
-#define foggyness clamp(aWeather * 2.0, 0.0, 1.0)
+#define foggyness clamp(overcastFactor * overcastFactor * 4.0, 0.0, 1.0)
 
 vec3 getAtmosphericScatteringAmbient(){
 	float uDotV = -1.0; //float lDotV = dot(l, v);
