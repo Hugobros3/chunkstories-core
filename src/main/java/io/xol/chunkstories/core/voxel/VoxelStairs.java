@@ -25,7 +25,7 @@ public class VoxelStairs extends Voxel
 	{
 		super(type);
 		for (int i = 0; i < 8; i++)
-			models[i] = store.models().getVoxelModelByName("stairs.m" + i);
+			models[i] = store.models().getVoxelModel("stairs.m" + i);
 	}
 
 	@Override

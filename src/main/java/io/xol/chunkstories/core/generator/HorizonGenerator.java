@@ -36,10 +36,10 @@ public class HorizonGenerator extends WorldGenerator
 		worldSizeInBlocks = world.getSizeInChunks() * 32;
 		worldEnv = new DefaultWorldEnvironment(world);
 
-		this.STONE_VOXEL = world.getGameContext().getContent().voxels().getVoxelByName("stone");
-		this.WATER_VOXEL = world.getGameContext().getContent().voxels().getVoxelByName("water");
-		this.GROUND_VOXEL = world.getGameContext().getContent().voxels().getVoxelByName("grass");
-		this.UNDERGROUND_VOXEL = world.getGameContext().getContent().voxels().getVoxelByName("dirt");
+		this.STONE_VOXEL = world.getGameContext().getContent().voxels().getVoxel("stone");
+		this.WATER_VOXEL = world.getGameContext().getContent().voxels().getVoxel("water");
+		this.GROUND_VOXEL = world.getGameContext().getContent().voxels().getVoxel("grass");
+		this.UNDERGROUND_VOXEL = world.getGameContext().getContent().voxels().getVoxel("dirt");
 	}
 	
 	@Override

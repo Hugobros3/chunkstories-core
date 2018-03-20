@@ -10,7 +10,7 @@ import io.xol.chunkstories.api.physics.CollisionBox;
 import io.xol.chunkstories.api.rendering.voxel.VoxelRenderer;
 import io.xol.chunkstories.api.voxel.Voxel;
 import io.xol.chunkstories.api.voxel.VoxelDefinition;
-import io.xol.chunkstories.api.voxel.VoxelSides;
+import io.xol.chunkstories.api.voxel.VoxelSide;
 import io.xol.chunkstories.api.voxel.models.VoxelModel;
 import io.xol.chunkstories.api.world.cell.CellData;
 import io.xol.chunkstories.core.voxel.renderers.SmoothStepVoxelRenderer;
@@ -24,7 +24,7 @@ public class Voxel8Steps extends Voxel
 	{
 		super(type);
 		for(int i = 0; i < 8; i++)
-			steps[i] = store().models().getVoxelModelByName("steps.m"+i);
+			steps[i] = store().models().getVoxelModel("steps.m"+i);
 		
 		nextGen = new SmoothStepVoxelRenderer(this, steps);
 	}
@@ -37,10 +37,10 @@ public class Voxel8Steps extends Voxel
 	}
 
 	@Override
-	public boolean isFaceOpaque(VoxelSides side, int data) {
-		if(side == VoxelSides.BOTTOM)
+	public boolean isFaceOpaque(VoxelSide side, int data) {
+		if(side == VoxelSide.BOTTOM)
 			return true;
-		if(side == VoxelSides.TOP)
+		if(side == VoxelSide.TOP)
 			return true;
 		
 		return super.isFaceOpaque(side, data);

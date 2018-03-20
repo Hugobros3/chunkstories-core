@@ -29,7 +29,7 @@ import io.xol.chunkstories.api.rendering.RenderingInterface;
 import io.xol.chunkstories.api.rendering.item.ItemRenderer;
 import io.xol.chunkstories.api.sound.SoundSource.Mode;
 import io.xol.chunkstories.api.voxel.Voxel;
-import io.xol.chunkstories.api.voxel.materials.Material;
+import io.xol.chunkstories.api.voxel.materials.VoxelMaterial;
 import io.xol.chunkstories.api.world.World;
 import io.xol.chunkstories.api.world.World.WorldCell;
 import io.xol.chunkstories.api.world.WorldMaster;
@@ -127,7 +127,7 @@ public class ItemMiningTool extends Item {
 									}
 
 									EntityGroundItem thrownItem = (EntityGroundItem) getDefinition().store().parent().entities()
-											.getEntityTypeByName("groundItem").create(itemSpawnLocation);
+											.getEntityDefinition("groundItem").create(itemSpawnLocation);
 									thrownItem.positionComponent.setPosition(itemSpawnLocation);
 									thrownItem.velocityComponent.setVelocity(new Vector3d(Math.random() * 0.125 - 0.0625, 0.1, Math.random() * 0.125 - 0.0625));
 									thrownItem.setItemPile(droppedItemPile);
@@ -219,7 +219,7 @@ public class ItemMiningTool extends Item {
 
 		public final CellData context;
 		public final Voxel voxel;
-		public final Material material;
+		public final VoxelMaterial material;
 		public final Location loc;
 		// public final int startId;
 		public float progress;

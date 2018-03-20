@@ -8,7 +8,7 @@ package io.xol.chunkstories.core.voxel;
 
 import io.xol.chunkstories.api.voxel.Voxel;
 import io.xol.chunkstories.api.voxel.VoxelDefinition;
-import io.xol.chunkstories.api.voxel.VoxelSides;
+import io.xol.chunkstories.api.voxel.VoxelSide;
 import io.xol.chunkstories.api.voxel.models.VoxelModel;
 import io.xol.chunkstories.api.world.cell.CellData;
 
@@ -22,9 +22,9 @@ public class VoxelRail extends Voxel
 	@Override
 	public VoxelModel getVoxelRenderer(CellData info)
 	{
-		if(info.getNeightborVoxel(VoxelSides.FRONT.ordinal()).sameKind(this))
-			return store.models().getVoxelModelByName("rails.alt");
+		if(info.getNeightborVoxel(VoxelSide.FRONT.ordinal()).sameKind(this))
+			return store.models().getVoxelModel("rails.alt");
 
-		return store.models().getVoxelModelByName("rails.default");
+		return store.models().getVoxelModel("rails.default");
 	}
 }

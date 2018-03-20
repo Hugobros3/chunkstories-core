@@ -18,7 +18,7 @@ import io.xol.chunkstories.api.item.inventory.Inventory;
 import io.xol.chunkstories.api.player.Player;
 import io.xol.chunkstories.api.voxel.Voxel;
 import io.xol.chunkstories.api.voxel.VoxelDefinition;
-import io.xol.chunkstories.api.voxel.VoxelSides;
+import io.xol.chunkstories.api.voxel.VoxelSide;
 import io.xol.chunkstories.api.voxel.components.VoxelComponent;
 import io.xol.chunkstories.api.voxel.components.VoxelInventoryComponent;
 import io.xol.chunkstories.api.voxel.textures.VoxelTexture;
@@ -38,9 +38,9 @@ public class VoxelChest extends Voxel
 	{
 		super(type);
 		
-		frontTexture = store.textures().getVoxelTextureByName(getName() + "_front");
-		sideTexture = store.textures().getVoxelTextureByName(getName() + "_side");
-		topTexture = store.textures().getVoxelTextureByName(getName() + "_top");
+		frontTexture = store.textures().getVoxelTexture(getName() + "_front");
+		sideTexture = store.textures().getVoxelTexture(getName() + "_side");
+		topTexture = store.textures().getVoxelTexture(getName() + "_top");
 	}
 
 	@Override
@@ -77,11 +77,11 @@ public class VoxelChest extends Voxel
 	}
 
 	@Override
-	public VoxelTexture getVoxelTexture(VoxelSides side, CellData info)
+	public VoxelTexture getVoxelTexture(VoxelSide side, CellData info)
 	{
-		VoxelSides actualSide = VoxelSides.getSideMcStairsChestFurnace(info.getMetaData());
+		VoxelSide actualSide = VoxelSide.getSideMcStairsChestFurnace(info.getMetaData());
 		
-		if(side.equals(VoxelSides.TOP))
+		if(side.equals(VoxelSide.TOP))
 			return topTexture;
 		
 		if(side.equals(actualSide))

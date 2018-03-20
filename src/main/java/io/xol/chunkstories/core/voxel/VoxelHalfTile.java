@@ -9,7 +9,7 @@ package io.xol.chunkstories.core.voxel;
 import io.xol.chunkstories.api.physics.CollisionBox;
 import io.xol.chunkstories.api.voxel.Voxel;
 import io.xol.chunkstories.api.voxel.VoxelDefinition;
-import io.xol.chunkstories.api.voxel.VoxelSides;
+import io.xol.chunkstories.api.voxel.VoxelSide;
 import io.xol.chunkstories.api.voxel.models.VoxelModel;
 import io.xol.chunkstories.api.world.cell.CellData;
 
@@ -22,8 +22,8 @@ public class VoxelHalfTile extends Voxel
 	public VoxelHalfTile(VoxelDefinition type)
 	{
 		super(type);
-		bot = store.models().getVoxelModelByName("halftile.bottom");
-		top = store.models().getVoxelModelByName("halftile.top");
+		bot = store.models().getVoxelModel("halftile.bottom");
+		top = store.models().getVoxelModel("halftile.top");
 	}
 
 	boolean bottomOrTop(int meta)
@@ -53,7 +53,7 @@ public class VoxelHalfTile extends Voxel
 	}
 	
 	@Override
-	public int getLightLevelModifier(CellData dataFrom, CellData dataTo, VoxelSides side2)
+	public int getLightLevelModifier(CellData dataFrom, CellData dataTo, VoxelSide side2)
 	{
 		int side = side2.ordinal();
 		

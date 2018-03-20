@@ -64,7 +64,7 @@ public class VoxelFence extends Voxel
 		else if(connectBack)
 			type = "back";
 		
-		return store.models().getVoxelModelByName("wood_fence"+"."+type);
+		return store.models().getVoxelModel("wood_fence"+"."+type);
 	}
 	
 	@Override

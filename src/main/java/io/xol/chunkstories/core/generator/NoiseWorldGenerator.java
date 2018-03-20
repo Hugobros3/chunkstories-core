@@ -37,8 +37,8 @@ public class NoiseWorldGenerator extends WorldGenerator
 		
 		worldEnv = new DefaultWorldEnvironment(world);
 		
-		this.STONE_VOXEL = world.getGameContext().getContent().voxels().getVoxelByName("stone");
-		this.WATER_VOXEL = world.getGameContext().getContent().voxels().getVoxelByName("water");
+		this.STONE_VOXEL = world.getGameContext().getContent().voxels().getVoxel("stone");
+		this.WATER_VOXEL = world.getGameContext().getContent().voxels().getVoxel("water");
 	}
 
 	@Override

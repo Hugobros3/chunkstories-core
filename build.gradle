@@ -32,13 +32,13 @@ repositories {
 
 description = 'The base content chunkstories is built on.'
 group = 'io.xol.chunkstories'
-version = '127'
+version = '128'
 
 sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
 
 ext {
-	apiRevisionBuiltAgainst = '119'
+	apiRevisionBuiltAgainst = '120'
 	useEclipseCompiler = true
 }
 

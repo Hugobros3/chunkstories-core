@@ -50,7 +50,7 @@ public class ItemsLogicListener implements Listener {
 			}
 		}
 		
-		EntityGroundItem thrownItem = (EntityGroundItem) core.getPluginExecutionContext().getContent().entities().getEntityTypeByName("groundItem").create(throwLocation);
+		EntityGroundItem thrownItem = (EntityGroundItem) core.getPluginExecutionContext().getContent().entities().getEntityDefinition("groundItem").create(throwLocation);
 		thrownItem.positionComponent.setPosition(throwLocation);
 		thrownItem.velocityComponent.setVelocity(throwForce);
 		thrownItem.setItemPile(event.getItemPile());

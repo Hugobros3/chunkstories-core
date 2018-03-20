@@ -16,10 +16,9 @@ import io.xol.chunkstories.api.item.inventory.ItemPile;
 import io.xol.chunkstories.api.physics.CollisionBox;
 import io.xol.chunkstories.api.sound.SoundSource.Mode;
 import io.xol.chunkstories.api.voxel.Voxel;
-import io.xol.chunkstories.api.voxel.VoxelCustomIcon;
 import io.xol.chunkstories.api.voxel.VoxelDefinition;
 import io.xol.chunkstories.api.voxel.VoxelFormat;
-import io.xol.chunkstories.api.voxel.VoxelSides;
+import io.xol.chunkstories.api.voxel.VoxelSide;
 import io.xol.chunkstories.api.voxel.models.VoxelModel;
 import io.xol.chunkstories.api.voxel.textures.VoxelTexture;
 import io.xol.chunkstories.api.world.World;
@@ -32,7 +31,7 @@ import io.xol.chunkstories.api.world.chunk.Chunk.ChunkCell;
 /**
  * 2-blocks tall door Requires two consecutive voxel ids, x being lower, x+1 top, the top part should be suffixed of _top
  */
-public class VoxelDoor extends Voxel implements VoxelCustomIcon
+public class VoxelDoor extends Voxel// implements VoxelCustomIcon
 {
 	VoxelTexture doorTexture;
 
@@ -47,30 +46,30 @@ public class VoxelDoor extends Voxel implements VoxelCustomIcon
 		top = getName().endsWith("_top");
 
 		if (top)
-			doorTexture = store.textures().getVoxelTextureByName(getName().replace("_top", "") + "_upper");
+			doorTexture = store.textures().getVoxelTexture(getName().replace("_top", "") + "_upper");
 		else
-			doorTexture = store.textures().getVoxelTextureByName(getName() + "_lower");
+			doorTexture = store.textures().getVoxelTexture(getName() + "_lower");
 
 		for (int i = 0; i < 8; i++)
-			models[i] = store.models().getVoxelModelByName("door.m" + i);
+			models[i] = store.models().getVoxelModel("door.m" + i);
 	}
 
 	public Voxel getUpperPart() {
 		if(top)
 			return this;
 		else
-			return store().getVoxelByName(getName()+"_top");
+			return store().getVoxel(getName()+"_top");
 	}
 	
 	public Voxel getLowerPart() {
 		if(top) 
-			return store.getVoxelByName(getName().substring(0, getName().length() - 4));
+			return store.getVoxel(getName().substring(0, getName().length() - 4));
 		else
 			return this;
 	}
 	
 	@Override
-	public VoxelTexture getVoxelTexture(VoxelSides side, CellData info)
+	public VoxelTexture getVoxelTexture(VoxelSide side, CellData info)
 	{
 		return doorTexture;
 	}
@@ -261,7 +260,7 @@ public class VoxelDoor extends Voxel implements VoxelCustomIcon
 		int facingPassed = (cell.getMetaData() >> 2) & 0x3;
 
 		//Default face is given by passed metadata
-		VoxelSides doorSideFacing = VoxelSides.values()[facingPassed];
+		VoxelSide doorSideFacing = VoxelSide.values()[facingPassed];
 
 		//Determine side if placed by an entity and not internal code
 		if (cause != null && cause instanceof Entity)
@@ -272,16 +271,16 @@ public class VoxelDoor extends Voxel implements VoxelCustomIcon
 			if (Math.abs(dx) > Math.abs(dz))
 			{
 				if (dx > 0)
-					doorSideFacing = VoxelSides.RIGHT;
+					doorSideFacing = VoxelSide.RIGHT;
 				else
-					doorSideFacing = VoxelSides.LEFT;
+					doorSideFacing = VoxelSide.LEFT;
 			}
 			else
 			{
 				if (dz > 0)
-					doorSideFacing = VoxelSides.FRONT;
+					doorSideFacing = VoxelSide.FRONT;
 				else
-					doorSideFacing = VoxelSides.BACK;
+					doorSideFacing = VoxelSide.BACK;
 			}
 
 			//If there is an adjacent one, set the hinge to right
@@ -315,7 +314,7 @@ public class VoxelDoor extends Voxel implements VoxelCustomIcon
 		world.pokeSimple(x, y + 1, z, this.getUpperPart(), -1, -1, cell.getMetaData());
 	}
 
-	public static int computeMeta(boolean isOpen, boolean hingeSide, VoxelSides doorFacingSide)
+	public static int computeMeta(boolean isOpen, boolean hingeSide, VoxelSide doorFacingSide)
 	{
 		return computeMeta(isOpen, hingeSide, doorFacingSide.ordinal());
 	}
@@ -364,7 +363,7 @@ public class VoxelDoor extends Voxel implements VoxelCustomIcon
 			return new ItemPile[] {};
 
 
-		ItemVoxel itemVoxel = (ItemVoxel)store.parent().items().getItemTypeByName("item_voxel_1x2").newItem();
+		ItemVoxel itemVoxel = (ItemVoxel)store.parent().items().getItemDefinition("item_voxel_1x2").newItem();
 		itemVoxel.voxel = this;		
 		
 		return new ItemPile[] { new ItemPile(itemVoxel) };

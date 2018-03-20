@@ -14,8 +14,8 @@ import io.xol.chunkstories.api.rendering.world.chunk.ChunkMeshDataSubtypes.Shadi
 import io.xol.chunkstories.api.rendering.world.chunk.ChunkRenderer;
 import io.xol.chunkstories.api.rendering.world.chunk.ChunkRenderer.ChunkRenderContext;
 import io.xol.chunkstories.api.voxel.Voxel;
-import io.xol.chunkstories.api.voxel.VoxelSides;
-import io.xol.chunkstories.api.voxel.VoxelSides.Corners;
+import io.xol.chunkstories.api.voxel.VoxelSide;
+import io.xol.chunkstories.api.voxel.VoxelSide.Corners;
 import io.xol.chunkstories.api.voxel.textures.VoxelTexture;
 import io.xol.chunkstories.api.world.cell.CellData;
 import io.xol.chunkstories.api.world.chunk.Chunk;
@@ -45,32 +45,32 @@ public class DefaultVoxelRenderer implements VoxelRenderer
 		
 		if (shallBuildWallArround(cell, 5) && (k != 0 || bakingContext.isBottomChunkLoaded()))
 		{
-			addQuadBottom(chunk, bakingContext, vbc, i, k, j, vox.getVoxelTexture(VoxelSides.BOTTOM, cell), wavyVegetationFlag);
+			addQuadBottom(chunk, bakingContext, vbc, i, k, j, vox.getVoxelTexture(VoxelSide.BOTTOM, cell), wavyVegetationFlag);
 			vertices += 6;
 		}
 		if (shallBuildWallArround(cell, 4) && (k != 31 || bakingContext.isTopChunkLoaded()))
 		{
-			addQuadTop(chunk, bakingContext, vbc, i, k, j, vox.getVoxelTexture(VoxelSides.TOP, cell), wavyVegetationFlag);
+			addQuadTop(chunk, bakingContext, vbc, i, k, j, vox.getVoxelTexture(VoxelSide.TOP, cell), wavyVegetationFlag);
 			vertices += 6;
 		}
 		if (shallBuildWallArround(cell, 2) && (i != 31 || bakingContext.isRightChunkLoaded()))
 		{
-			addQuadRight(chunk, bakingContext, vbc, i, k, j, vox.getVoxelTexture(VoxelSides.RIGHT, cell), wavyVegetationFlag);
+			addQuadRight(chunk, bakingContext, vbc, i, k, j, vox.getVoxelTexture(VoxelSide.RIGHT, cell), wavyVegetationFlag);
 			vertices += 6;
 		}
 		if (shallBuildWallArround(cell, 0) && (i != 0 || bakingContext.isLeftChunkLoaded()))
 		{
-			addQuadLeft(chunk, bakingContext, vbc, i, k, j, vox.getVoxelTexture(VoxelSides.LEFT, cell), wavyVegetationFlag);
+			addQuadLeft(chunk, bakingContext, vbc, i, k, j, vox.getVoxelTexture(VoxelSide.LEFT, cell), wavyVegetationFlag);
 			vertices += 6;
 		}
 		if (shallBuildWallArround(cell, 1) && (j != 31 || bakingContext.isFrontChunkLoaded()))
 		{
-			addQuadFront(chunk, bakingContext, vbc, i, k, j, vox.getVoxelTexture(VoxelSides.FRONT, cell), wavyVegetationFlag);
+			addQuadFront(chunk, bakingContext, vbc, i, k, j, vox.getVoxelTexture(VoxelSide.FRONT, cell), wavyVegetationFlag);
 			vertices += 6;
 		}
 		if (shallBuildWallArround(cell, 3) && (j != 0 || bakingContext.isBackChunkLoaded()))
 		{
-			addQuadBack(chunk, bakingContext, vbc, i, k, j, vox.getVoxelTexture(VoxelSides.BACK, cell), wavyVegetationFlag);
+			addQuadBack(chunk, bakingContext, vbc, i, k, j, vox.getVoxelTexture(VoxelSide.BACK, cell), wavyVegetationFlag);
 			vertices += 6;
 		}
 		
@@ -312,7 +312,7 @@ public class DefaultVoxelRenderer implements VoxelRenderer
 			return true;
 		
 		//Facing.isSideOpaque
-		if (!facing.isFaceOpaque(VoxelSides.values()[face].getOppositeSide(), renderInfo.getNeightborMetadata(face)) && (!voxel.sameKind(facing) || !voxel.getDefinition().isSelfOpaque()))
+		if (!facing.isFaceOpaque(VoxelSide.values()[face].getOppositeSide(), renderInfo.getNeightborMetadata(face)) && (!voxel.sameKind(facing) || !voxel.getDefinition().isSelfOpaque()))
 			return true;
 		return false;
 	}

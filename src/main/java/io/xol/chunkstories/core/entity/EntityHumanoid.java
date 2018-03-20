@@ -32,7 +32,7 @@ import io.xol.chunkstories.api.rendering.entity.RenderingIterator;
 import io.xol.chunkstories.api.rendering.textures.Texture2D;
 import io.xol.chunkstories.api.sound.SoundSource.Mode;
 import io.xol.chunkstories.api.voxel.Voxel;
-import io.xol.chunkstories.api.voxel.materials.Material;
+import io.xol.chunkstories.api.voxel.materials.VoxelMaterial;
 import io.xol.chunkstories.api.world.WorldClient;
 import io.xol.chunkstories.api.world.WorldMaster;
 import io.xol.chunkstories.api.world.cell.CellData;
@@ -419,7 +419,7 @@ public abstract class EntityHumanoid extends EntityLivingImplementation
 		if (voxelStandingOn == null || !voxelStandingOn.getDefinition().isSolid() && !voxelStandingOn.getDefinition().isLiquid())
 			return;
 
-		Material material = voxelStandingOn.getMaterial();
+		VoxelMaterial material = voxelStandingOn.getMaterial();
 
 		if (justJumped && !inWater)
 		{

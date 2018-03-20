@@ -8,7 +8,7 @@ package io.xol.chunkstories.core.converter.mappings;
 
 import io.xol.chunkstories.api.converter.mappings.NonTrivialMapper;
 import io.xol.chunkstories.api.voxel.Voxel;
-import io.xol.chunkstories.api.voxel.VoxelSides;
+import io.xol.chunkstories.api.voxel.VoxelSide;
 import io.xol.chunkstories.api.world.World;
 import io.xol.chunkstories.api.world.chunk.Chunk;
 import io.xol.chunkstories.core.voxel.VoxelDoor;
@@ -38,7 +38,7 @@ public class Door extends NonTrivialMapper {
 			int hingeSide = upperMeta & 0x01;
 			int direction = minecraftMetaData & 0x3;
 			
-			csWorld.pokeSimple(csX, csY, csZ, voxel, -1, -1, VoxelDoor.computeMeta(open == 1, hingeSide == 1, VoxelSides.getSideMcDoor(direction)));
+			csWorld.pokeSimple(csX, csY, csZ, voxel, -1, -1, VoxelDoor.computeMeta(open == 1, hingeSide == 1, VoxelSide.getSideMcDoor(direction)));
 		}
 		else
 			return;

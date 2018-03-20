@@ -15,7 +15,6 @@ import io.xol.chunkstories.api.exceptions.world.voxel.IllegalBlockModificationEx
 import io.xol.chunkstories.api.input.Input;
 import io.xol.chunkstories.api.rendering.voxel.VoxelDynamicRenderer;
 import io.xol.chunkstories.api.voxel.Voxel;
-import io.xol.chunkstories.api.voxel.VoxelCustomIcon;
 import io.xol.chunkstories.api.voxel.VoxelDefinition;
 import io.xol.chunkstories.api.world.cell.CellData;
 import io.xol.chunkstories.api.world.cell.FutureCell;
@@ -28,7 +27,7 @@ import io.xol.chunkstories.core.voxel.renderers.SignRenderer;
 //TODO implement a gui when placing a sign to actually set the text
 //currently only the map converter can make signs have non-default text
 //TODO expose the gui to the api to enable this
-public class VoxelSign extends Voxel implements VoxelCustomIcon
+public class VoxelSign extends Voxel// implements VoxelCustomIcon
 {
 	final SignRenderer signRenderer;
 	

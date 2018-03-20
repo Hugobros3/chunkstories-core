@@ -16,12 +16,12 @@ import org.joml.Vector3fc;
 
 import io.xol.chunkstories.api.Location;
 import io.xol.chunkstories.api.client.ClientContent;
-import io.xol.chunkstories.api.rendering.Primitive;
 import io.xol.chunkstories.api.rendering.RenderingInterface;
 import io.xol.chunkstories.api.rendering.StateMachine.BlendMode;
 import io.xol.chunkstories.api.rendering.StateMachine.CullingMode;
 import io.xol.chunkstories.api.rendering.shader.Shader;
 import io.xol.chunkstories.api.rendering.textures.Texture2D;
+import io.xol.chunkstories.api.rendering.vertex.Primitive;
 import io.xol.chunkstories.api.rendering.vertex.VertexBuffer;
 import io.xol.chunkstories.api.rendering.vertex.VertexFormat;
 import io.xol.chunkstories.api.rendering.voxel.VoxelBakerCubic;
@@ -31,7 +31,7 @@ import io.xol.chunkstories.api.rendering.world.chunk.ChunkMeshDataSubtypes.LodLe
 import io.xol.chunkstories.api.rendering.world.chunk.ChunkMeshDataSubtypes.ShadingType;
 import io.xol.chunkstories.api.rendering.world.chunk.ChunkRenderer;
 import io.xol.chunkstories.api.rendering.world.chunk.vertexlayout.BaseLayoutBaker;
-import io.xol.chunkstories.api.voxel.VoxelSides.Corners;
+import io.xol.chunkstories.api.voxel.VoxelSide.Corners;
 import io.xol.chunkstories.api.world.WorldClient;
 import io.xol.chunkstories.api.world.cell.CellData;
 import io.xol.chunkstories.core.item.ItemMiningTool.MiningProgress;

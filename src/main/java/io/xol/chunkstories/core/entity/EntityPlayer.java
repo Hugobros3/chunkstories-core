@@ -745,7 +745,7 @@ EntityWorldModifier
 						if (!ctx.getVoxel().isAir())
 						{
 							//Spawn new itemPile in his inventory
-							ItemVoxel item = (ItemVoxel) world.getGameContext().getContent().items().getItemTypeByName("item_voxel").newItem();
+							ItemVoxel item = (ItemVoxel) world.getGameContext().getContent().items().getItemDefinition("item_voxel").newItem();
 							item.voxel = ctx.getVoxel();
 							item.voxelMeta = ctx.getMetaData();
 

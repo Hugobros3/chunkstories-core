@@ -66,7 +66,7 @@ public class VoxelPane extends Voxel
 		else
 			type = "allDir";
 
-		return store.models().getVoxelModelByName("pane" + "." + type);
+		return store.models().getVoxelModel("pane" + "." + type);
 	}
 
 	@Override

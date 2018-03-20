@@ -17,8 +17,8 @@ import io.xol.chunkstories.api.entity.EntityLiving.HitBox;
 import io.xol.chunkstories.api.entity.interfaces.EntityAnimated;
 import io.xol.chunkstories.api.entity.interfaces.EntityControllable;
 import io.xol.chunkstories.api.physics.CollisionBox;
-import io.xol.chunkstories.api.rendering.Primitive;
 import io.xol.chunkstories.api.rendering.RenderingInterface;
+import io.xol.chunkstories.api.rendering.vertex.Primitive;
 import io.xol.chunkstories.api.rendering.vertex.VertexFormat;
 import io.xol.chunkstories.api.world.WorldClient;
 

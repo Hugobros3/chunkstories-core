@@ -12,12 +12,12 @@ import java.nio.ByteOrder;
 import org.joml.Vector3f;
 
 import io.xol.chunkstories.api.math.Math2;
-import io.xol.chunkstories.api.rendering.Primitive;
 import io.xol.chunkstories.api.rendering.RenderingInterface;
 import io.xol.chunkstories.api.rendering.StateMachine.BlendMode;
 import io.xol.chunkstories.api.rendering.StateMachine.CullingMode;
 import io.xol.chunkstories.api.rendering.StateMachine.DepthTestMode;
 import io.xol.chunkstories.api.rendering.shader.Shader;
+import io.xol.chunkstories.api.rendering.vertex.Primitive;
 import io.xol.chunkstories.api.rendering.vertex.VertexBuffer;
 import io.xol.chunkstories.api.rendering.vertex.VertexFormat;
 import io.xol.chunkstories.api.rendering.world.SkyRenderer;

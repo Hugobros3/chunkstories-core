@@ -19,8 +19,8 @@ public class VoxelLiquid extends Voxel
 	public VoxelLiquid(VoxelDefinition type)
 	{
 		super(type);
-		inside = new VoxelWaterRenderer(store.models().getVoxelModelByName("water.inside"));
-		surface = new VoxelWaterRenderer(store.models().getVoxelModelByName("water.surface"));
+		inside = new VoxelWaterRenderer(store.models().getVoxelModel("water.inside"));
+		surface = new VoxelWaterRenderer(store.models().getVoxelModel("water.surface"));
 	}
 
 	@Override

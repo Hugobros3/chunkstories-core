@@ -20,7 +20,7 @@ public class VoxelVine extends Voxel implements VoxelClimbable
 	{
 		super(type);
 		for (int i = 0; i < 4; i++)
-			models[i] = store.models().getVoxelModelByName("dekal.m" + i);
+			models[i] = store.models().getVoxelModel("dekal.m" + i);
 	}
 
 	@Override

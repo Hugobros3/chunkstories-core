@@ -64,7 +64,7 @@ public class VoxelStoneWall extends Voxel
 		else if(connectBack)
 			type = "back";
 		
-		return store.models().getVoxelModelByName("stone_wall"+"."+type);
+		return store.models().getVoxelModel("stone_wall"+"."+type);
 	}
 	
 	@Override

@@ -14,7 +14,7 @@ import io.xol.chunkstories.api.rendering.world.chunk.ChunkRenderer;
 import io.xol.chunkstories.api.rendering.world.chunk.ChunkRenderer.ChunkRenderContext;
 import io.xol.chunkstories.api.voxel.Voxel;
 import io.xol.chunkstories.api.voxel.VoxelFormat;
-import io.xol.chunkstories.api.voxel.VoxelSides;
+import io.xol.chunkstories.api.voxel.VoxelSide;
 import io.xol.chunkstories.api.voxel.models.VoxelModel;
 import io.xol.chunkstories.api.voxel.textures.VoxelTexture;
 import io.xol.chunkstories.api.world.World;
@@ -68,7 +68,7 @@ public class SmoothStepVoxelRenderer implements VoxelRenderer {
 		//if(true)
 		//	return old(voxelInformations).renderInto(chunkRenderer, bakingContext, chunk, voxelInformations);
 		
-		VoxelTexture texture = voxel.getVoxelTexture(VoxelSides.TOP, voxelInformations);
+		VoxelTexture texture = voxel.getVoxelTexture(VoxelSide.TOP, voxelInformations);
 		
 		baker.usingTexture(texture);
 		

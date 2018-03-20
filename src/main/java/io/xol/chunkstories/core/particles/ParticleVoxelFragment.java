@@ -18,7 +18,7 @@ import io.xol.chunkstories.api.particles.ParticleTypeHandler;
 import io.xol.chunkstories.api.particles.ParticlesRenderer;
 import io.xol.chunkstories.api.rendering.RenderingInterface;
 import io.xol.chunkstories.api.rendering.textures.Texture2D;
-import io.xol.chunkstories.api.voxel.VoxelSides;
+import io.xol.chunkstories.api.voxel.VoxelSide;
 import io.xol.chunkstories.api.voxel.textures.VoxelTexture;
 import io.xol.chunkstories.api.world.World;
 import io.xol.chunkstories.api.world.cell.CellData;
@@ -46,7 +46,7 @@ public class ParticleVoxelFragment extends ParticleTypeHandler
 		{
 			super(x, y, z);
 			
-			tex = cell.getTexture(VoxelSides.LEFT);
+			tex = cell.getTexture(VoxelSide.LEFT);
 			
 			int qx = (int) Math.floor(Math.random() * 4.0);
 			int rx = qx + 1;

@@ -8,7 +8,6 @@ package io.xol.chunkstories.core.rendering.passes.gi;
 
 import java.nio.ByteBuffer;
 
-import org.joml.Vector3f;
 import org.joml.Vector4f;
 
 import io.xol.chunkstories.api.rendering.RenderingInterface;
@@ -17,7 +16,7 @@ import io.xol.chunkstories.api.rendering.textures.Texture3D;
 import io.xol.chunkstories.api.rendering.textures.TextureFormat;
 import io.xol.chunkstories.api.rendering.world.WorldRenderer;
 import io.xol.chunkstories.api.voxel.Voxel;
-import io.xol.chunkstories.api.voxel.VoxelSides;
+import io.xol.chunkstories.api.voxel.VoxelSide;
 import io.xol.chunkstories.api.world.World;
 import io.xol.chunkstories.api.world.cell.CellData;
 import io.xol.chunkstories.api.world.chunk.Chunk;
@@ -94,7 +93,7 @@ public class NearbyVoxelsVolumeTexture {
 												(!voxel.getDefinition().isSolid() && !voxel.getDefinition().isLiquid() && voxel.getDefinition().getEmittedLightLevel() == 0)) {
 											bb.put(empty);
 										} else {
-											col.set(voxel.getVoxelTexture(VoxelSides.TOP, cell).getColor());
+											col.set(voxel.getVoxelTexture(VoxelSide.TOP, cell).getColor());
 											if(col.w() < 1.0) {
 												col.mul(new Vector4f(0.1f, 0.5f, 0.1f, 1.0f));
 											}
