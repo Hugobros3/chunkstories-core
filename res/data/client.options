@@ -95,6 +95,12 @@ option client.game.log-policy
 	default: undefined
 end
 
+option client.game.last-server
+	type: string
+	default: enter an ip here
+	hidden: true
+end
+
 # Debug nonsense
 
 option client.debug.debugGBuffers

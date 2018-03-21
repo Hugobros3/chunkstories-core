@@ -153,8 +153,10 @@ void main() {
 	//fragColor.w = 1.0;
 	
 	//Volumetric light
+	#ifdef shadows
 	compositeColor.rgb += clamp(10.0 * ComputeVolumetricLight(compositeColor.rgb, cameraSpacePosition, sunPos, eyeDirection), 0.0, 10.0);
-
+	#endif
+	
 	//GI
 	/*
 	vec4 gi = giMain();
