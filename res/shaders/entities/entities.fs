@@ -81,13 +81,11 @@ void main(){
 	
 	vec4 material = texture(materialTexture, texcoord);
 	
-	//if(useColorIn > 0.0)
-	//	alpha *= colorPassed.a;
-	
 	if(alpha < 0.5)
 		discard;
-	else if(alpha < 1)
-		baseColor *= vegetationColor;
+	else if(alpha < 1) {
+		baseColor *= vec3(0.2, 0.8, 0.2);
+	}
 	
 	//Rain makes shit glint
 	float spec = rainWetness * fresnelTerm;
