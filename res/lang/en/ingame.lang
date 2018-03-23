@@ -1,1 +1,4 @@
 ingame.pause Ingame menu
+
+ingame.respawn Respawn
+ingame.exit Exit to menu

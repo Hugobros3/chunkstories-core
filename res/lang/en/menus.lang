@@ -12,6 +12,8 @@ menu.singleplayer Singleplayer
 menu.serverbrowser Multiplayer
 menu.quit Quit
 
+menu.ok Ok
+
 connection.connect Connect
 
 login.username Username
