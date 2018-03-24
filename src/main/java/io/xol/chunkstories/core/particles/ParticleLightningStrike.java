@@ -52,7 +52,7 @@ public class ParticleLightningStrike extends ParticleTypeHandler
 				Content content = ParticleLightningStrike.this.getType().store().parent();
 				if(content instanceof ClientContent) {
 					ClientContent clientContent = (ClientContent)content;
-					LocalPlayer player = clientContent.getClient().getPlayer();
+					LocalPlayer player = clientContent.getContext().getPlayer();
 					
 					Entity entity = player.getControlledEntity();
 					if(entity != null) {
