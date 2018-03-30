@@ -109,28 +109,9 @@ public class GBuffersOpaquePass extends RenderPass {
 			renderingInterface.setObjectMatrix(new Matrix4f());
 			
 			worldRenderer.getChunksRenderer().renderChunks(renderingInterface);
-			
-			// Select shader
-			Shader entitiesShader = renderingInterface.useShader("entities");
-
-			entitiesShader.setUniform1f("viewDistance", renderingInterface.getClient().getConfiguration().getIntOption("client.rendering.viewDistance"));
-			//entitiesShader.setUniform1f("shadowVisiblity", shadower.getShadowVisibility());
-
-			renderingInterface.bindTexture2D("lightColors", renderingInterface.textures().getTexture("./textures/environement/light.png"));
-			entitiesShader.setUniform3f("blockColor", 1f, 1f, 1f);
-			entitiesShader.setUniform1f("time", worldRenderer.getAnimationTimer());
-
-			entitiesShader.setUniform1f("overcastFactor", world.getWeather());
-			entitiesShader.setUniform1f("wetness", world.getGenerator().getEnvironment().getWorldWetness(renderingInterface.getCamera().getCameraPosition()));
-
-			renderingInterface.currentShader().setUniform1f("useColorIn", 0.0f);
-			renderingInterface.currentShader().setUniform1f("useNormalIn", 1.0f);
-
-			renderingInterface.getCamera().setupShader(entitiesShader);
-
 			worldRenderer.getChunksRenderer().renderChunksExtras(renderingInterface);
-			worldRenderer.getEntitiesRenderer().renderEntities(renderingInterface);
 			
+			worldRenderer.getEntitiesRenderer().renderEntities(renderingInterface);
 			worldRenderer.getParticlesRenderer().renderParticles(renderingInterface);
 		}
 	}

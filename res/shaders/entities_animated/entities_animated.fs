@@ -6,14 +6,12 @@ in vec2 texcoord; // Coordinate
 in vec3 eye; // eye-position
 in vec3 inNormal;
 in vec4 inVertex;
-in vec4 colorPassed;
 in float fresnelTerm;
 in float rainWetness;
 in vec4 vertexColor; // Vertex color : red is for blocklight, green is sunlight
 in vec2 worldLight; //Computed in vertex shader
 in vec4 modelview;
 
-uniform float useColorIn;
 uniform float useNormalIn;
 
 //Diffuse colors
@@ -59,9 +57,6 @@ out uint outMaterial;
 void main(){
 	
 	vec3 normal = inNormal;
-	
-	if(useNormalIn < 1.0)
-		normal = vec3(0.0, 1.0, 0.0);
 		
 	vec3 normalMapped = texture(normalTexture, texcoord).xyz;
     normalMapped = normalMapped * 2.0 - 1.0;
@@ -71,9 +66,6 @@ void main(){
 		
 	//Basic texture color
 	vec3 baseColor = texture(diffuseTexture, texcoord).rgb;
-	
-	if(useColorIn > 0.0)
-		baseColor = colorPassed.rgb;
 	
 	//Texture transparency
 	float alpha = texture(diffuseTexture, texcoord).a;
@@ -95,6 +87,7 @@ void main(){
 	//#endif
 	
 	vec3 finalColor = baseColor;
+	
 	
 	outDiffuseColor = vec4(finalColor, 1.0);
 	outNormal = encodeNormal(normal);

@@ -29,6 +29,7 @@ import io.xol.chunkstories.api.rendering.RenderingInterface;
 import io.xol.chunkstories.api.rendering.entity.EntityRenderable;
 import io.xol.chunkstories.api.rendering.entity.EntityRenderer;
 import io.xol.chunkstories.api.rendering.entity.RenderingIterator;
+import io.xol.chunkstories.api.rendering.shader.Shader;
 import io.xol.chunkstories.api.rendering.textures.Texture2D;
 import io.xol.chunkstories.api.sound.SoundSource.Mode;
 import io.xol.chunkstories.api.voxel.Voxel;
@@ -216,10 +217,9 @@ public abstract class EntityHumanoid extends EntityLivingImplementation
 			}
 			return false;
 		}
-
 	}
 
-	protected class EntityHumanoidRenderer<H extends EntityHumanoid> implements EntityRenderer<H>
+	protected class EntityHumanoidRenderer<H extends EntityHumanoid> extends EntityRenderer<H>
 	{
 		void setupRender(RenderingInterface renderingContext)
 		{
@@ -239,6 +239,17 @@ public abstract class EntityHumanoid extends EntityLivingImplementation
 		@Override
 		public int renderEntities(RenderingInterface renderer, RenderingIterator<H> renderableEntitiesIterator)
 		{
+			boolean shadow = renderer.getCurrentPass().name.startsWith("shadow");
+			Shader shader = /*shadow ? renderer.currentShader() : */renderer.useShader("entities");
+
+			//entitiesShader.setUniform1f("wetness", world.getGenerator().getEnvironment().getWorldWetness(renderer.getCamera().getCameraPosition()));
+
+			renderer.currentShader().setUniform1f("useColorIn", 0.0f);
+			renderer.currentShader().setUniform1f("useNormalIn", 1.0f);
+
+			renderer.getCamera().setupShader(shader);
+			renderer.getWorldRenderer().setupShaderUniforms(shader);
+			
 			setupRender(renderer);
 			
 			int e = 0;

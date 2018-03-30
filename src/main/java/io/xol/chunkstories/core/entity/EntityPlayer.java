@@ -16,6 +16,7 @@ import org.joml.Vector3fc;
 import org.joml.Vector4f;
 
 import io.xol.chunkstories.api.Location;
+import io.xol.chunkstories.api.animation.SkeletalAnimation;
 import io.xol.chunkstories.api.client.LocalPlayer;
 import io.xol.chunkstories.api.entity.Controller;
 import io.xol.chunkstories.api.entity.DamageCause;
@@ -50,6 +51,7 @@ import io.xol.chunkstories.api.rendering.RenderingInterface;
 import io.xol.chunkstories.api.rendering.entity.EntityRenderable;
 import io.xol.chunkstories.api.rendering.entity.EntityRenderer;
 import io.xol.chunkstories.api.rendering.entity.RenderingIterator;
+import io.xol.chunkstories.api.rendering.shader.Shader;
 import io.xol.chunkstories.api.rendering.textures.Texture2D;
 import io.xol.chunkstories.api.sound.SoundSource.Mode;
 import io.xol.chunkstories.api.util.ColorsTools;
@@ -542,9 +544,20 @@ EntityWorldModifier
 		}
 
 		@Override
-		public int renderEntities(RenderingInterface renderingContext, RenderingIterator<H> renderableEntitiesIterator)
+		public int renderEntities(RenderingInterface renderer, RenderingIterator<H> renderableEntitiesIterator)
 		{
-			setupRender(renderingContext);
+			boolean shadow = renderer.getCurrentPass().name.startsWith("shadow");
+			Shader shader = /*shadow ? renderer.currentShader() : */renderer.useShader("entities_animated");
+
+			//entitiesShader.setUniform1f("wetness", world.getGenerator().getEnvironment().getWorldWetness(renderer.getCamera().getCameraPosition()));
+
+			renderer.currentShader().setUniform1f("useColorIn", 0.0f);
+			renderer.currentShader().setUniform1f("useNormalIn", 1.0f);
+
+			renderer.getCamera().setupShader(shader);
+			renderer.getWorldRenderer().setupShaderUniforms(shader);
+			
+			setupRender(renderer);
 			
 			int e = 0;
 
@@ -557,38 +570,41 @@ EntityWorldModifier
 				loc3f.set((float)location.x(), (float)location.y(), (float)location.z());
 				pre3f.set((float)entity.getPredictedLocation().x(), (float)entity.getPredictedLocation().y(), (float)entity.getPredictedLocation().z());
 
-				if (!(renderingContext.getCurrentPass().name.startsWith("shadow") && location.distance(renderingContext.getCamera().getCameraPosition()) > 15f))
+				if (!(renderer.getCurrentPass().name.startsWith("shadow") && location.distance(renderer.getCamera().getCameraPosition()) > 15f))
 				{
-					entity.cachedSkeleton.lodUpdate(renderingContext);
+					entity.cachedSkeleton.lodUpdate(renderer);
 
 					Matrix4f matrix = new Matrix4f();
 					matrix.translate(loc3f);
-					renderingContext.setObjectMatrix(matrix);
+					renderer.setObjectMatrix(matrix);
 
 					//Obtains the data for the block the player is standing inside of, so he can be lit appropriately
 					CellData cell = entity.getWorld().peekSafely(entity.getLocation());
-					renderingContext.currentShader().setUniform2f("worldLightIn", cell.getBlocklight(), cell.getSunlight() );
+					renderer.currentShader().setUniform2f("worldLightIn", cell.getBlocklight(), cell.getSunlight() );
 					
 					variant = ColorsTools.getUniqueColorCode(entity.getName()) % 6;
 
 					//Player textures
-					Texture2D playerTexture = renderingContext.textures().getTexture("./models/variant" + variant + ".png");
+					Texture2D playerTexture = renderer.textures().getTexture("./models/variant" + variant + ".png");
 					playerTexture.setLinearFiltering(false);
 
-					renderingContext.bindAlbedoTexture(playerTexture);
-					renderingContext.bindNormalTexture(renderingContext.textures().getTexture("./textures/normalnormal.png"));
-					renderingContext.bindMaterialTexture(renderingContext.textures().getTexture("./textures/defaultmaterial.png"));
+					renderer.bindAlbedoTexture(playerTexture);
+					renderer.bindNormalTexture(renderer.textures().getTexture("./textures/normalnormal.png"));
+					renderer.bindMaterialTexture(renderer.textures().getTexture("./textures/defaultmaterial.png"));
 
-					renderingContext.meshes().getRenderableMultiPartAnimatableMeshByName("./models/human.obj").render(renderingContext, entity.getAnimatedSkeleton(), System.currentTimeMillis() % 1000000);
-					//animationsData.add(new AnimatableData(location.castToSinglePrecision(), entity.getAnimatedSkeleton(), System.currentTimeMillis() % 1000000, bl, sl));
-			
+					SkeletalAnimation dab = renderer.meshes().parent().getAnimationsLibrary().getAnimation("./animations/human/running.bvh");
+					if(dab != null && !entity.getFlyingComponent().get())
+						renderer.meshes().getRenderableMultiPartAnimatableMeshByName("./models/human.obj").render(renderer, dab, System.currentTimeMillis() % 1000000);
+					
+					//renderer.meshes().getRenderableMultiPartAnimatableMeshByName("./models/human.obj").render(renderer, entity.getAnimatedSkeleton(), System.currentTimeMillis() % 1000000);
+					
 					for(ItemPile aip : entity.armor.getInventory().iterator())
 					{
 						ItemArmor ia = (ItemArmor)aip.getItem();
 						
-						renderingContext.bindAlbedoTexture(renderingContext.textures().getTexture(ia.getOverlayTextureName()));
-						renderingContext.textures().getTexture(ia.getOverlayTextureName()).setLinearFiltering(false);
-						renderingContext.meshes().getRenderableMultiPartAnimatableMeshByName("./models/human_overlay.obj").render(renderingContext, entity.getAnimatedSkeleton(), System.currentTimeMillis() % 1000000, ia.bodyPartsAffected());
+						renderer.bindAlbedoTexture(renderer.textures().getTexture(ia.getOverlayTextureName()));
+						renderer.textures().getTexture(ia.getOverlayTextureName()).setLinearFiltering(false);
+						renderer.meshes().getRenderableMultiPartAnimatableMeshByName("./models/human_overlay.obj").render(renderer, entity.getAnimatedSkeleton(), System.currentTimeMillis() % 1000000, ia.bodyPartsAffected());
 					}
 					
 					ItemPile selectedItemPile = null;
@@ -596,7 +612,7 @@ EntityWorldModifier
 					if (entity instanceof EntityWithSelectedItem)
 						selectedItemPile = ((EntityWithSelectedItem) entity).getSelectedItem();
 
-					renderingContext.currentShader().setUniform3f("objectPosition", new Vector3f(0));
+					renderer.currentShader().setUniform3f("objectPosition", new Vector3f(0));
 
 					if (selectedItemPile != null)
 					{
@@ -606,7 +622,7 @@ EntityWorldModifier
 						itemMatrix.mul(entity.getAnimatedSkeleton().getBoneHierarchyTransformationMatrix("boneItemInHand", System.currentTimeMillis() % 1000000));
 						//Matrix4f.mul(itemMatrix, entity.getAnimatedSkeleton().getBoneHierarchyTransformationMatrix("boneItemInHand", System.currentTimeMillis() % 1000000), itemMatrix);
 
-						selectedItemPile.getItem().getDefinition().getRenderer().renderItemInWorld(renderingContext, selectedItemPile, world, entity.getLocation(), itemMatrix);
+						selectedItemPile.getItem().getDefinition().getRenderer().renderItemInWorld(renderer, selectedItemPile, world, entity.getLocation(), itemMatrix);
 					}
 				}
 				e++;

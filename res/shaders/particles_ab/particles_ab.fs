@@ -8,7 +8,6 @@ in vec3 eye; // eye-position
 //Diffuse colors
 uniform sampler2D diffuseTexture; // diffuse texture
 uniform sampler2D normalTexture; // diffuse texture
-uniform vec3 blockColor;
 
 uniform sampler2D normalMap; // Blocks normal texture atlas
 

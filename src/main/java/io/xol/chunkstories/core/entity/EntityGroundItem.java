@@ -21,6 +21,7 @@ import io.xol.chunkstories.api.rendering.RenderingInterface;
 import io.xol.chunkstories.api.rendering.entity.EntityRenderable;
 import io.xol.chunkstories.api.rendering.entity.EntityRenderer;
 import io.xol.chunkstories.api.rendering.entity.RenderingIterator;
+import io.xol.chunkstories.api.rendering.shader.Shader;
 import io.xol.chunkstories.api.voxel.Voxel;
 import io.xol.chunkstories.api.world.WorldClient;
 import io.xol.chunkstories.api.world.WorldMaster;
@@ -121,11 +122,22 @@ public class EntityGroundItem extends EntityBase implements EntityRenderable
 	
 	static EntityRenderer<EntityGroundItem> entityRenderer = new EntityGroundItemRenderer();
 	
-	static class EntityGroundItemRenderer implements EntityRenderer<EntityGroundItem> {
+	static class EntityGroundItemRenderer extends EntityRenderer<EntityGroundItem> {
 		
 		@Override
 		public int renderEntities(RenderingInterface renderer, RenderingIterator<EntityGroundItem> renderableEntitiesIterator)
 		{
+			boolean shadow = renderer.getCurrentPass().name.startsWith("shadow");
+			Shader shader = /*shadow ? renderer.currentShader() : */renderer.useShader("entities");
+
+			//entitiesShader.setUniform1f("wetness", world.getGenerator().getEnvironment().getWorldWetness(renderer.getCamera().getCameraPosition()));
+
+			renderer.currentShader().setUniform1f("useColorIn", 0.0f);
+			renderer.currentShader().setUniform1f("useNormalIn", 1.0f);
+
+			renderer.getCamera().setupShader(shader);
+			renderer.getWorldRenderer().setupShaderUniforms(shader);
+			
 			int i = 0;
 			
 			while(renderableEntitiesIterator.hasNext())
