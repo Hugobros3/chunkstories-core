@@ -99,12 +99,6 @@ public class RenderingEventsListener implements Listener {
 			// note we could generalize the shadowmappass to not only the sun but also the moon, point and spotlights
 			pipeline.registerRenderPass(sunShadowPass);
 		}
-
-		boolean gi = client.getConfiguration().getBooleanOption("client.rendering.globalIllumination");
-		if(gi) {
-			GiPass giPass = new GiPass(pipeline, "gi", new String[] {"water.albedoBuffer", "water.normalBuffer", "water.zBuffer"}, new String[] {"giBuffer"});
-			pipeline.registerRenderPass(giPass);
-		}
 		
 		// aka shadows_apply in the current code, it takes the gbuffers and applies the shadowmapping to them, then outputs to the shaded pixels buffers already filled with the far terrain pixels
 		ApplySunlightPass applySunlight = new ApplySunlightPass(pipeline, "applySunlight", 
@@ -116,6 +110,12 @@ public class RenderingEventsListener implements Listener {
 		if(shadows)
 			applySunlight.requires.add("shadowsSun.shadowMap");
 		pipeline.registerRenderPass(applySunlight);	
+		
+		boolean gi = client.getConfiguration().getBooleanOption("client.rendering.globalIllumination") && shadows;
+		if(gi) {
+			GiPass giPass = new GiPass(pipeline, "gi", new String[] {"water.albedoBuffer", "water.normalBuffer", "water.zBuffer"}, new String[] {"giBuffer"}, sunShadowPass);
+			pipeline.registerRenderPass(giPass);
+		}
 
 		DefferedLightsPass lightsPass = new DefferedLightsPass(pipeline, "lights", 
 				new String[]{"applySunlight.shadedBuffer!", "water.albedoBuffer", "water.normalBuffer", "water.zBuffer"}, 

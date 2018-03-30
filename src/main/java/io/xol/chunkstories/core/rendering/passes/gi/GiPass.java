@@ -21,6 +21,7 @@ import io.xol.chunkstories.api.rendering.textures.Texture2DRenderTarget;
 import io.xol.chunkstories.api.rendering.textures.TextureFormat;
 import io.xol.chunkstories.api.rendering.world.WorldRenderer;
 import io.xol.chunkstories.api.world.World;
+import io.xol.chunkstories.core.rendering.passes.ShadowPass;
 
 public class GiPass extends RenderPass {
 
@@ -33,14 +34,16 @@ public class GiPass extends RenderPass {
 	private RenderTargetsConfiguration fboAccumulationA, fboAccumulationB;
 	
 	private NearbyVoxelsVolumeTexture voxels4gi;
+	private final ShadowPass shadowPass;
 	
 	public int accumulatedSamples = 0;
 
-	public GiPass(RenderPasses pipeline, String name, String[] requires, String[] exports) {
+	public GiPass(RenderPasses pipeline, String name, String[] requires, String[] exports, ShadowPass sunShadowPass) {
 		super(pipeline, name, requires, exports);
 		this.worldRenderer = pipeline.getWorldRenderer();
 		this.world = worldRenderer.getWorld();
 		
+		this.shadowPass = sunShadowPass;
 		this.voxels4gi = new NearbyVoxelsVolumeTexture(worldRenderer);
 
 		float giScale = 2.0f;
@@ -93,6 +96,15 @@ public class GiPass extends RenderPass {
 		/*renderer.bindTexture2D("albedoBuffer", worldRenderer.renderBuffers.rbAlbedo);
 		renderer.bindTexture2D("depthBuffer", worldRenderer.renderBuffers.rbZBuffer);
 		renderer.bindTexture2D("normalBuffer", worldRenderer.renderBuffers.rbNormal);*/
+		
+		if(shadowPass != null) {
+			renderer.bindTexture2D("shadowMap", (Texture2D) shadowPass.resolvedOutputs.get("shadowMap"));
+			
+			giShader.setUniform1f("shadowMapResolution", ((Texture2D) shadowPass.resolvedOutputs.get("shadowMap")).getWidth());
+			giShader.setUniform1f("shadowVisiblity", shadowPass.getShadowVisibility());
+			
+			giShader.setUniformMatrix4f("shadowMatrix", shadowPass.getShadowMatrix());
+		}
 		
 		renderer.getRenderTargetManager().clearBoundRenderTargetAll();
 		renderer.getRenderTargetManager().setDepthMask(true);

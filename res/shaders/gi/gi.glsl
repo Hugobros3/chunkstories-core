@@ -2,7 +2,7 @@ const int MAX_RAY_STEPS = 48;
 const int MAX_RAY_STEPS_SHADOW = 72;
 const int MAX_RAY_STEPS_GI = 48;
 
-const int GI_SAMPLES = 2;
+const int GI_SAMPLES = 1;
 
 uniform sampler3D currentChunk;
 
@@ -97,6 +97,38 @@ bool shadow(in vec3 rayPos, in vec3 rayDir) {
 		mapPosz += ivec3(mask) * rayStep;
 	}
 	
+	
+	//vec3 rayPos = vec3(mod(worldSpacePosition.x - voxelOffset.x, voxel_sizef), mod(worldSpacePosition.y - voxelOffset.y, voxel_sizef), mod(worldSpacePosition.z - voxelOffset.z, voxel_sizef));
+	
+	
+	/*vec4 worldSpaceRay = vec4(rayPos + voxelOffset.xyz, 1.0);
+	vec4 cameraSpacePosition = modelViewMatrixInv * worldSpaceRay;
+	
+	
+	vec4 shadowCoord = shadowMatrix * (untranslatedMVInv * cameraSpacePosition);
+	float distFactor = getDistordFactor(shadowCoord.xy);
+	vec4 coordinatesInShadowmap = accuratizeShadow(shadowCoord);
+
+	float clamped = 10 * clamp(NdotL, 0.0, 0.1);
+	
+	//How much in shadows's brightness the object is
+	float shadowIllumination = 0.0;
+	
+	//How much in shadow influence's zone the object is
+	float edgeSmoother = 0.0;
+	
+	//How much does the pixel is lit by directional light
+	float directionalLightning = clamp((NdotL * 1.1 - 0.1), 0.0, 1.0);
+	
+		//Bias to avoid shadow acne
+		float bias = distFactor/32768.0 * 64.0;
+		//Are we inside the shadowmap zone edge ?
+		edgeSmoother = 1.0-clamp(pow(max(0,abs(coordinatesInShadowmap.x-0.5) - 0.45)*20.0+max(0,abs(coordinatesInShadowmap.y-0.5) - 0.45)*20.0, 1.0), 0.0, 1.0);
+		
+		shadowIllumination += clamp((texture(shadowMap, vec3(coordinatesInShadowmap.xy, coordinatesInShadowmap.z-bias), 0.0)), 0.0, 1.0);
+	
+	float sunlightAmount = ( directionalLightning * shadowIllumination * ( mix( shadowIllumination, voxelLight.y, 1-edgeSmoother) )) * clamp(sunPos.y, 0.0, 1.0);
+	*/
 	return false;
 }
 
@@ -184,7 +216,7 @@ vec4 giMain(vec4 worldSpacePosition, vec3 normalWorldSpace, vec2 texCoord)
 	
 	float seed = snoise(vec2(animationTimer + 321.1, 30.5));
 	
-	for(int sample = 0; sample < GI_SAMPLES; sample++) {
+	//for(int sample = 0; sample < GI_SAMPLES; sample++) {
 		/*float rx = -1.0 + 2.0 * bayer16(gl_FragCoord.xy * seed + sample + seed);
 		float ry = -1.0 + 2.0 * bayer16(gl_FragCoord.yx * seed);
 		float rz = -1.0 + 2.0 * bayer16(gl_FragCoord.xy * ry + animationTimer * rx + 1.0);*/
@@ -193,11 +225,11 @@ vec4 giMain(vec4 worldSpacePosition, vec3 normalWorldSpace, vec2 texCoord)
 		float ry = -1.0 + 2.0 * bayer32(worldSpacePosition.yz*0 + gl_FragCoord.yx + vec2(sample, seed)); //snoise(gl_FragCoord.yx * rx * animationTimer * 1.15);
 		float rz = -1.0 + 2.0 * bayer32(worldSpacePosition.zx*0 + gl_FragCoord.xy + vec2(seed + 500, sample)); //snoise(gl_FragCoord.xy * ry + 321.1);*/
 		
-		float rx = snoise(gl_FragCoord.xy * seed + 64.2 + sample + seed);
+		float rx = snoise(gl_FragCoord.xy * seed + 64.2 + /*sample*/ + seed);
 		float ry = snoise(gl_FragCoord.yx * rx * animationTimer * 1.15);
 		float rz = snoise(gl_FragCoord.xy * ry + 321.1);
 		
-		seed = rz;
+		//seed = rz;
 		
 		vec3 rng = vec3(rx, ry, rz);
 		rng = normalize(rng);
@@ -208,14 +240,14 @@ vec4 giMain(vec4 worldSpacePosition, vec3 normalWorldSpace, vec2 texCoord)
 		
 		//gi(hit_pos, rng, contrib);
 		gi(rayPos.xyz, rng, contrib);
-		acc += max(contrib, 0.0);
-	}
+		acc = max(contrib, 0.0);
+	//}
 	
-	acc /= float(GI_SAMPLES);
-	color *= acc;
+	//acc /= float(GI_SAMPLES);
+	//color *= acc;
 	
 	//if(texture(currentChunk, vec3(mapPos) / voxel_sizef).a >= 2.0 / 255.0)
 	//	color.rgb += pow(texture(currentChunk, vec3(mapPos) / voxel_sizef).rgb, vec3(gamma));
     
-	return color;
+	return acc;
 }

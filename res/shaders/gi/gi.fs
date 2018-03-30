@@ -11,6 +11,10 @@ uniform sampler2D previousBuffer;
 uniform sampler2D previousConfidence;
 uniform sampler2D previousZ;
 
+uniform float shadowVisiblity; // Used for night transitions, hides shadows
+uniform sampler2DShadow shadowMap;
+uniform mat4 shadowMatrix;
+
 uniform int keepPreviousData;
 
 //Reflections stuff
@@ -44,9 +48,9 @@ uniform mat4 previousProjectionMatrixInv;
 uniform mat4 previousModelViewMatrixInv;
 
 //Shadow mapping
-uniform float shadowVisiblity; // Used for night transitions, hides shadows
-uniform sampler2DShadow shadowMap;
-uniform mat4 shadowMatrix;
+//uniform float shadowVisiblity; // Used for night transitions, hides shadows
+//uniform sampler2DShadow shadowMap;
+//uniform mat4 shadowMatrix;
 
 uniform float time;
 uniform float animationTimer;
@@ -68,7 +72,7 @@ uniform vec3 camUp;
 #include ../sky/sky.glsl
 //#include ../sky/fog.glsl
 #include ../lib/transformations.glsl
-//#include ../lib/shadowTricks.glsl
+#include ../lib/shadowTricks.glsl
 #include ../lib/normalmapping.glsl
 #include gi.glsl
 //#include ../lib/ssr.glsl

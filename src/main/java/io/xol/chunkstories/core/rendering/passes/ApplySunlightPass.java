@@ -94,7 +94,7 @@ public class ApplySunlightPass extends RenderPass {
 
 		//renderingContext.bindCubemap("environmentCubemap", renderBuffers.rbEnvironmentMap);
 
-		if(renderer.getClient().getConfiguration().getBooleanOption("client.rendering.shadows")) {
+		if(shadowPass != null) {
 			renderer.bindTexture2D("shadowMap", (Texture2D) shadowPass.resolvedOutputs.get("shadowMap"));
 			
 			applyShadowsShader.setUniform1f("shadowMapResolution", ((Texture2D) shadowPass.resolvedOutputs.get("shadowMap")).getWidth());
