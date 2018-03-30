@@ -156,13 +156,14 @@ public class EntityZombie extends EntityHumanoid
 		@Override
 		public int renderEntities(RenderingInterface renderer, RenderingIterator<EntityZombie> renderableEntitiesIterator)
 		{
+			renderer.useShader("entities_animated");
 			setupRender(renderer);
 			
 			int e = 0;
 
 			for (EntityZombie entity : renderableEntitiesIterator.getElementsInFrustrumOnly())
 			{
-				Location location = entity.getPredictedLocation();
+				Location location = entity.getLocation();//entity.getPredictedLocation();
 
 				if (renderer.getCurrentPass().name.startsWith("shadow") && location.distance(renderer.getCamera().getCameraPosition()) > 15f)
 					continue;
@@ -183,12 +184,12 @@ public class EntityZombie extends EntityHumanoid
 				renderer.bindAlbedoTexture(playerTexture);
 				
 				renderer.meshes().getRenderableMultiPartAnimatableMeshByName("./models/human.obj").render(renderer, entity.getAnimatedSkeleton(), System.currentTimeMillis() % 1000000);
-				//animationsData.add(new AnimatableData(location.castToSinglePrecision(), entity.getAnimatedSkeleton(), System.currentTimeMillis() % 1000000, bl, sl));
-			
-			}
 
+				e++;
+			}
 			
 			//Render items in hands
+			renderer.useShader("entities");
 			for (EntityHumanoid entity : renderableEntitiesIterator)
 			{
 				//don't render items in hand when far
@@ -199,8 +200,6 @@ public class EntityZombie extends EntityHumanoid
 
 				if (entity instanceof EntityWithSelectedItem)
 					selectedItemPile = ((EntityWithSelectedItem) entity).getSelectedItem();
-
-				renderer.currentShader().setUniform3f("objectPosition", new Vector3f(0));
 
 				if (selectedItemPile != null)
 				{
@@ -213,8 +212,6 @@ public class EntityZombie extends EntityHumanoid
 
 					selectedItemPile.getItem().getDefinition().getRenderer().renderItemInWorld(renderer, selectedItemPile, world, entity.getLocation(), itemMatrix);
 				}
-
-				e++;
 			}
 			
 			return e;

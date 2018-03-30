@@ -105,7 +105,6 @@ public class GBuffersOpaquePass extends RenderPass {
 			opaqueBlocksShader.setUniform2f("screenSize", gameWindow.getWidth(), gameWindow.getHeight());
 			renderingInterface.getCamera().setupShader(opaqueBlocksShader);
 			
-
 			renderingInterface.setObjectMatrix(new Matrix4f());
 			
 			worldRenderer.getChunksRenderer().renderChunks(renderingInterface);
@@ -120,4 +119,11 @@ public class GBuffersOpaquePass extends RenderPass {
 	public void onScreenResize(int width, int height) {
 		fbo.resize(width, height);
 	}
+
+	@Override
+	public void setupShader(RenderingInterface renderer, Shader shader) {
+		super.setupShader(renderer, shader);
+	}
+	
+	
 }

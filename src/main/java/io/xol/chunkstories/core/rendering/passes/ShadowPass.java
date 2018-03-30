@@ -145,4 +145,22 @@ public class ShadowPass extends RenderPass
 	public void onScreenResize(int width, int height) {
 		
 	}
+
+	@Override
+	public void setupShader(RenderingInterface renderer, Shader shader) {
+		super.setupShader(renderer, shader);
+
+		renderer.getCamera().setupShader(shader);
+		renderer.getWorldRenderer().setupShaderUniforms(shader);
+		
+		Matrix4f edit = new Matrix4f(shadowMatrix);
+		edit.translate(-(float)renderer.getCamera().getCameraPosition().x(), -(float)renderer.getCamera().getCameraPosition().y(), -(float)renderer.getCamera().getCameraPosition().z());
+		
+		renderer.currentShader().setUniformMatrix4f("projectionMatrix", new Matrix4f());
+		renderer.currentShader().setUniformMatrix4f("modelViewMatrix", edit);
+
+		renderer.currentShader().setUniform1i("isShadowPass", 1);
+	}
+	
+	
 }

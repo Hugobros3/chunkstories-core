@@ -239,16 +239,7 @@ public abstract class EntityHumanoid extends EntityLivingImplementation
 		@Override
 		public int renderEntities(RenderingInterface renderer, RenderingIterator<H> renderableEntitiesIterator)
 		{
-			boolean shadow = renderer.getCurrentPass().name.startsWith("shadow");
-			Shader shader = /*shadow ? renderer.currentShader() : */renderer.useShader("entities");
-
-			//entitiesShader.setUniform1f("wetness", world.getGenerator().getEnvironment().getWorldWetness(renderer.getCamera().getCameraPosition()));
-
-			renderer.currentShader().setUniform1f("useColorIn", 0.0f);
-			renderer.currentShader().setUniform1f("useNormalIn", 1.0f);
-
-			renderer.getCamera().setupShader(shader);
-			renderer.getWorldRenderer().setupShaderUniforms(shader);
+			renderer.useShader("entities_animated");
 			
 			setupRender(renderer);
 			
@@ -288,8 +279,6 @@ public abstract class EntityHumanoid extends EntityLivingImplementation
 
 				if (entity instanceof EntityWithSelectedItem)
 					selectedItemPile = ((EntityWithSelectedItem) entity).getSelectedItem();
-
-				renderer.currentShader().setUniform3f("objectPosition", new Vector3f(0));
 
 				if (selectedItemPile != null)
 				{

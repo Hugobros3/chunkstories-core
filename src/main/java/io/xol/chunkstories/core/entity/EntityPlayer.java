@@ -546,16 +546,7 @@ EntityWorldModifier
 		@Override
 		public int renderEntities(RenderingInterface renderer, RenderingIterator<H> renderableEntitiesIterator)
 		{
-			boolean shadow = renderer.getCurrentPass().name.startsWith("shadow");
-			Shader shader = /*shadow ? renderer.currentShader() : */renderer.useShader("entities_animated");
-
-			//entitiesShader.setUniform1f("wetness", world.getGenerator().getEnvironment().getWorldWetness(renderer.getCamera().getCameraPosition()));
-
-			renderer.currentShader().setUniform1f("useColorIn", 0.0f);
-			renderer.currentShader().setUniform1f("useNormalIn", 1.0f);
-
-			renderer.getCamera().setupShader(shader);
-			renderer.getWorldRenderer().setupShaderUniforms(shader);
+			renderer.useShader("entities_animated");
 			
 			setupRender(renderer);
 			
@@ -570,7 +561,7 @@ EntityWorldModifier
 				loc3f.set((float)location.x(), (float)location.y(), (float)location.z());
 				pre3f.set((float)entity.getPredictedLocation().x(), (float)entity.getPredictedLocation().y(), (float)entity.getPredictedLocation().z());
 
-				if (!(renderer.getCurrentPass().name.startsWith("shadow") && location.distance(renderer.getCamera().getCameraPosition()) > 15f))
+				if (!renderer.getCurrentPass().name.startsWith("shadow") || location.distance(renderer.getCamera().getCameraPosition()) <= 15f)
 				{
 					entity.cachedSkeleton.lodUpdate(renderer);
 
@@ -592,11 +583,11 @@ EntityWorldModifier
 					renderer.bindNormalTexture(renderer.textures().getTexture("./textures/normalnormal.png"));
 					renderer.bindMaterialTexture(renderer.textures().getTexture("./textures/defaultmaterial.png"));
 
-					SkeletalAnimation dab = renderer.meshes().parent().getAnimationsLibrary().getAnimation("./animations/human/running.bvh");
-					if(dab != null && !entity.getFlyingComponent().get())
-						renderer.meshes().getRenderableMultiPartAnimatableMeshByName("./models/human.obj").render(renderer, dab, System.currentTimeMillis() % 1000000);
+					//SkeletalAnimation dab = renderer.meshes().parent().getAnimationsLibrary().getAnimation("./animations/human/running.bvh");
+					//if(dab != null && !entity.getFlyingComponent().get())
+					//	renderer.meshes().getRenderableMultiPartAnimatableMeshByName("./models/human.obj").render(renderer, dab, System.currentTimeMillis() % 1000000);
 					
-					//renderer.meshes().getRenderableMultiPartAnimatableMeshByName("./models/human.obj").render(renderer, entity.getAnimatedSkeleton(), System.currentTimeMillis() % 1000000);
+					renderer.meshes().getRenderableMultiPartAnimatableMeshByName("./models/human.obj").render(renderer, entity.getAnimatedSkeleton(), System.currentTimeMillis() % 1000000);
 					
 					for(ItemPile aip : entity.armor.getInventory().iterator())
 					{
@@ -606,28 +597,34 @@ EntityWorldModifier
 						renderer.textures().getTexture(ia.getOverlayTextureName()).setLinearFiltering(false);
 						renderer.meshes().getRenderableMultiPartAnimatableMeshByName("./models/human_overlay.obj").render(renderer, entity.getAnimatedSkeleton(), System.currentTimeMillis() % 1000000, ia.bodyPartsAffected());
 					}
-					
-					ItemPile selectedItemPile = null;
 
-					if (entity instanceof EntityWithSelectedItem)
-						selectedItemPile = ((EntityWithSelectedItem) entity).getSelectedItem();
-
-					renderer.currentShader().setUniform3f("objectPosition", new Vector3f(0));
-
-					if (selectedItemPile != null)
-					{
-						Matrix4f itemMatrix = new Matrix4f();
-						itemMatrix.translate(pre3f);
-
-						itemMatrix.mul(entity.getAnimatedSkeleton().getBoneHierarchyTransformationMatrix("boneItemInHand", System.currentTimeMillis() % 1000000));
-						//Matrix4f.mul(itemMatrix, entity.getAnimatedSkeleton().getBoneHierarchyTransformationMatrix("boneItemInHand", System.currentTimeMillis() % 1000000), itemMatrix);
-
-						selectedItemPile.getItem().getDefinition().getRenderer().renderItemInWorld(renderer, selectedItemPile, world, entity.getLocation(), itemMatrix);
-					}
+					e++;
 				}
-				e++;
 			}
 
+			renderer.useShader("entities");
+			for (EntityPlayer entity : renderableEntitiesIterator.getElementsInFrustrumOnly()) {
+
+				// don't render items in hand when far
+				if (renderer.getCurrentPass().name.startsWith("shadow") && entity.getLocation().distance(renderer.getCamera().getCameraPosition()) > 15f)
+					continue;
+
+				ItemPile selectedItemPile = null;
+
+				if (entity instanceof EntityWithSelectedItem)
+					selectedItemPile = ((EntityWithSelectedItem) entity).getSelectedItem();
+
+				if (selectedItemPile != null) {
+					Matrix4f itemMatrix = new Matrix4f();
+					itemMatrix.translate(pre3f);
+
+					itemMatrix.mul(entity.getAnimatedSkeleton().getBoneHierarchyTransformationMatrix("boneItemInHand", System.currentTimeMillis() % 1000000));
+
+					selectedItemPile.getItem().getDefinition().getRenderer().renderItemInWorld(renderer, selectedItemPile, world, entity.getLocation(),
+							itemMatrix);
+				}
+			}
+			
 			return e;
 		}
 	}

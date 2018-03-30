@@ -12,23 +12,10 @@ in vec4 vertexColor; // Vertex color : red is for blocklight, green is sunlight
 in vec2 worldLight; //Computed in vertex shader
 in vec4 modelview;
 
-uniform float useNormalIn;
-
 //Diffuse colors
 uniform sampler2D diffuseTexture; // Blocks diffuse texture atlas
 uniform sampler2D normalTexture; // Blocks normal texture atlas
 uniform sampler2D materialTexture; // Blocks normal texture atlas
-
-//Chunk fading into view
-uniform float chunkTransparency;
-
-//Debug
-uniform vec3 blindFactor; // can white-out all the colors
-
-//Normal mapping
-
-//Shadow shit
-uniform float shadowVisiblity; // Used for night transitions, hides shadows
 
 //Matrices
 

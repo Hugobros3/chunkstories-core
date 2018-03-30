@@ -46,13 +46,15 @@ uniform mat3 objectMatrixNormal;
 
 //Weather
 uniform float wetness;
+uniform int isShadowPass;
+#include ../lib/shadowTricks.glsl
 
 void main(){
 	//Usual variable passing
 	texcoord = texCoordIn;
 	vec4 v = objectMatrix * vec4(vertexIn.xyz, 1.0);
 	
-	if(isUsingInstancedData > 0)
+	/*if(isUsingInstancedData > 0)
 	{
 		mat4 matrixInstanced = mat4(texelFetch(instancedDataSampler, ivec2(mod(gl_InstanceID * 8, 32), (gl_InstanceID * 8) / 32), 0),
 									texelFetch(instancedDataSampler, ivec2(mod(gl_InstanceID * 8 + 1, 32), (gl_InstanceID * 8 + 1) / 32), 0),
@@ -65,11 +67,10 @@ void main(){
 		inVertex = v;
 		inNormal =  mat3(transpose(inverse(matrixInstanced))) * (normalIn).xyz;//(normalIn.xyz-0.5)*2.0;//normalIn;;
 	}
-	else
-	{
-		inVertex = v;
-		inNormal = objectMatrixNormal * (normalIn).xyz;//(normalIn.xyz-0.5)*2.0;//normalIn;
-	}
+	*/
+	inVertex = v;
+	inNormal = objectMatrixNormal * (normalIn).xyz;//(normalIn.xyz-0.5)*2.0;//normalIn;
+	
 	
 	fresnelTerm = 0.0 + 1.0 * clamp(0.7 + dot(normalize(v.xyz - camPos), vec3(inNormal)), 0.0, 1.0);
 	
@@ -78,17 +79,18 @@ void main(){
 	//Compute lightmap coords
 	rainWetness = wetness;
 	
-	if(isUsingInstancedData > 0)
+	/*if(isUsingInstancedData > 0)
 	{
 		worldLight = vec2(texelFetch(instancedDataSampler, ivec2(mod(gl_InstanceID * 8 + 4, 32), (gl_InstanceID * 8 + 5) / 32), 0).xy / 15.0);
-	}
-	else
-		worldLight = vec2(worldLightIn / 15.0);
+	}*/
+	worldLight = vec2(worldLightIn / 15.0);
 	
 	//Translate vertex
 	modelview = modelViewMatrix * v;
 	
-	gl_Position = projectionMatrix * modelview;
+	gl_Position = projectionMatrix * modelViewMatrix * v;
+	if(isShadowPass == 1)
+		gl_Position = accuratizeShadowIn(modelViewMatrix * v);
 	
 	//Eye transform
 	eye = v.xyz-camPos;
