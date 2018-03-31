@@ -109,6 +109,11 @@ public class GiPass extends RenderPass {
 		renderer.getRenderTargetManager().clearBoundRenderTargetAll();
 		renderer.getRenderTargetManager().setDepthMask(true);
 		
+		accumulationA.setTextureWrapping(false);
+		accumulationB.setTextureWrapping(false);
+		confidenceA.setTextureWrapping(false);
+		confidenceB.setTextureWrapping(false);
+		
 		renderer.bindTexture2D("previousBuffer", !renderingToA ? accumulationA : accumulationB);
 		renderer.bindTexture2D("previousConfidence", !renderingToA ? confidenceA : confidenceB);
 		renderer.bindTexture2D("previousZ", !renderingToA ? zBufferA : zBufferB);

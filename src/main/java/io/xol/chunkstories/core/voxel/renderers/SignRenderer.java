@@ -32,23 +32,24 @@ public class SignRenderer implements VoxelDynamicRenderer {
 	}
 	
 	@Override
-	public void renderVoxels(RenderingInterface renderingContext, IterableIterator<ChunkCell> renderableEntitiesIterator)
+	public void renderVoxels(RenderingInterface renderer, IterableIterator<ChunkCell> renderableEntitiesIterator)
 	{
-		setupRender(renderingContext);
+		renderer.useShader("entities");
+		setupRender(renderer);
 		
-		renderingContext.setObjectMatrix(null);
+		renderer.setObjectMatrix(null);
 
 		for (ChunkCell context : renderableEntitiesIterator)//.getElementsInFrustrumOnly())
 		{
-			if (renderingContext.getCamera().getCameraPosition().distance(context.getLocation()) > 32)
+			if (renderer.getCamera().getCameraPosition().distance(context.getLocation()) > 32)
 				continue;
 			
-			Texture2D diffuse = renderingContext.textures().getTexture("./models/sign.png");
+			Texture2D diffuse = renderer.textures().getTexture("./models/sign.png");
 			diffuse.setLinearFiltering(false);
-			renderingContext.bindAlbedoTexture(diffuse);
-			renderingContext.bindNormalTexture(renderingContext.textures().getTexture("./textures/normalnormal.png"));
+			renderer.bindAlbedoTexture(diffuse);
+			renderer.bindNormalTexture(renderer.textures().getTexture("./textures/normalnormal.png"));
 			
-			renderingContext.currentShader().setUniform2f("worldLightIn", context.getBlocklight(), context.getSunlight() );
+			renderer.currentShader().setUniform2f("worldLightIn", context.getBlocklight(), context.getSunlight() );
 			
 			boolean isPost = context.getVoxel().getName().endsWith("_post");
 			int facing = context.getMetaData();
@@ -61,14 +62,14 @@ public class SignRenderer implements VoxelDynamicRenderer {
 			mutrix.rotate((float) Math.PI * 2.0f * (-facing) / 16f, new Vector3f(0, 1, 0));
 			if (!isPost)
 				mutrix.translate(new Vector3f(0.0f, 0.0f, -0.5f));
-			renderingContext.setObjectMatrix(mutrix);
+			renderer.setObjectMatrix(mutrix);
 
 			//System.out.println("bonsoir");
 			
 			if (!isPost)
-				renderingContext.meshes().getRenderableMeshByName("./models/sign_post.obj").render(renderingContext);
+				renderer.meshes().getRenderableMeshByName("./models/sign_post.obj").render(renderer);
 			else
-				renderingContext.meshes().getRenderableMeshByName("./models/sign.obj").render(renderingContext);
+				renderer.meshes().getRenderableMeshByName("./models/sign.obj").render(renderer);
 
 			VoxelComponentSignText signTextComponent = (VoxelComponentSignText) context.components().get("signData");
 			
@@ -80,7 +81,7 @@ public class SignRenderer implements VoxelDynamicRenderer {
 			{
 				//entitySign.renderData = new TextMeshObject(entitySign.signText.getSignText());
 				signTextComponent.cachedText = signTextComponent.getSignText();
-				signTextComponent.renderData = renderingContext.getFontRenderer().newTextMeshObject(renderingContext.getFontRenderer().defaultFont(), signTextComponent.cachedText);
+				signTextComponent.renderData = renderer.getFontRenderer().newTextMeshObject(renderer.getFontRenderer().defaultFont(), signTextComponent.cachedText);
 			}
 			
 			//signTextComponent.setSignText("fuck");
@@ -88,8 +89,8 @@ public class SignRenderer implements VoxelDynamicRenderer {
 			
 			// Display it
 			mutrix.translate(new Vector3f(0.0f, 1.15f, 0.055f));
-			renderingContext.setObjectMatrix(mutrix);
-			signTextComponent.renderData.render(renderingContext);
+			renderer.setObjectMatrix(mutrix);
+			signTextComponent.renderData.render(renderer);
 		}
 	}
 

@@ -145,6 +145,11 @@ public class RenderingEventsListener implements Listener {
 		PostProcessPass postprocess = new PostProcessPass(pipeline, "final", 
 				new String[] {"water.albedoBuffer", "forward.shadedBuffer", "farTerrain.zBuffer", "bloom.bloomBuffer", "reflections.reflectionsBuffer", "farTerrain.specularityBuffer"},
 				sunShadowPass);
+
+		boolean debug = client.getConfiguration().getBooleanOption("client.rendering.debugGBuffers");
+		if(debug) {
+			
+		}
 		
 		if(gi)
 			postprocess.requires.add("gi.giBuffer");

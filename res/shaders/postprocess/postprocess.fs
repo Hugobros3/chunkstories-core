@@ -205,9 +205,9 @@ void main() {
 	//fragColor = getDebugShit(texCoord);
 	#endif
 }
-
+/*
 //Draws divided screen with debug buffers
-/*vec4 getDebugShit(vec2 coords)
+vec4 getDebugShit(vec2 coords)
 {
 	vec2 sampleCoords = coords;
 	sampleCoords.x = mod(sampleCoords.x, 0.5);

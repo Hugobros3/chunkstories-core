@@ -21,5 +21,5 @@ out vec4 fragColor;
 void main()
 {
 	//Diffuse G-Buffer
-	fragColor = vec4(color, clamp(blend * 0.5, 0.0, 1.0));
+	fragColor = vec4(color * 0.25, clamp(0.5, 0.0, 1.0));
 }

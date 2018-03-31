@@ -132,10 +132,10 @@ void main() {
 	
 	//similarity = clamp(similarity, 0.0, 0.95 + clamp(confidence / 100, 0.0, 0.025));
 	if(reprojectedPosition.x < 0.0 || reprojectedPosition.x > 1.0 || reprojectedPosition.y < 0.0 || reprojectedPosition.y > 1.0) {
-		outputConfidence = 1.0;
+		outputConfidence = 0.5;
 	} else {
 		outputConfidence = 1.0 + confidence * similarity;
-		gi = (gi * (1.0) + previousGi * similarity * confidence) / outputConfidence;
+		gi = (gi + previousGi * similarity * confidence) / outputConfidence;
 	}
 	
 	fragColor = gi;

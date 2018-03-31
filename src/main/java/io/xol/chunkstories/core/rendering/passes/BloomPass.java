@@ -46,6 +46,10 @@ public class BloomPass extends RenderPass {
 	public void render(RenderingInterface renderer) {
 
 		bloomBuffer.setLinearFiltering(true);
+		bloomBuffer.setTextureWrapping(false);
+		
+		blurBuffer.setLinearFiltering(true);
+		blurBuffer.setTextureWrapping(false);
 		
 		renderer.setDepthTestMode(DepthTestMode.DISABLED);
 		renderer.setBlendMode(BlendMode.DISABLED);
