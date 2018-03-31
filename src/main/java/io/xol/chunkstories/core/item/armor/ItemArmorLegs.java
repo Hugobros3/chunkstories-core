@@ -6,11 +6,14 @@
 
 package io.xol.chunkstories.core.item.armor;
 
+import java.util.Arrays;
+import java.util.Collection;
+
 import io.xol.chunkstories.api.item.ItemDefinition;
 
 public class ItemArmorLegs extends ItemArmor
 {
-	public static final String[] bodyParts = {"boneLegRU","boneLegRD","boneLegLU","boneLegLD"};
+	public static final Collection<String> bodyParts = Arrays.asList(new String[]{"boneLegRU","boneLegRD","boneLegLU","boneLegLD"});
 
 	public ItemArmorLegs(ItemDefinition type)
 	{
@@ -18,7 +21,7 @@ public class ItemArmorLegs extends ItemArmor
 	}
 
 	@Override
-	public String[] bodyPartsAffected()
+	public Collection<String> bodyPartsAffected()
 	{
 		return bodyParts;
 	}

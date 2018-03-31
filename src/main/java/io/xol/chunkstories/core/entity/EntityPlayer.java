@@ -9,6 +9,7 @@ package io.xol.chunkstories.core.entity;
 import java.util.Iterator;
 
 import org.joml.Matrix4f;
+import org.joml.Matrix4fc;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
 import org.joml.Vector3f;
@@ -17,6 +18,7 @@ import org.joml.Vector4f;
 
 import io.xol.chunkstories.api.Location;
 import io.xol.chunkstories.api.animation.SkeletalAnimation;
+import io.xol.chunkstories.api.animation.SkeletonAnimator;
 import io.xol.chunkstories.api.client.LocalPlayer;
 import io.xol.chunkstories.api.entity.Controller;
 import io.xol.chunkstories.api.entity.DamageCause;
@@ -585,9 +587,9 @@ EntityWorldModifier
 
 					//SkeletalAnimation dab = renderer.meshes().parent().getAnimationsLibrary().getAnimation("./animations/human/running.bvh");
 					//if(dab != null && !entity.getFlyingComponent().get())
-					//	renderer.meshes().getRenderableMultiPartAnimatableMeshByName("./models/human.obj").render(renderer, dab, System.currentTimeMillis() % 1000000);
+					//	renderer.meshes().getRenderableAnimatableMesh("./models/human.dae").render(renderer, dab, System.currentTimeMillis() % 1000000);
 					
-					renderer.meshes().getRenderableMultiPartAnimatableMeshByName("./models/human.obj").render(renderer, entity.getAnimatedSkeleton(), System.currentTimeMillis() % 1000000);
+					renderer.meshes().getRenderableAnimatableMesh("./models/human.dae").render(renderer, entity.getAnimatedSkeleton(), System.currentTimeMillis() % 1000000);
 					
 					for(ItemPile aip : entity.armor.getInventory().iterator())
 					{
@@ -595,7 +597,27 @@ EntityWorldModifier
 						
 						renderer.bindAlbedoTexture(renderer.textures().getTexture(ia.getOverlayTextureName()));
 						renderer.textures().getTexture(ia.getOverlayTextureName()).setLinearFiltering(false);
-						renderer.meshes().getRenderableMultiPartAnimatableMeshByName("./models/human_overlay.obj").render(renderer, entity.getAnimatedSkeleton(), System.currentTimeMillis() % 1000000, ia.bodyPartsAffected());
+						
+						SkeletonAnimator armorMask = ia.bodyPartsAffected().size() == 0 ? entity.getAnimatedSkeleton() : new SkeletonAnimator() {
+
+							@Override
+							public Matrix4fc getBoneHierarchyTransformationMatrix(String nameOfEndBone, double animationTime) {
+								return entity.getAnimatedSkeleton().getBoneHierarchyTransformationMatrix(nameOfEndBone, animationTime);
+							}
+
+							@Override
+							public Matrix4fc getBoneHierarchyTransformationMatrixWithOffset(String nameOfEndBone, double animationTime) {
+								return entity.getAnimatedSkeleton().getBoneHierarchyTransformationMatrixWithOffset(nameOfEndBone, animationTime);
+							}
+
+							@Override
+							public boolean shouldHideBone(RenderingInterface renderingContext, String boneName) {
+								return entity.getAnimatedSkeleton().shouldHideBone(renderingContext, boneName) || !ia.bodyPartsAffected().contains(boneName);
+							}
+							
+						};
+						
+						renderer.meshes().getRenderableAnimatableMesh("./models/human_overlay.obj").render(renderer, armorMask, System.currentTimeMillis() % 1000000);
 					}
 
 					e++;

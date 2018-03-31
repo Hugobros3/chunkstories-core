@@ -65,7 +65,7 @@ public class ObjViewModelRenderer extends ItemRenderer
 		renderingContext.bindAlbedoTexture(textures.getTexture(albedoTextureName));
 		renderingContext.bindNormalTexture(textures.getTexture(normalTextureName));
 		renderingContext.bindMaterialTexture(textures.getTexture(materialTextureName));
-		models.getRenderableMeshByName(objName).render(renderingContext);
+		models.getRenderableMesh(objName).render(renderingContext);
 	}
 
 }

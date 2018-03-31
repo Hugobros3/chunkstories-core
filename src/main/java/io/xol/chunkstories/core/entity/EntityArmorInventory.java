@@ -6,6 +6,7 @@
 
 package io.xol.chunkstories.core.entity;
 
+import java.util.Collection;
 import java.util.Iterator;
 
 import io.xol.chunkstories.api.entity.Entity;
@@ -56,23 +57,12 @@ public class EntityArmorInventory extends EntityComponentInventory {
 				ItemPile p = i.next();
 				ItemArmor a = (ItemArmor)p.getItem();
 
-				String[] bpa = a.bodyPartsAffected();
+				Collection<String> bpa = a.bodyPartsAffected();
 				if(bodyPartName == null && bpa == null)
 					multiplier *= a.damageMultiplier(bodyPartName);
 				else if(bodyPartName != null){
-					if(bpa == null)
+					if(bpa == null || bpa.contains(bodyPartName))
 						multiplier *= a.damageMultiplier(bodyPartName);
-					else
-					{
-						for(int j = 0; j < bpa.length; j++)
-						{
-							if(bpa[j].equals(bodyPartName))
-							{
-								multiplier *= a.damageMultiplier(bodyPartName);
-								break;
-							}
-						}
-					}
 				}
 				//Of BPN == null & BPA != null, we don't do shit
 			}

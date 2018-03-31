@@ -261,11 +261,11 @@ public abstract class EntityHumanoid extends EntityLivingImplementation
 				matrix.translate((float)location.x, (float)location.y, (float)location.z);
 				renderer.setObjectMatrix(matrix);
 
-				renderer.meshes().getRenderableMultiPartAnimatableMeshByName("./models/human.obj").render(renderer, entity.getAnimatedSkeleton(), System.currentTimeMillis() % 1000000);
+				renderer.meshes().getRenderableAnimatableMesh("./models/human.obj").render(renderer, entity.getAnimatedSkeleton(), System.currentTimeMillis() % 1000000);
 				
 				renderer.bindAlbedoTexture(renderer.textures().getTexture("./textures/armor/isis.png"));
 				renderer.textures().getTexture("./textures/armor/isis.png").setLinearFiltering(false);
-				renderer.meshes().getRenderableMultiPartAnimatableMeshByName("./models/human_overlay.obj").render(renderer, entity.getAnimatedSkeleton(), System.currentTimeMillis() % 1000000);
+				renderer.meshes().getRenderableAnimatableMesh("./models/human_overlay.obj").render(renderer, entity.getAnimatedSkeleton(), System.currentTimeMillis() % 1000000);
 			}
 			
 			//Render items in hands

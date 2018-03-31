@@ -67,9 +67,9 @@ public class SignRenderer implements VoxelDynamicRenderer {
 			//System.out.println("bonsoir");
 			
 			if (!isPost)
-				renderer.meshes().getRenderableMeshByName("./models/sign_post.obj").render(renderer);
+				renderer.meshes().getRenderableMesh("./models/sign_post.obj").render(renderer);
 			else
-				renderer.meshes().getRenderableMeshByName("./models/sign.obj").render(renderer);
+				renderer.meshes().getRenderableMesh("./models/sign.obj").render(renderer);
 
 			VoxelComponentSignText signTextComponent = (VoxelComponentSignText) context.components().get("signData");
 			

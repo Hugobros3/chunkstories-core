@@ -6,6 +6,8 @@
 
 package io.xol.chunkstories.core.item.armor;
 
+import java.util.Collection;
+
 import io.xol.chunkstories.api.item.Item;
 import io.xol.chunkstories.api.item.ItemDefinition;
 
@@ -23,7 +25,7 @@ public abstract class ItemArmor extends Item
 	}
 	
 	/** Returns either null (and affects the entire holder) or a list of body parts it cares about */
-	public abstract String[] bodyPartsAffected();
+	public abstract Collection<String> bodyPartsAffected();
 	
 	/** Returns the multiplier, optional bodyPartName (might be null, handled that case) for entities that support it */
 	public float damageMultiplier(String bodyPartName)

@@ -183,7 +183,7 @@ public class EntityZombie extends EntityHumanoid
 				
 				renderer.bindAlbedoTexture(playerTexture);
 				
-				renderer.meshes().getRenderableMultiPartAnimatableMeshByName("./models/human.obj").render(renderer, entity.getAnimatedSkeleton(), System.currentTimeMillis() % 1000000);
+				renderer.meshes().getRenderableAnimatableMesh("./models/human.dae").render(renderer, entity.getAnimatedSkeleton(), System.currentTimeMillis() % 1000000);
 
 				e++;
 			}
