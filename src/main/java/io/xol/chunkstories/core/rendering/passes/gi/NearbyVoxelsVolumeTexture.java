@@ -100,8 +100,6 @@ public class NearbyVoxelsVolumeTexture {
 											
 											if(voxel.getDefinition().getEmittedLightLevel() > 0) {
 												
-												Vector4f emits = new Vector4f(1.0f, 1.0f, 1.0f, 1.0f);
-													
 												float alpha = col.w;
 												//if(alpha <= 0.0f)
 													alpha = 1.0f;

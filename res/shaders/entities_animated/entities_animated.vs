@@ -61,6 +61,13 @@ void main(){
 	
 	vec4 v = objectMatrix * (v0 * boneWeightsIn.x + v1 * boneWeightsIn.y + v2 * boneWeightsIn.z + v3 * boneWeightsIn.w);
 	
+	vec4 n0 = bones[boneIdIn.x] * vec4(normalIn.xyz, 0.0);
+	vec4 n1 = bones[boneIdIn.y] * vec4(normalIn.xyz, 0.0);
+	vec4 n2 = bones[boneIdIn.z] * vec4(normalIn.xyz, 0.0);
+	vec4 n3 = bones[boneIdIn.w] * vec4(normalIn.xyz, 0.0);
+	
+	vec4 n = objectMatrix * (n0 * boneWeightsIn.x + n1 * boneWeightsIn.y + n2 * boneWeightsIn.z + n3 * boneWeightsIn.w);
+	
 	//v = objectMatrix * v0;
 	//vec4 v = objectMatrix * vec4(vertexIn.xyz, 1.0);
 	
@@ -79,7 +86,7 @@ void main(){
 	}*/
 	
 	inVertex = v;
-	inNormal = objectMatrixNormal * (normalIn).xyz;//(normalIn.xyz-0.5)*2.0;//normalIn;
+	inNormal = objectMatrixNormal * normalize(n).xyz;//(normalIn.xyz-0.5)*2.0;//normalIn;
 	
 	fresnelTerm = 0.0 + 1.0 * clamp(0.7 + dot(normalize(v.xyz - camPos), vec3(inNormal)), 0.0, 1.0);
 	

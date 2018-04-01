@@ -22,7 +22,6 @@ import io.xol.chunkstories.api.exceptions.world.WorldException;
 import io.xol.chunkstories.api.input.InputsManager;
 import io.xol.chunkstories.api.item.Item;
 import io.xol.chunkstories.api.item.ItemDefinition;
-import io.xol.chunkstories.api.item.ItemVoxel;
 import io.xol.chunkstories.api.item.inventory.ItemPile;
 import io.xol.chunkstories.api.player.Player;
 import io.xol.chunkstories.api.rendering.RenderingInterface;

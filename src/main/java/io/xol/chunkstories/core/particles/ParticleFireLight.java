@@ -99,22 +99,22 @@ public class ParticleFireLight extends ParticleTypeHandler
 	}
 
 	@Override
-	public ParticleTypeRenderer getRenderer(ParticlesRenderer particlesRenderer) {
-		return new ParticleTypeRenderer(particlesRenderer) {
+	public ParticleTypeRenderer getRenderer(ParticlesRenderer renderer) {
+		return new ParticleTypeRenderer(renderer) {
 			
 			@Override
-			public void beginRenderingForType(RenderingInterface renderingContext)
+			public void beginRenderingForType(RenderingInterface renderer)
 			{
-				super.beginRenderingForType(renderingContext);
+				super.beginRenderingForType(renderer);
 				
-				renderingContext.setBlendMode(BlendMode.PREMULT_ALPHA);
+				renderer.setBlendMode(BlendMode.PREMULT_ALPHA);
 				
-				renderingContext.getRenderTargetManager().setDepthMask(false);
+				renderer.getRenderTargetManager().setDepthMask(false);
 				//renderingContext.setDepthTestMode(DepthTestMode.DISABLED);
 				//System.out.println("k");
 				
 				String temp_scale = "./textures/particles/fire_temp_scale_expl.png";
-				renderingContext.bindTexture2D("colorTempSampler", particlesRenderer.getContent().textures().getTexture(temp_scale));
+				renderer.bindTexture2D("colorTempSampler", particlesRenderer.getContent().textures().getTexture(temp_scale));
 				particlesRenderer.getContent().textures().getTexture(temp_scale).setLinearFiltering(true);
 				particlesRenderer.getContent().textures().getTexture(temp_scale).setTextureWrapping(false);
 				
@@ -127,11 +127,11 @@ public class ParticleFireLight extends ParticleTypeHandler
 			public void forEach_Rendering(RenderingInterface renderingContext, ParticleData data)
 			{
 				ParticleFireData b = (ParticleFireData) data;
-				renderingContext.getLightsRenderer().queueLight(new Light(new Vector3f(1.0f, 252f/255f, 1/255f),
+				renderingContext.getLightsRenderer().queueLight(new Light(new Vector3f(1.0f, 252f/255f, 1/255f).mul(5f),
 						new Vector3f((float) data.x(), (float) data.y(), (float) data.z()),
 						25f * Math2.clamp((float)(double)b.vel.x() * 5000, 0.0, 1.0)));
 				
-				//System.out.println("k");
+				System.out.println("k");
 				
 				/*data.setY((float) (data.y() + (Math.random() - 0.1) * 0.0015));
 				data.setX((float) (data.x() + (Math.random() - 0.5) * 0.0015));

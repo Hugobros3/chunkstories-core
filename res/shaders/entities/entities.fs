@@ -6,7 +6,6 @@ in vec2 texcoord; // Coordinate
 in vec3 eye; // eye-position
 in vec3 inNormal;
 in vec4 inVertex;
-in vec4 colorPassed;
 in float fresnelTerm;
 in float rainWetness;
 in vec4 vertexColor; // Vertex color : red is for blocklight, green is sunlight

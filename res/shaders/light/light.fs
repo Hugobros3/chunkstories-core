@@ -65,11 +65,13 @@ void main() {
 		float distance = length(pixelPositionWorld-lightPositionWorld);
 		
 		vec4 lightAmount = vec4(pow(lightColor[i], vec3(gamma)), 1.0);
-		lightAmount *= pow(clamp(1.0-distance/(lightDecay[i]), 0.0, 10.0), gamma);
+		
+		float squareme = distance;// * lightDecay[i];
+		lightAmount /= squareme * squareme;
 		
 		vec3 lightRay = normalize((vec4(lightPositionWorld-pixelPositionWorld, 1.0)).xyz);
-		//Normal influence
 		
+		//Normal influence
 		float dotL = clamp(dot(normalWorld, lightRay), 0.0, 1.0);
 		lightAmount.rgb *= dotL;
 		
@@ -80,7 +82,7 @@ void main() {
 			float dotCone = dot(-1.0 * lightRay, lightDir[i]);
 			float cosAngle = cos(lightAngle[i]);
 			
-			lightAmount.rgb *= clamp(30.0*(dotCone-cosAngle), 0.0, 1.0);
+			lightAmount.rgb *= clamp(3.0*(dotCone-cosAngle), 0.0, 1.0);
 		}
 		if(spec > 0.0)
 		{

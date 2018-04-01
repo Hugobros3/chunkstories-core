@@ -13,7 +13,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.joml.Matrix4f;
-import org.joml.Vector3f;
 
 import io.xol.chunkstories.api.Location;
 import io.xol.chunkstories.api.entity.DamageCause;

@@ -16,10 +16,7 @@ out vec3 eye;
 
 out vec3 inNormal;
 out vec4 inVertex;
-out vec4 colorPassed;
 
-uniform float useColorIn;
-uniform float useNormalIn;
 uniform float isUsingInstancedData;
 uniform sampler2D instancedDataSampler;
 
@@ -73,8 +70,6 @@ void main(){
 	
 	
 	fresnelTerm = 0.0 + 1.0 * clamp(0.7 + dot(normalize(v.xyz - camPos), vec3(inNormal)), 0.0, 1.0);
-	
-	colorPassed = colorIn;
 	
 	//Compute lightmap coords
 	rainWetness = wetness;
