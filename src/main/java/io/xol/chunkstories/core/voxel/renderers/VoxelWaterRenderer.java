@@ -20,9 +20,9 @@ public class VoxelWaterRenderer implements VoxelRenderer
 {
 	VoxelModel model;
 	
-	public VoxelWaterRenderer(VoxelModel model)
+	public VoxelWaterRenderer(VoxelRenderer model)
 	{
-		this.model = model;
+		this.model = (VoxelModel) model;
 	}
 
 	@Override

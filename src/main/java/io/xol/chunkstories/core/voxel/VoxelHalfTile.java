@@ -7,6 +7,7 @@
 package io.xol.chunkstories.core.voxel;
 
 import io.xol.chunkstories.api.physics.CollisionBox;
+import io.xol.chunkstories.api.rendering.voxel.VoxelRenderer;
 import io.xol.chunkstories.api.voxel.Voxel;
 import io.xol.chunkstories.api.voxel.VoxelDefinition;
 import io.xol.chunkstories.api.voxel.VoxelSide;
@@ -15,9 +16,8 @@ import io.xol.chunkstories.api.world.cell.CellData;
 
 public class VoxelHalfTile extends Voxel
 {
-
-	VoxelModel bot;
-	VoxelModel top;
+	VoxelRenderer bot;
+	VoxelRenderer top;
 
 	public VoxelHalfTile(VoxelDefinition type)
 	{
@@ -32,7 +32,7 @@ public class VoxelHalfTile extends Voxel
 	}
 
 	@Override
-	public VoxelModel getVoxelRenderer(CellData info)
+	public VoxelRenderer getVoxelRenderer(CellData info)
 	{
 		int meta = info.getMetaData();
 		if (bottomOrTop(meta))

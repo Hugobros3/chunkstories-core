@@ -14,12 +14,12 @@ import io.xol.chunkstories.api.input.Input;
 import io.xol.chunkstories.api.item.ItemVoxel;
 import io.xol.chunkstories.api.item.inventory.ItemPile;
 import io.xol.chunkstories.api.physics.CollisionBox;
+import io.xol.chunkstories.api.rendering.voxel.VoxelRenderer;
 import io.xol.chunkstories.api.sound.SoundSource.Mode;
 import io.xol.chunkstories.api.voxel.Voxel;
 import io.xol.chunkstories.api.voxel.VoxelDefinition;
 import io.xol.chunkstories.api.voxel.VoxelFormat;
 import io.xol.chunkstories.api.voxel.VoxelSide;
-import io.xol.chunkstories.api.voxel.models.VoxelModel;
 import io.xol.chunkstories.api.voxel.textures.VoxelTexture;
 import io.xol.chunkstories.api.world.World;
 import io.xol.chunkstories.api.world.WorldMaster;
@@ -35,7 +35,7 @@ public class VoxelDoor extends Voxel// implements VoxelCustomIcon
 {
 	VoxelTexture doorTexture;
 
-	VoxelModel[] models = new VoxelModel[8];
+	VoxelRenderer[] models = new VoxelRenderer[8];
 
 	boolean top;
 
@@ -75,7 +75,7 @@ public class VoxelDoor extends Voxel// implements VoxelCustomIcon
 	}
 
 	@Override
-	public VoxelModel getVoxelRenderer(CellData info)
+	public VoxelRenderer getVoxelRenderer(CellData info)
 	{
 		int facingPassed = (info.getMetaData() >> 2) & 0x3;
 		boolean isOpen = ((info.getMetaData() >> 0) & 0x1) == 1;

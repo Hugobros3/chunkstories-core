@@ -8,3 +8,5 @@ build/
 *.jar
 gradle.properties
 core_content.zip
+
+*.blend1

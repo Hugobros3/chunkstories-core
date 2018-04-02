@@ -7,14 +7,14 @@
 package io.xol.chunkstories.core.voxel;
 
 import io.xol.chunkstories.api.physics.CollisionBox;
+import io.xol.chunkstories.api.rendering.voxel.VoxelRenderer;
 import io.xol.chunkstories.api.voxel.Voxel;
 import io.xol.chunkstories.api.voxel.VoxelDefinition;
-import io.xol.chunkstories.api.voxel.models.VoxelModel;
 import io.xol.chunkstories.api.world.cell.CellData;
 
 public class VoxelVine extends Voxel implements VoxelClimbable
 {
-	VoxelModel[] models = new VoxelModel[4];
+	VoxelRenderer[] models = new VoxelRenderer[4];
 
 	public VoxelVine(VoxelDefinition type)
 	{
@@ -24,7 +24,7 @@ public class VoxelVine extends Voxel implements VoxelClimbable
 	}
 
 	@Override
-	public VoxelModel getVoxelRenderer(CellData info)
+	public VoxelRenderer getVoxelRenderer(CellData info)
 	{
 		int meta = info.getMetaData();
 		if(meta == 1)
