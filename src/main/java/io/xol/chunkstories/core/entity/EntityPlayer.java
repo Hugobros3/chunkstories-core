@@ -313,9 +313,10 @@ EntityWorldModifier
 		}
 		
 
+		//System.out.println(this.getLocation().y+":"+justJumped);
 		if (focus && !inWater && controller.getInputsManager().getInputByName("jump").isPressed() && isOnGround())
 		{
-			// System.out.println("jumpin");
+			//System.out.println("jumpin"+justJumped);
 			jumpForce = 0.15;
 		}
 		else if (focus && inWater && controller.getInputsManager().getInputByName("jump").isPressed())

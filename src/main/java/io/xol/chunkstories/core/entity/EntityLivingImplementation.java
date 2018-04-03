@@ -157,6 +157,15 @@ public abstract class EntityLivingImplementation extends EntityBase implements E
 		if (getWorld() == null)
 			return;
 		
+		Entity stuckIn = this.isStuckInEntity();
+		if(stuckIn != null) {
+			Vector3d delta = this.getLocation();
+			delta.sub(stuckIn.getLocation());
+			delta.add(0.01, 0.01, 0.01);
+			//System.out.println("door stuck");
+			this.moveWithCollisionRestrain(delta);
+		}
+		
 		//Despawn counter is strictly a client matter
 		if (getWorld() instanceof WorldMaster)
 		{
@@ -251,14 +260,14 @@ public abstract class EntityLivingImplementation extends EntityBase implements E
 			velocity.y = (velocity.y() + acceleration.y());
 			velocity.z = (velocity.z() + acceleration.z());
 
-			//TODO ugly
-			if (!world.isChunkLoaded((int) (double) positionComponent.getLocation().x() / 32, (int) (double) positionComponent.getLocation().y() / 32, (int) (double) positionComponent.getLocation().z() / 32))
-			{
+			// TODO ugly
+			if (!world.isChunkLoaded((int) (double) positionComponent.getLocation().x() / 32, (int) (double) positionComponent.getLocation().y() / 32,
+					(int) (double) positionComponent.getLocation().z() / 32)) {
 				velocity.set(0d, 0d, 0d);
 			}
 
 			//Eventually moves
-			Vector3dc remainingToMove = moveWithCollisionRestrain(velocity.x(), velocity.y(), velocity.z());
+			Vector3dc remainingToMove = world.collisionsManager().tryMovingEntityWithCollisions(this, this.getLocation(), velocity);//moveWithCollisionRestrain(velocity.x(), velocity.y(), velocity.z());
 			Vector2d remaining2d = new Vector2d(remainingToMove.x(), remainingToMove.z());
 
 			//Auto-step logic
@@ -283,14 +292,14 @@ public abstract class EntityLivingImplementation extends EntityBase implements E
 				for (double d = 0.25; d < 0.5; d += 0.05)
 				{
 					//I don't want any of this to reflect on the object, because it causes ugly jumps in the animation
-					Vector3dc canMoveUp = this.canMoveWithCollisionRestrain(new Vector3d(0.0, d, 0.0));
+					Vector3dc canMoveUp = world.collisionsManager().runEntityAgainstWorldVoxelsAndEntities(this, getLocation(), new Vector3d(0.0, d, 0.0));
 					//It can go up that bit
 					if (canMoveUp.length() == 0.0f)
 					{
 						//Would it help with being stuck ?
 						Vector3d tryFromHigher = new Vector3d(this.getLocation());
 						tryFromHigher.add(new Vector3d(0.0, d, 0.0));
-						Vector3dc blockedMomentumRemaining = this.canMoveWithCollisionRestrain(tryFromHigher, blockedMomentum);
+						Vector3dc blockedMomentumRemaining = world.collisionsManager().runEntityAgainstWorldVoxelsAndEntities(this, tryFromHigher, blockedMomentum);
 						//If length of remaining momentum < of what we requested it to do, that means it *did* go a bit further away
 						if (blockedMomentumRemaining.length() < blockedMomentum.length())
 						{
@@ -300,7 +309,7 @@ public abstract class EntityLivingImplementation extends EntityBase implements E
 							afterJump.sub(blockedMomentumRemaining);
 
 							//land distance = whatever is left of our -0.55 delta when it hits the ground
-							Vector3dc landDistance = this.canMoveWithCollisionRestrain(afterJump, new Vector3d(0.0, -d, 0.0));
+							Vector3dc landDistance = world.collisionsManager().runEntityAgainstWorldVoxelsAndEntities(this, afterJump, new Vector3d(0.0, -d, 0.0));
 							afterJump.add(new Vector3d(0.0, -d, 0.0));
 							afterJump.sub(landDistance);
 

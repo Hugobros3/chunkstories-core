@@ -52,16 +52,20 @@ public class ObjViewModelRenderer extends ItemRenderer
 	}
 
 	@Override
-	public void renderItemInInventory(RenderingInterface context, ItemPile pile, float screenPositionX, float screenPositionY, int scaling)
-	{
+	public void renderItemInInventory(RenderingInterface context, ItemPile pile, float screenPositionX, float screenPositionY, int scaling) {
 		super.renderItemInInventory(context, pile, screenPositionX, screenPositionY, scaling);
 	}
 
 	@Override
-	public void renderItemInWorld(RenderingInterface renderingContext, ItemPile pile, World world, Location location, Matrix4f handTransformation)
-	{
+	public void renderItemInWorld(RenderingInterface renderingContext, ItemPile pile, World world, Location location, Matrix4f handTransformation) {
+		Matrix4f c = new Matrix4f();
+		c.m11(0);
+		c.m22(0);
+		c.m12(1);
+		c.m21(-1);
+		handTransformation.mul(c);
 		renderingContext.setObjectMatrix(handTransformation);
-		
+
 		renderingContext.bindAlbedoTexture(textures.getTexture(albedoTextureName));
 		renderingContext.bindNormalTexture(textures.getTexture(normalTextureName));
 		renderingContext.bindMaterialTexture(textures.getTexture(materialTextureName));

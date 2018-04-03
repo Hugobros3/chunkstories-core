@@ -378,25 +378,22 @@ public abstract class EntityHumanoid extends EntityLivingImplementation
 
 	boolean lastTickOnGround = false;
 
-	public void tickClientPrediction()
-	{
+	public void tickClientPrediction() {
 		handleWalkingEtcSounds();
 	}
 
-	protected void handleWalkingEtcSounds()
-	{
-		//This is strictly a clientside hack
+	protected void handleWalkingEtcSounds() {
+		// This is strictly a clientside hack
 		if (!(getWorld() instanceof WorldClient))
 			return;
 
-		//When the entities are too far from the player, don't play any sounds
-		if (((WorldClient)getWorld()).getClient().getPlayer().getControlledEntity() != null)
-			if (((WorldClient)getWorld()).getClient().getPlayer().getControlledEntity().getLocation().distance(this.getLocation()) > 25f)
+		// When the entities are too far from the player, don't play any sounds
+		if (((WorldClient) getWorld()).getClient().getPlayer().getControlledEntity() != null)
+			if (((WorldClient) getWorld()).getClient().getPlayer().getControlledEntity().getLocation().distance(this.getLocation()) > 25f)
 				return;
 
 		// Sound stuff
-		if (isOnGround() && !lastTickOnGround)
-		{
+		if (isOnGround() && !lastTickOnGround) {
 			justLanded = true;
 			metersWalked = 0.0;
 		}
@@ -416,10 +413,10 @@ public abstract class EntityHumanoid extends EntityLivingImplementation
 		Voxel voxelStandingOn = world.peekSafely(new Vector3d(this.getLocation()).add(0.0, -0.01, 0.0)).getVoxel();
 
 		if (voxelStandingOn == null || !voxelStandingOn.getDefinition().isSolid() && !voxelStandingOn.getDefinition().isLiquid())
-			return;
+			voxelStandingOn = world.getContent().voxels().air();
 
 		VoxelMaterial material = voxelStandingOn.getMaterial();
-
+		//System.out.println(justJumped +"&&"+ !inWater);
 		if (justJumped && !inWater)
 		{
 			justJumped = false;
@@ -457,17 +454,18 @@ public abstract class EntityHumanoid extends EntityLivingImplementation
 	}
 
 	@Override
-	public CollisionBox getBoundingBox()
-	{
+	public CollisionBox getBoundingBox() {
 		if (isDead())
 			return new CollisionBox(1.6, 1.0, 1.6).translate(-0.8, 0.0, -0.8);
-		//Have it centered
+		// Have it centered
 		return new CollisionBox(1.0, stance.get() == EntityHumanoidStance.CROUCHING ? 1.5 : 2.0, 1.0).translate(-0.5, 0.0, -0.5);
 	}
 
-	public CollisionBox[] getCollisionBoxes()
-	{
-		return new CollisionBox[] { new CollisionBox(0.6, stance.get() == EntityHumanoidStance.CROUCHING ? 1.45 : 1.9, 0.6).translate(-0.3, 0.0, -0.3) };
+	public CollisionBox[] getCollisionBoxes() {
+		double height = stance.get() == EntityHumanoidStance.CROUCHING ? 1.45 : 1.9;
+		if(this.isDead())
+			height = 0.2;
+		return new CollisionBox[] { new CollisionBox(0.6, height , 0.6).translate(-0.3, 0.0, -0.3) };
 	}
 
 	HitBoxImpl[] hitboxes = { new HitBoxImpl(this, new CollisionBox(-0.15, 0.0, -0.25, 0.30, 0.675, 0.5), "boneTorso"), new HitBoxImpl(this, new CollisionBox(-0.25, 0.0, -0.25, 0.5, 0.5, 0.5), "boneHead"),
@@ -478,35 +476,31 @@ public abstract class EntityHumanoid extends EntityLivingImplementation
 			new HitBoxImpl(this, new CollisionBox(-0.15, -0.075, -0.125, 0.35, 0.075, 0.25), "boneFootL"), new HitBoxImpl(this, new CollisionBox(-0.15, -0.075, -0.125, 0.35, 0.075, 0.25), "boneFootR"), };
 
 	@Override
-	public HitBoxImpl[] getHitBoxes()
-	{
+	public HitBoxImpl[] getHitBoxes() {
 		return hitboxes;
 	}
 
 	@Override
-	public float damage(DamageCause cause, HitBox osef, float damage)
-	{
-		if (osef != null)
-		{
+	public float damage(DamageCause cause, HitBox osef, float damage) {
+		if (osef != null) {
 			if (osef.getName().equals("boneHead"))
 				damage *= 2.8f;
-			else if(osef.getName().contains("Arm"))
+			else if (osef.getName().contains("Arm"))
 				damage *= 0.75;
-			else if(osef.getName().contains("Leg"))
+			else if (osef.getName().contains("Leg"))
 				damage *= 0.5;
-			else if(osef.getName().contains("Foot"))
+			else if (osef.getName().contains("Foot"))
 				damage *= 0.25;
 		}
-		
+
 		damage *= 0.5;
 
-		world.getSoundManager().playSoundEffect("sounds/entities/flesh.ogg", Mode.NORMAL, this.getLocation(), (float)Math.random() * 0.4f + 0.4f, 1);
-		
+		world.getSoundManager().playSoundEffect("sounds/entities/flesh.ogg", Mode.NORMAL, this.getLocation(), (float) Math.random() * 0.4f + 0.4f, 1);
+
 		return super.damage(cause, null, damage);
 	}
 
-	public Location getPredictedLocation()
-	{
+	public Location getPredictedLocation() {
 		return getLocation();
 	}
 }
