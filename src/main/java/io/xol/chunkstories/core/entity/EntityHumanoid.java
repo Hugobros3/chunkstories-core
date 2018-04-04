@@ -223,14 +223,13 @@ public abstract class EntityHumanoid extends EntityLivingImplementation
 		void setupRender(RenderingInterface renderingContext)
 		{
 			//Player textures
-			Texture2D playerTexture = renderingContext.textures().getTexture("./models/humanoid_test.png");
+			Texture2D playerTexture = renderingContext.textures().getTexture("./models/human/humanoid_test.png");
 			playerTexture.setLinearFiltering(false);
 
 			renderingContext.bindAlbedoTexture(playerTexture);
 
-			renderingContext.textures().getTexture("./models/humanoid_normal.png").setLinearFiltering(false);
+			renderingContext.textures().getTexture("./models/human/humanoid_normal.png").setLinearFiltering(false);
 
-			renderingContext.bindAlbedoTexture(renderingContext.textures().getTexture("./models/humanoid_test.png"));
 			renderingContext.bindNormalTexture(renderingContext.textures().getTexture("./textures/normalnormal.png"));
 			renderingContext.bindMaterialTexture(renderingContext.textures().getTexture("./textures/defaultmaterial.png"));
 		}
@@ -260,11 +259,11 @@ public abstract class EntityHumanoid extends EntityLivingImplementation
 				matrix.translate((float)location.x, (float)location.y, (float)location.z);
 				renderer.setObjectMatrix(matrix);
 
-				renderer.meshes().getRenderableAnimatableMesh("./models/human.obj").render(renderer, entity.getAnimatedSkeleton(), System.currentTimeMillis() % 1000000);
+				renderer.meshes().getRenderableAnimatableMesh("./models/human/human.dae").render(renderer, entity.getAnimatedSkeleton(), System.currentTimeMillis() % 1000000);
 				
-				renderer.bindAlbedoTexture(renderer.textures().getTexture("./textures/armor/isis.png"));
-				renderer.textures().getTexture("./textures/armor/isis.png").setLinearFiltering(false);
-				renderer.meshes().getRenderableAnimatableMesh("./models/human_overlay.obj").render(renderer, entity.getAnimatedSkeleton(), System.currentTimeMillis() % 1000000);
+				//renderer.bindAlbedoTexture(renderer.textures().getTexture("./textures/armor/isis.png"));
+				//renderer.textures().getTexture("./textures/armor/isis.png").setLinearFiltering(false);
+				//renderer.meshes().getRenderableAnimatableMesh("./models/human/human_overlay.dae").render(renderer, entity.getAnimatedSkeleton(), System.currentTimeMillis() % 1000000);
 			}
 			
 			//Render items in hands

@@ -20,22 +20,10 @@ public class SignRenderer implements VoxelDynamicRenderer {
 		this.ogVoxelRenderer = voxelRenderer;
 	}
 
-	private void setupRender(RenderingInterface renderingContext)
-	{
-		renderingContext.setObjectMatrix(null);
-
-		Texture2D diffuse = renderingContext.textures().getTexture("./models/sign.png");
-		diffuse.setLinearFiltering(false);
-		renderingContext.bindAlbedoTexture(diffuse);
-		renderingContext.bindNormalTexture(renderingContext.textures().getTexture("./textures/normalnormal.png"));
-		renderingContext.bindMaterialTexture(renderingContext.textures().getTexture("./textures/defaultmaterial.png"));
-	}
-	
 	@Override
 	public void renderVoxels(RenderingInterface renderer, IterableIterator<ChunkCell> renderableEntitiesIterator)
 	{
 		renderer.useShader("entities");
-		setupRender(renderer);
 		
 		renderer.setObjectMatrix(null);
 
@@ -44,7 +32,7 @@ public class SignRenderer implements VoxelDynamicRenderer {
 			if (renderer.getCamera().getCameraPosition().distance(context.getLocation()) > 32)
 				continue;
 			
-			Texture2D diffuse = renderer.textures().getTexture("./models/sign.png");
+			Texture2D diffuse = renderer.textures().getTexture("./voxels/blockmodels/sign.png");
 			diffuse.setLinearFiltering(false);
 			renderer.bindAlbedoTexture(diffuse);
 			renderer.bindNormalTexture(renderer.textures().getTexture("./textures/normalnormal.png"));
@@ -55,21 +43,22 @@ public class SignRenderer implements VoxelDynamicRenderer {
 			int facing = context.getMetaData();
 			
 			Matrix4f mutrix = new Matrix4f();
-			mutrix.translate(new Vector3f(0.5f, 0.0f, 0.5f));
 			
 			Location loc = context.getLocation();
 			mutrix.translate((float)loc.x, (float)loc.y, (float)loc.z);
+			
+			mutrix.translate(new Vector3f(0.5f, 0.0f, 0.5f));
+			mutrix.rotate((float) Math.PI * -0.5f, new Vector3f(0, 1, 0));
 			mutrix.rotate((float) Math.PI * 2.0f * (-facing) / 16f, new Vector3f(0, 1, 0));
 			if (!isPost)
-				mutrix.translate(new Vector3f(0.0f, 0.0f, -0.5f));
-			renderer.setObjectMatrix(mutrix);
-
-			//System.out.println("bonsoir");
+				mutrix.translate(new Vector3f(-0.5f, 0.0f, 0.0f));
 			
-			if (!isPost)
-				renderer.meshes().getRenderableMesh("./models/sign_post.obj").render(renderer);
+			renderer.setObjectMatrix(mutrix);
+			
+			if (isPost)
+				renderer.meshes().getRenderableMesh("./voxels/blockmodels/sign_post.dae").render(renderer);
 			else
-				renderer.meshes().getRenderableMesh("./models/sign.obj").render(renderer);
+				renderer.meshes().getRenderableMesh("./voxels/blockmodels/sign.dae").render(renderer);
 
 			VoxelComponentSignText signTextComponent = (VoxelComponentSignText) context.components().get("signData");
 			

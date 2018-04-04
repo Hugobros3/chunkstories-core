@@ -58,12 +58,12 @@ public class ObjViewModelRenderer extends ItemRenderer
 
 	@Override
 	public void renderItemInWorld(RenderingInterface renderingContext, ItemPile pile, World world, Location location, Matrix4f handTransformation) {
-		Matrix4f c = new Matrix4f();
+		/*Matrix4f c = new Matrix4f();
 		c.m11(0);
 		c.m22(0);
 		c.m12(1);
 		c.m21(-1);
-		handTransformation.mul(c);
+		handTransformation.mul(c);*/
 		renderingContext.setObjectMatrix(handTransformation);
 
 		renderingContext.bindAlbedoTexture(textures.getTexture(albedoTextureName));

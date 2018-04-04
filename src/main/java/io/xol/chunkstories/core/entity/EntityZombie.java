@@ -177,13 +177,15 @@ public class EntityZombie extends EntityHumanoid
 				renderer.setObjectMatrix(matrix);
 				
 				//Player textures
-				Texture2D playerTexture = renderer.textures().getTexture("./models/zombie_s"+(entity.stage().ordinal() + 1)+".png");
+				Texture2D playerTexture = renderer.textures().getTexture("./models/human/zombie_s"+(entity.stage().ordinal() + 1)+".png");
 				playerTexture.setLinearFiltering(false);
 				
 				renderer.bindAlbedoTexture(playerTexture);
+				//System.out.println(renderer.meshes().getRenderableMesh("./models/human/human.dae"));
+				renderer.meshes().getRenderableAnimatableMesh("./models/human/human.dae").render(renderer, entity.getAnimatedSkeleton(), System.currentTimeMillis() % 1000000);
 				
-				renderer.meshes().getRenderableAnimatableMesh("./models/human.dae").render(renderer, entity.getAnimatedSkeleton(), System.currentTimeMillis() % 1000000);
-
+				//renderer.meshes().getRenderableMesh("./models/human/human.dae").render(renderer);
+				
 				e++;
 			}
 			

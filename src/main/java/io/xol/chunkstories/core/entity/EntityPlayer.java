@@ -577,7 +577,7 @@ EntityWorldModifier
 					variant = ColorsTools.getUniqueColorCode(entity.getName()) % 6;
 
 					//Player textures
-					Texture2D playerTexture = renderer.textures().getTexture("./models/variant" + variant + ".png");
+					Texture2D playerTexture = renderer.textures().getTexture("./models/human/variant" + variant + ".png");
 					playerTexture.setLinearFiltering(false);
 
 					renderer.bindAlbedoTexture(playerTexture);
@@ -588,7 +588,7 @@ EntityWorldModifier
 					//if(dab != null && !entity.getFlyingComponent().get())
 					//	renderer.meshes().getRenderableAnimatableMesh("./models/human.dae").render(renderer, dab, System.currentTimeMillis() % 1000000);
 					
-					renderer.meshes().getRenderableAnimatableMesh("./models/human.dae").render(renderer, entity.getAnimatedSkeleton(), System.currentTimeMillis() % 1000000);
+					renderer.meshes().getRenderableAnimatableMesh("./models/human/human.dae").render(renderer, entity.getAnimatedSkeleton(), System.currentTimeMillis() % 1000000);
 					
 					for(ItemPile aip : entity.armor.getInventory().iterator())
 					{
@@ -616,7 +616,7 @@ EntityWorldModifier
 							
 						};
 						
-						renderer.meshes().getRenderableAnimatableMesh("./models/human_overlay.obj").render(renderer, armorMask, System.currentTimeMillis() % 1000000);
+						renderer.meshes().getRenderableAnimatableMesh("./models/human/human_overlay.dae").render(renderer, armorMask, System.currentTimeMillis() % 1000000);
 					}
 
 					e++;
