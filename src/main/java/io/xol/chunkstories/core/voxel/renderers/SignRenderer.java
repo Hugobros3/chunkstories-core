@@ -52,8 +52,9 @@ public class SignRenderer implements VoxelDynamicRenderer {
 			mutrix.rotate((float) Math.PI * 2.0f * (-facing) / 16f, new Vector3f(0, 1, 0));
 			if (!isPost)
 				mutrix.translate(new Vector3f(-0.5f, 0.0f, 0.0f));
-			
+
 			renderer.setObjectMatrix(mutrix);
+			mutrix.rotate((float) Math.PI * 0.5f, new Vector3f(0, 1, 0));
 			
 			if (isPost)
 				renderer.meshes().getRenderableMesh("./voxels/blockmodels/sign_post.dae").render(renderer);
