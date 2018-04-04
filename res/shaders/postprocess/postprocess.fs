@@ -17,6 +17,7 @@ uniform sampler2D reflectionsBuffer;
 uniform sampler2D pauseOverlayTexture;
 uniform float pauseOverlayFade;
 
+uniform sampler2D colourMap;
 //uniform samplerCube environmentMap;
 
 in vec2 texCoord;
@@ -175,11 +176,15 @@ void main() {
 	// Eye adapatation
 	compositeColor *= apertureModifier;
 	
-	//Gamma-corrects stuff
+	//Gamma-correction
 	
 	//compositeColor.rgb = pow(compositeColor.rgb, vec3(gammaInv));
-
 	compositeColor.rgb = pow(jodieReinhardTonemap(compositeColor.rgb), vec3(gammaInv));
+
+	//Applies colour map
+	vec3 colourMapped = texture(colourMap, vec2(compositeColor.r, 0.125)).rgb + texture(colourMap, vec2(compositeColor.g, 0.125 + 0.25)).rgb + texture(colourMap, vec2(compositeColor.b, 0.125 + 0.5)).rgb;
+	
+	compositeColor.rgb = colourMapped;
 	
 	//Applies pause overlay
 	vec3 overlayColor = texture(pauseOverlayTexture, pauseOverlayCoords).rgb;

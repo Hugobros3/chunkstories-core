@@ -77,6 +77,10 @@ public class PostProcessPass extends RenderPass {
 			renderer.bindTexture2D("zBuffer", zBuffer);
 			
 			renderer.bindTexture2D("pauseOverlayTexture", renderer.textures().getTexture("./textures/gui/darker.png"));
+			
+			renderer.textures().getTexture("./textures/post/colour_map.png").setTextureWrapping(false);
+			renderer.textures().getTexture("./textures/post/colour_map.png").setLinearFiltering(true);
+			renderer.bindTexture2D("colourMap", renderer.textures().getTexture("./textures/post/colour_map.png"));
 
 			//TODO make an underwater pass
 			//Voxel vox = world.peekSafely(renderingContext.getCamera().getCameraPosition()).getVoxel();
