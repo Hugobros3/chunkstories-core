@@ -6,8 +6,9 @@
 //Vertex inputs
 in vec4 vertexIn;
 in vec2 texCoordIn;
-in vec3 colorIn;
+in vec4 colorIn;
 in vec4 normalIn;
+in uvec4 materialFlagsIn; //hack: it's aliased with colorIn! xyz are the components for voxel light and w is our material flags
 
 //Passed variables
 out vec2 texCoordPassed;
@@ -17,6 +18,7 @@ out vec3 normalPassed;
 out vec4 vertexPassed;
 out vec3 eyeDirection;
 out float rainWetness;
+flat out uint materialFlagsPassed;
 
 //Lighthing
 uniform float sunIntensity;
@@ -75,6 +77,13 @@ void main(){
 	
 	gl_Position = modelViewProjectionMatrix * vertex;
 	
+	uint materialFlags = materialFlagsIn.w;
+	//if(materialFlags != 0u)
+	//	gl_Position = vec4(0.0);
+	
 	//eyeDirection transform
+	materialFlagsPassed = materialFlags;
+	
+	
 	eyeDirection = vertex.xyz - camPos;
 }

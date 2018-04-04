@@ -29,6 +29,7 @@ voxel leaves
 	shading: 2
 	hardness: 0.5
 	affectedByWind: true
+	materialFlags: 1
 end
 
 voxel forestgrass
@@ -50,6 +51,7 @@ voxel pineleaves
 	shading: 1
 	hardness: 0.5
 	affectedByWind: true
+	materialFlags: 1
 end
 
 voxel bricks
@@ -105,6 +107,7 @@ voxel birchleaves
 	shading: 1
 	hardness: 0.5
 	affectedByWind: true
+	materialFlags: 1
 end
 
 voxel whool
@@ -180,6 +183,7 @@ voxel vine
 	usesCustomModel: true
 	solid: false
 	hardness: 0.5
+	materialFlags: 1
 end
 
 voxel torch
@@ -223,6 +227,7 @@ voxel flower_yellow
 	#models: ~
 	collisionBox: (0.0, 0.0, 0.0, 1.0, 1.0, 1.0)
 	affectedByWind: true
+	materialFlags: 1
 end
 
 voxel flower_red
@@ -233,6 +238,7 @@ voxel flower_red
 	#models: ~
 	collisionBox: (0.0, 0.0, 0.0, 1.0, 1.0, 1.0)
 	affectedByWind: true
+	materialFlags: 1
 end
 
 voxel iron_block
@@ -249,6 +255,7 @@ voxel wheat
 	model: ~
 	#collisionBox: (0.0, 0.0, 0.0, 1.0, 1.0, 1.0)
 	affectedByWind: true
+	materialFlags: 1
 end
 
 voxel flower_orange
@@ -259,6 +266,7 @@ voxel flower_orange
 	#models: ~
 	collisionBox: (0.0, 0.0, 0.0, 1.0, 1.0, 1.0)
 	affectedByWind: true
+	materialFlags: 1
 end
 
 voxel flower_blue
@@ -269,6 +277,7 @@ voxel flower_blue
 	#models: ~
 	collisionBox: (0.0, 0.0, 0.0, 1.0, 1.0, 1.0)
 	affectedByWind: true
+	materialFlags: 1
 end
 
 voxel flower_purple
@@ -279,6 +288,7 @@ voxel flower_purple
 	#models: ~
 	collisionBox: (0.0, 0.0, 0.0, 1.0, 1.0, 1.0)
 	affectedByWind: true
+	materialFlags: 1
 end
 
 voxel flower_white
@@ -289,6 +299,7 @@ voxel flower_white
 	#models: ~
 	collisionBox: (0.0, 0.0, 0.0, 1.0, 1.0, 1.0)
 	affectedByWind: true
+	materialFlags: 1
 end
 
 voxel mushroom_red
@@ -299,6 +310,7 @@ voxel mushroom_red
 	#models: ~
 	collisionBox: (0.0, 0.0, 0.0, 1.0, 1.0, 1.0)
 	affectedByWind: true
+	materialFlags: 1
 end
 
 voxel mushroom_brown
@@ -309,6 +321,7 @@ voxel mushroom_brown
 	#models: ~
 	collisionBox: (0.0, 0.0, 0.0, 1.0, 1.0, 1.0)
 	affectedByWind: true
+	materialFlags: 1
 end
 
 voxel gold_block
@@ -323,6 +336,7 @@ voxel grass_prop
 	#models: ~
 	collisionBox: (0.0, 0.0, 0.0, 1.0, 1.0, 1.0)
 	affectedByWind: true
+	materialFlags: 1
 end
 
 voxel dead_grass
@@ -333,6 +347,7 @@ voxel dead_grass
 	#models: ~ // one for each possible metadata value.
 	collisionBox: (0.0, 0.0, 0.0, 1.0, 1.0, 1.0)
 	affectedByWind: true
+	materialFlags: 1
 end
 
 voxel rails
@@ -459,6 +474,7 @@ voxel bamboo
 	opaque: false
 	model: grass
 	material: plant
+	materialFlags: 1
 end
 
 voxel hellearth

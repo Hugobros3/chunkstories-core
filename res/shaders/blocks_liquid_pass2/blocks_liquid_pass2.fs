@@ -104,5 +104,5 @@ void main(){
 	outNormal = encodeNormal(normal);
 	outVoxelLight = lightMapCoords.xy;
 	outSpecularity = spec;
-	outMaterial = 255u;
+	outMaterial = 0u;
 }

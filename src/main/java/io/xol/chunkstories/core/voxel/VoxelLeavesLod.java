@@ -67,43 +67,49 @@ public class VoxelLeavesLod extends Voxel
 			return false;
 		}
 		
-		public void renderLodVersion(ChunkRenderer chunkRenderer, ChunkRenderContext bakingContext, Chunk chunk, CellData voxelInformations, LodLevel lodLevel)
+		public void renderLodVersion(ChunkRenderer chunkRenderer, ChunkRenderContext bakingContext, Chunk chunk, CellData cell, LodLevel lodLevel)
 		{
-			Voxel vox = voxelInformations.getVoxel();
+			Voxel vox = cell.getVoxel();
 			//int src = voxelInformations.getData();
 			
-			int i = voxelInformations.getX() & 0x1F;
-			int k = voxelInformations.getY() & 0x1F;
-			int j = voxelInformations.getZ() & 0x1F;
+			int i = cell.getX() & 0x1F;
+			int k = cell.getY() & 0x1F;
+			int j = cell.getZ() & 0x1F;
 			
 			VoxelBakerCubic rawRBBF = chunkRenderer.getLowpolyBakerFor(lodLevel, ShadingType.OPAQUE);
+			
+			byte flags = 1;//Byte.parseByte(cell.getVoxel().getDefinition().resolveProperty("materialFlags", "0"));
+			if(lodLevel == LodLevel.LOW)
+				flags = 0;
+			rawRBBF.setMaterialFlags(flags);
+			
 			byte extraByte = (byte) (vox.getDefinition().resolveProperty("affectedByWind", "false").equals("true") ? 3 : 0);
-			if (shallBuildWallArround(voxelInformations, 5, lodLevel))
+			if (shallBuildWallArround(cell, 5, lodLevel))
 			{
 				if (k != 0 || bakingContext.isBottomChunkLoaded())
 					addQuadBottom(chunk, bakingContext, rawRBBF, i, k, j, lodLevel == LodLevel.HIGH ? baseTexture : opaqueTexture, extraByte);
 			}
-			if (shallBuildWallArround(voxelInformations, 4, lodLevel))
+			if (shallBuildWallArround(cell, 4, lodLevel))
 			{
 				if (k != 31 || bakingContext.isTopChunkLoaded())
 					addQuadTop(chunk, bakingContext, rawRBBF, i, k, j, lodLevel == LodLevel.HIGH ? baseTexture : opaqueTexture, extraByte);
 			}
-			if (shallBuildWallArround(voxelInformations, 2, lodLevel))
+			if (shallBuildWallArround(cell, 2, lodLevel))
 			{
 				if (i != 31 || bakingContext.isRightChunkLoaded())
 					addQuadRight(chunk, bakingContext, rawRBBF, i, k, j, lodLevel == LodLevel.HIGH ? baseTexture : opaqueTexture, extraByte);
 			}
-			if (shallBuildWallArround(voxelInformations, 0, lodLevel))
+			if (shallBuildWallArround(cell, 0, lodLevel))
 			{
 				if (i != 0 || bakingContext.isLeftChunkLoaded())
 					addQuadLeft(chunk, bakingContext, rawRBBF, i, k, j, lodLevel == LodLevel.HIGH ? baseTexture : opaqueTexture, extraByte);
 			}
-			if (shallBuildWallArround(voxelInformations, 1, lodLevel))
+			if (shallBuildWallArround(cell, 1, lodLevel))
 			{
 				if (j != 31 || bakingContext.isFrontChunkLoaded())
 					addQuadFront(chunk, bakingContext, rawRBBF, i, k, j, lodLevel == LodLevel.HIGH ? baseTexture : opaqueTexture, extraByte);
 			}
-			if (shallBuildWallArround(voxelInformations, 3, lodLevel))
+			if (shallBuildWallArround(cell, 3, lodLevel))
 			{
 				if (j != 0 || bakingContext.isBackChunkLoaded())
 					addQuadBack(chunk, bakingContext, rawRBBF, i, k, j, lodLevel == LodLevel.HIGH ? baseTexture : opaqueTexture, extraByte);

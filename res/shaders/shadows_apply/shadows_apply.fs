@@ -8,6 +8,7 @@ uniform sampler2D zBuffer;
 uniform sampler2D albedoBuffer;
 uniform sampler2D normalBuffer;
 uniform sampler2D voxelLightBuffer;
+uniform usampler2D materialsBuffer;
 
 //Passed variables
 in vec2 screenCoord;
@@ -127,6 +128,7 @@ void main() {
 	
 	vec3 pixelNormal = decodeNormal(texture(normalBuffer, screenCoord));
 	vec4 albedoColor = texture(albedoBuffer, screenCoord);
+	uint materialFlags = texture(materialsBuffer, screenCoord).x;
 	
 	//Discard fragments using alpha
 	if(albedoColor.a <= 0.0)
@@ -153,7 +155,6 @@ void main() {
 	#else
 	vec3 voxelSunlight = 0.005 * clamp(sl_invSquared - 1.0 / (1.0 + vl_bias), 0.0, 100.0) * vec3(1.0);// * pow(torchColor, vec3(gamma));
 	#endif
-	
 	
 	//float sunVisibility = clamp(1.0 - overcastFactor * 2.0, 0.0, 1.0);
 	//float storminess = clamp(-1.0 + overcastFactor * 2.0, 0.0, 1.0);
@@ -189,14 +190,17 @@ void main() {
 		//How much does the pixel is lit by directional light
 		float directionalLightning = clamp((NdotL * 1.1 - 0.1), 0.0, 1.0);
 		
-			//Bias to avoid shadow acne
-			float bias = distFactor/32768.0 * 64.0;
-			//Are we inside the shadowmap zone edge ?
-			edgeSmoother = 1.0-clamp(pow(max(0,abs(coordinatesInShadowmap.x-0.5) - 0.45)*20.0+max(0,abs(coordinatesInShadowmap.y-0.5) - 0.45)*20.0, 1.0), 0.0, 1.0);
-			
-			shadowIllumination += clamp((texture(shadowMap, vec3(coordinatesInShadowmap.xy, coordinatesInShadowmap.z-bias), 0.0)), 0.0, 1.0);
+		//Bias to avoid shadow acne
+		float bias = distFactor/32768.0 * 64.0;
+		//Are we inside the shadowmap zone edge ?
+		edgeSmoother = 1.0-clamp(pow(max(0,abs(coordinatesInShadowmap.x-0.5) - 0.45)*20.0+max(0,abs(coordinatesInShadowmap.y-0.5) - 0.45)*20.0, 1.0), 0.0, 1.0);
 		
-		float sunlightAmount = ( directionalLightning * shadowIllumination * ( mix( shadowIllumination, voxelLight.y, 1-edgeSmoother) )) * clamp(sunPos.y, 0.0, 1.0);
+		shadowIllumination += clamp((texture(shadowMap, vec3(coordinatesInShadowmap.xy, coordinatesInShadowmap.z-bias), 0.0)), 0.0, 1.0);
+	
+		float sunlightAmount = shadowIllumination * ( mix( shadowIllumination, voxelLight.y, 1-edgeSmoother) ) * clamp(sunPos.y, 0.0, 1.0);
+		
+		//sunlightAmount *= directionalLightning;
+		sunlightAmount *= mix(directionalLightning, 1.0, float(materialFlags & 1u) * 0.75);
 		
 		lightColor += clamp(sunLight_g * sunlightAmount, 0.0, 4096);
 		lightColor += (1.0 - gi.a) * clamp(shadowLight_g * voxelSunlight, 0.0, 4096);
@@ -230,6 +234,8 @@ void main() {
 	//Multiplies the albedo by the light color
 	fragColor = vec4(albedoColor.rgb * lightColor.rgb, 1.0);
 	
+	//if(materialFlags == 1u)
+	//	fragColor = vec4(0.0, 1.0, 0.0, 1.0);
 	
 	//fragColor = vec4(gi.rgb, 1.0);
 	//fragColor = vec4(vec3(gi.a), 1.0);

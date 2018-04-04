@@ -40,6 +40,7 @@ public class DefaultVoxelRenderer implements VoxelRenderer
 		
 		VoxelBakerCubic vbc = chunkRenderer.getLowpolyBakerFor(LodLevel.ANY, ShadingType.OPAQUE);
 		byte wavyVegetationFlag = (byte) (vox.getDefinition().resolveProperty("affectedByWind", "false").equals("true") ? 3 : 0);
+		vbc.setMaterialFlags(Byte.parseByte(cell.getVoxel().getDefinition().resolveProperty("materialFlags", "0")));
 		
 		int vertices = 0;
 		

@@ -80,5 +80,5 @@ void main(){
 	outNormal = encodeNormal(normal);
 	outVoxelLight = worldLight;
 	outSpecularity = spec;
-	outMaterial = 255u;
+	outMaterial = 0u;
 }

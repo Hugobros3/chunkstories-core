@@ -11,6 +11,7 @@ in vec3 normalPassed;
 in vec4 vertexPassed;
 in vec2 texCoordPassed; // Coordinate
 in vec3 eyeDirection; // eyeDirection-position
+flat in uint materialFlagsPassed;
 
 //Blocks textures
 uniform sampler2D diffuseTexture; // Blocks diffuse texture atlas
@@ -89,5 +90,5 @@ void main(){
 	outNormal = encodeNormal(normal);
 	outVoxelLight = worldLight;
 	outSpecularity = specularity;
-	outMaterial = 255u;
+	outMaterial = materialFlagsPassed;
 }
