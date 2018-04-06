@@ -6,9 +6,8 @@
 //Vertex inputs
 in vec4 vertexIn;
 in vec2 texCoordIn;
-in vec4 colorIn;
+in uvec4 colorAndMaterialIn;
 in vec4 normalIn;
-in uvec4 materialFlagsIn; //hack: it's aliased with colorIn! xyz are the components for voxel light and w is our material flags
 
 //Passed variables
 out vec2 texCoordPassed;
@@ -72,12 +71,12 @@ void main(){
 	texCoordPassed /= 32768.0;
 	
 	//Compute lightmap coords
-	rainWetness = wetness*clamp((colorIn.g * 16.0 - 0.85)*16,0,1.0);
-	worldLight = clamp(vec2(colorIn.r * 15.0, colorIn.g * 15.0) * (1.0 - colorIn.b * 65.75 * 0.25), 0.0, 1.0);
+	rainWetness = wetness*clamp(float(colorAndMaterialIn.g - 16),0,1.0);
+	worldLight = clamp(vec2(colorAndMaterialIn.r, colorAndMaterialIn.g) / 15.0 * (1.0 - float(colorAndMaterialIn.b) * 0.05), 0.0, 1.0);
 	
 	gl_Position = modelViewProjectionMatrix * vertex;
 	
-	uint materialFlags = materialFlagsIn.w;
+	uint materialFlags = colorAndMaterialIn.w;
 	//if(materialFlags != 0u)
 	//	gl_Position = vec4(0.0);
 	

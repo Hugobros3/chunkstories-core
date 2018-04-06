@@ -6,7 +6,7 @@
 //Vertex inputs
 in vec4 vertexIn;
 in vec2 texCoordIn;
-in vec4 colorIn;
+in uvec4 colorAndMaterialIn;
 in vec4 normalIn;
 
 //Passed variables
@@ -14,7 +14,7 @@ out vec3 normalPassed;
 out vec4 vertexPassed;
 out vec2 texCoordPassed; // Coordinate
 out vec3 eyeDirection; // eyeDirection-position
-out vec4 lightMapCoords; //Computed in vertex shader
+out vec2 lightMapCoords; //Computed in vertex shader
 out float fresnelTerm;
 
 //Lighthing
@@ -68,8 +68,11 @@ void main(){
 	
 	fresnelTerm = 0.2 + 0.8 * clamp(0.7 + dot(normalize(vertex.xyz - camPos), vec3(0, 1.0 , 0)), 0.0, 1.0);
 	
+	vec3 colorIn = vec3(colorAndMaterialIn.xyz) / 255.0;
+	
 	//Compute lightmap coords
-	lightMapCoords = vec4(colorIn.r * 16.0, colorIn.g * 16.0, colorIn.b * 16.0, colorIn.a);
+	//lightMapCoords = vec4(colorIn.r * 16.0, colorIn.g * 16.0, colorIn.b * 16.0, 0.0);
+	lightMapCoords.xy = vec2(colorAndMaterialIn.r, colorAndMaterialIn.g) / 15.0 * (1.0 - float(colorAndMaterialIn.b) * 0.002);
 	
 	gl_Position = modelViewProjectionMatrix * vertex;
 	

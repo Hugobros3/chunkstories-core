@@ -10,7 +10,7 @@ in vec3 normalPassed;
 in vec4 vertexPassed;
 in vec2 texCoordPassed; // Coordinate
 in vec3 eyeDirection; // eyeDirection-position
-in vec4 lightMapCoords; //Computed in vertex shader
+in vec2 lightMapCoords; //Computed in vertex shader
 in float fresnelTerm;
 
 out vec4 outDiffuseColor;

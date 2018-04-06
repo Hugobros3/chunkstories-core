@@ -6,7 +6,7 @@
 //Vertex inputs
 in vec4 vertexIn;
 in vec2 texCoordIn;
-in vec4 colorIn;
+in uvec4 colorAndMaterialIn;
 in vec4 normalIn;
 
 //Passed variables
@@ -14,7 +14,6 @@ out vec4 vertexPassed;
 out vec3 normalPassed;
 out vec2 texCoordPassed;
 out vec3 eyeDirection;
-out vec4 lightMapCoords;
 out float fresnelTerm;
 out float waterFogI;
 
@@ -63,9 +62,6 @@ void main(){
 	eyeDirection = vertex.xyz-camPos;
 	
 	fresnelTerm = 0.1 + 0.6 * clamp(0.7 + dot(normalize(vertex.xyz - camPos), vec3(0, 1.0 , 0)), 0.0, 1.0);
-	
-	//Compute lightmap coords
-	lightMapCoords = vec4(colorIn.r, colorIn.g, colorIn.b, 0);
 	
 	waterFogI = length(eyeDirection)/(viewDistance/2.0-16);
 	

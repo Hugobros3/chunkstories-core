@@ -11,19 +11,12 @@ in vec4 vertexPassed;
 in vec3 normalPassed;
 in vec2 texCoordPassed;
 in vec3 eyeDirection;
-in vec4 lightMapCoords;
-in float fresnelTerm;
 in float waterFogI;
 
 out vec4 fragColor;
 
 //Block and sun Lightning
-uniform float sunIntensity; // Adjusts the lightmap coordinates
-uniform vec3 sunPos; // Sun position
 uniform sampler2D lightColors; // Sampler to lightmap
-
-//Shadow shit
-uniform float shadowVisiblity; // Used for night transitions ( w/o shadows as you know )
 
 //Water
 uniform float animationTimer;
@@ -43,7 +36,6 @@ uniform mat3 normalMatrixInv;
 uniform vec3 camPos;
 
 const vec3 shadowColor = vec3(0.20, 0.20, 0.31);
-const float shadowStrength = 0.75;
 
 uniform sampler2D readbackAlbedoBufferTemp;
 uniform sampler2D readbackVoxelLightBufferTemp;
@@ -75,8 +67,6 @@ void main(){
 	vec3 blockLight = textureGammaIn(lightColors,vec2(worldLight.x, 0)).rgb;
 	vec3 sunLight = textureGammaIn(lightColors,vec2(0, worldLight.y)).rgb;
 	
-	sunLight = mix(sunLight, sunLight * shadowColor, shadowVisiblity * 0.75);
-	
 	vec3 finalLight = blockLight;
 	finalLight += sunLight;
 
@@ -84,7 +74,7 @@ void main(){
 	vec4 refracted = texture(readbackAlbedoBufferTemp, coords);
 	
 	float waterFogI2 = length(worldspaceFragment) / viewDistance;
-	refracted.rgb *= pow(finalLight + 0 * vec3(1.0) * (1-refracted.a*lightMapCoords.g), vec3(gammaInv));
+	refracted.rgb *= pow(finalLight, vec3(gammaInv));
 	
 	//baseColor.rgba = vec4(1.0);
 	
