@@ -42,7 +42,7 @@ public class NoiseWorldGenerator extends WorldGenerator
 	}
 
 	@Override
-	public Chunk generateChunk(Chunk chunk)
+	public void generateChunk(Chunk chunk)
 	{
 		int cx = chunk.getChunkX();
 		int cy = chunk.getChunkY();
@@ -122,7 +122,6 @@ public class NoiseWorldGenerator extends WorldGenerator
 						chunk.pokeSimpleSilently(x, y, z, WATER_VOXEL, -1, -1, 0);
 				}
 			}
-		return chunk;
 	}
 
 	float lerp(int x, float val0, float val1, int i0, int i1, int granularity)
@@ -172,19 +171,6 @@ public class NoiseWorldGenerator extends WorldGenerator
 			amplitude *= persistence;
 		}
 		return total / maxAmplitude;
-	}
-	@Override
-	public int getTopDataAt(int x, int y)
-	{
-		//Stones
-		return 1;
-	}
-
-	@Override
-	public int getHeightAt(int x, int z)
-	{
-		//Don't care about far terrain for now
-		return 0;
 	}
 
 	@Override

@@ -1,10 +1,12 @@
 #Bundled world generators
 generator blank
 	class: io.xol.chunkstories.api.world.generator.BlankWorldGenerator
+	maxGenerationHeight: 0
 end
 
 generator horizon
 	class: io.xol.chunkstories.core.generator.HorizonGenerator
+	maxGenerationHeight: 256
 end
 
 generator flat

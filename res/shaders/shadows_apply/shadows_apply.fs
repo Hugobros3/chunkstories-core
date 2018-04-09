@@ -140,7 +140,7 @@ void main() {
 	
 	vec3 lightColor = vec3(0.0);
 	
-	float NdotL = clamp(dot(normalize(normalWorldSpace), normalize(sunPos)), 0.0, 1.0);
+	float NdotL = dot(normalize(normalWorldSpace), normalize(sunPos));
 	
 	#define vl_bias 0.05
 	
@@ -178,8 +178,6 @@ void main() {
 		vec4 shadowCoord = shadowMatrix * (untranslatedMVInv * cameraSpacePosition);
 		float distFactor = getDistordFactor(shadowCoord.xy);
 		vec4 coordinatesInShadowmap = accuratizeShadow(shadowCoord);
-	
-		float clamped = 10 * clamp(NdotL, 0.0, 0.1);
 		
 		//How much in shadows's brightness the object is
 		float shadowIllumination = 0.0;
@@ -188,7 +186,7 @@ void main() {
 		float edgeSmoother = 0.0;
 		
 		//How much does the pixel is lit by directional light
-		float directionalLightning = clamp((NdotL * 1.1 - 0.1), 0.0, 1.0);
+		float directionalLightning = NdotL * 1.0;
 		
 		//Bias to avoid shadow acne
 		float bias = distFactor/32768.0 * 64.0;
@@ -200,16 +198,16 @@ void main() {
 		float sunlightAmount = shadowIllumination * ( mix( shadowIllumination, voxelLight.y, 1-edgeSmoother) ) * clamp(sunPos.y, 0.0, 1.0);
 		
 		//sunlightAmount *= directionalLightning;
-		sunlightAmount *= mix(directionalLightning, 1.0, float(materialFlags & 1u) * 0.75);
+		sunlightAmount *= clamp(mix(directionalLightning, abs(directionalLightning), float(materialFlags & 1u) * 1.0), 0.0, 1.0);
 		
 		lightColor += clamp(sunLight_g * sunlightAmount, 0.0, 4096);
 		lightColor += (1.0 - gi.a) * clamp(shadowLight_g * voxelSunlight, 0.0, 4096);
 	#else
 		// Simple lightning for lower end machines
 		float flatShading = 0.0;
-		flatShading += 0.35 * clamp(dot(/*vec3(0.0, 0.0, 0.0)*/sunPos, normalWorldSpace), -0.5, 1.0);
-		flatShading += 0.25 * clamp(dot(/*vec3(0.0, 0.0, 1.0)*/sunPos, normalWorldSpace), -0.5, 1.0);
-		flatShading += 0.5 * clamp(dot(/*vec3(0.0, 1.0, 0.0)*/sunPos, normalWorldSpace), 0.0, 1.0);
+		flatShading += 0.35 * clamp(dot(sunPos, normalWorldSpace), -0.5, 1.0);
+		flatShading += 0.25 * clamp(dot(sunPos, normalWorldSpace), -0.5, 1.0);
+		flatShading += 0.5 * clamp(dot(sunPos, normalWorldSpace), 0.0, 1.0);
 		
 		lightColor += clamp(sunLight_g * flatShading * voxelSunlight, 0.0, 4096);
 		lightColor += (1.0 - gi.a) * clamp(shadowLight_g * voxelSunlight, 0.0, 4096);

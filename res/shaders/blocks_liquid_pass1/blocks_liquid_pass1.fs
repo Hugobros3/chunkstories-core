@@ -59,7 +59,8 @@ void main(){
 	
 	vec4 baseColor = texture(diffuseTexture, texCoordPassed);
 	
-	vec4 worldspaceFragment = convertScreenSpaceToCameraSpace(coords, readbackDepthBufferTemp);
+	vec4 posunderwater = convertScreenSpaceToCameraSpace(coords, readbackDepthBufferTemp);
+	vec4 possurface = convertScreenSpaceToCameraSpace(vec3((gl_FragCoord.xy)/screenSize, gl_FragCoord.z));
 	
 	//Pass 1
 	vec2 worldLight = texture(readbackVoxelLightBufferTemp, coords).xy;
@@ -73,7 +74,7 @@ void main(){
 	//coords += 15.0 * (1 - length(worldspaceFragment) / viewDistance) * vec2( normal.xz ) / screenSize;
 	vec4 refracted = texture(readbackAlbedoBufferTemp, coords);
 	
-	float waterFogI2 = length(worldspaceFragment) / viewDistance;
+	float waterFogI2 = length(posunderwater.xyz) / 128.0;
 	refracted.rgb *= pow(finalLight, vec3(gammaInv));
 	
 	//baseColor.rgba = vec4(1.0);

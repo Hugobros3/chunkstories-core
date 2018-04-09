@@ -38,7 +38,7 @@ public class FlatGenerator extends WorldGenerator
 	private final Voxel WALL_TOP_VOXEL;
 
 	@Override
-	public Chunk generateChunk(Chunk chunk)
+	public void generateChunk(Chunk chunk)
 	{
 		int cx = chunk.getChunkX();
 		int cy = chunk.getChunkY();
@@ -68,33 +68,6 @@ public class FlatGenerator extends WorldGenerator
 					y++;
 				}
 			}
-		return chunk;
-	}
-
-	@Override
-	public int getHeightAt(int x, int z)
-	{
-		int v = 21;
-		if ((x) % 256 == 0 || (z) % 256 == 0)
-		{
-			v = 30 - 1;
-		}
-		return v;
-
-		//int finalHeight = getHeightAtInternal(x, z);
-		//return finalHeight;
-	}
-
-	@Override
-	public int getTopDataAt(int x, int z)
-	{
-		int type = 27;
-		if ((x) % 256 == 0 || (z) % 256 == 0)
-		{
-			type = 23;
-		}
-
-		return type;
 	}
 
 	@Override
