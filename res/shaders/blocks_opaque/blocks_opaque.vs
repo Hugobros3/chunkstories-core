@@ -71,7 +71,7 @@ void main(){
 	texCoordPassed /= 32768.0;
 	
 	//Compute lightmap coords
-	rainWetness = wetness*clamp(float(colorAndMaterialIn.g - 16),0,1.0);
+	rainWetness = wetness*clamp(float(colorAndMaterialIn.g) - 16.0,0.0,1.0);
 	worldLight = clamp(vec2(colorAndMaterialIn.r, colorAndMaterialIn.g) / 15.0 * (1.0 - float(colorAndMaterialIn.b) * 0.05), 0.0, 1.0);
 	
 	gl_Position = modelViewProjectionMatrix * vertex;
