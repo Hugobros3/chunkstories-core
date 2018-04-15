@@ -34,11 +34,22 @@ public class HorizonGenerator extends WorldGenerator
 	private Voxel GROUND_VOXEL;
 	private Voxel UNDERGROUND_VOXEL;
 	private Voxel STONE_VOXEL;
+	private Voxel TALLGRASS;
+	
+	private Voxel[] SURFACE_DECORATIONS;
 	
 	private int WATER_HEIGHT = 48;
 	
-	final int TREE_TYPES = 2;
-	Structure trees[] = new Structure[TREE_TYPES];
+	final int OKA_TREE_VARIANTS = 6;
+	Structure oakTrees[] = new Structure[OKA_TREE_VARIANTS];
+	
+	final int FALLEN_TREE_VARIANTS = 2;
+	Structure fallenTrees[] = new Structure[FALLEN_TREE_VARIANTS];
+	
+	final int REDWOOD_TREE_VARIANTS = 3;
+	Structure redwoodTrees[] = new Structure[REDWOOD_TREE_VARIANTS];
+	
+	Structure treeTypes[][] = {oakTrees, fallenTrees, redwoodTrees};
 	
 	public HorizonGenerator(WorldGeneratorDefinition type, World w)
 	{
@@ -51,14 +62,26 @@ public class HorizonGenerator extends WorldGenerator
 		this.WATER_VOXEL = world.getGameContext().getContent().voxels().getVoxel("water");
 		this.GROUND_VOXEL = world.getGameContext().getContent().voxels().getVoxel("grass");
 		this.UNDERGROUND_VOXEL = world.getGameContext().getContent().voxels().getVoxel("dirt");
+		this.TALLGRASS = world.getGameContext().getContent().voxels().getVoxel("grass_prop");
 		
 		try {
 			MinecraftBlocksTranslator translator = new MinecraftBlocksTranslator(w.getGameContext(), new File("converter_mapping.txt"));
 			
-			for(int i = 1; i <= TREE_TYPES; i++)
-				trees[i-1] = McSchematicStructure.fromAsset(w.getContent().getAsset("./structures/tree"+i+".schematic"), translator);
+			for(int i = 1; i <= OKA_TREE_VARIANTS; i++)
+				oakTrees[i-1] = McSchematicStructure.fromAsset(w.getContent().getAsset("./structures/oak_tree"+i+".schematic"), translator);
+			
+			for(int i = 1; i <= FALLEN_TREE_VARIANTS; i++)
+				fallenTrees[i-1] = McSchematicStructure.fromAsset(w.getContent().getAsset("./structures/oak_fallen"+i+".schematic"), translator);
+
+			for(int i = 1; i <= REDWOOD_TREE_VARIANTS; i++)
+				redwoodTrees[i-1] = McSchematicStructure.fromAsset(w.getContent().getAsset("./structures/redwood_tree"+i+".schematic"), translator);
+			
+			String decorations[] = new String[] {"flower_yellow", "flower_red", "flower_orange", "flower_blue", "flower_purple", "flower_white", "mushroom_red", "mushroom_brown"};
+			SURFACE_DECORATIONS = new Voxel[decorations.length];
+			for(int i = 1; i <= REDWOOD_TREE_VARIANTS; i++)
+				SURFACE_DECORATIONS[i] = world.getGameContext().getContent().voxels().getVoxel(decorations[i]);
+		
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -66,6 +89,8 @@ public class HorizonGenerator extends WorldGenerator
 	@Override
 	public void generateChunk(Chunk chunk)
 	{
+		Random rnd = new Random();
+		
 		int cx = chunk.getChunkX();
 		int cy = chunk.getChunkY();
 		int cz = chunk.getChunkZ();
@@ -73,7 +98,6 @@ public class HorizonGenerator extends WorldGenerator
 		if(chunk.getChunkY() * 32 >= 384)
 			return;
 		
-		//CubicChunk c = new CubicChunk(region, cx, cy, cz);
 		Voxel voxel = null;
 		for(int x = 0; x < 32; x++)
 			for(int z = 0; z < 32; z++)
@@ -81,33 +105,44 @@ public class HorizonGenerator extends WorldGenerator
 				int groundHeight = getHeightAtInternal(cx * 32 + x, cz * 32 + z);
 				
 				int y = cy * 32;
-				while(y < cy * 32 + 32 && y < groundHeight)
+				while(y < cy * 32 + 32 && y <= groundHeight)
 				{
-					if(groundHeight - y >= 3)
+					if(groundHeight - y > 3) // more than 3 blocks underground => deep ground
 						voxel = STONE_VOXEL;
-					else if(groundHeight - y > 1 || y + 1 < WATER_HEIGHT)
+					else if(y < groundHeight) // dirt
 						voxel = UNDERGROUND_VOXEL;
-					else {
-						voxel = GROUND_VOXEL;
-						/*if(Math.random() > 0.999) {
-							tree.paste(chunk, new Vector3i(cx * 32 + x, y, cz * 32 + z), Structure.FLAG_USE_OFFSET | Structure.FLAG_DONT_OVERWRITE_AIR);
-						}*/
-					}
+					else if(y < WATER_HEIGHT)
+						voxel = UNDERGROUND_VOXEL;
+					else
+						voxel = GROUND_VOXEL; // ground
+					
 					chunk.pokeSimpleSilently(x, y, z, voxel, -1, -1, 0);
 					y++;
 				}
-				while(y < cy * 32 + 32 && y < WATER_HEIGHT)
+				
+				if(y < cy * 32 + 32 && y == groundHeight + 1 && y > WATER_HEIGHT) {
+					//Top soil!
+					double woab = Math.random();
+					if(woab > 0.5) {
+						if(woab > 0.95) {
+							Voxel surfaceVoxel = SURFACE_DECORATIONS[rnd.nextInt(SURFACE_DECORATIONS.length)];
+							chunk.pokeSimpleSilently(x, y, z, surfaceVoxel, -1, -1, 0);
+						} else
+							chunk.pokeSimpleSilently(x, y, z, TALLGRASS, -1, -1, 0); 
+					}
+				}
+				
+				while(y < cy * 32 + 32 && y <= WATER_HEIGHT)
 				{
 					chunk.pokeSimpleSilently(x, y, z, WATER_VOXEL, -1, -1, 0);
 					y++;
 				}
 			}
 		
-		addTrees(chunk);
+		addTrees(chunk, rnd);
 	}
 	
-	private void addTrees(Chunk chunk) {
-		Random rnd = new Random();
+	private void addTrees(Chunk chunk, Random rnd) {
 		
 		int cx = chunk.getChunkX();
 		int cy = chunk.getChunkY();
@@ -130,8 +165,12 @@ public class HorizonGenerator extends WorldGenerator
 						int y = getHeightAtInternal(x, z) - 1;
 						if(y > WATER_HEIGHT) {
 							
-							int type = rnd.nextInt(trees.length);
-							trees[type].paste(chunk, new Vector3i(x, y, z), Structure.FLAG_USE_OFFSET | Structure.FLAG_DONT_OVERWRITE_AIR);
+							int type = rnd.nextInt(treeTypes.length);
+							
+							Structure[] treeType = treeTypes[type];
+							
+							int variant = rnd.nextInt(treeType.length);
+							treeType[variant].paste(chunk, new Vector3i(x, y, z), Structure.FLAG_USE_OFFSET | Structure.FLAG_DONT_OVERWRITE_AIR);
 						}
 					}
 				}
