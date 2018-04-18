@@ -234,8 +234,12 @@ public class HorizonGenerator extends WorldGenerator {
 		if (mountainFactor > 1.0f)
 			mountainFactor = 1f;
 
+		float baseHeight = ridgedNoise(x, z, 5, 1.0f, 0.5f);
+		
+		float plateauHeight = Math.max(0.0f, fractalNoise(x + 22, z + 321, 3, 1.0f / 32f, 0.5f) * 2.0f - 1.0f);
+		
 		// Mountains
-		finalHeight += (ridgedNoise(x, z, 5, 1.0f, 0.5f) * 64 + 128 * mountainFactor);
+		finalHeight += (baseHeight * 64 + plateauHeight * 64 + 128 * mountainFactor);
 
 		return (int) finalHeight;
 	}
