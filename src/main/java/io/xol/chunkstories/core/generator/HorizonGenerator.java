@@ -35,20 +35,16 @@ public class HorizonGenerator extends WorldGenerator {
 	SeededSimplexNoiseGenerator ssng;
 
 	int worldSizeInBlocks;
-	private Voxel AIR_VOXEL;
+
+	private int WATER_HEIGHT, MOUNTAIN_SCALE, BASE_HEIGHT_SCALE, PLATEAU_HEIGHT_SCALE;
+	private double MOUNTAIN_OFFSET;
 	
-	private Voxel WATER_VOXEL;
-	private Voxel GROUND_VOXEL;
-	private Voxel FOREST_GROUND_VOXEL;
-	private Voxel DRY_GROUND_VOXEL;
+	private Voxel AIR_VOXEL, STONE_VOXEL, UNDERGROUND_VOXEL, WATER_VOXEL;
 	
-	private Voxel UNDERGROUND_VOXEL;
-	private Voxel STONE_VOXEL;
+	private Voxel GROUND_VOXEL, FOREST_GROUND_VOXEL, DRY_GROUND_VOXEL;
+	
 	private Voxel TALLGRASS;
-
 	private Voxel[] SURFACE_DECORATIONS;
-
-	private int WATER_HEIGHT = 48;
 
 	final int OKA_TREE_VARIANTS = 6;
 	Structure oakTrees[] = new Structure[OKA_TREE_VARIANTS];
@@ -70,6 +66,12 @@ public class HorizonGenerator extends WorldGenerator {
 		worldEnv = new DefaultWorldEnvironment(world);
 		
 		caveBuilder = new CaveBuilder(world, this);
+		
+		this.WATER_HEIGHT = pint(type.resolveProperty("waterHeight"), 48);
+		this.MOUNTAIN_OFFSET = pdouble(type.resolveProperty("mountainOffset"), 0.3);
+		this.MOUNTAIN_SCALE = pint(type.resolveProperty("mountainScale"), 128);
+		this.BASE_HEIGHT_SCALE = pint(type.resolveProperty("baseHeightScale"), 64);
+		this.PLATEAU_HEIGHT_SCALE = pint(type.resolveProperty("plateauHeightScale"), 64);
 		
 		this.AIR_VOXEL = world.getGameContext().getContent().voxels().air();
 		this.STONE_VOXEL = world.getGameContext().getContent().voxels().getVoxel("stone");
@@ -107,6 +109,24 @@ public class HorizonGenerator extends WorldGenerator {
 		}
 	}
 	
+	private double pdouble(String resolveProperty, double d) {
+		try {
+			if(resolveProperty != null)
+				return Double.parseDouble(resolveProperty);
+		} catch(NumberFormatException nfe) {
+		}
+		return d;
+	}
+
+	private int pint(String resolveProperty, int i) {
+		try {
+			if(resolveProperty != null)
+				return Integer.parseInt(resolveProperty);
+		} catch(NumberFormatException nfe) {
+		}
+		return i;
+	}
+
 	static class SliceData {
 		int heights[] = new int[1024];
 		
@@ -341,28 +361,31 @@ public class HorizonGenerator extends WorldGenerator {
 	}
 
 	int getHeightAtInternal(int x, int z) {
-		float finalHeight = 0.0f;
-
-		float mountainFactor = fractalNoise(x + 548, z + 330, 3, 0.5f, 0.5f);
-		mountainFactor *= 1.0 + 0.125 * ridgedNoise(x + 14, z + 9977, 2, 4.0f, 0.7f);
-
-		mountainFactor -= 0.3;
-		mountainFactor *= 2.0;
-		
-		mountainFactor = Math2.clamp(mountainFactor, 0.0f, 1.0f);
+		float height = 0.0f;
 
 		float baseHeight = ridgedNoise(x, z, 5, 1.0f, 0.5f);
 		
-		float plateauHeight = Math2.clamp(fractalNoise(x + 2235, z + 321, 3, 1, 0.5f) * 3.0f - 1.0f, 0.0f, 1.0f);
-		
-		// Mountains
-		finalHeight += (baseHeight * 64 + plateauHeight * 64 + 128 * mountainFactor);
+		height += baseHeight * BASE_HEIGHT_SCALE;
 
-		//finalHeight = 64 + 128 * mountainFactor;
+		float mountainFactor = fractalNoise(x + 548, z + 330, 3, 0.5f, 0.5f);
+		mountainFactor *= 1.0 + 0.125 * ridgedNoise(x + 14, z + 9977, 2, 4.0f, 0.7f);
+		mountainFactor -= MOUNTAIN_OFFSET;
+		mountainFactor /= (1 - MOUNTAIN_OFFSET);
+		mountainFactor = Math2.clamp(mountainFactor, 0.0f, 1.0f);
 		
-		//finalHeight = 96;
+		height += mountainFactor * MOUNTAIN_SCALE;
 		
-		return (int) finalHeight;
+		float plateauHeight = Math2.clamp(fractalNoise(x + 225, z + 321, 3, 1, 0.5f) * 32.0f - 8.0f, 0.0f, 1.0f);
+		plateauHeight *= Math2.clamp(fractalNoise(x + 3158, z + 9711, 3, 0.125f, 0.5f) * 0.5f + 0.5f, 0.0f, 1.0f);
+
+		if(height >= WATER_HEIGHT)
+			height += plateauHeight * PLATEAU_HEIGHT_SCALE;
+		else
+			height += plateauHeight * baseHeight * PLATEAU_HEIGHT_SCALE;
+		
+		//height = 64 + plateauHeight * PLATEAU_HEIGHT_SCALE;
+		
+		return (int) height;
 	}
 	
 	private float getForestness(int x, int z) {

@@ -6,7 +6,13 @@ end
 
 generator horizon
 	class: io.xol.chunkstories.core.generator.HorizonGenerator
-	maxGenerationHeight: 256
+	maxGenerationHeight: 512
+	
+	waterLevel: 48
+	mountainOffset: 0.3
+	mountainScale: 128
+	baseHeightScale: 64
+	plateauHeightScale: 24
 end
 
 generator flat
