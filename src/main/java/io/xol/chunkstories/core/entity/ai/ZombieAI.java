@@ -11,13 +11,13 @@ import java.util.Collection;
 import org.joml.Vector3d;
 
 import io.xol.chunkstories.api.entity.Entity;
-import io.xol.chunkstories.api.entity.EntityLiving;
 import io.xol.chunkstories.api.entity.ai.AI;
 import io.xol.chunkstories.api.sound.SoundSource.Mode;
 import io.xol.chunkstories.core.entity.EntityHumanoid;
-import io.xol.chunkstories.core.entity.EntityHumanoid.EntityHumanoidStance;
+import io.xol.chunkstories.core.entity.EntityLiving;
 import io.xol.chunkstories.core.entity.EntityPlayer;
 import io.xol.chunkstories.core.entity.EntityZombie;
+import io.xol.chunkstories.core.entity.components.EntityStance.EntityHumanoidStance;
 
 public class ZombieAI extends GenericHumanoidAI
 {

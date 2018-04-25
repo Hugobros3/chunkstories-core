@@ -10,6 +10,7 @@ import io.xol.chunkstories.api.GameContext;
 import io.xol.chunkstories.api.client.ClientInterface;
 import io.xol.chunkstories.api.plugin.ChunkStoriesPlugin;
 import io.xol.chunkstories.api.plugin.PluginInformation;
+import io.xol.chunkstories.core.logic.EntityLogicListener;
 import io.xol.chunkstories.core.logic.ItemsLogicListener;
 import io.xol.chunkstories.core.rendering.RenderingEventsListener;
 
@@ -17,6 +18,8 @@ import io.xol.chunkstories.core.rendering.RenderingEventsListener;
 public class CoreContentPlugin extends ChunkStoriesPlugin {
 
 	private ItemsLogicListener itemsLogic;
+	private EntityLogicListener entityLogic;
+	
 	private RenderingEventsListener renderingLogic;
 	
 	public CoreContentPlugin(PluginInformation pluginInformation, GameContext pluginExecutionContext) {
@@ -28,6 +31,9 @@ public class CoreContentPlugin extends ChunkStoriesPlugin {
 	public void onEnable() {
 		itemsLogic = new ItemsLogicListener(this);
 		pluginExecutionContext.getPluginManager().registerEventListener(itemsLogic, this);
+		
+		entityLogic = new EntityLogicListener(this);
+		pluginExecutionContext.getPluginManager().registerEventListener(entityLogic, this);
 		
 		if(this.getPluginExecutionContext() instanceof ClientInterface) {
 			renderingLogic = new RenderingEventsListener(this, (ClientInterface) getPluginExecutionContext());

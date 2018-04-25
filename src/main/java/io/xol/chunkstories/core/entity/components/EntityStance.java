@@ -14,39 +14,43 @@ import io.xol.chunkstories.api.entity.Entity;
 import io.xol.chunkstories.api.entity.components.EntityComponent;
 import io.xol.chunkstories.api.world.serialization.StreamSource;
 import io.xol.chunkstories.api.world.serialization.StreamTarget;
-import io.xol.chunkstories.core.entity.EntityHumanoid.EntityHumanoidStance;
 
-public class EntityComponentStance extends EntityComponent
-{
+public class EntityStance extends EntityComponent {
 	private EntityHumanoidStance value = EntityHumanoidStance.STANDING;
-	
-	public EntityHumanoidStance get()
-	{
+
+	public EntityHumanoidStance get() {
 		return value;
 	}
 
-	public void set(EntityHumanoidStance flying)
-	{
+	public void set(EntityHumanoidStance flying) {
 		this.value = flying;
 		this.pushComponentEveryone();
 	}
 
-	public EntityComponentStance(Entity entity)
-	{
+	public EntityStance(Entity entity) {
 		super(entity);
 	}
 
 	@Override
-	protected void push(StreamTarget destinator, DataOutputStream dos) throws IOException
-	{
+	protected void push(StreamTarget destinator, DataOutputStream dos) throws IOException {
 		dos.writeByte(this.value.ordinal());
 	}
 
 	@Override
-	protected void pull(StreamSource from, DataInputStream dis) throws IOException
-	{
+	protected void pull(StreamSource from, DataInputStream dis) throws IOException {
 		value = EntityHumanoidStance.values()[dis.readByte()];
 		this.pushComponentEveryoneButController();
 	}
-
+	
+	public enum EntityHumanoidStance {
+		STANDING(1.65),
+		CROUCHING(1.15),
+		;
+		
+		public final double eyeLevel;
+		
+		EntityHumanoidStance(double eyeLevel) {
+			this.eyeLevel = eyeLevel;
+		}
+	}
 }

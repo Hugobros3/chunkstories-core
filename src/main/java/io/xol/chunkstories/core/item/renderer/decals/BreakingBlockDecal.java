@@ -34,7 +34,7 @@ import io.xol.chunkstories.api.rendering.world.chunk.vertexlayout.BaseLayoutBake
 import io.xol.chunkstories.api.voxel.VoxelSide.Corners;
 import io.xol.chunkstories.api.world.WorldClient;
 import io.xol.chunkstories.api.world.cell.CellData;
-import io.xol.chunkstories.core.item.ItemMiningTool.MiningProgress;
+import io.xol.chunkstories.core.item.MiningProgress;
 import io.xol.chunkstories.core.voxel.renderers.DefaultVoxelRenderer;
 
 public class BreakingBlockDecal {

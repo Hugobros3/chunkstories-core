@@ -14,10 +14,10 @@ import org.joml.Vector3dc;
 
 import io.xol.chunkstories.api.Location;
 import io.xol.chunkstories.api.entity.Entity;
-import io.xol.chunkstories.api.entity.EntityLiving;
 import io.xol.chunkstories.api.entity.ai.AI;
 import io.xol.chunkstories.api.sound.SoundSource.Mode;
 import io.xol.chunkstories.core.entity.EntityHumanoid;
+import io.xol.chunkstories.core.entity.EntityLiving;
 
 public class GenericHumanoidAI extends AI<EntityHumanoid>
 {

@@ -10,9 +10,9 @@ import io.xol.chunkstories.api.entity.DamageCause;
 import io.xol.chunkstories.api.entity.Entity;
 import io.xol.chunkstories.api.entity.components.EntityComponentGenericFloatValue;
 
-public class EntityComponentFoodLevel extends EntityComponentGenericFloatValue
+public class EntityFoodLevel extends EntityComponentGenericFloatValue
 {
-	public EntityComponentFoodLevel(Entity entity, float defaultValue)
+	public EntityFoodLevel(Entity entity, float defaultValue)
 	{
 		super(entity, defaultValue);
 	}

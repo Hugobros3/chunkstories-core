@@ -19,7 +19,7 @@ import io.xol.chunkstories.api.rendering.world.WorldRenderer;
 import io.xol.chunkstories.api.world.WorldClient;
 import io.xol.chunkstories.core.CoreContentPlugin;
 import io.xol.chunkstories.core.item.ItemMiningTool;
-import io.xol.chunkstories.core.item.ItemMiningTool.MiningProgress;
+import io.xol.chunkstories.core.item.MiningProgress;
 import io.xol.chunkstories.core.item.renderer.decals.BreakingBlockDecal;
 import io.xol.chunkstories.core.rendering.passes.ApplySunlightPass;
 import io.xol.chunkstories.core.rendering.passes.BloomPass;

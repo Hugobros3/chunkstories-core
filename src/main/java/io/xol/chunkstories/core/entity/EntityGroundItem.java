@@ -12,13 +12,14 @@ import org.joml.Vector3dc;
 import org.joml.Vector3f;
 
 import io.xol.chunkstories.api.Location;
-import io.xol.chunkstories.api.entity.EntityBase;
+import io.xol.chunkstories.api.entity.Entity;
 import io.xol.chunkstories.api.entity.EntityDefinition;
-import io.xol.chunkstories.api.entity.components.EntityComponentVelocity;
+import io.xol.chunkstories.api.entity.components.EntityVelocity;
+import io.xol.chunkstories.api.entity.traits.TraitCollidable;
+import io.xol.chunkstories.api.entity.traits.TraitRenderable;
 import io.xol.chunkstories.api.item.inventory.ItemPile;
 import io.xol.chunkstories.api.physics.CollisionBox;
 import io.xol.chunkstories.api.rendering.RenderingInterface;
-import io.xol.chunkstories.api.rendering.entity.EntityRenderable;
 import io.xol.chunkstories.api.rendering.entity.EntityRenderer;
 import io.xol.chunkstories.api.rendering.entity.RenderingIterator;
 import io.xol.chunkstories.api.voxel.Voxel;
@@ -26,13 +27,12 @@ import io.xol.chunkstories.api.world.WorldClient;
 import io.xol.chunkstories.api.world.WorldMaster;
 import io.xol.chunkstories.api.world.cell.CellData;
 
-public class EntityGroundItem extends EntityBase implements EntityRenderable
-{
-	//protected float tilt = 0f;
-	//protected float direction = 0f;
+public class EntityGroundItem extends Entity {
 	protected float rotation = 0f;
 	
-	public final EntityComponentVelocity velocityComponent = new EntityComponentVelocity(this);
+	public final EntityVelocity entityVelocity = new EntityVelocity(this);
+	public final TraitCollidable collisions = new TraitCollidable(this);
+	public final TraitRenderable renderable = new TraitRenderable(this, EntityGroundItemRenderer::new );
 	
 	private long spawnTime;
 	private final EntityGroundItemPileComponent itemPileWithin;
@@ -70,20 +70,20 @@ public class EntityGroundItem extends EntityBase implements EntityRenderable
 	public void tick()
 	{
 		//this.moveWithCollisionRestrain(0, -0.05, 0);
-		Vector3d velocity = velocityComponent.getVelocity();
+		Vector3d velocity = entityVelocity.getVelocity();
 
 		if (world instanceof WorldMaster) {
-			Voxel voxelIn = world.peekSafely(positionComponent.getLocation()).getVoxel();
+			Voxel voxelIn = world.peekSafely(getLocation()).getVoxel();
 			boolean inWater = voxelIn.getDefinition().isLiquid();
 
 			double terminalVelocity = inWater ? -0.25 : -0.5;
-			if (velocity.y() > terminalVelocity && !this.isOnGround())
+			if (velocity.y() > terminalVelocity && !collisions.isOnGround())
 				velocity.y = (velocity.y() - 0.016);
 			if (velocity.y() < terminalVelocity)
 				velocity.y = (terminalVelocity);
 
-			Vector3dc remainingToMove = moveWithCollisionRestrain(velocity.x(), velocity.y(), velocity.z());
-			if (remainingToMove.y() < -0.02 && this.isOnGround()) {
+			Vector3dc remainingToMove = collisions.moveWithCollisionRestrain(velocity.x(), velocity.y(), velocity.z());
+			if (remainingToMove.y() < -0.02 && collisions.isOnGround()) {
 				if (remainingToMove.y() < -0.01) {
 					//Bounce
 					double originalDownardsVelocity = velocity.y();
@@ -104,22 +104,18 @@ public class EntityGroundItem extends EntityBase implements EntityRenderable
 			if (Math.abs(velocity.y()) < 0.01)
 				velocity.y = (0.0);
 
-			velocityComponent.setVelocity(velocity);
+			entityVelocity.setVelocity(velocity);
 		}
 
 		if (world instanceof WorldClient) {
 			
-			if(this.isOnGround())
+			if(collisions.isOnGround())
 			{
 				rotation += 1.0f;
 				rotation %= 360;
 			}
 		}
-		
-		super.tick();
 	}
-	
-	static EntityRenderer<EntityGroundItem> entityRenderer = new EntityGroundItemRenderer();
 	
 	static class EntityGroundItemRenderer extends EntityRenderer<EntityGroundItem> {
 		
@@ -167,17 +163,9 @@ public class EntityGroundItem extends EntityBase implements EntityRenderable
 		}
 		
 	}
-	
-	@Override
-	public EntityRenderer<? extends EntityRenderable> getEntityRenderer()
-	{
-		return entityRenderer;
-	}
 
 	@Override
 	public CollisionBox getBoundingBox() {
 		return new CollisionBox(0.5, 0.75, 0.5).translate(-0.25, 0.0, -0.25);
 	}
-	
-	
 }

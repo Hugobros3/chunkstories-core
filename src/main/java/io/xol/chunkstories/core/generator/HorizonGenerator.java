@@ -12,9 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import org.joml.Vector2i;
-import org.joml.Vector3d;
-import org.joml.Vector3f;
 import org.joml.Vector3i;
 
 import io.xol.chunkstories.api.content.Content.WorldGenerators.WorldGeneratorDefinition;

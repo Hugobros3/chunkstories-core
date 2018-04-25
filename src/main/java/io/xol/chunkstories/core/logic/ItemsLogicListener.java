@@ -10,15 +10,15 @@ import org.joml.Vector3d;
 
 import io.xol.chunkstories.api.Location;
 import io.xol.chunkstories.api.entity.Entity;
-import io.xol.chunkstories.api.entity.EntityLiving;
-import io.xol.chunkstories.api.entity.interfaces.EntityWithInventory;
+import io.xol.chunkstories.api.entity.components.EntityInventory;
+import io.xol.chunkstories.api.entity.components.EntityRotation;
+import io.xol.chunkstories.api.entity.components.EntityVelocity;
 import io.xol.chunkstories.api.events.EventHandler;
 import io.xol.chunkstories.api.events.Listener;
 import io.xol.chunkstories.api.events.item.EventItemDroppedToWorld;
 import io.xol.chunkstories.api.math.Math2;
 import io.xol.chunkstories.core.CoreContentPlugin;
 import io.xol.chunkstories.core.entity.EntityGroundItem;
-import io.xol.chunkstories.core.entity.EntityPlayer;
 
 public class ItemsLogicListener implements Listener {
 	private final CoreContentPlugin core;
@@ -35,24 +35,31 @@ public class ItemsLogicListener implements Listener {
 		
 		//Throw it when dropping it from a player's inventory ?
 		System.out.println(event.getInventoryFrom());
-		if(event.getInventoryFrom() != null && event.getInventoryFrom().getHolder() != null && event.getInventoryFrom().getHolder() instanceof Entity) {
-			
+		if(event.getInventoryFrom() != null && event.getInventoryFrom() instanceof EntityInventory) {
 			System.out.println("from som 1");
-			EntityWithInventory entity = ((EntityWithInventory)event.getInventoryFrom().getHolder());
-			Location pos = entity.getLocation();
+			EntityInventory entityInventory = (EntityInventory) event.getInventoryFrom();
+			Entity entity = entityInventory.entity;
 			
-			if(entity instanceof EntityLiving) {
-				System.out.println("he l i v e s");
-				EntityLiving owner = (EntityLiving)entity;
+			entity.components.with(EntityRotation.class, er -> {
+				
+				throwForce.set(new Vector3d(er.getDirectionLookingAt()).mul(0.15 - Math2.clampd(er.getVerticalRotation(), -45, 20) / 45f * 0.0f));
+				
+				if(entity.components.has(EntityVelocity.class))
+					throwForce.add(entity.components.get(EntityVelocity.class).getVelocity());
+			});
+			
+			/*
+			 * TODO remake
+			 * if(entityInventory instanceof EntityLiving) {
+				EntityLiving owner = (EntityLiving)entityInventory;
 				throwLocation = new Location(pos.getWorld(), pos.x(), pos.y() + ((EntityPlayer)owner).eyePosition, pos.z());
-				throwForce = new Vector3d(((EntityPlayer)owner).getDirectionLookingAt()).mul(0.15 - Math2.clampd(((EntityPlayer)owner).getEntityRotationComponent().getVerticalRotation(), -45, 20) / 45f * 0.0f);
-				throwForce.add(((EntityPlayer)owner).getVelocityComponent().getVelocity());
-			}
+				
+			}*/
 		}
 		
 		EntityGroundItem thrownItem = (EntityGroundItem) core.getPluginExecutionContext().getContent().entities().getEntityDefinition("groundItem").create(throwLocation);
-		thrownItem.positionComponent.setPosition(throwLocation);
-		thrownItem.velocityComponent.setVelocity(throwForce);
+		thrownItem.entityLocation.set(throwLocation);
+		thrownItem.entityVelocity.setVelocity(throwForce);
 		thrownItem.setItemPile(event.getItemPile());
 		
 		//EntityGroundItem entity = new EntityGroundItem(core.getPluginExecutionContext().getContent().entities().getEntityDefinitionByName("groundItem"), event.getLocation(), event.getItemPile());

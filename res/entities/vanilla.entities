@@ -3,10 +3,12 @@
 
 entity player
 	class: io.xol.chunkstories.core.entity.EntityPlayer
+	collidesWithEntities: true
 end
 
 entity zombie
 	class: io.xol.chunkstories.core.entity.EntityZombie
+	collidesWithEntities: true
 end
 
 voxel_entity chest

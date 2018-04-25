@@ -7,44 +7,27 @@
 package io.xol.chunkstories.core.item;
 
 import org.joml.Matrix4f;
-import org.joml.Vector3d;
 import org.joml.Vector3f;
 
 import io.xol.chunkstories.api.Location;
-import io.xol.chunkstories.api.client.ClientInterface;
-import io.xol.chunkstories.api.entity.Controller;
 import io.xol.chunkstories.api.entity.Entity;
 import io.xol.chunkstories.api.entity.interfaces.EntityControllable;
-import io.xol.chunkstories.api.entity.interfaces.EntityWorldModifier;
-import io.xol.chunkstories.api.events.player.voxel.PlayerVoxelModificationEvent;
-import io.xol.chunkstories.api.events.voxel.WorldModificationCause;
-import io.xol.chunkstories.api.exceptions.world.WorldException;
-import io.xol.chunkstories.api.input.InputsManager;
 import io.xol.chunkstories.api.item.Item;
 import io.xol.chunkstories.api.item.ItemDefinition;
 import io.xol.chunkstories.api.item.inventory.ItemPile;
-import io.xol.chunkstories.api.player.Player;
 import io.xol.chunkstories.api.rendering.RenderingInterface;
 import io.xol.chunkstories.api.rendering.item.ItemRenderer;
 import io.xol.chunkstories.api.sound.SoundSource.Mode;
-import io.xol.chunkstories.api.voxel.Voxel;
-import io.xol.chunkstories.api.voxel.materials.VoxelMaterial;
 import io.xol.chunkstories.api.world.World;
-import io.xol.chunkstories.api.world.World.WorldCell;
-import io.xol.chunkstories.api.world.WorldMaster;
-import io.xol.chunkstories.api.world.cell.CellData;
-import io.xol.chunkstories.api.world.cell.FutureCell;
-import io.xol.chunkstories.core.entity.EntityGroundItem;
 
-public class ItemMiningTool extends Item {
+public class ItemMiningTool extends Item implements MiningTool {
 
 	public final String toolType;
 	public final float miningEfficiency;
 
 	public final long animationCycleDuration;
 
-	private MiningProgress progress;
-	public static MiningProgress myProgress;
+	//public static MiningProgress myProgress;
 
 	public ItemMiningTool(ItemDefinition type) {
 		super(type);
@@ -58,7 +41,7 @@ public class ItemMiningTool extends Item {
 	@Override
 	public void tickInHand(Entity owner, ItemPile itemPile) {
 
-		World world = owner.getWorld();
+		/*World world = owner.getWorld();
 		if (owner instanceof EntityControllable && owner instanceof EntityWorldModifier) {
 			EntityControllable entityControllable = (EntityControllable) owner;
 			Controller controller = entityControllable.getController();
@@ -83,56 +66,9 @@ public class ItemMiningTool extends Item {
 					if (progress == null) {
 						// Try starting mining something
 						if (lookingAt != null)
-							progress = new MiningProgress(world.peekSafely(lookingAt));
+							progress = new MiningProgress(world.peekSafely(lookingAt), this);
 					} else {
-						// Progress using efficiency / ticks per second
-						progress.progress += ItemMiningTool.this.miningEfficiency / 60f / progress.materialHardnessForThisTool;
-
-						if (progress.progress >= 1.0f) {
-							if (owner.getWorld() instanceof WorldMaster) {
-								FutureCell future = new FutureCell(cell);
-								future.setVoxel(this.getDefinition().store().parent().voxels().air());
-
-								// Check no one minds
-								PlayerVoxelModificationEvent event = new PlayerVoxelModificationEvent(cell, future, (WorldModificationCause) entityControllable,
-										(Player) controller);
-								owner.getWorld().getGameContext().getPluginManager().fireEvent(event);
-
-								// Break the block
-								if (!event.isCancelled()) {
-									Vector3d rnd = new Vector3d();
-									for (int i = 0; i < 40; i++) {
-										rnd.set(progress.loc);
-										rnd.add(Math.random() * 0.98, Math.random() * 0.98, Math.random() * 0.98);
-										world.getParticlesManager().spawnParticleAtPosition("voxel_frag", rnd);
-									}
-									world.getSoundManager().playSoundEffect("sounds/gameplay/voxel_remove.ogg", Mode.NORMAL, progress.loc, 1.0f, 1.0f);
-
-									Location itemSpawnLocation = new Location(world, progress.loc);
-									itemSpawnLocation.add(0.5, 0.0, 0.5);
-									
-									//ItemPile droppedItemPile = null;
-									for(ItemPile droppedItemPile : cell.getVoxel().getLoot(cell, (WorldModificationCause) entityControllable)) {
-	
-										EntityGroundItem thrownItem = (EntityGroundItem) getDefinition().store().parent().entities()
-												.getEntityDefinition("groundItem").create(itemSpawnLocation);
-										thrownItem.positionComponent.setPosition(itemSpawnLocation);
-										thrownItem.velocityComponent.setVelocity(new Vector3d(Math.random() * 0.125 - 0.0625, 0.1, Math.random() * 0.125 - 0.0625));
-										thrownItem.setItemPile(droppedItemPile);
-										world.addEntity(thrownItem);
-									}
-
-									try {
-										world.poke(future, (WorldModificationCause) entityControllable);
-									} catch (WorldException e) {
-										// Didn't work
-										// TODO make some ingame effect so as to clue in the player why it failed
-									}
-								}
-							}
-
-							progress = null;
-						}
+						progress.keepGoing(entityControllable, controller);
 					}
 				} else {
 					progress = null;
@@ -146,7 +82,7 @@ public class ItemMiningTool extends Item {
 					}
 				}
 			}
-		}
+		}*/
 
 	}
 
@@ -204,46 +140,13 @@ public class ItemMiningTool extends Item {
 		}
 	}
 
-	public class MiningProgress {
+	@Override
+	public float getMiningEfficiency() {
+		return this.miningEfficiency;
+	}
 
-		public final CellData context;
-		public final Voxel voxel;
-		public final VoxelMaterial material;
-		public final Location loc;
-		// public final int startId;
-		public float progress;
-		public final long started;
-
-		public final float materialHardnessForThisTool;
-		int timesSoundPlayed = 0;
-
-		public MiningProgress(CellData context) {
-			this.context = context;
-			this.loc = context.getLocation();
-
-			voxel = context.getVoxel();
-			material = voxel.getMaterial();
-			String hardnessString = null;
-
-			// First order, check the voxel itself if it states a certain hardness for this tool type
-			hardnessString = voxel.getDefinition().resolveProperty("hardnessFor" + ItemMiningTool.this.toolType, null);
-
-			// Then check if the voxel states a general hardness multiplier
-			if (hardnessString == null)
-				hardnessString = voxel.getDefinition().resolveProperty("hardness", null);
-
-			// if the voxel is devoid of information, we do the same on the material
-			if (hardnessString == null)
-				hardnessString = material.resolveProperty("materialHardnessFor" + ItemMiningTool.this.toolType, null);
-
-			// Eventually we default to 1.0
-			if (hardnessString == null)
-				hardnessString = material.resolveProperty("materialHardness", "1.0");
-
-			this.materialHardnessForThisTool = Float.parseFloat(hardnessString);
-
-			this.progress = 0.0f;
-			this.started = System.currentTimeMillis();
-		}
+	@Override
+	public String getToolTypeName() {
+		return this.toolType;
 	}
 }

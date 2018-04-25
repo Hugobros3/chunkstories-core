@@ -7,9 +7,9 @@
 package io.xol.chunkstories.core.item;
 
 import io.xol.chunkstories.api.entity.Controller;
-import io.xol.chunkstories.api.entity.EntityLiving;
 import io.xol.chunkstories.api.events.Event;
 import io.xol.chunkstories.api.events.EventListeners;
+import io.xol.chunkstories.core.entity.EntityLiving;
 
 public class FirearmShotEvent extends Event
 {
