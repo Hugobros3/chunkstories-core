@@ -11,14 +11,16 @@ import org.joml.Vector3f;
 
 import io.xol.chunkstories.api.Location;
 import io.xol.chunkstories.api.entity.Entity;
-import io.xol.chunkstories.api.entity.interfaces.EntityControllable;
+import io.xol.chunkstories.api.entity.components.EntityInventory;
 import io.xol.chunkstories.api.item.Item;
 import io.xol.chunkstories.api.item.ItemDefinition;
+import io.xol.chunkstories.api.item.inventory.Inventory;
 import io.xol.chunkstories.api.item.inventory.ItemPile;
 import io.xol.chunkstories.api.rendering.RenderingInterface;
 import io.xol.chunkstories.api.rendering.item.ItemRenderer;
 import io.xol.chunkstories.api.sound.SoundSource.Mode;
 import io.xol.chunkstories.api.world.World;
+import io.xol.chunkstories.core.entity.traits.MinerTrait;
 
 public class ItemMiningTool extends Item implements MiningTool {
 
@@ -100,16 +102,18 @@ public class ItemMiningTool extends Item implements MiningTool {
 		@Override
 		public void renderItemInWorld(RenderingInterface renderingInterface, ItemPile pile, World world, Location location, Matrix4f transformation) {
 
-			// Controlled by some player
-			if (pile.getInventory() != null && pile.getInventory().getHolder() != null && pile.getInventory().getHolder() instanceof EntityControllable
-					&& ((EntityControllable) pile.getInventory().getHolder()).getController() != null) {
-
+			MinerTrait trait = null;
+			Inventory inv = pile.getInventory();
+			if(inv instanceof EntityInventory)
+				trait = ((EntityInventory)inv).entity.traits.get(MinerTrait.class);
+				
+			if(trait != null){
 				Matrix4f rotated = new Matrix4f(transformation);
 
 				Vector3f center = new Vector3f(0.0f, -0.0f, -100f);
 
 				rotated.translate(0.05f, -0.1f, 0f);
-				MiningProgress progress = ((ItemMiningTool) pile.getItem()).progress;
+				MiningProgress progress = trait.getProgress();
 
 				if (progress != null) {
 					long elapsed = System.currentTimeMillis() - progress.started;

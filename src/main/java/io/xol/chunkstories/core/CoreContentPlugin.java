@@ -10,6 +10,7 @@ import io.xol.chunkstories.api.GameContext;
 import io.xol.chunkstories.api.client.ClientInterface;
 import io.xol.chunkstories.api.plugin.ChunkStoriesPlugin;
 import io.xol.chunkstories.api.plugin.PluginInformation;
+import io.xol.chunkstories.core.cli.FoodCommand;
 import io.xol.chunkstories.core.logic.EntityLogicListener;
 import io.xol.chunkstories.core.logic.ItemsLogicListener;
 import io.xol.chunkstories.core.rendering.RenderingEventsListener;
@@ -25,6 +26,7 @@ public class CoreContentPlugin extends ChunkStoriesPlugin {
 	public CoreContentPlugin(PluginInformation pluginInformation, GameContext pluginExecutionContext) {
 		super(pluginInformation, pluginExecutionContext);
 		
+		this.getPluginManager().registerCommandHandler("food", new FoodCommand());
 	}
 
 	@Override
@@ -43,7 +45,6 @@ public class CoreContentPlugin extends ChunkStoriesPlugin {
 
 	@Override
 	public void onDisable() {
-		
 		//pluginExecutionContext.getPluginManager().unRegisterEventListener(itemsLogic, this);
 	}
 

@@ -8,6 +8,7 @@ package io.xol.chunkstories.core.voxel;
 
 import io.xol.chunkstories.api.Location;
 import io.xol.chunkstories.api.entity.Entity;
+import io.xol.chunkstories.api.entity.components.EntityRotation;
 import io.xol.chunkstories.api.events.voxel.WorldModificationCause;
 import io.xol.chunkstories.api.physics.CollisionBox;
 import io.xol.chunkstories.api.voxel.Voxel;
@@ -15,7 +16,6 @@ import io.xol.chunkstories.api.voxel.VoxelDefinition;
 import io.xol.chunkstories.api.voxel.models.VoxelModel;
 import io.xol.chunkstories.api.world.cell.CellData;
 import io.xol.chunkstories.api.world.cell.FutureCell;
-import io.xol.chunkstories.core.entity.EntityPlayer;
 
 public class VoxelStairs extends Voxel
 {
@@ -108,11 +108,8 @@ public class VoxelStairs extends Voxel
 					stairsSide = 2;
 			}
 			
-			if(entity instanceof EntityPlayer)
-			{
-				if(((EntityPlayer)entity).getEntityRotationComponent().getVerticalRotation() < 0)
-					stairsSide += 4;
-			}
+			if(entity.components.tryWithBoolean(EntityRotation.class, er -> er.getVerticalRotation() < 0))
+				stairsSide += 4;
 			
 			cell.setMetaData(stairsSide);
 		}

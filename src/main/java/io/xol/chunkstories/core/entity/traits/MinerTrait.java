@@ -81,4 +81,8 @@ public class MinerTrait extends Trait {
 		});
 		
 	}
+
+	public MiningProgress getProgress() {
+		return progress;
+	}
 }

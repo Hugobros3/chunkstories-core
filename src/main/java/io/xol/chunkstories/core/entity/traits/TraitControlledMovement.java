@@ -1,16 +1,15 @@
-package io.xol.chunkstories.core.entity;
+package io.xol.chunkstories.core.entity.traits;
 
 import io.xol.chunkstories.api.client.LocalPlayer;
 import io.xol.chunkstories.api.entity.Controller;
 import io.xol.chunkstories.api.entity.Entity;
 import io.xol.chunkstories.api.entity.components.EntityController;
+import io.xol.chunkstories.api.entity.components.EntityHealth;
 import io.xol.chunkstories.api.entity.components.EntityRotation;
 import io.xol.chunkstories.api.entity.components.EntityVelocity;
 import io.xol.chunkstories.api.entity.traits.TraitCollidable;
 import io.xol.chunkstories.api.physics.CollisionBox;
 import io.xol.chunkstories.api.world.cell.CellData;
-import io.xol.chunkstories.core.entity.components.EntityHealth;
-import io.xol.chunkstories.core.entity.traits.TraitBasicMovement;
 import io.xol.chunkstories.core.voxel.VoxelClimbable;
 
 public abstract class TraitControlledMovement extends TraitBasicMovement {

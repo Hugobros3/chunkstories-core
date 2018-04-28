@@ -4,7 +4,7 @@
 // Website: http://chunkstories.xyz
 //
 
-package io.xol.chunkstories.core.entity;
+package io.xol.chunkstories.core.entity.components;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -21,7 +21,7 @@ import io.xol.chunkstories.api.world.serialization.StreamTarget;
 
 public class EntityGroundItemPileComponent extends EntityComponent
 {
-	ItemPile itemPile = null;
+	public ItemPile itemPile = null;
 
 	public EntityGroundItemPileComponent(Entity entity)
 	{

@@ -6,18 +6,17 @@ import org.joml.Vector3d;
 import org.joml.Vector3dc;
 
 import io.xol.chunkstories.api.entity.Entity;
+import io.xol.chunkstories.api.entity.components.EntityHealth;
 import io.xol.chunkstories.api.entity.components.EntityRotation;
 import io.xol.chunkstories.api.entity.components.EntityVelocity;
 import io.xol.chunkstories.api.entity.traits.Trait;
 import io.xol.chunkstories.api.entity.traits.TraitCollidable;
 import io.xol.chunkstories.api.world.cell.CellData;
-import io.xol.chunkstories.core.entity.components.EntityHealth;
 
 public class TraitBasicMovement extends Trait {
 
 	public Vector3d acceleration = new Vector3d();
-	
-	protected Vector3d targetVelocity = new Vector3d(0);
+	public Vector3d targetVelocity = new Vector3d(0);
 	//double jumpForce = 0;
 
 	protected long lastJump;

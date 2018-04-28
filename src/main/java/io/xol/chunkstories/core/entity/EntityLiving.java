@@ -11,11 +11,11 @@ import io.xol.chunkstories.api.entity.Controller;
 import io.xol.chunkstories.api.entity.Entity;
 import io.xol.chunkstories.api.entity.EntityDefinition;
 import io.xol.chunkstories.api.entity.components.EntityController;
+import io.xol.chunkstories.api.entity.components.EntityHealth;
 import io.xol.chunkstories.api.entity.components.EntityRotation;
 import io.xol.chunkstories.api.entity.components.EntityVelocity;
 import io.xol.chunkstories.api.world.WorldClient;
 import io.xol.chunkstories.api.world.WorldMaster;
-import io.xol.chunkstories.core.entity.components.EntityHealth;
 import io.xol.chunkstories.core.entity.traits.TraitBasicMovement;
 
 public abstract class EntityLiving extends Entity {

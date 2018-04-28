@@ -17,10 +17,11 @@ import io.xol.chunkstories.api.Location;
 import io.xol.chunkstories.api.client.LocalPlayer;
 import io.xol.chunkstories.api.entity.Controller;
 import io.xol.chunkstories.api.entity.Entity;
-import io.xol.chunkstories.api.entity.components.EntityComponentRotation;
-import io.xol.chunkstories.api.entity.interfaces.EntityControllable;
-import io.xol.chunkstories.api.entity.interfaces.EntityCreative;
-import io.xol.chunkstories.api.entity.traits.TraitHitboxes.HitBox;
+import io.xol.chunkstories.api.entity.components.EntityController;
+import io.xol.chunkstories.api.entity.components.EntityCreativeMode;
+import io.xol.chunkstories.api.entity.components.EntityHealth;
+import io.xol.chunkstories.api.entity.components.EntityRotation;
+import io.xol.chunkstories.api.entity.traits.TraitHitboxes;
 import io.xol.chunkstories.api.input.Input;
 import io.xol.chunkstories.api.item.ItemDefinition;
 import io.xol.chunkstories.api.item.interfaces.ItemCustomHoldingAnimation;
@@ -29,6 +30,7 @@ import io.xol.chunkstories.api.item.interfaces.ItemZoom;
 import io.xol.chunkstories.api.item.inventory.Inventory;
 import io.xol.chunkstories.api.item.inventory.ItemPile;
 import io.xol.chunkstories.api.physics.CollisionBox;
+import io.xol.chunkstories.api.physics.EntityHitbox;
 import io.xol.chunkstories.api.rendering.RenderingInterface;
 import io.xol.chunkstories.api.rendering.item.ItemRenderer;
 import io.xol.chunkstories.api.rendering.text.FontRenderer.Font;
@@ -38,8 +40,7 @@ import io.xol.chunkstories.api.world.World;
 import io.xol.chunkstories.api.world.World.WorldCell;
 import io.xol.chunkstories.api.world.WorldClient;
 import io.xol.chunkstories.api.world.WorldMaster;
-import io.xol.chunkstories.core.entity.EntityLiving;
-import io.xol.chunkstories.core.entity.EntityPlayer;
+import io.xol.chunkstories.core.entity.traits.TraitEyeLevel;
 import io.xol.chunkstories.core.item.renderer.FlatIconItemRenderer;
 import io.xol.chunkstories.core.item.renderer.ObjViewModelRenderer;
 
@@ -165,13 +166,11 @@ public class ItemFirearm extends ItemWeapon implements ItemOverlay, ItemZoom, It
 	@Override
 	public void tickInHand(Entity owner, ItemPile itemPile)
 	{
-		if (owner instanceof EntityControllable && ((EntityControllable) owner).getController() != null)
-		{
-			EntityControllable owner2 = ((EntityControllable) owner);
-			Controller controller = owner2.getController();
+		
+			Controller controller = owner.components.tryWith(EntityController.class, ec -> ec.getController());
 
 			//For now only client-side players can trigger shooting actions
-			if (controller instanceof LocalPlayer)
+			if (controller != null && controller instanceof LocalPlayer)
 			{
 				if (!((LocalPlayer) controller).hasFocus())
 					return;
@@ -181,7 +180,7 @@ public class ItemFirearm extends ItemWeapon implements ItemOverlay, ItemZoom, It
 				if (LocalPlayer.getInputsManager().getInputByName("mouse.left").isPressed())
 				{
 					//Check for bullet presence (or creative mode)
-					boolean bulletPresence = (owner instanceof EntityCreative && ((EntityCreative) owner).isCreativeMode()) || checkBullet(itemPile);
+					boolean bulletPresence = owner.components.tryWithBoolean(EntityCreativeMode.class, ecm -> ecm.get()) || checkBullet(itemPile);
 					if (!bulletPresence && !wasTriggerPressedLastTick)
 					{
 						//Play sounds
@@ -206,11 +205,11 @@ public class ItemFirearm extends ItemWeapon implements ItemOverlay, ItemZoom, It
 
 				wasTriggerPressedLastTick = controller.getInputsManager().getInputByName("mouse.left").isPressed();
 			}
-		}
+		
 	}
 
 	@Override
-	public boolean onControllerInput(Entity user, ItemPile pile, Input input, Controller controller)
+	public boolean onControllerInput(Entity entity, ItemPile pile, Input input, Controller controller)
 	{
 		//Don't do anything with the left mouse click
 		if (input.getName().startsWith("mouse."))
@@ -219,10 +218,6 @@ public class ItemFirearm extends ItemWeapon implements ItemOverlay, ItemZoom, It
 		}
 		if (input.getName().equals("shootGun"))
 		{
-			if (user instanceof EntityLiving)
-			{
-				EntityLiving shooter = (EntityLiving) user;
-
 				//Serverside checks
 				//if (user.getWorld() instanceof WorldMaster)
 				{
@@ -231,58 +226,60 @@ public class ItemFirearm extends ItemWeapon implements ItemOverlay, ItemZoom, It
 						return false;
 
 					//Do we have any bullets to shoot
-					boolean bulletPresence = (user instanceof EntityCreative && ((EntityCreative) user).isCreativeMode()) || checkBullet(pile);
+					boolean bulletPresence = entity.components.tryWithBoolean(EntityCreativeMode.class, ecm -> ecm.get()) || checkBullet(pile);
 					if (!bulletPresence)
 					{
 						//Dry.ogg
 						return true;
 					}
-					else if (!(user instanceof EntityCreative && ((EntityCreative) user).isCreativeMode()))
+					else if (!entity.components.tryWithBoolean(EntityCreativeMode.class, ecm -> ecm.get()))
 					{
 						consumeBullet(pile);
 					}
 				}
 
 				//Jerk client view a bit
-				if (shooter.getWorld() instanceof WorldClient)
+				if (entity.getWorld() instanceof WorldClient)
 				{
-					EntityComponentRotation rot = ((EntityLiving) user).getEntityRotationComponent();
-					rot.applyInpulse(shake * (Math.random() - 0.5) * 3.0, shake * -(Math.random() - 0.25) * 5.0);
+					entity.components.with(EntityRotation.class, rot -> {
+						rot.applyInpulse(shake * (Math.random() - 0.5) * 3.0, shake * -(Math.random() - 0.25) * 5.0);
+					});
 				}
 
 				//Play sounds
 				if (controller != null)
 				{
-					controller.getSoundManager().playSoundEffect(this.soundName, Mode.NORMAL, user.getLocation(), 1.0f, 1.0f, 1.0f,
+					controller.getSoundManager().playSoundEffect(this.soundName, Mode.NORMAL, entity.getLocation(), 1.0f, 1.0f, 1.0f,
 							(float) soundRange);
 				}
 				
 				playAnimation();
 
 				//Raytrace shot
-				Vector3d eyeLocation = new Vector3d(shooter.getLocation());
-				//eyeLocation.add(0.25, 0.0, 0.25);
+				Vector3d eyeLocation = new Vector3d(entity.getLocation());
+				entity.traits.with(TraitEyeLevel.class, tel -> eyeLocation.x += tel.getEyeLevel());
 
-				if (shooter instanceof EntityPlayer)
-					eyeLocation.add(new Vector3d(0.0, ((EntityPlayer) shooter).eyePosition, 0.0));
-
+				Vector3dc shooterDirection = entity.components.tryWith(EntityRotation.class, er -> er.getDirectionLookingAt());
+				if(shooterDirection == null)
+					return false;
+				
 				//For each shot
 				for (int ss = 0; ss < shots; ss++)
 				{
-					Vector3d direction = new Vector3d(shooter.getDirectionLookingAt());
+					Vector3d direction = new Vector3d(shooterDirection);
 					direction.add(new Vector3d(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).normalize().mul(accuracy / 100d));
 					direction.normalize();
 
 					//Find wall collision
-					Location shotBlock = user.getWorld().collisionsManager().raytraceSolid(eyeLocation, direction, range);
+					Location shotBlock = entity.getWorld().collisionsManager().raytraceSolid(eyeLocation, direction, range);
 
 					Vector3dc nearestLocation = null;
 
 					//Loops to try and break blocks
 					boolean brokeLastBlock = false;
-					while(user.getWorld() instanceof WorldMaster && shotBlock != null)
+					while(entity.getWorld() instanceof WorldMaster && shotBlock != null)
 					{
-						WorldCell peek = user.getWorld().peekSafely(shotBlock);
+						WorldCell peek = entity.getWorld().peekSafely(shotBlock);
 						//int data = peek.getData();
 						Voxel voxel = peek.getVoxel();
 						
@@ -302,12 +299,12 @@ public class ItemFirearm extends ItemWeapon implements ItemOverlay, ItemZoom, It
 								smashedVoxelParticleDirection.add(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5);
 								smashedVoxelParticleDirection.normalize();
 								
-								user.getWorld().getParticlesManager().spawnParticleAtPositionWithVelocity("voxel_frag", shotBlock, smashedVoxelParticleDirection);
+								entity.getWorld().getParticlesManager().spawnParticleAtPositionWithVelocity("voxel_frag", shotBlock, smashedVoxelParticleDirection);
 							}
-							user.getWorld().getSoundManager().playSoundEffect("sounds/environment/glass.ogg", Mode.NORMAL, shotBlock, (float)Math.random() * 0.2f + 0.9f, 1.0f);
+							entity.getWorld().getSoundManager().playSoundEffect("sounds/environment/glass.ogg", Mode.NORMAL, shotBlock, (float)Math.random() * 0.2f + 0.9f, 1.0f);
 							
 							//Re-raytrace the ray
-							shotBlock = user.getWorld().collisionsManager().raytraceSolid(eyeLocation, direction, range);
+							shotBlock = entity.getWorld().collisionsManager().raytraceSolid(eyeLocation, direction, range);
 						}
 						else
 							break;
@@ -316,7 +313,7 @@ public class ItemFirearm extends ItemWeapon implements ItemOverlay, ItemZoom, It
 					//Spawn decal and particles on block the bullet embedded itself in
 					if (shotBlock != null && !brokeLastBlock)
 					{
-						Location shotBlockOuter = user.getWorld().collisionsManager().raytraceSolidOuter(eyeLocation, direction, range);
+						Location shotBlockOuter = entity.getWorld().collisionsManager().raytraceSolidOuter(eyeLocation, direction, range);
 						
 						if (shotBlockOuter != null)
 						{
@@ -332,7 +329,7 @@ public class ItemFirearm extends ItemWeapon implements ItemOverlay, ItemZoom, It
 
 							//shotBlock.setX(shotBlock.getX() + 1);
 							
-							WorldCell peek = user.getWorld().peekSafely(shotBlock);
+							WorldCell peek = entity.getWorld().peekSafely(shotBlock);
 							
 							//int data = user.getWorld().getVoxelData(shotBlock);
 							//Voxel voxel = VoxelsStore.get().getVoxelById(data);
@@ -390,19 +387,23 @@ public class ItemFirearm extends ItemWeapon implements ItemOverlay, ItemZoom, It
 					}
 					
 					//Hitreg takes place on server bois
-					if (shooter.getWorld() instanceof WorldMaster)
+					if (entity.getWorld() instanceof WorldMaster)
 					{
 						//Iterate over each found entities
-						Iterator<Entity> shotEntities = user.getWorld().collisionsManager().rayTraceEntities(eyeLocation, direction, 256f);
+						Iterator<Entity> shotEntities = entity.getWorld().collisionsManager().rayTraceEntities(eyeLocation, direction, 256f);
 						while (shotEntities.hasNext())
 						{
 							Entity shotEntity = shotEntities.next();
 							//Don't shoot itself & only living things get shot
-							if (!shotEntity.equals(shooter) && shotEntity instanceof EntityLiving)
+							if (!shotEntity.equals(entity))
 							{
+								TraitHitboxes hitboxes = shotEntity.traits.get(TraitHitboxes.class);
+								EntityHealth health = shotEntity.components.get(EntityHealth.class);
 								
+								if(health != null && hitboxes != null) {
+									
 								//Get hit location
-								for (HitBox hitBox : ((EntityLiving) shotEntity).getHitBoxes())
+								for (EntityHitbox hitBox : hitboxes.getHitBoxes())
 								{
 									Vector3dc hitPoint = hitBox.lineIntersection(eyeLocation, direction);
 									
@@ -412,7 +413,7 @@ public class ItemFirearm extends ItemWeapon implements ItemOverlay, ItemZoom, It
 									//System.out.println("shot" + hitBox.getName());
 
 									//Deal damage
-									((EntityLiving) shotEntity).damage(pileAsDamageCause(pile), hitBox, (float) damage);
+									health.damage(pileAsDamageCause(pile), hitBox, (float) damage);
 
 									//Spawn blood particles
 									Vector3d bloodDir = direction.normalize().mul(0.75);
@@ -422,12 +423,13 @@ public class ItemFirearm extends ItemWeapon implements ItemOverlay, ItemZoom, It
 										random.mul(0.25);
 										random.add(bloodDir);
 
-										shooter.getWorld().getParticlesManager().spawnParticleAtPositionWithVelocity("blood", hitPoint, random);
+										entity.getWorld().getParticlesManager().spawnParticleAtPositionWithVelocity("blood", hitPoint, random);
 									}
 
 									//Spawn blood on walls
 									if (nearestLocation != null)
-										shooter.getWorld().getDecalsManager().drawDecal(nearestLocation, bloodDir, new Vector3d(Math.min(3, shots) * damage / 20f), "blood");
+										entity.getWorld().getDecalsManager().drawDecal(nearestLocation, bloodDir, new Vector3d(Math.min(3, shots) * damage / 20f), "blood");
+								}
 								}
 							}
 						}
@@ -437,11 +439,11 @@ public class ItemFirearm extends ItemWeapon implements ItemOverlay, ItemZoom, It
 
 				controller.getParticlesManager().spawnParticleAtPosition("muzzle", eyeLocation);
 				
-				FirearmShotEvent event = new FirearmShotEvent(this, shooter, controller);
-				shooter.getWorld().getGameContext().getPluginManager().fireEvent(event);
+				FirearmShotEvent event = new FirearmShotEvent(this, entity, controller);
+				entity.getWorld().getGameContext().getPluginManager().fireEvent(event);
 				
-				return (shooter.getWorld() instanceof WorldMaster);
-			}
+				return (entity.getWorld() instanceof WorldMaster);
+			
 		}
 		return false;
 	}
@@ -500,28 +502,21 @@ public class ItemFirearm extends ItemWeapon implements ItemOverlay, ItemZoom, It
 	@Override
 	public void drawItemOverlay(RenderingInterface renderingInterface, ItemPile pile)
 	{
-		EntityLiving clientControlledEntity = (EntityLiving) renderingInterface.getClient().getPlayer().getControlledEntity();
+		Entity clientControlledEntity = renderingInterface.getClient().getPlayer().getControlledEntity();
 		if (clientControlledEntity != null && pile.getInventory() != null && pile.getInventory().getHolder() != null && pile.getInventory().getHolder().equals(clientControlledEntity))
 		{
 			if (isScoped())
 				drawScope(renderingInterface);
 
 			Vector3d eyeLocation = new Vector3d(clientControlledEntity.getLocation());
-			if (clientControlledEntity instanceof EntityPlayer)
-				eyeLocation.add(new Vector3d(0.0, ((EntityPlayer) clientControlledEntity).eyePosition, 0.0));
-
-			Vector3d direction = new Vector3d(clientControlledEntity.getDirectionLookingAt());
+			clientControlledEntity.traits.with(TraitEyeLevel.class, tel -> eyeLocation.x += tel.getEyeLevel());
+				
+			Vector3d direction = new Vector3d();
+			clientControlledEntity.components.tryWith(EntityRotation.class, er -> direction.set(er.getDirectionLookingAt()));
+			
 			direction.add(new Vector3d(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).normalize().mul(accuracy / 100d));
 			direction.normalize();
-
-			//Location shotBlock = clientControlledEntity.getWorld().raytraceSolid(eyeLocation, direction, 5000);
-
-			//String dist = "-1m";
-			//if (shotBlock != null)
-			//	dist = Math.floor(shotBlock.distanceTo(clientControlledEntity.getLocation())) + "m";
-
-			//renderingInterface.getTrueTypeFontRenderer().drawString(TrueTypeFont.arial11px, renderingContext.getWindow().getWidth() / 2, renderingContext.getWindow().getHeight() / 2, dist, 1);
-
+			
 			//display reload cooldownt text
 			if (cooldownEnd > System.currentTimeMillis())
 			{

@@ -15,10 +15,16 @@ import org.joml.Vector3dc;
 import io.xol.chunkstories.api.Location;
 import io.xol.chunkstories.api.entity.Entity;
 import io.xol.chunkstories.api.entity.ai.AI;
+import io.xol.chunkstories.api.entity.components.EntityHealth;
+import io.xol.chunkstories.api.entity.components.EntityRotation;
+import io.xol.chunkstories.api.entity.components.EntityVelocity;
+import io.xol.chunkstories.api.entity.traits.TraitCollidable;
 import io.xol.chunkstories.api.sound.SoundSource.Mode;
 import io.xol.chunkstories.core.entity.EntityHumanoid;
 import io.xol.chunkstories.core.entity.EntityLiving;
+import io.xol.chunkstories.core.entity.traits.TraitBasicMovement;
 
+//TODO refator properly for components & traits
 public class GenericHumanoidAI extends AI<EntityHumanoid>
 {
 	static Random rng = new Random();
@@ -33,11 +39,11 @@ public class GenericHumanoidAI extends AI<EntityHumanoid>
 	
 	public void tick()
 	{	
-		if(entity.isDead())
+		if(entity.components.tryWithBoolean(EntityHealth.class, eh -> eh.isDead()))
 		{
 			//Dead entities shouldn't be moving
-			entity.getTargetVelocity().x = (0d);
-			entity.getTargetVelocity().z = (0d);
+			entity.traits.get(TraitBasicMovement.class).targetVelocity.x = (0d);
+			entity.traits.get(TraitBasicMovement.class).targetVelocity.z = (0d);
 			return;
 		}
 		
@@ -59,8 +65,8 @@ public class GenericHumanoidAI extends AI<EntityHumanoid>
 		//Water-jump
 		if(entity.getWorld().peekSafely(entity.getLocation().add(0, 1.15, 0)).getVoxel().getDefinition().isLiquid())
 		{
-			if(entity.getVelocityComponent().getVelocity().y() < 0.0)
-				entity.getVelocityComponent().addVelocity(0.0, 0.10, 0.0);
+			if(entity.components.get(EntityVelocity.class).getVelocity().y() < 0.0)
+				entity.components.get(EntityVelocity.class).addVelocity(0.0, 0.10, 0.0);
 			//System.out.println("vel:");
 		}
 			
@@ -82,12 +88,12 @@ public class GenericHumanoidAI extends AI<EntityHumanoid>
 		@Override
 		public void execute()
 		{
-			//if(entity.getEntityRotationComponent().getHorizontalRotation() == Float.NaN)
-			//	entity.getEntityRotationComponent().setRotation(0.0, 0.0);
+			//if(entity.components.get(EntityRotation.class).getHorizontalRotation() == Float.NaN)
+			//	entity.components.get(EntityRotation.class).setRotation(0.0, 0.0);
 			
 			if(Math.random() > 0.990)
 			{
-				targetH = entity.getEntityRotationComponent().getHorizontalRotation() + (Math.random() * 2.0 - 1.0) * 30f;
+				targetH = entity.components.get(EntityRotation.class).getHorizontalRotation() + (Math.random() * 2.0 - 1.0) * 30f;
 				
 				if(Math.random() > 0.5)
 					targetV = targetV / 2.0f + (Math.random() * 2.0 - 1.0) * 20f;
@@ -98,10 +104,10 @@ public class GenericHumanoidAI extends AI<EntityHumanoid>
 					targetV = -90f;
 			}
 			
-			double diffH = targetH - entity.getEntityRotationComponent().getHorizontalRotation();
-			double diffV = targetV - entity.getEntityRotationComponent().getVerticalRotation();
+			double diffH = targetH - entity.components.get(EntityRotation.class).getHorizontalRotation();
+			double diffV = targetV - entity.components.get(EntityRotation.class).getVerticalRotation();
 			
-			entity.getEntityRotationComponent().addRotation(diffH / 15f, diffV / 15f);
+			entity.components.get(EntityRotation.class).addRotation(diffH / 15f, diffV / 15f);
 			
 			if(lookAtEntityCoolDown > 0)
 				lookAtEntityCoolDown--;
@@ -110,7 +116,8 @@ public class GenericHumanoidAI extends AI<EntityHumanoid>
 			{
 				for(Entity entityToLook : entity.getWorld().getEntitiesInBox(entity.getLocation(), new Vector3d(lookAtNearbyEntities)))
 				{
-					if(!entityToLook.equals(entity) && entityToLook.getLocation().distance(GenericHumanoidAI.this.entity.getLocation()) <= lookAtNearbyEntities && entityToLook instanceof EntityHumanoid && !((EntityHumanoid) entityToLook).isDead())
+					if(!entityToLook.equals(entity) && entityToLook.getLocation().distance(GenericHumanoidAI.this.entity.getLocation()) <= lookAtNearbyEntities &&
+							entityToLook instanceof EntityHumanoid && !((EntityHumanoid) entityToLook).components.get(EntityHealth.class).isDead())
 					{
 						GenericHumanoidAI.this.setAiTask(new AiTaskLookAtEntity((EntityHumanoid) entityToLook, 10f, this));
 						lookAtEntityCoolDown = (int) (Math.random() * 60 * 5);
@@ -128,10 +135,10 @@ public class GenericHumanoidAI extends AI<EntityHumanoid>
 				return;
 			}
 
-			entity.getTargetVelocity().x = (0d);
-			entity.getTargetVelocity().z = (0d);
-			//entity.getVelocityComponent().setVelocityX(0);
-			//entity.getVelocityComponent().setVelocityZ(0);
+			entity.traits.get(TraitBasicMovement.class).targetVelocity.x = (0d);
+			entity.traits.get(TraitBasicMovement.class).targetVelocity.z = (0d);
+			//entity.components.get(EntityVelocity.class).setVelocityX(0);
+			//entity.components.get(EntityVelocity.class).setVelocityZ(0);
 		}
 	}
 	
@@ -156,7 +163,7 @@ public class GenericHumanoidAI extends AI<EntityHumanoid>
 		{
 			timeBeforeDoingSomethingElse--;
 			
-			if(timeBeforeDoingSomethingElse <= 0 || entityFollowed == null || entityFollowed.isDead())
+			if(timeBeforeDoingSomethingElse <= 0 || entityFollowed == null || entityFollowed.components.get(EntityHealth.class).isDead())
 			{
 				GenericHumanoidAI.this.setAiTask(previousTask);
 				return;
@@ -173,10 +180,10 @@ public class GenericHumanoidAI extends AI<EntityHumanoid>
 			
 			makeEntityLookAt(entity, delta);
 			
-			entity.getTargetVelocity().x = (0d);
-			entity.getTargetVelocity().z = (0d);
-			//entity.getVelocityComponent().setVelocityX(0);
-			//entity.getVelocityComponent().setVelocityZ(0);
+			entity.traits.get(TraitBasicMovement.class).targetVelocity.x = (0d);
+			entity.traits.get(TraitBasicMovement.class).targetVelocity.z = (0d);
+			//entity.components.get(EntityVelocity.class).setVelocityX(0);
+			//entity.components.get(EntityVelocity.class).setVelocityZ(0);
 		}
 		
 	}
@@ -199,7 +206,7 @@ public class GenericHumanoidAI extends AI<EntityHumanoid>
 		@Override
 		public void execute()
 		{
-			if(entityFollowed == null || entityFollowed.isDead())
+			if(entityFollowed == null || entityFollowed.components.get(EntityHealth.class).isDead())
 			{
 				GenericHumanoidAI.this.setAiTask(previousTask);
 				return;
@@ -222,25 +229,25 @@ public class GenericHumanoidAI extends AI<EntityHumanoid>
 			
 			delta.normalize().mul(entitySpeed);
 
-			entity.getTargetVelocity().x = (delta.x());
-			entity.getTargetVelocity().z = (delta.z());
+			entity.traits.get(TraitBasicMovement.class).targetVelocity.x = (delta.x());
+			entity.traits.get(TraitBasicMovement.class).targetVelocity.z = (delta.z());
 			
-			//entity.getVelocityComponent().setVelocityX(delta.getX());
-			//entity.getVelocityComponent().setVelocityZ(delta.getZ());
+			//entity.components.get(EntityVelocity.class).setVelocityX(delta.getX());
+			//entity.components.get(EntityVelocity.class).setVelocityZ(delta.getZ());
 			
-			if(((EntityHumanoid)entity).isOnGround())
+			if(((EntityHumanoid)entity).traits.get(TraitCollidable.class).isOnGround())
 			{
-				Vector3dc rem = entity.canMoveWithCollisionRestrain(entity.getTargetVelocity());
+				Vector3dc rem = entity.traits.get(TraitCollidable.class).canMoveWithCollisionRestrain(entity.traits.get(TraitBasicMovement.class).targetVelocity);
 				
 				if(Math.sqrt(rem.x() * rem.x() + rem.z() * rem.z()) > 0.001)
 				{
 					//System.out.println("cuck");
 					//If they have their feet in water
 					if(entity.getWorld().peekSafely(entity.getLocation().add(0, 0.0, 0)).getVoxel().getDefinition().isLiquid()) {
-						entity.getVelocityComponent().addVelocity(0.0, 0.20, 0.0);
+						entity.components.get(EntityVelocity.class).addVelocity(0.0, 0.20, 0.0);
 						//System.out.println("feet in water yo");
 					} else
-						entity.getVelocityComponent().addVelocity(0.0, 0.15, 0.0);
+						entity.components.get(EntityVelocity.class).addVelocity(0.0, 0.15, 0.0);
 				}
 			}
 		}
@@ -293,20 +300,20 @@ public class GenericHumanoidAI extends AI<EntityHumanoid>
 			
 			delta.normalize().mul(entitySpeed);
 
-			entity.getTargetVelocity().x = (delta.x());
-			entity.getTargetVelocity().z = (delta.z());
+			entity.traits.get(TraitBasicMovement.class).targetVelocity.x = (delta.x());
+			entity.traits.get(TraitBasicMovement.class).targetVelocity.z = (delta.z());
 			
-			//entity.getVelocityComponent().setVelocityX(delta.getX());
-			//entity.getVelocityComponent().setVelocityZ(delta.getZ());
+			//entity.components.get(EntityVelocity.class).setVelocityX(delta.getX());
+			//entity.components.get(EntityVelocity.class).setVelocityZ(delta.getZ());
 			
-			if(((EntityHumanoid)entity).isOnGround())
+			if(((EntityHumanoid)entity).traits.get(TraitCollidable.class).isOnGround())
 			{
-				Vector3dc rem = entity.canMoveWithCollisionRestrain(entity.getTargetVelocity());
+				Vector3dc rem = entity.traits.get(TraitCollidable.class).canMoveWithCollisionRestrain(entity.traits.get(TraitBasicMovement.class).targetVelocity);
 				//rem.setY(0.0D);
 
 				if(Math.sqrt(rem.x() * rem.x() + rem.z() * rem.z()) > 0.001)
 				//if(rem.length() > 0.001)
-					entity.getVelocityComponent().addVelocity(0.0, 0.15, 0.0);
+					entity.components.get(EntityVelocity.class).addVelocity(0.0, 0.15, 0.0);
 			}
 		}
 		
@@ -333,7 +340,7 @@ public class GenericHumanoidAI extends AI<EntityHumanoid>
 		while(targetH < 0.0)
 			targetH += 360.0;
 		
-		double diffH = targetH - entity.getEntityRotationComponent().getHorizontalRotation();
+		double diffH = targetH - entity.components.get(EntityRotation.class).getHorizontalRotation();
 		
 		//Ensures we always take the fastest route
 		if(Math.abs(diffH + 360) < Math.abs(diffH))
@@ -341,7 +348,7 @@ public class GenericHumanoidAI extends AI<EntityHumanoid>
 		else if(Math.abs(diffH - 360) < Math.abs(diffH))
 			diffH = diffH - 360;
 		
-		double diffV = targetV - entity.getEntityRotationComponent().getVerticalRotation();
+		double diffV = targetV - entity.components.get(EntityRotation.class).getVerticalRotation();
 		
 		if(Double.isNaN(diffH))
 			diffH = 0;
@@ -349,6 +356,6 @@ public class GenericHumanoidAI extends AI<EntityHumanoid>
 		if(Double.isNaN(diffV))
 			diffV = 0;
 		
-		entity.getEntityRotationComponent().addRotation(diffH / 15f, diffV / 15f);
+		entity.components.get(EntityRotation.class).addRotation(diffH / 15f, diffV / 15f);
 	}
 }

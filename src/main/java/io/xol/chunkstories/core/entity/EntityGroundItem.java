@@ -26,6 +26,7 @@ import io.xol.chunkstories.api.voxel.Voxel;
 import io.xol.chunkstories.api.world.WorldClient;
 import io.xol.chunkstories.api.world.WorldMaster;
 import io.xol.chunkstories.api.world.cell.CellData;
+import io.xol.chunkstories.core.entity.components.EntityGroundItemPileComponent;
 
 public class EntityGroundItem extends Entity {
 	protected float rotation = 0f;

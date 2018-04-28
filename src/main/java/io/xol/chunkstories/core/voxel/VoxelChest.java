@@ -9,7 +9,7 @@ package io.xol.chunkstories.core.voxel;
 import io.xol.chunkstories.api.Location;
 import io.xol.chunkstories.api.entity.Controller;
 import io.xol.chunkstories.api.entity.Entity;
-import io.xol.chunkstories.api.entity.interfaces.EntityControllable;
+import io.xol.chunkstories.api.entity.components.EntityController;
 import io.xol.chunkstories.api.events.voxel.WorldModificationCause;
 import io.xol.chunkstories.api.exceptions.world.WorldException;
 import io.xol.chunkstories.api.exceptions.world.voxel.IllegalBlockModificationException;
@@ -28,47 +28,39 @@ import io.xol.chunkstories.api.world.cell.FutureCell;
 import io.xol.chunkstories.api.world.chunk.Chunk.ChunkCell;
 import io.xol.chunkstories.api.world.chunk.Chunk.FreshChunkCell;
 
-public class VoxelChest extends Voxel
-{
+public class VoxelChest extends Voxel {
 	VoxelTexture frontTexture;
 	VoxelTexture sideTexture;
 	VoxelTexture topTexture;
-	
-	public VoxelChest(VoxelDefinition type)
-	{
+
+	public VoxelChest(VoxelDefinition type) {
 		super(type);
-		
+
 		frontTexture = store.textures().getVoxelTexture(getName() + "_front");
 		sideTexture = store.textures().getVoxelTexture(getName() + "_side");
 		topTexture = store.textures().getVoxelTexture(getName() + "_top");
 	}
 
 	@Override
-	public boolean handleInteraction(Entity entity, ChunkCell voxelContext, Input input)
-	{
-		if(input.getName().equals("mouse.right") && voxelContext.getWorld() instanceof WorldMaster) {
-			//Only actual players can open that kind of stuff
-			if(entity instanceof EntityControllable) {
-				EntityControllable e = (EntityControllable)entity;
-				Controller c = e.getController();
-				
-				if(c instanceof Player && ((Player) c).getLocation().distance(voxelContext.getLocation()) <= 5) {
-					Player p = (Player)c;
-					
-					p.openInventory(getInventory(voxelContext));
-				}
-				
+	public boolean handleInteraction(Entity entity, ChunkCell voxelContext, Input input) {
+		if (input.getName().equals("mouse.right") && voxelContext.getWorld() instanceof WorldMaster) {
+
+			Controller c = entity.components.tryWith(EntityController.class, ec -> ec.getController());
+			if (c != null && c instanceof Player && ((Player) c).getLocation().distance(voxelContext.getLocation()) <= 5) {
+				Player p = (Player) c;
+
+				p.openInventory(getInventory(voxelContext));
 			}
 		}
 		return false;
 	}
-	
+
 	private Inventory getInventory(ChunkCell context) {
 		VoxelComponent comp = context.components().get("chestInventory");
-		VoxelInventoryComponent component = (VoxelInventoryComponent)comp;
+		VoxelInventoryComponent component = (VoxelInventoryComponent) comp;
 		return component.getInventory();
 	}
-	
+
 	@Override
 	public void whenPlaced(FreshChunkCell cell) {
 		// Create a new component and insert it into the chunk
@@ -77,44 +69,38 @@ public class VoxelChest extends Voxel
 	}
 
 	@Override
-	public VoxelTexture getVoxelTexture(VoxelSide side, CellData info)
-	{
+	public VoxelTexture getVoxelTexture(VoxelSide side, CellData info) {
 		VoxelSide actualSide = VoxelSide.getSideMcStairsChestFurnace(info.getMetaData());
-		
-		if(side.equals(VoxelSide.TOP))
+
+		if (side.equals(VoxelSide.TOP))
 			return topTexture;
-		
-		if(side.equals(actualSide))
+
+		if (side.equals(actualSide))
 			return frontTexture;
-		
+
 		return sideTexture;
 	}
-	
+
 	@Override
-	//Chunk stories chests use Minecraft format to ease porting of maps
-	public void onPlace(FutureCell cell, WorldModificationCause cause) throws IllegalBlockModificationException
-	{
-		//Can't access the components of a non-yet placed FutureCell
-		//getInventory(context);
-		
+	// Chunk stories chests use Minecraft format to ease porting of maps
+	public void onPlace(FutureCell cell, WorldModificationCause cause) throws IllegalBlockModificationException {
+		// Can't access the components of a non-yet placed FutureCell
+		// getInventory(context);
+
 		int stairsSide = 0;
-		//See: 
-		//http://minecraft.gamepedia.com/Data_values#Ladders.2C_Furnaces.2C_Chests.2C_Trapped_Chests
-		if (cause != null && cause instanceof Entity)
-		{
+		// See:
+		// http://minecraft.gamepedia.com/Data_values#Ladders.2C_Furnaces.2C_Chests.2C_Trapped_Chests
+		if (cause != null && cause instanceof Entity) {
 			Location loc = ((Entity) cause).getLocation();
 			double dx = loc.x() - (cell.getX() + 0.5);
 			double dz = loc.z() - (cell.getZ() + 0.5);
-			if (Math.abs(dx) > Math.abs(dz))
-			{
-				if(dx > 0)
+			if (Math.abs(dx) > Math.abs(dz)) {
+				if (dx > 0)
 					stairsSide = 4;
 				else
 					stairsSide = 5;
-			}
-			else
-			{
-				if(dz > 0)
+			} else {
+				if (dz > 0)
 					stairsSide = 2;
 				else
 					stairsSide = 3;
@@ -125,8 +111,8 @@ public class VoxelChest extends Voxel
 
 	@Override
 	public void onRemove(ChunkCell context, WorldModificationCause cause) throws WorldException {
-		
-		//Delete the components as to not pollute the chunk's components space
-		//context.components().erase();
+
+		// Delete the components as to not pollute the chunk's components space
+		// context.components().erase();
 	}
 }

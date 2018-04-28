@@ -4,7 +4,7 @@
 // Website: http://chunkstories.xyz
 //
 
-package io.xol.chunkstories.core.entity;
+package io.xol.chunkstories.core.entity.components;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -12,8 +12,10 @@ import java.util.Iterator;
 import io.xol.chunkstories.api.entity.Entity;
 import io.xol.chunkstories.api.entity.components.EntityInventory;
 import io.xol.chunkstories.api.item.inventory.ItemPile;
+import io.xol.chunkstories.api.util.Specialized;
 import io.xol.chunkstories.core.item.armor.ItemArmor;
 
+@Specialized // doesn't take the place of entity inventory
 public class EntityArmorInventory extends EntityInventory {
 
 	public EntityArmorInventory(Entity holder, int width, int height)

@@ -28,6 +28,7 @@ import io.xol.chunkstories.api.entity.components.EntityCreativeMode;
 import io.xol.chunkstories.api.entity.components.EntityFlyingMode;
 import io.xol.chunkstories.api.entity.components.EntityInventory;
 import io.xol.chunkstories.api.entity.components.EntityName;
+import io.xol.chunkstories.api.entity.components.EntitySelectedItem;
 import io.xol.chunkstories.api.entity.traits.TraitAnimated;
 import io.xol.chunkstories.api.entity.traits.TraitCollidable;
 import io.xol.chunkstories.api.entity.traits.TraitDontSave;
@@ -43,6 +44,7 @@ import io.xol.chunkstories.api.input.Input;
 import io.xol.chunkstories.api.item.ItemVoxel;
 import io.xol.chunkstories.api.item.interfaces.ItemOverlay;
 import io.xol.chunkstories.api.item.interfaces.ItemZoom;
+import io.xol.chunkstories.api.item.inventory.InventoryHolder;
 import io.xol.chunkstories.api.item.inventory.ItemPile;
 import io.xol.chunkstories.api.math.Math2;
 import io.xol.chunkstories.api.physics.EntityHitbox;
@@ -57,9 +59,11 @@ import io.xol.chunkstories.api.world.WorldClient;
 import io.xol.chunkstories.api.world.WorldMaster;
 import io.xol.chunkstories.api.world.cell.CellData;
 import io.xol.chunkstories.api.world.cell.FutureCell;
+import io.xol.chunkstories.core.entity.components.EntityArmorInventory;
 import io.xol.chunkstories.core.entity.components.EntityFoodLevel;
-import io.xol.chunkstories.core.entity.components.EntitySelectedItem;
 import io.xol.chunkstories.core.entity.components.EntityStance.EntityHumanoidStance;
+import io.xol.chunkstories.core.entity.traits.TraitControlledMovement;
+import io.xol.chunkstories.core.entity.traits.TraitEyeLevel;
 import io.xol.chunkstories.core.entity.traits.TraitTakesFallDamage;
 import io.xol.chunkstories.core.item.armor.ItemArmor;
 import io.xol.chunkstories.core.item.inventory.InventoryLocalCreativeMenu;
@@ -68,7 +72,7 @@ import io.xol.chunkstories.core.item.inventory.InventoryLocalCreativeMenu;
  * Core/Vanilla player, has all the functionality you'd want from it:
  * creative/survival mode, flying and walking controller...
  */
-public class EntityPlayer extends EntityHumanoid implements WorldModificationCause {
+public class EntityPlayer extends EntityHumanoid implements WorldModificationCause, InventoryHolder {
 	protected EntityController controllerComponent;
 
 	protected EntityInventory inventory;
@@ -142,14 +146,25 @@ public class EntityPlayer extends EntityHumanoid implements WorldModificationCau
 		new TraitDontSave(this);
 		
 		new PlayerOverlay(this);
+		new TraitEyeLevel(this) {
+
+			@Override
+			public double getEyeLevel() {
+				return stance.get().eyeLevel;
+			}
+			
+		};
+		
+		new PlayerMovement(this);
+		new PlayerWhenControlled(this);
 	}
 
-	public EntityPlayer(EntityDefinition t, Location location, String name) {
+	/*public EntityPlayer(EntityDefinition t, Location location, String name) {
 		this(t, location);
 		this.name.setName(name);
 
 		variant = ColorsTools.getUniqueColorCode(name) % 6;
-	}
+	}*/
 
 	class PlayerWhenControlled extends TraitWhenControlled {
 
@@ -551,6 +566,8 @@ public class EntityPlayer extends EntityHumanoid implements WorldModificationCau
 				loc3f.set((float) location.x(), (float) location.y(), (float) location.z());
 				pre3f.set((float) entity.getPredictedLocation().x(), (float) entity.getPredictedLocation().y(), (float) entity.getPredictedLocation().z());
 				TraitAnimated animation = entity.traits.get(TraitAnimated.class);
+				if(animation == null)
+					return 0;
 
 				if (!renderer.getCurrentPass().name.startsWith("shadow") || location.distance(renderer.getCamera().getCameraPosition()) <= 15f) {
 					((CachedLodSkeletonAnimator) animation.getAnimatedSkeleton()).lodUpdate(renderer);

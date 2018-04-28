@@ -7,9 +7,9 @@
 package io.xol.chunkstories.core.item;
 
 import io.xol.chunkstories.api.entity.Controller;
+import io.xol.chunkstories.api.entity.Entity;
 import io.xol.chunkstories.api.events.Event;
 import io.xol.chunkstories.api.events.EventListeners;
-import io.xol.chunkstories.core.entity.EntityLiving;
 
 public class FirearmShotEvent extends Event
 {
@@ -31,13 +31,13 @@ public class FirearmShotEvent extends Event
 	// Specific event code
 
 	final ItemFirearm itemFirearm;
-	final EntityLiving shooter;
+	final Entity shooter;
 	final Controller controller;
 
-	public FirearmShotEvent(ItemFirearm itemFirearm, EntityLiving shooter, Controller controller)
+	public FirearmShotEvent(ItemFirearm itemFirearm, Entity entity, Controller controller)
 	{
 		this.itemFirearm = itemFirearm;
-		this.shooter = shooter;
+		this.shooter = entity;
 		this.controller = controller;
 	}
 
@@ -46,7 +46,7 @@ public class FirearmShotEvent extends Event
 		return itemFirearm;
 	}
 
-	public EntityLiving getShooter()
+	public Entity getShooter()
 	{
 		return shooter;
 	}

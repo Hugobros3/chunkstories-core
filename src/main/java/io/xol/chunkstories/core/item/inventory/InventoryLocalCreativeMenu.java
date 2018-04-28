@@ -24,7 +24,7 @@ public class InventoryLocalCreativeMenu extends BasicInventory
 	
 	public InventoryLocalCreativeMenu(World world)
 	{
-		super(world, 0, 0);
+		super(0, 0);
 		List<ItemPile> allItems = new ArrayList<ItemPile>();
 		
 		Voxels voxels = world.getGameContext().getContent().voxels();

@@ -13,7 +13,7 @@ import io.xol.chunkstories.api.item.Item;
 import io.xol.chunkstories.api.item.ItemDefinition;
 import io.xol.chunkstories.api.item.inventory.ItemPile;
 import io.xol.chunkstories.api.world.WorldMaster;
-import io.xol.chunkstories.core.entity.EntityPlayer;
+import io.xol.chunkstories.core.entity.components.EntityFoodLevel;
 
 public class ItemFood extends Item {
 
@@ -23,24 +23,24 @@ public class ItemFood extends Item {
 		super(type);
 		calories = Float.parseFloat(type.resolveProperty("calories", "10.0"));
 	}
-	
-	public boolean onControllerInput(Entity owner, ItemPile itemPile, Input input, Controller controller)
-	{
-		if(owner.getWorld() instanceof WorldMaster)
-		{
-			if(input.getName().equals("mouse.right") && owner instanceof EntityPlayer)
-			{
-				if(((EntityPlayer) owner).getFoodLevel() >= 100)
+
+	public boolean onControllerInput(Entity entity, ItemPile itemPile, Input input, Controller controller) {
+		if (entity.getWorld() instanceof WorldMaster) {
+			if (input.getName().equals("mouse.right")) {
+				//Any entity with a food level can eat
+				if (entity.components.tryWithBoolean(EntityFoodLevel.class, efl -> {
+					if (efl.getValue() >= 100)
+						return true;
+
+					System.out.println(entity + " ate " + itemPile);
+					efl.setValue(efl.getValue() + calories);
+					itemPile.setAmount(itemPile.getAmount() - 1);
 					return true;
-				
-				System.out.println(owner + " ate "+itemPile);
-				
-				((EntityPlayer)owner).setFoodLevel(((EntityPlayer) owner).getFoodLevel() + calories);
-				itemPile.setAmount(itemPile.getAmount() - 1);
-				return true;
+				}))
+					return true;
 			}
 		}
-		
+
 		return false;
 	}
 

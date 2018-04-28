@@ -19,12 +19,11 @@ import io.xol.chunkstories.api.entity.DamageCause;
 import io.xol.chunkstories.api.entity.Entity;
 import io.xol.chunkstories.api.entity.EntityDefinition;
 import io.xol.chunkstories.api.entity.components.EntityComponent;
-import io.xol.chunkstories.api.entity.interfaces.EntityWithSelectedItem;
-import io.xol.chunkstories.api.entity.traits.TraitHitboxes.HitBox;
-import io.xol.chunkstories.api.item.inventory.ItemPile;
+import io.xol.chunkstories.api.entity.components.EntityHealth;
+import io.xol.chunkstories.api.entity.traits.TraitAnimated;
+import io.xol.chunkstories.api.entity.traits.TraitRenderable;
+import io.xol.chunkstories.api.physics.EntityHitbox;
 import io.xol.chunkstories.api.rendering.RenderingInterface;
-import io.xol.chunkstories.api.rendering.entity.EntityRenderable;
-import io.xol.chunkstories.api.rendering.entity.EntityRenderer;
 import io.xol.chunkstories.api.rendering.entity.RenderingIterator;
 import io.xol.chunkstories.api.rendering.textures.Texture2D;
 import io.xol.chunkstories.api.sound.SoundSource.Mode;
@@ -34,10 +33,10 @@ import io.xol.chunkstories.api.world.serialization.StreamSource;
 import io.xol.chunkstories.api.world.serialization.StreamTarget;
 import io.xol.chunkstories.core.entity.ai.ZombieAI;
 
-public class EntityZombie extends EntityHumanoid
+public class EntityZombie extends EntityHumanoid implements DamageCause
 {
 	ZombieAI zombieAi;
-	//public final Stage stage;
+	
 	final StageComponent stageComponent;
 	
 	public enum Stage {
@@ -116,14 +115,26 @@ public class EntityZombie extends EntityHumanoid
 		
 		this.stageComponent = new StageComponent(this);
 		this.stageComponent.setStage(stage);
-		//this.stage = stage;
-		this.setHealth(stage.hp);
-	}
+		
+		this.entityHealth = new EntityHealth(this) {
 
-	@Override
-	public float getStartHealth()
-	{
-		return 50;
+			@Override
+			public float damage(DamageCause cause, EntityHitbox osef, float damage)
+			{
+				if(!this.isDead())
+					world.getSoundManager().playSoundEffect("sounds/entities/zombie/hurt.ogg", Mode.NORMAL, getLocation(), (float)Math.random() * 0.4f + 0.8f, 1.5f + Math.min(0.5f, damage / 15.0f));
+				
+				if(cause instanceof EntityLiving) {
+					EntityLiving entity = (EntityLiving)cause;
+					zombieAi.setAiTask(zombieAi.new AiTaskAttackEntity(entity, 15f, 20f, zombieAi.currentTask(), stage().attackCooldown, stage().attackDamage));
+				}
+				
+				return super.damage(cause, osef, damage);
+			}
+		};
+		this.entityHealth.setHealth(stage.hp);
+		
+		new TraitRenderable(this, EntityZombieRenderer::new );
 	}
 	
 	@Override
@@ -137,10 +148,10 @@ public class EntityZombie extends EntityHumanoid
 		super.tick();
 		
 		//Anti-glitch
-		if(Double.isNaN(this.getEntityRotationComponent().getHorizontalRotation()))
+		if(Double.isNaN(entityRotation.getHorizontalRotation()))
 		{
 			System.out.println("nan !" + this);
-			this.getEntityRotationComponent().setRotation(0.0, 0.0);
+			entityRotation.setRotation(0.0, 0.0);
 		}
 	}
 
@@ -169,8 +180,9 @@ public class EntityZombie extends EntityHumanoid
 
 				CellData cell = entity.getWorld().peekSafely(entity.getLocation());
 				renderer.currentShader().setUniform2f("worldLightIn", cell.getBlocklight(), cell.getSunlight());
-				
-				entity.cachedSkeleton.lodUpdate(renderer);
+
+				TraitAnimated animation = entity.traits.get(TraitAnimated.class);
+				((CachedLodSkeletonAnimator) animation.getAnimatedSkeleton()).lodUpdate(renderer);
 
 				Matrix4f matrix = new Matrix4f();
 				matrix.translate((float)location.x, (float)location.y, (float)location.z);
@@ -182,7 +194,7 @@ public class EntityZombie extends EntityHumanoid
 				
 				renderer.bindAlbedoTexture(playerTexture);
 				//System.out.println(renderer.meshes().getRenderableMesh("./models/human/human.dae"));
-				renderer.meshes().getRenderableAnimatableMesh("./models/human/human.dae").render(renderer, entity.getAnimatedSkeleton(), System.currentTimeMillis() % 1000000);
+				renderer.meshes().getRenderableAnimatableMesh("./models/human/human.dae").render(renderer, animation.getAnimatedSkeleton(), System.currentTimeMillis() % 1000000);
 				
 				//renderer.meshes().getRenderableMesh("./models/human/human.dae").render(renderer);
 				
@@ -190,7 +202,7 @@ public class EntityZombie extends EntityHumanoid
 			}
 			
 			//Render items in hands
-			renderer.useShader("entities");
+			/*renderer.useShader("entities");
 			for (EntityHumanoid entity : renderableEntitiesIterator)
 			{
 				//don't render items in hand when far
@@ -213,16 +225,10 @@ public class EntityZombie extends EntityHumanoid
 
 					selectedItemPile.getItem().getDefinition().getRenderer().renderItemInWorld(renderer, selectedItemPile, world, entity.getLocation(), itemMatrix);
 				}
-			}
+			}*/
 			
 			return e;
 		}
-	}
-	
-	@Override
-	public EntityRenderer<? extends EntityRenderable> getEntityRenderer()
-	{
-		return new EntityZombieRenderer();
 	}
 	
 	public Stage stage()
@@ -230,24 +236,13 @@ public class EntityZombie extends EntityHumanoid
 		return stageComponent.stage;
 	}
 
-	@Override
-	public float damage(DamageCause cause, HitBox osef, float damage)
-	{
-		if(!isDead())
-			world.getSoundManager().playSoundEffect("sounds/entities/zombie/hurt.ogg", Mode.NORMAL, this.getLocation(), (float)Math.random() * 0.4f + 0.8f, 1.5f + Math.min(0.5f, damage / 15.0f));
-		
-		if(cause instanceof EntityLiving) {
-
-			EntityLiving entity = (EntityLiving)cause;
-			
-			this.zombieAi.setAiTask(zombieAi.new AiTaskAttackEntity(entity, 15f, 20f, zombieAi.currentTask(), stage().attackCooldown, stage().attackDamage));
-		}
-		
-		return super.damage(cause, osef, damage);
-	}
-
 	public void attack(EntityLiving target, float maxDistance)
 	{
 		this.zombieAi.setAiTask(zombieAi.new AiTaskAttackEntity(target, 15f, maxDistance, zombieAi.currentTask(), stage().attackCooldown, stage().attackDamage));
+	}
+
+	@Override
+	public String getName() {
+		return "Zombie";
 	}
 }

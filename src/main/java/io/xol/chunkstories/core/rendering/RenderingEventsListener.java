@@ -7,6 +7,7 @@
 package io.xol.chunkstories.core.rendering;
 
 import io.xol.chunkstories.api.client.ClientInterface;
+import io.xol.chunkstories.api.entity.Entity;
 import io.xol.chunkstories.api.events.EventHandler;
 import io.xol.chunkstories.api.events.Listener;
 import io.xol.chunkstories.api.events.config.OptionSetEvent;
@@ -18,7 +19,7 @@ import io.xol.chunkstories.api.rendering.world.SkyRenderer;
 import io.xol.chunkstories.api.rendering.world.WorldRenderer;
 import io.xol.chunkstories.api.world.WorldClient;
 import io.xol.chunkstories.core.CoreContentPlugin;
-import io.xol.chunkstories.core.item.ItemMiningTool;
+import io.xol.chunkstories.core.entity.traits.MinerTrait;
 import io.xol.chunkstories.core.item.MiningProgress;
 import io.xol.chunkstories.core.item.renderer.decals.BreakingBlockDecal;
 import io.xol.chunkstories.core.rendering.passes.ApplySunlightPass;
@@ -166,7 +167,11 @@ public class RenderingEventsListener implements Listener {
 	BreakingBlockDecal dekal = null;
 	
 	private void drawCrackedBlocks(RenderingInterface renderingInterface) {
-		MiningProgress progress = ItemMiningTool.myProgress;
+		Entity entity = client.getPlayer().getControlledEntity();
+		if(entity == null)
+			return;
+		
+		MiningProgress progress = entity.traits.tryWith(MinerTrait.class, mt -> mt.getProgress());
 		if(progress == null || (dekal != null && !dekal.miningProgress.equals(progress))) {
 			if(dekal != null) {
 				dekal.destroy();

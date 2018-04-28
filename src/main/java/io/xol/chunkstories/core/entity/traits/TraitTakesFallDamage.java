@@ -2,9 +2,9 @@ package io.xol.chunkstories.core.entity.traits;
 
 import io.xol.chunkstories.api.entity.DamageCause;
 import io.xol.chunkstories.api.entity.Entity;
+import io.xol.chunkstories.api.entity.components.EntityHealth;
 import io.xol.chunkstories.api.entity.traits.Trait;
 import io.xol.chunkstories.api.entity.traits.TraitCollidable;
-import io.xol.chunkstories.core.entity.components.EntityHealth;
 
 public class TraitTakesFallDamage extends Trait {
 
