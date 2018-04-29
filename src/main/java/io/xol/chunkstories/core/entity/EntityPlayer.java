@@ -234,7 +234,7 @@ public class EntityPlayer extends EntityHumanoid implements WorldModificationCau
 			float speedEffect = (float) (entityVelocity.getVelocity().x() * entityVelocity.getVelocity().x()
 					+ entityVelocity.getVelocity().z() * entityVelocity.getVelocity().z());
 
-			speedEffect -= 0.7f * 0.7f;
+			speedEffect -= 0.07f * 0.07f;
 			speedEffect = Math.max(0.0f, speedEffect);
 			speedEffect *= 500.0f;
 
@@ -388,7 +388,7 @@ public class EntityPlayer extends EntityHumanoid implements WorldModificationCau
 
 		@Override
 		public double getForwardSpeed() {
-			return ((running && stance.get() == EntityHumanoidStance.CROUCHING) ? 0.06 : 0.09);
+			return ((!running || stance.get() == EntityHumanoidStance.CROUCHING) ? 0.06 : 0.09);
 		}
 
 		@Override
