@@ -7,20 +7,20 @@
 package io.xol.chunkstories.core.item;
 
 import org.joml.Matrix4f;
-import org.joml.Vector3f;
 
 import io.xol.chunkstories.api.Location;
 import io.xol.chunkstories.api.entity.Entity;
 import io.xol.chunkstories.api.entity.components.EntityInventory;
 import io.xol.chunkstories.api.item.Item;
 import io.xol.chunkstories.api.item.ItemDefinition;
-import io.xol.chunkstories.api.item.inventory.Inventory;
+import io.xol.chunkstories.api.item.inventory.InventoryHolder;
 import io.xol.chunkstories.api.item.inventory.ItemPile;
 import io.xol.chunkstories.api.rendering.RenderingInterface;
 import io.xol.chunkstories.api.rendering.item.ItemRenderer;
-import io.xol.chunkstories.api.sound.SoundSource.Mode;
 import io.xol.chunkstories.api.world.World;
 import io.xol.chunkstories.core.entity.traits.MinerTrait;
+import io.xol.chunkstories.core.item.renderer.FlatIconItemRenderer;
+import io.xol.chunkstories.core.item.renderer.ItemModelRenderer;
 
 public class ItemMiningTool extends Item implements MiningTool {
 
@@ -39,10 +39,49 @@ public class ItemMiningTool extends Item implements MiningTool {
 
 		this.animationCycleDuration = Long.parseLong(type.resolveProperty("animationCycleDuration", "500"));
 	}
+	
+	/** Some weapons have fancy renderers */
+	public ItemRenderer getCustomItemRenderer(ItemRenderer fallbackRenderer)
+	{
+		ItemRenderer itemRenderer;
+		
+		String modelName = getDefinition().resolveProperty("model", "none");
+		if (!modelName.equals("none"))
+			itemRenderer = new ItemModelRenderer(this, fallbackRenderer, modelName, getDefinition().resolveProperty("modelDiffuse", "none")) {
+
+				@Override
+				public void renderItemInWorld(RenderingInterface renderingContext, ItemPile pile, World world,
+						Location location, Matrix4f handTransformation) {
+					
+					boolean mining = false;
+					if(pile.getInventory() instanceof EntityInventory) {
+						Entity entity = ((EntityInventory)pile.getInventory()).entity;
+						//System.out.println(entity);
+						MinerTrait miningTrait = entity.traits.get(MinerTrait.class);
+						if(miningTrait != null) {
+							if(miningTrait.getProgress() != null)
+								mining = true;
+						}
+					}
+					
+					if(mining) {
+						handTransformation.rotate((float)Math.PI , 0, 0, 1);
+					}
+					handTransformation.rotate((float)Math.PI * 1.5f, 0, 1, 0);
+					handTransformation.translate(0, -0.2f, 0);
+					handTransformation.scale(0.5f);
+					
+					super.renderItemInWorld(renderingContext, pile, world, location, handTransformation);
+				}
+		};
+		else
+			itemRenderer = new FlatIconItemRenderer(this, fallbackRenderer, getDefinition());
+		
+		return itemRenderer;
+	}
 
 	@Override
 	public void tickInHand(Entity owner, ItemPile itemPile) {
-
 		/*World world = owner.getWorld();
 		if (owner instanceof EntityControllable && owner instanceof EntityWorldModifier) {
 			EntityControllable entityControllable = (EntityControllable) owner;
@@ -88,7 +127,7 @@ public class ItemMiningTool extends Item implements MiningTool {
 
 	}
 
-	@Override
+	/*@Override
 	public ItemRenderer getCustomItemRenderer(ItemRenderer fallbackRenderer) {
 		return new SwingToolRenderer(fallbackRenderer);
 	}
@@ -142,7 +181,7 @@ public class ItemMiningTool extends Item implements MiningTool {
 			} else
 				super.renderItemInWorld(renderingInterface, pile, world, location, transformation);
 		}
-	}
+	}*/
 
 	@Override
 	public float getMiningEfficiency() {

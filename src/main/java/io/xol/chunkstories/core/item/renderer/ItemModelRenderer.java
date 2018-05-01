@@ -18,7 +18,7 @@ import io.xol.chunkstories.api.rendering.item.ItemRenderer;
 import io.xol.chunkstories.api.rendering.mesh.ClientMeshLibrary;
 import io.xol.chunkstories.api.world.World;
 
-public class ObjViewModelRenderer extends ItemRenderer
+public class ItemModelRenderer extends ItemRenderer
 {
 	final String objName;
 	final String albedoTextureName;
@@ -28,17 +28,17 @@ public class ObjViewModelRenderer extends ItemRenderer
 	private final TexturesLibrary textures;
 	private final ClientMeshLibrary models;
 
-	public ObjViewModelRenderer(Item item, ItemRenderer fallbackRenderer, String objName, String albedoTextureName)
+	public ItemModelRenderer(Item item, ItemRenderer fallbackRenderer, String objName, String albedoTextureName)
 	{
 		this(item, fallbackRenderer, objName, albedoTextureName, "./textures/normalnormal.png");
 	}
 	
-	public ObjViewModelRenderer(Item item, ItemRenderer fallbackRenderer, String objName, String albedoTextureName, String normalTextureName)
+	public ItemModelRenderer(Item item, ItemRenderer fallbackRenderer, String objName, String albedoTextureName, String normalTextureName)
 	{
 		this(item, fallbackRenderer, objName, albedoTextureName, normalTextureName, "./textures/defaultmaterial.png");
 	}
 	
-	public ObjViewModelRenderer(Item item, ItemRenderer fallbackRenderer, String objName, String albedoTextureName, String normalTextureName, String materialTextureName)
+	public ItemModelRenderer(Item item, ItemRenderer fallbackRenderer, String objName, String albedoTextureName, String normalTextureName, String materialTextureName)
 	{
 		super(fallbackRenderer);
 		

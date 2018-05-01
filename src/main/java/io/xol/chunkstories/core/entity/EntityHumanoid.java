@@ -40,7 +40,10 @@ import io.xol.chunkstories.api.world.WorldClient;
 import io.xol.chunkstories.api.world.cell.CellData;
 import io.xol.chunkstories.core.entity.components.EntityStance;
 import io.xol.chunkstories.core.entity.components.EntityStance.EntityHumanoidStance;
+import io.xol.chunkstories.core.entity.traits.MinerTrait;
 import io.xol.chunkstories.core.entity.traits.TraitWalkingSounds;
+import io.xol.chunkstories.core.item.ItemMiningTool;
+import io.xol.chunkstories.core.item.MiningProgress;
 
 public abstract class EntityHumanoid extends EntityLiving {
 
@@ -161,6 +164,15 @@ public abstract class EntityHumanoid extends EntityLiving {
 						// TODO refactor BVH subsystem to enable SkeletonAnimator to also take care of
 						// additional transforms
 						Item item = selectedItemPile.getItem();
+						
+						if(item instanceof ItemMiningTool) {
+							ItemMiningTool item2 = (ItemMiningTool)item;
+							MinerTrait trait = traits.get(MinerTrait.class);
+							if(trait != null) {
+								if(trait.getProgress() != null)
+									return world.getGameContext().getContent().getAnimationsLibrary().getAnimation("./animations/human/mining.bvh");
+							}
+						}
 
 						if (item instanceof ItemCustomHoldingAnimation)
 							return world.getGameContext().getContent().getAnimationsLibrary()
@@ -202,14 +214,17 @@ public abstract class EntityHumanoid extends EntityLiving {
 		}
 
 		public Matrix4f getBoneTransformationMatrix(String boneName, double animationTime) {
+			Matrix4f characterRotationMatrix = new Matrix4f();
+			// Only the torso is modified, the effect is replicated accross the other bones
+			// later
+			if (boneName.endsWith("boneTorso"))
+				characterRotationMatrix.rotate((90 - entityRotation.getHorizontalRotation()) / 180f * 3.14159f, new Vector3f(0, 1, 0));
+			
 			Vector3d vel = entityVelocity.getVelocity();
 
 			double horizSpd = Math.sqrt(vel.x() * vel.x() + vel.z() * vel.z());
 
 			animationTime *= 0.75;
-
-			// animationTime += metersWalked * 50;
-			// return BVHLibrary.getAnimation("res/animations/human/running.bvh");
 
 			if (boneName.endsWith("boneHead")) {
 				Matrix4f modify = new Matrix4f(getAnimationPlayingForBone(boneName, animationTime).getBone(boneName).getTransformationMatrix(animationTime));
@@ -223,18 +238,23 @@ public abstract class EntityHumanoid extends EntityLiving {
 			if (horizSpd > 0.060)
 				animationTime *= 1.5;
 			else if (Arrays.asList(new String[] { "boneArmLU", "boneArmRU", "boneArmLD", "boneArmRD", "boneItemInHand", "boneTorso" }).contains(boneName)) {
+				
+				MinerTrait trait = traits.get(MinerTrait.class);
+				if(trait != null && Arrays.asList(new String[] { "boneArmLU", "boneArmLD", "boneItemInHand"}).contains(boneName)) {
+					MiningProgress miningProgress = trait.getProgress();
+					if(miningProgress != null) {
+						SkeletalAnimation lol = world.getGameContext().getContent().getAnimationsLibrary().getAnimation("./animations/human/mining.bvh");
+						
+						return characterRotationMatrix.mul(lol.getBone(boneName).getTransformationMatrix((System.currentTimeMillis() - miningProgress.started) * 1.5f));
+					}
+				}
+				
 				// Vector3d vel = getVelocityComponent().getVelocity();
 				// double horizSpd = Math.sqrt(vel.getX() * vel.getX() + vel.getZ() *
 				// vel.getZ());
 
 				// System.out.println((horizSpd / 0.065) * 0.3);
 			}
-
-			Matrix4f characterRotationMatrix = new Matrix4f();
-			// Only the torso is modified, the effect is replicated accross the other bones
-			// later
-			if (boneName.endsWith("boneTorso"))
-				characterRotationMatrix.rotate((90 - entityRotation.getHorizontalRotation()) / 180f * 3.14159f, new Vector3f(0, 1, 0));
 
 			ItemPile selectedItem = EntityHumanoid.this.components.tryWith(EntitySelectedItem.class, eci -> eci.getSelectedItem());
 
@@ -270,7 +290,7 @@ public abstract class EntityHumanoid extends EntityLiving {
 				ItemPile selectedItem = EntityHumanoid.this.components.tryWith(EntitySelectedItem.class, eci -> eci.getSelectedItem());
 
 				if (Arrays.asList("boneArmRU", "boneArmRD").contains(boneName) && selectedItem != null)
-					if (selectedItem.getItem() instanceof ItemVoxel)
+					if (selectedItem.getItem() instanceof ItemVoxel || selectedItem.getItem() instanceof ItemMiningTool)
 						return true;
 
 				if (Arrays.asList("boneArmLU", "boneArmRU", "boneArmLD", "boneArmRD").contains(boneName) && selectedItem != null)

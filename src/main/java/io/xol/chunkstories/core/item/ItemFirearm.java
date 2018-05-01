@@ -42,7 +42,7 @@ import io.xol.chunkstories.api.world.WorldClient;
 import io.xol.chunkstories.api.world.WorldMaster;
 import io.xol.chunkstories.core.entity.traits.TraitEyeLevel;
 import io.xol.chunkstories.core.item.renderer.FlatIconItemRenderer;
-import io.xol.chunkstories.core.item.renderer.ObjViewModelRenderer;
+import io.xol.chunkstories.core.item.renderer.ItemModelRenderer;
 
 public class ItemFirearm extends ItemWeapon implements ItemOverlay, ItemZoom, ItemCustomHoldingAnimation
 {
@@ -114,7 +114,7 @@ public class ItemFirearm extends ItemWeapon implements ItemOverlay, ItemZoom, It
 		
 		String modelName = getDefinition().resolveProperty("modelObj", "none");
 		if (!modelName.equals("none"))
-			itemRenderer = new ObjViewModelRenderer(this, fallbackRenderer, modelName, getDefinition().resolveProperty("modelDiffuse", "none"));
+			itemRenderer = new ItemModelRenderer(this, fallbackRenderer, modelName, getDefinition().resolveProperty("modelDiffuse", "none"));
 		else
 			itemRenderer = new FlatIconItemRenderer(this, fallbackRenderer, getDefinition());
 

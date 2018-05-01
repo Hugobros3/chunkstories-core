@@ -35,7 +35,7 @@ import io.xol.chunkstories.api.world.cell.CellData;
 import io.xol.chunkstories.api.world.cell.EditableCell;
 import io.xol.chunkstories.core.entity.traits.TraitEyeLevel;
 import io.xol.chunkstories.core.item.renderer.FlatIconItemRenderer;
-import io.xol.chunkstories.core.item.renderer.ObjViewModelRenderer;
+import io.xol.chunkstories.core.item.renderer.ItemModelRenderer;
 
 public class ItemMeleeWeapon extends ItemWeapon {
 	final long swingDuration;
@@ -67,7 +67,7 @@ public class ItemMeleeWeapon extends ItemWeapon {
 
 		String modelName = getDefinition().resolveProperty("modelObj", "none");
 		if (!modelName.equals("none"))
-			itemRenderer = new ObjViewModelRenderer(this, fallbackRenderer, modelName, getDefinition().resolveProperty("modelDiffuse", "none"));
+			itemRenderer = new ItemModelRenderer(this, fallbackRenderer, modelName, getDefinition().resolveProperty("modelDiffuse", "none"));
 		else
 			itemRenderer = new FlatIconItemRenderer(this, fallbackRenderer, getDefinition());
 

@@ -58,7 +58,7 @@ public class MinerTrait extends Trait {
 				if (lookingAt != null && lookingAt.distance(entity.getLocation()) > 7f)
 					lookingAt = null;
 
-				if (inputs.getInputByName("mouse.left").isPressed() && lookingAt != null) {
+				if (lookingAt != null && inputs.getInputByName("mouse.left").isPressed()) {
 
 					WorldCell cell = world.peekSafely(lookingAt);
 

@@ -62,6 +62,7 @@ import io.xol.chunkstories.api.world.cell.FutureCell;
 import io.xol.chunkstories.core.entity.components.EntityArmorInventory;
 import io.xol.chunkstories.core.entity.components.EntityFoodLevel;
 import io.xol.chunkstories.core.entity.components.EntityStance.EntityHumanoidStance;
+import io.xol.chunkstories.core.entity.traits.MinerTrait;
 import io.xol.chunkstories.core.entity.traits.TraitControlledMovement;
 import io.xol.chunkstories.core.entity.traits.TraitEyeLevel;
 import io.xol.chunkstories.core.entity.traits.TraitTakesFallDamage;
@@ -157,6 +158,8 @@ public class EntityPlayer extends EntityHumanoid implements WorldModificationCau
 		
 		new PlayerMovement(this);
 		new PlayerWhenControlled(this);
+		
+		new MinerTrait(this);
 	}
 
 	/*public EntityPlayer(EntityDefinition t, Location location, String name) {
@@ -377,6 +380,9 @@ public class EntityPlayer extends EntityHumanoid implements WorldModificationCau
 				}
 
 				super.tick(controller);
+				
+				if(focus)
+					traits.with(MinerTrait.class, mt -> mt.tickTrait());
 			}
 
 			// TODO check if this is needed
@@ -645,6 +651,8 @@ public class EntityPlayer extends EntityHumanoid implements WorldModificationCau
 					itemMatrix
 							.mul(animation.getAnimatedSkeleton().getBoneHierarchyTransformationMatrix("boneItemInHand", System.currentTimeMillis() % 1000000));
 
+					CellData cell = entity.getWorld().peekSafely(entity.getLocation());
+					renderer.currentShader().setUniform2f("worldLightIn", cell.getBlocklight(), cell.getSunlight());
 					selectedItemPile.getItem().getDefinition().getRenderer().renderItemInWorld(renderer, selectedItemPile, world, entity.getLocation(),
 							itemMatrix);
 				}

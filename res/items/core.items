@@ -16,6 +16,8 @@ item iron_pickaxe
 	class: io.xol.chunkstories.core.item.ItemMiningTool
 	toolType: pickaxe
 	miningEfficiency: 1.0
+	model: ./items/models/pickaxe.dae
+	modelDiffuse: ./items/models/pickaxe.png
 end
 
 item iron_shovel
@@ -110,8 +112,8 @@ item weapon_ak47
 	accuracy: 1.9
 	damage: 50
 	fireSound: sounds/weapons/ak47/shootNear.ogg
-	modelObj: ./item/models/ak47.hq.dae
-	modelDiffuse: ./item/models/ak47.hq.png
+	modelObj: ./items/models/ak47.hq.dae
+	modelDiffuse: ./items/models/ak47.hq.png
 	shootingAnimationName: ./animations/human/human_shoot_assault_rifle.bvh
 	shootingAnimationDuration: 100
 end

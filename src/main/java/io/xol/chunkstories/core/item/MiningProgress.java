@@ -32,7 +32,6 @@ public class MiningProgress {
 	int timesSoundPlayed = 0;
 
 	MiningTool tool;
-	//String toolType;
 	
 	public MiningProgress(CellData context, MiningTool tool) {
 		this.context = context;
