@@ -87,8 +87,8 @@ public class RenderingEventsListener implements Listener {
 		WaterPass waterPass = new WaterPass(pipeline, "water", 
 				new String[]{"decals.albedoBuffer", "gBuffers.normalBuffer", "gBuffers.voxelLightBuffer", "gBuffers.specularityBuffer", "gBuffers.materialsBuffer", 
 				"gBuffers.zBuffer"}, 
-				new String[]{/*"albedoBuffer", "normalBuffer", "voxelLightBuffer", "specularityBuffer", "materialsBuffer", "zBuffer"*/ }
-			, sky);
+				new String[]{/*"albedoBuffer", "normalBuffer", "voxelLightBuffer", "specularityBuffer", "materialsBuffer", "zBuffer"*/ }, 
+				sky);
 		pipeline.registerRenderPass(waterPass);
 
 		boolean shadows = client.getConfiguration().getBooleanOption("client.rendering.shadows");
@@ -101,12 +101,12 @@ public class RenderingEventsListener implements Listener {
 			pipeline.registerRenderPass(sunShadowPass);
 		}
 		
-		// aka shadows_apply in the current code, it takes the gbuffers and applies the shadowmapping to them, then outputs to the shaded pixels buffers already filled with the far terrain pixels
-		ApplySunlightPass applySunlight = new ApplySunlightPass(pipeline, "applySunlight", 
-				new String[]{"water.albedoBuffer", "water.normalBuffer", "water.voxelLightBuffer", "water.specularityBuffer", "water.materialsBuffer", 
-						"water.zBuffer", "sky.shadedBuffer!"}, 
-				new String[]{/*"shadedBuffer"*/},
-				sunShadowPass);
+		// aka shadows_apply in the current code, it takes the gbuffers and applies the shadowmapping to them, 
+		// then outputs to the shaded pixels buffers already filled with the far terrain pixels
+		String[] as_inputs = {"water.albedoBuffer", "water.normalBuffer", "water.voxelLightBuffer", "water.specularityBuffer", "water.materialsBuffer", 
+				"water.zBuffer", "sky.shadedBuffer!"};
+		String[] as_outputs = {/*"shadedBuffer"*/}; // not needed because we appended sky.shadedBuffer with !
+		ApplySunlightPass applySunlight = new ApplySunlightPass(pipeline, "applySunlight", as_inputs, as_outputs, sunShadowPass);
 		
 		if(shadows)
 			applySunlight.requires.add("shadowsSun.shadowMap");
