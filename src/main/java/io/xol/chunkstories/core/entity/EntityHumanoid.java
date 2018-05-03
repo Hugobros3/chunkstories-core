@@ -166,7 +166,6 @@ public abstract class EntityHumanoid extends EntityLiving {
 						Item item = selectedItemPile.getItem();
 						
 						if(item instanceof ItemMiningTool) {
-							ItemMiningTool item2 = (ItemMiningTool)item;
 							MinerTrait trait = traits.get(MinerTrait.class);
 							if(trait != null) {
 								if(trait.getProgress() != null)

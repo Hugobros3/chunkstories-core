@@ -18,13 +18,10 @@ public class MinerTrait extends Trait {
 	public MinerTrait(Entity entity) {
 		super(entity);
 		
-		if(entity instanceof WorldModificationCause)
-			worldModifier = (WorldModificationCause)entity;
-		else
+		if(!(entity instanceof WorldModificationCause))
 			throw new RuntimeException("Sorry but only entities implementing WorldModificationCause may be miners.");
 	}
 
-	private final WorldModificationCause worldModifier;
 	private MiningProgress progress;
 	
 	private final MiningTool hands = new MiningTool() {

@@ -381,8 +381,8 @@ public class EntityPlayer extends EntityHumanoid implements WorldModificationCau
 
 				super.tick(controller);
 				
-				if(focus)
-					traits.with(MinerTrait.class, mt -> mt.tickTrait());
+				//if(focus)
+				//	traits.with(MinerTrait.class, mt -> mt.tickTrait());
 			}
 
 			// TODO check if this is needed
@@ -407,6 +407,9 @@ public class EntityPlayer extends EntityHumanoid implements WorldModificationCau
 	@Override
 	public void tick() {
 
+		//if(world instanceof WorldMaster)
+		traits.with(MinerTrait.class, mt -> mt.tickTrait());
+		
 		// Tick item in hand if one such exists
 		ItemPile pileSelected = this.components.tryWith(EntitySelectedItem.class, eci -> eci.getSelectedItem());
 		if (pileSelected != null)
