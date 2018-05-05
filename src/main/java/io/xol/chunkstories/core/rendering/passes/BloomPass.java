@@ -1,3 +1,9 @@
+//
+// This file is a part of the Chunk Stories Core codebase
+// Check out README.md for more information
+// Website: http://chunkstories.xyz
+//
+
 package io.xol.chunkstories.core.rendering.passes;
 
 import static io.xol.chunkstories.api.rendering.textures.TextureFormat.RGB_HDR;
