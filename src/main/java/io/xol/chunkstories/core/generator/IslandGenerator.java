@@ -12,44 +12,39 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import io.xol.chunkstories.api.content.Content.WorldGenerators.WorldGeneratorDefinition;
 import io.xol.chunkstories.api.math.Math2;
-import io.xol.chunkstories.api.math.random.SeededSimplexNoiseGenerator;
+import io.xol.chunkstories.api.world.World;
 
-public class IslandGenerator {
-	public static void main(String[] a) throws IOException {
-		new IslandGenerator();
+public class IslandGenerator extends HorizonGenerator {
+	
+	public IslandGenerator(WorldGeneratorDefinition type, World world) {
+		super(type, world);
+		
+//		BufferedImage image = new BufferedImage(this.worldSizeInBlocks, worldSizeInBlocks, BufferedImage.TYPE_4BYTE_ABGR);
+//		
+//		for(int x = 0; x < worldSizeInBlocks; x++) {
+//			for(int y = 0; y < worldSizeInBlocks; y++) {
+//				int height = this.getHeightAtInternal(x, y);
+//				
+//				//System.out.println(height);
+//				int rgb = 0xFF << 24 | (((height << 8) | height ) << 8 | height);
+//				if(height < WATER_HEIGHT)
+//					rgb = 0xFF << 24 | (((height << 8) | height ) << 8 | 0x5F);
+//				
+//				//image.getRaster().
+//				image.setRGB(x, y, rgb);
+//			}
+//		}
+//		
+//		try {
+//			ImageIO.write(image, "PNG", new File("output.png"));
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		System.out.println(new File("output.png").getAbsolutePath());
 	}
-	
-	SeededSimplexNoiseGenerator ssng;
-	
-	public IslandGenerator() throws IOException {
-		ssng = new SeededSimplexNoiseGenerator(/*world.getWorldInfo().getSeed()*/ "484301319400031197119904322214741360655671"+System.currentTimeMillis());
-		
-		
-		BufferedImage image = new BufferedImage(1024, 1024, BufferedImage.TYPE_4BYTE_ABGR);
-		
-		for(int x = 0; x < 1024; x++) {
-			for(int y = 0; y < 1024; y++) {
-				int height = this.getHeightAtInternal(x, y);
-				
-				//System.out.println(height);
-				int rgb = 0xFF << 24 | (((height << 8) | height ) << 8 | height);
-				if(height < WATER_HEIGHT)
-					rgb = 0xFF << 24 | (((height << 8) | height ) << 8 | 0x5F);
-				
-				//image.getRaster().
-				image.setRGB(x, y, rgb);
-			}
-		}
-		
-		ImageIO.write(image, "PNG", new File("output.png"));
-		System.out.println(new File("output.png").getAbsolutePath());
-	}
-	
-	int worldSizeInBlocks = 1024;
-	
-	private int WATER_HEIGHT = 48, MOUNTAIN_SCALE = 128, BASE_HEIGHT_SCALE = 76, PLATEAU_HEIGHT_SCALE = 32;
-	private double MOUNTAIN_OFFSET = 0.3;
 	
 	float fractalNoise(float x, float z, int octaves, float freq, float persistence) {
 		float total = 0.0f;
@@ -81,35 +76,43 @@ public class IslandGenerator {
 		return total / maxAmplitude;
 	}
 
+	
+	@Override
+	int getHeightAtInternal(int x, int z) {
+		return getHeightAtInternal((float)x, (float)z);
+	}
+
 	int getHeightAtInternal(float x, float z) {
 		
-		float nx = x / worldSizeInBlocks;
-		float nz = z / worldSizeInBlocks;
+		float nx = (float)x / worldSizeInBlocks;
+		float nz = (float)z / worldSizeInBlocks;
 		
 		x /= 256;
 		z /= 256;
 		
 		float centerness = (float) (1.0f - Math.sqrt((nx - 0.5f) * (nx - 0.5f) + (nz - 0.5f) * (nz - 0.5f)));
-		centerness *= centerness * 1.0f;
-		centerness -= 0.35f;
-		centerness *= 2.0f;
+		centerness *= centerness;
+		//centerness -= 0.35f;
+		//centerness *= 2.0f;
 		centerness = Math2.clamp(centerness, 0.0, 1.0);
 		
-		float height = 0.0f;
+		//System.out.println("nx"+nx+": nz"+nz);
 		
-		height += centerness * 128 - 64;
+		float height = (float) (-20.0f + Math.sqrt(centerness) * 150);
 		
-		float baseHeight = ridgedNoise(x, z, 5, 1.0f, 0.5f);
+		//height += centerness * 128 - 64;
 		
-		height += baseHeight * BASE_HEIGHT_SCALE; //* centerness;
+		float baseHeight = fractalNoise(x, z, 5, 1.0f, 0.5f);
+		
+		height += baseHeight * BASE_HEIGHT_SCALE * 2 - BASE_HEIGHT_SCALE;
 
 		float mountainFactor = fractalNoise(x + 548, z + 330, 3, 0.5f, 0.5f);
-		mountainFactor *= 1.0 + 0.125 * ridgedNoise(x + 14, z + 9977, 2, 4.0f, 0.7f);
-		mountainFactor -= MOUNTAIN_OFFSET;
-		mountainFactor /= (1 - MOUNTAIN_OFFSET);
-		mountainFactor = Math2.clamp(mountainFactor, 0.0f, 1.0f);
+		mountainFactor *= 1.0 + 0.25 * ridgedNoise(x + 14, z + 9977, 2, 4.0f, 0.7f);
+		//mountainFactor -= MOUNTAIN_OFFSET;
+		//mountainFactor /= (1 - MOUNTAIN_OFFSET);
+		mountainFactor = Math2.clamp(mountainFactor, 0.0f, 100.0f);
 		
-		height += mountainFactor * MOUNTAIN_SCALE;// * Math2.clamp(centerness * 10, 0.0, 1.0);
+		height += mountainFactor * MOUNTAIN_SCALE * (0.0 + centerness * 2.0);// * Math2.clamp(centerness * 10, 0.0, 1.0);
 		
 		float plateauHeight = Math2.clamp(fractalNoise(x + 225, z + 321, 3, 1, 0.5f) * 32.0f - 8.0f, 0.0f, 1.0f);
 		plateauHeight *= Math2.clamp(fractalNoise(x + 3158, z + 9711, 3, 0.125f, 0.5f) * 0.5f + 0.5f, 0.0f, 1.0f);
@@ -127,6 +130,15 @@ public class IslandGenerator {
 			height = 0;
 		if(height > 255)
 			height = 255;
+		
+		float edge = centerness;
+		edge -= 0.26;
+		edge *= 8.0f;
+		edge = Math2.clamp(edge, 0.0, 1.0);
+		
+		height = Math2.mix(20, height, edge);
+		
+		//height = edge > 0 ? edge * 255 : 0; 
 		
 		return (int) height;
 	}

@@ -33,8 +33,8 @@ public class HorizonGenerator extends WorldGenerator {
 
 	int worldSizeInBlocks;
 
-	private int WATER_HEIGHT, MOUNTAIN_SCALE, BASE_HEIGHT_SCALE, PLATEAU_HEIGHT_SCALE;
-	private double MOUNTAIN_OFFSET;
+	protected int WATER_HEIGHT, MOUNTAIN_SCALE, BASE_HEIGHT_SCALE, PLATEAU_HEIGHT_SCALE;
+	protected double MOUNTAIN_OFFSET;
 	
 	private Voxel AIR_VOXEL, STONE_VOXEL, UNDERGROUND_VOXEL, WATER_VOXEL;
 	

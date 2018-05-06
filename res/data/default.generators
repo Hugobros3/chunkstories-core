@@ -15,6 +15,17 @@ generator horizon
 	plateauHeightScale: 24
 end
 
+generator island
+	class: io.xol.chunkstories.core.generator.IslandGenerator
+	maxGenerationHeight: 384
+	
+	waterLevel: 48
+	mountainOffset: 0.3
+	mountainScale: 128
+	baseHeightScale: 16
+	plateauHeightScale: 24
+end
+
 generator flat
 	class: io.xol.chunkstories.core.generator.FlatGenerator
 end
