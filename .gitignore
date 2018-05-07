@@ -10,3 +10,10 @@ gradle.properties
 core_content.zip
 
 *.blend1
+
+# IntelliJ
+/.idea/
+/out/
+*.iml
+*.ipr
+*.iws
