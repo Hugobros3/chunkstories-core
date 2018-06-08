@@ -40,6 +40,8 @@ public class HorizonGenerator extends WorldGenerator {
 	
 	private Voxel GROUND_VOXEL, FOREST_GROUND_VOXEL, DRY_GROUND_VOXEL;
 	
+	private Voxel SAND, GRAVEL;
+	
 	private Voxel TALLGRASS;
 	private Voxel[] SURFACE_DECORATIONS;
 
@@ -79,6 +81,9 @@ public class HorizonGenerator extends WorldGenerator {
 		this.UNDERGROUND_VOXEL = world.getGameContext().getContent().voxels().getVoxel("dirt");
 		this.TALLGRASS = world.getGameContext().getContent().voxels().getVoxel("grass_prop");
 
+		this.SAND = world.getGameContext().getContent().voxels().getVoxel("sand");
+		this.GRAVEL = world.getGameContext().getContent().voxels().getVoxel("gravel");
+		
 		try {
 			MinecraftBlocksTranslator translator = new MinecraftBlocksTranslator(world.getGameContext(),
 					new File("converter_mapping.txt"));
@@ -172,20 +177,20 @@ public class HorizonGenerator extends WorldGenerator {
 		for (int x = 0; x < 32; x++)
 			for (int z = 0; z < 32; z++) {
 				int y = maxheight;
-
+				int worldY = sliceData.heights[x * 32 + z];
+				
 				while(y > 0 && chunks[y/32].peekSimple(x, y, z) == AIR_VOXEL) {
 					y--;
 				}
 				int groundHeightActual = y;
 				
 				//It's flooded!
-				if(groundHeightActual < WATER_HEIGHT && sliceData.heights[x * 32 + z] < WATER_HEIGHT) {
+				if(groundHeightActual < WATER_HEIGHT && worldY < WATER_HEIGHT) {
 					int waterY = WATER_HEIGHT;
 					while(waterY > 0 && chunks[waterY/32].peekSimple(x, waterY, z) == AIR_VOXEL) {
 						chunks[waterY/32].pokeSimpleSilently(x, waterY, z, WATER_VOXEL, -1, -1, 0);
 						waterY--;
 					}
-					
 				} else {
 					//Top soil
 					Voxel topVoxel;
@@ -194,19 +199,27 @@ public class HorizonGenerator extends WorldGenerator {
 						topVoxel = FOREST_GROUND_VOXEL; // ground
 					else
 						topVoxel = GROUND_VOXEL;
-					chunks[groundHeightActual/32].pokeSimpleSilently(x, groundHeightActual, z, topVoxel, -1, -1, 0);
+					Voxel groundVoxel = UNDERGROUND_VOXEL;
 					
+					//if we're close to water level make the ground sand
+					if(worldY < WATER_HEIGHT + 3) {
+						topVoxel = SAND;
+						groundVoxel = SAND;
+					}
+					
+					chunks[groundHeightActual/32].pokeSimpleSilently(x, groundHeightActual, z, topVoxel, -1, -1, 0);
 					//3 blocks of dirt underneath it
 					int undergroundDirt = groundHeightActual-1;
 					while(undergroundDirt >= 0 && undergroundDirt >= groundHeightActual - 3 && chunks[undergroundDirt/32].peekSimple(x, undergroundDirt, z) == STONE_VOXEL) {
-						chunks[undergroundDirt/32].pokeSimpleSilently(x, undergroundDirt, z, UNDERGROUND_VOXEL, -1, -1, 0);
+						chunks[undergroundDirt/32].pokeSimpleSilently(x, undergroundDirt, z, groundVoxel, -1, -1, 0);
 						undergroundDirt--;
 					}
 					
 					//Decoration shrubs flowers etc
 					int surface = groundHeightActual + 1;
-					if(surface > maxheight)
+					if(surface > maxheight || topVoxel == SAND)
 						continue;
+					
 					double bushChance = Math.random();
 					if(topVoxel != FOREST_GROUND_VOXEL || Math.random() > 0.8) {
 						if (bushChance > 0.5) {
@@ -246,23 +259,22 @@ public class HorizonGenerator extends WorldGenerator {
 			for (int z = 0; z < 32; z++) {
 				int groundHeight = sliceData.heights[x * 32 + z]/*getHeightAtInternal(cx * 32 + x, cz * 32 + z)*/;
 
+				Voxel groundVoxel = UNDERGROUND_VOXEL;
+				
+				//if we're close to water level make the ground sand
+				if(groundHeight > WATER_HEIGHT - 9 && groundHeight < WATER_HEIGHT) {
+					groundVoxel = GRAVEL;
+				}
+				if(groundHeight > WATER_HEIGHT - 3 && groundHeight < WATER_HEIGHT) {
+					groundVoxel = SAND;
+				}
+				
 				int y = cy * 32;
 				while (y < cy * 32 + 32 && y <= groundHeight) {
 					if (groundHeight - y > 3) // more than 3 blocks underground => deep ground
 						voxel = STONE_VOXEL;
-					/*else if (y < groundHeight) // dirt
-						voxel = UNDERGROUND_VOXEL;
-					else if (y < WATER_HEIGHT)
-						voxel = UNDERGROUND_VOXEL;
-					else {
-						float h = sliceData.forestness[x * 32 + z];
-						if(Math.random() < (h - 0.5) * 1.5f && h > 0.5)
-							voxel = FOREST_GROUND_VOXEL; // ground
-						else
-							voxel = GROUND_VOXEL;
-					}*/
 					else
-						voxel = UNDERGROUND_VOXEL;
+						voxel = groundVoxel;
 
 					chunk.pokeSimpleSilently(x, y, z, voxel, -1, -1, 0);
 					y++;
