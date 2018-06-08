@@ -160,14 +160,15 @@ void main() {
 	//float storminess = clamp(-1.0 + overcastFactor * 2.0, 0.0, 1.0);
 	
 	vec4 gi = vec4(0.0, 0.0, 0.0, 0.0);
+	float ambientOcclusion = 1.0;
 	
 	#ifdef globalIllumination
 	float confidence = texture(giConfidence, screenCoord).x;
 	//gi = texture(giBuffer, screenCoord) / 1.0;
 	gi = bilateralTexture(giBuffer, screenCoord, pixelNormal, 0.0) / 1.0;
-	//gi.a = 1.0 - gi.a;
 	
-	lightColor.rgb += gi.rgb * 2.0;
+	ambientOcclusion = clamp(1.0 - 0.16 - gi.a * 1.0, 0.0, 1.0);
+	lightColor.rgb += gi.rgb;
 	#endif
 	
 	vec3 sunLight_g = sunLightColor * pi;//pow(sunColor, vec3(gamma));
@@ -201,7 +202,7 @@ void main() {
 		sunlightAmount *= clamp(mix(directionalLightning, abs(directionalLightning), float(materialFlags & 1u) * 1.0), 0.0, 1.0);
 		
 		lightColor += clamp(sunLight_g * sunlightAmount, 0.0, 4096);
-		lightColor += (1.0 - gi.a) * clamp(shadowLight_g * voxelSunlight, 0.0, 4096);
+		lightColor += clamp(shadowLight_g * voxelSunlight, 0.0, 4096);
 	#else
 		// Simple lightning for lower end machines
 		float flatShading = 0.0;
@@ -210,7 +211,7 @@ void main() {
 		flatShading += 0.5 * clamp(dot(sunPos, normalWorldSpace), 0.0, 1.0);
 		
 		lightColor += clamp(sunLight_g * flatShading * voxelSunlight, 0.0, 4096);
-		lightColor += (1.0 - gi.a) * clamp(shadowLight_g * voxelSunlight, 0.0, 4096);
+		lightColor += clamp(shadowLight_g * voxelSunlight, 0.0, 4096);
 	#endif
 	
 	//Adds block light
@@ -229,6 +230,8 @@ void main() {
 	//gamma-correct the albedo color
 	albedoColor.rgb = pow(albedoColor.rgb, vec3(gamma));
 
+	//albedoColor.rgb = vec3(1.0);
+	
 	//Multiplies the albedo by the light color
 	fragColor = vec4(albedoColor.rgb * lightColor.rgb, 1.0);
 	
@@ -236,5 +239,6 @@ void main() {
 	//	fragColor = vec4(0.0, 1.0, 0.0, 1.0);
 	
 	//fragColor = vec4(gi.rgb, 1.0);
-	//fragColor = vec4(vec3(gi.a), 1.0);
+	//fragColor = vec4(vec3(pow(clamp(1.0 - gi.a * 1.0, 0.0, 1.0), 2.1)), 1.0);
+	//fragColor = vec4(vec3(clamp(1.0 - 0.16 - gi.a * 1.0, 0.0, 1.0)), 1.0);
 }

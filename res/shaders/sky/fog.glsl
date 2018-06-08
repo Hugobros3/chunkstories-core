@@ -10,7 +10,7 @@ vec4 getFogColor(float time, vec3 eyePosition)
 	
 	//vec3 blended = mix(skyColor / TAU, totalSky, clamp(( -0 + length(eyePosition)) / 256.0, 0.0, 1.0));
 
-	vec3 fogColor = getAtmosphericScatteringAmbient() * mix(vec3(1.0), sunAbsorb * 0.9 + 0.1, overCastRatio);
+	vec3 fogColor = getAtmosphericScatteringAmbient();// * mix(vec3(1.0), sunAbsorb * 0.9 + 0.1, overCastRatio);
 	
 	return vec4(fogColor, fogIntensity);
 }
