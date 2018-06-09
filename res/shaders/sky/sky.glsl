@@ -65,7 +65,7 @@ vec3 getAtmosphericScatteringAmbient(){
 	return result;
 }
 
-vec3 getAtmosphericScattering(vec3 v, vec3 sunVec, vec3 upVec){ //vec3 v, vec3 lp
+vec3 getAtmosphericScattering(vec3 v, vec3 sunVec, vec3 upVec, float sunspotStrength){ 
 	sunVec = normalize(sunVec);
 	v = normalize(v);
 	upVec = normalize(upVec);
@@ -85,8 +85,12 @@ vec3 getAtmosphericScattering(vec3 v, vec3 sunVec, vec3 upVec){ //vec3 v, vec3 l
 	
 	vec3 finalScatter = aScatter(sunAbsorb, viewAbsorb, sunCoeff, viewCoeff, viewScatter); //Scatters all sunlight
 	vec3 sunSpot = (calcSunSpot(lDotV) * viewAbsorb) * sunBrightness; //Sunspot
+	//sunSpot *= sunspotStrength;
+	//vec3 sunSpot = vec3(0);
 	
 	vec3 result = (finalScatter + sunSpot) * PI * (2.0 * scatterBrightness);
+	/*result = vec3(0.01, 0.05, 0.1);
+	result += sunspotStrength * clamp(pow(max(lDotV, 0.0), 1000.0) - 0.2, 0.0, 1.0) * vec3(1000.0);*/
 	
 	return result;
 }
@@ -95,5 +99,10 @@ vec3 getAtmosphericScattering(vec3 v, vec3 sunVec, vec3 upVec){ //vec3 v, vec3 l
 //Requires sunPos, skyTextureSunny, skyTextureRaining, sunSetRiseTexture, overcastFactor
 vec3 getSkyColor(float time, vec3 eyeDirection)
 {
-	return getAtmosphericScattering(eyeDirection, sunPos, upVec);
+	return getAtmosphericScattering(eyeDirection, sunPos, upVec, 1.0);
+}
+
+vec3 getSkyColorNoSun(float time, vec3 eyeDirection)
+{
+	return getAtmosphericScattering(eyeDirection, sunPos, upVec, 0.0);
 }

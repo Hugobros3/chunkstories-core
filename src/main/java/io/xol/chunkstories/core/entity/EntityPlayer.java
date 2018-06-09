@@ -276,7 +276,7 @@ public class EntityPlayer extends EntityHumanoid implements WorldModificationCau
 			Iterator<Entity> i = world.collisionsManager().rayTraceEntities(initialPosition, direction, maxLen);
 			while (i.hasNext()) {
 				Entity e = i.next();
-				if (e.traits.with(TraitInteractible.class, ti -> ti.handleInteraction(EntityPlayer.this, input)))
+				if (e != EntityPlayer.this && e.traits.with(TraitInteractible.class, ti -> ti.handleInteraction(EntityPlayer.this, input)))
 					return true;
 			}
 

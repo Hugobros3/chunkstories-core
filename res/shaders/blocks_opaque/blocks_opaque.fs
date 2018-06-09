@@ -44,7 +44,8 @@ uniform float mapSize;
 out vec4 outDiffuseColor;
 out vec3 outNormal;
 out vec2 outVoxelLight;
-out float outSpecularity;
+out float outRoughness;
+out float outMetalness;
 out uint outMaterial;
 
 void main(){
@@ -77,18 +78,15 @@ void main(){
 		surfaceDiffuseColor *= texture(vegetationColorTexture, vertexPassed.xz / vec2(mapSize)).rgb;
 		
 	vec4 material = texture(materialTexture, texCoordPassed);
-
-	float specularity = (material.g + rainWetness) * fresnelTerm;
-	//We use a fancier equation if enabled
-	//#ifdef perPixelFresnel
-		float dynamicFresnelTerm = 0.0 + 1.0 * clamp(0.7 + dot(normalMatrix * normalize(eyeDirection), vec3(normal)), 0.0, 1.0);
-		specularity = (material.g + rainWetness) * dynamicFresnelTerm;
-	//#endif
+	
+	float dynamicFresnelTerm = 0.0 + 1.0 * clamp(0.7 + dot(normalMatrix * normalize(eyeDirection), vec3(normal)), 0.0, 1.0);
+	//float specularity = (material.g + rainWetness);
 	
 	//A fancy GBuffer setup we got here
 	outDiffuseColor = vec4(surfaceDiffuseColor, 1.0);
 	outNormal = encodeNormal(normal);
 	outVoxelLight = worldLight;
-	outSpecularity = specularity;
+	outRoughness = material.r;
+	outMetalness = material.g;
 	outMaterial = materialFlagsPassed;
 }

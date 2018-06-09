@@ -143,19 +143,19 @@ void main() {
 	float reflectionsAmount = texture(specularityBuffer, finalCoords).x;
 	
 	vec4 reflection = texture(reflectionsBuffer, finalCoords);
-	compositeColor.rgb = mix(compositeColor.rgb, reflection.rgb, reflectionsAmount);
+	//compositeColor.rgb = mix(compositeColor.rgb, reflection.rgb, reflectionsAmount);
 	
 	//Apply the fog
 	if(texture(zBuffer, finalCoords).r < 1.0) {
 		vec4 fogColor = getFogColor(dayTime, ((modelViewMatrixInv * cameraSpacePosition).xyz - camPos).xyz);
-		compositeColor = mix(compositeColor, vec4(fogColor.xyz, 1.0), fogColor.a);
+		//compositeColor = mix(compositeColor, vec4(fogColor.xyz, 1.0), fogColor.a);
 	}
 	
 	//fragColor.w = 1.0;
 	
 	//Volumetric light
 	#ifdef shadows
-	compositeColor.rgb += clamp(1.0 * ComputeVolumetricLight(compositeColor.rgb, cameraSpacePosition, sunPos, eyeDirection), 0.0, 10.0);
+	//compositeColor.rgb += clamp(1.0 * ComputeVolumetricLight(compositeColor.rgb, cameraSpacePosition, sunPos, eyeDirection), 0.0, 10.0);
 	#endif
 	
 	//GI

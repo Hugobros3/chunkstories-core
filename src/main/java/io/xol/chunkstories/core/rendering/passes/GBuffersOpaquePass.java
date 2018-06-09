@@ -28,7 +28,7 @@ public class GBuffersOpaquePass extends RenderPass {
 	final WorldRenderer worldRenderer;
 	final World world;
 	
-	public final Texture2DRenderTarget albedoBuffer, normalBuffer, voxelLightBuffer, specularityBuffer, materialsBuffer;
+	public final Texture2DRenderTarget albedoBuffer, normalBuffer, voxelLightBuffer, roughnessBuffer, metalnessBuffer, materialsBuffer;
 	
 	private RenderTargetsConfiguration fbo;
 	private Texture2DRenderTarget rbZBuffer;
@@ -42,20 +42,23 @@ public class GBuffersOpaquePass extends RenderPass {
 		albedoBuffer = pipeline.getRenderingInterface().newTexture2D(TextureFormat.RGBA_8BPP, gameWindow.getWidth(), gameWindow.getHeight());
 		normalBuffer = pipeline.getRenderingInterface().newTexture2D(TextureFormat.RGB_8, gameWindow.getWidth(), gameWindow.getHeight());
 		voxelLightBuffer = pipeline.getRenderingInterface().newTexture2D(TextureFormat.RG_8, gameWindow.getWidth(), gameWindow.getHeight());
-		specularityBuffer = pipeline.getRenderingInterface().newTexture2D(TextureFormat.RED_8, gameWindow.getWidth(), gameWindow.getHeight());
+		roughnessBuffer = pipeline.getRenderingInterface().newTexture2D(TextureFormat.RED_8, gameWindow.getWidth(), gameWindow.getHeight());
+		metalnessBuffer = pipeline.getRenderingInterface().newTexture2D(TextureFormat.RED_8, gameWindow.getWidth(), gameWindow.getHeight());
+		
 		materialsBuffer = pipeline.getRenderingInterface().newTexture2D(TextureFormat.RED_8UI, gameWindow.getWidth(), gameWindow.getHeight());
 		
 		this.resolvedOutputs.put("albedoBuffer", albedoBuffer);
 		this.resolvedOutputs.put("normalBuffer", normalBuffer);
 		this.resolvedOutputs.put("voxelLightBuffer", voxelLightBuffer);
-		this.resolvedOutputs.put("specularityBuffer", specularityBuffer);
+		this.resolvedOutputs.put("roughnessBuffer", roughnessBuffer);
+		this.resolvedOutputs.put("metalnessBuffer", metalnessBuffer);
 		this.resolvedOutputs.put("materialsBuffer", materialsBuffer);
 	}
 
 	@Override
 	public void onResolvedInputs() {
 		rbZBuffer = (Texture2DRenderTarget) resolvedInputs.get("zBuffer");
-		fbo = pipeline.getRenderingInterface().getRenderTargetManager().newConfiguration(rbZBuffer, albedoBuffer, normalBuffer, voxelLightBuffer, specularityBuffer, materialsBuffer);
+		fbo = pipeline.getRenderingInterface().getRenderTargetManager().newConfiguration(rbZBuffer, albedoBuffer, normalBuffer, voxelLightBuffer, roughnessBuffer, metalnessBuffer, materialsBuffer);
 	}
 
 	@Override
@@ -88,17 +91,17 @@ public class GBuffersOpaquePass extends RenderPass {
 			//Set texturing arguments
 			blocksAlbedoTexture.setTextureWrapping(false);
 			blocksAlbedoTexture.setLinearFiltering(false);
-			blocksAlbedoTexture.setMipMapping(false);
+			blocksAlbedoTexture.setMipMapping(true);
 			blocksAlbedoTexture.setMipmapLevelsRange(0, 4);
 
 			blocksNormalTexture.setTextureWrapping(false);
 			blocksNormalTexture.setLinearFiltering(false);
-			blocksNormalTexture.setMipMapping(false);
+			blocksNormalTexture.setMipMapping(true);
 			blocksNormalTexture.setMipmapLevelsRange(0, 4);
 
 			blocksMaterialTexture.setTextureWrapping(false);
 			blocksMaterialTexture.setLinearFiltering(false);
-			blocksMaterialTexture.setMipMapping(false);
+			blocksMaterialTexture.setMipMapping(true);
 			blocksMaterialTexture.setMipmapLevelsRange(0, 4);
 
 			//World stuff

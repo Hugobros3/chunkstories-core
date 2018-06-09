@@ -16,7 +16,8 @@ in float fresnelTerm;
 out vec4 outDiffuseColor;
 out vec3 outNormal;
 out vec2 outVoxelLight;
-out float outSpecularity;
+out float outRoughness;
+out float outMetalness;
 out uint outMaterial;
 
 //Block and sun Lightning
@@ -79,7 +80,6 @@ void main(){
 	//Basic texture color
 	vec2 coords = (gl_FragCoord.xy)/screenSize;
 	
-	//vec4 baseColor = texture(diffuseTexture, texCoordPassed);
 	
 	float spec = fresnelTerm;
 	vec4 worldspaceFragment = convertScreenSpaceToCameraSpace(coords, gl_FragCoord.z);
@@ -89,7 +89,10 @@ void main(){
 	spec = dynamicFresnelTerm;
 	//#endif
 	
-	vec4 baseColor = texture(readbackShadedBufferTemp, gl_FragCoord.xy / screenSize);
+	//vec4 baseColor = texture(readbackShadedBufferTemp, gl_FragCoord.xy / screenSize);
+	vec4 baseColor = vec4(texture(diffuseTexture, texCoordPassed));
+	baseColor.rgb = pow(vec3(51 / 255.0, 105 / 255.0, 110 / 255.0), vec3(gamma));
+	baseColor.rgb *= 4.0;
 	
 	spec *= 1-underwater;
 	spec = pow(spec, gamma);
@@ -103,6 +106,7 @@ void main(){
 	outDiffuseColor = baseColor;
 	outNormal = encodeNormal(normal);
 	outVoxelLight = lightMapCoords.xy;
-	outSpecularity = spec;
+	outRoughness = 0.03;
+	outMetalness = 1.0;
 	outMaterial = 0u;
 }

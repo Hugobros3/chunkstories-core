@@ -52,6 +52,12 @@ public class ApplySunlightPass extends RenderPass {
 		shadows_apply.setUniform1f("overcastFactor", world.getWeather());
 		shadows_apply.setUniform1f("wetness", world.getGenerator().getEnvironment().getWorldWetness(renderer.getCamera().getCameraPosition()));
 
+		renderer.bindCubemap("irradianceMap", worldRenderer.getRenderingInterface().textures().getCubemap("./textures/pbr_test/irradiance"));
+		renderer.bindCubemap("unfiltered", worldRenderer.getRenderingInterface().textures().getCubemap("./textures/pbr_test/unfiltered"));
+		renderer.bindTexture2D("brdfLUT", worldRenderer.getRenderingInterface().textures().getTexture("./textures/pbr_test/brdf.png"));
+		
+		worldRenderer.getRenderingInterface().textures().getTexture("./textures/pbr_test/brdf.png").setTextureWrapping(false);
+		
 		renderer.setDepthTestMode(DepthTestMode.DISABLED);
 		renderer.setBlendMode(BlendMode.DISABLED);
 		renderer.getRenderTargetManager().setConfiguration(fbo);

@@ -31,7 +31,7 @@ public class WaterPass extends RenderPass {
 	final SkyRenderer skyRenderer;
 	private RenderTargetsConfiguration waterRefractionFbo, fboGBuffers;
 	private Texture2DRenderTarget waterTempTexture;
-	private Texture2DRenderTarget zBuffer, albedoBuffer, normalBuffer, voxelLightBuffer, specularityBuffer, materialsBuffer;
+	private Texture2DRenderTarget zBuffer, albedoBuffer, normalBuffer, voxelLightBuffer, roughnessBuffer, metalnessBuffer, materialsBuffer;
 	
 	public WaterPass(RenderPasses pipeline, String name, String[] requires, String[] exports, SkyRenderer skyRenderer) {
 		super(pipeline, name, requires, exports);
@@ -53,17 +53,20 @@ public class WaterPass extends RenderPass {
 		albedoBuffer = (Texture2DRenderTarget) resolvedInputs.get("albedoBuffer");
 		normalBuffer = (Texture2DRenderTarget) resolvedInputs.get("normalBuffer");
 		voxelLightBuffer = (Texture2DRenderTarget) resolvedInputs.get("voxelLightBuffer");
-		specularityBuffer = (Texture2DRenderTarget) resolvedInputs.get("specularityBuffer");
+		
+		roughnessBuffer = (Texture2DRenderTarget) resolvedInputs.get("roughnessBuffer");
+		metalnessBuffer = (Texture2DRenderTarget) resolvedInputs.get("metalnessBuffer");
 		materialsBuffer = (Texture2DRenderTarget) resolvedInputs.get("materialsBuffer");
 		
 		fboGBuffers = pipeline.getRenderingInterface().getRenderTargetManager().newConfiguration(
-				zBuffer, albedoBuffer, normalBuffer, voxelLightBuffer, specularityBuffer, materialsBuffer);	
+				zBuffer, albedoBuffer, normalBuffer, voxelLightBuffer, roughnessBuffer, metalnessBuffer, materialsBuffer);	
 		
 		this.resolvedOutputs.put("zBuffer", zBuffer);
 		this.resolvedOutputs.put("albedoBuffer", albedoBuffer);
 		this.resolvedOutputs.put("normalBuffer", normalBuffer);
 		this.resolvedOutputs.put("voxelLightBuffer", voxelLightBuffer);
-		this.resolvedOutputs.put("zBuspecularityBufferffer", specularityBuffer);
+		this.resolvedOutputs.put("roughnessBuffer", roughnessBuffer);
+		this.resolvedOutputs.put("metalnessBuffer", metalnessBuffer);
 		this.resolvedOutputs.put("materialsBuffer", materialsBuffer);
 	}
 

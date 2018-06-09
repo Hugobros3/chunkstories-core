@@ -17,6 +17,7 @@ import io.xol.chunkstories.api.rendering.StateMachine.BlendMode;
 import io.xol.chunkstories.api.rendering.StateMachine.CullingMode;
 import io.xol.chunkstories.api.rendering.StateMachine.DepthTestMode;
 import io.xol.chunkstories.api.rendering.shader.Shader;
+import io.xol.chunkstories.api.rendering.textures.Cubemap;
 import io.xol.chunkstories.api.rendering.vertex.Primitive;
 import io.xol.chunkstories.api.rendering.vertex.VertexBuffer;
 import io.xol.chunkstories.api.rendering.vertex.VertexFormat;
@@ -33,10 +34,14 @@ public class DefaultSkyRenderer implements SkyRenderer
 	CloudsRenderer cloudsRenderer;
 	VertexBuffer starsVertexBuffer;
 	
+	Cubemap unfiltered;
+	
 	public DefaultSkyRenderer(WorldRenderer worldRenderer) {
 		this.worldRenderer = worldRenderer;
 		this.world = worldRenderer.getWorld();
 		this.cloudsRenderer = new CloudsRenderer(worldRenderer, this);
+		
+		unfiltered = worldRenderer.getRenderingInterface().textures().getCubemap("./textures/pbr_test/unfiltered");
 	}
 
 	public Vector3f getSunPosition() {
@@ -72,6 +77,7 @@ public class DefaultSkyRenderer implements SkyRenderer
 		skyShader.setUniform3f("sunPos", sunPosVector.x(), sunPosVector.y(), sunPosVector.z());
 		skyShader.setUniform1f("time", dayTime);
 		renderingContext.getCamera().setupShader(skyShader);
+		renderingContext.bindCubemap("envmap", this.unfiltered);
 
 		renderingContext.drawFSQuad();
 
