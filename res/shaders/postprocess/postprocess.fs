@@ -148,7 +148,7 @@ void main() {
 	//Apply the fog
 	if(texture(zBuffer, finalCoords).r < 1.0) {
 		vec4 fogColor = getFogColor(dayTime, ((modelViewMatrixInv * cameraSpacePosition).xyz - camPos).xyz);
-		//compositeColor = mix(compositeColor, vec4(fogColor.xyz, 1.0), fogColor.a);
+		compositeColor = mix(compositeColor, vec4(fogColor.xyz, 1.0), fogColor.a);
 	}
 	
 	//fragColor.w = 1.0;

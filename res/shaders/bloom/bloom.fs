@@ -34,18 +34,19 @@ void main()
 	vec3 finalLight = vec3(0.0);
 	
 	vec3 originalPixelColor = texture(shadedBuffer, screenCoord).rgb;
-	originalPixelColor *= apertureModifier;
+	//originalPixelColor *= apertureModifier;
 	//originalPixelColor = pow(originalPixelColor, vec3(gammaInv));
 	
 	float lum = luminance(originalPixelColor);
-	lum -= 1.0;
+	lum -= 0.5;
+	//lum *= 2.0;
 	
 	finalLight += clamp(originalPixelColor * (lum - 0.6), vec3(0.0), vec3(1.0)) * 0.1;
 	finalLight += clamp(originalPixelColor * (lum - 0.8), vec3(0.0), vec3(1.0)) * 0.2;
 	finalLight += clamp(originalPixelColor * (lum - 0.9), vec3(0.0), vec3(1.0)) * 0.4;
 	finalLight += clamp(originalPixelColor * (lum - 1.0), vec3(0.0), vec3(1.0)) * 0.8;
 	
-	finalLight *= 0.01;
+	finalLight *= 0.05;
 	
 	fragColor = vec4(finalLight, 1.0);
 }

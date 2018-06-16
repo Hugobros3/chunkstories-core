@@ -75,7 +75,9 @@ void main(){
 	//normal.z += nt.b*i;
 	
 	normal = perturb_normal(normalPassed, eyeDirection, texCoordPassed, normalMap);
+	//normal = normalPassed;
 	normal = normalize(normalMatrix * normal);
+	
 	
 	//Basic texture color
 	vec2 coords = (gl_FragCoord.xy)/screenSize;
@@ -92,7 +94,8 @@ void main(){
 	//vec4 baseColor = texture(readbackShadedBufferTemp, gl_FragCoord.xy / screenSize);
 	vec4 baseColor = vec4(texture(diffuseTexture, texCoordPassed));
 	baseColor.rgb = pow(vec3(51 / 255.0, 105 / 255.0, 110 / 255.0), vec3(gamma));
-	baseColor.rgb *= 4.0;
+	baseColor.rgb *= 1.0;
+	baseColor.rgb = vec3(1.0);
 	
 	spec *= 1-underwater;
 	spec = pow(spec, gamma);
@@ -103,9 +106,11 @@ void main(){
 	if(baseColor.a < 1.0)
 		discard;
 	
+	
 	outDiffuseColor = baseColor;
 	outNormal = encodeNormal(normal);
 	outVoxelLight = lightMapCoords.xy;
+	outVoxelLight = vec2(0.0, 1.0);
 	outRoughness = 0.03;
 	outMetalness = 1.0;
 	outMaterial = 0u;

@@ -73,7 +73,7 @@ out vec4 fragColor;
 //#include gi.glsl
 //#include ../lib/ssr.glsl
 
-#define vl_bias 0.05
+#define vl_bias 0.01
 	
 vec4 bilateralTexture(sampler2D sample, vec2 position, vec3 normal, float lod){
 
@@ -227,7 +227,7 @@ void main() {
 		float edgeSmoother = 1.0-clamp(pow(max(0,abs(coordinatesInShadowmap.x-0.5) - 0.45)*20.0+max(0,abs(coordinatesInShadowmap.y-0.5) - 0.45)*20.0, 1.0), 0.0, 1.0);
 		
 		float shadowIllumination = clamp((texture(shadowMap, vec3(coordinatesInShadowmap.xy, coordinatesInShadowmap.z-bias), 0.0)), 0.0, 1.0);
-		shadowIllumination*= clamp((dot(normalize(sunPos), vec3(0.0, 1.0, 0.0)) - 0.5) * 10000.0, 0.0, 1.0);
+		shadowIllumination*= clamp((dot(normalize(sunPos), vec3(0.0, 1.0, 0.0)) - 0.0) * 100.0, 0.0, 1.0);
 	
 	vec3 N = normalWorldSpace;
 	vec3 V = normalize(-eyeDirection);
@@ -238,15 +238,15 @@ void main() {
 	float roughness = texture(roughnessBuffer, screenCoord).r;
 	float metallic = texture(metalnessBuffer, screenCoord).r;
 	
-	float wet = overcastFactor*0;
+	float wet = clamp(overcastFactor * 2.0 - 1.0, 0.0, 1.0);
 	vec3 watercolor = pow(vec3(51 / 255.0, 105 / 255.0, 110 / 255.0), vec3(gamma));
 	watercolor.rgb *= 4.0;
 	float waterRoughtness = 0.03;
 	float waterMetallic = 1.0;
 	
-	roughness = mix(roughness, waterRoughtness, wet * 0.25);
+	roughness = mix(roughness, waterRoughtness, wet);
 	metallic = mix(metallic, waterMetallic, wet);
-	//albedoColor.rgb = mix(albedoColor.rgb, watercolor, wet);
+	//albedoColor.rgb = mix(albedoColor.rgb, watercolor, wet * 0.25);
 	
 	roughness = clamp(roughness, 0.0, 1.0);
 	metallic = clamp(metallic, 0.0, 1.0);
@@ -259,7 +259,7 @@ void main() {
 	
 	vec3 lightColor = vec3(0.0);
 	
-	vec3 F0 = vec3(0.04);
+	vec3 F0 = vec3(0.01);
 	F0      = mix(F0, albedoColor.xyz, metallic);
 	
 	// cook-torrance brdf
@@ -269,7 +269,7 @@ void main() {
 
 	vec3 kS = F;
 	vec3 kD = vec3(1.0) - kS;
-	kD *= 1.0 - vec3(metallic);	  
+	kD *= 1.0 - metallic;	  
 	
 	vec3 numerator    = NDF * G * F;
 	float denominator = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0);
@@ -279,16 +279,23 @@ void main() {
 	float NdotL = max(dot(N, L), 0.0);        
 	
 	vec3 shadedColor = vec3(0.0);
+	vec3 skyboxTint = vec3(1.0);
+	skyboxTint = shadowLight_g.rgb;
 	
-	shadedColor += shadowIllumination * (kD * albedoColor.xyz / PI + specular) * radiance * NdotL; 
+	shadedColor += 10.0 * shadowIllumination * (kD * albedoColor.xyz / PI + specular) * radiance * NdotL; 
 	      
 	vec3 R = reflect(-V, N);
+	
+	//shadowLight_g*= 5.0;
 	
     /*const float MAX_REFLECTION_LOD = 4.0;
 	vec3 prefilteredColor = textureLod(prefilterMap, R,  roughness * MAX_REFLECTION_LOD).rgb;*/
 	//vec3 prefilteredColor = mix(pow(texture(unfiltered, R).rgb, vec3(2.1)), pow(texture(irradianceMap, R).rgb, vec3(2.1)), roughness).rgb;
 	//vec3 prefilteredColor = mix(getSkyColorNoSun(dayTime, R).rgb, shadowLight_g.rgb, roughness).rgb;
-	vec3 prefilteredColor = shadowLight_g.rgb;
+	//vec3 prefilteredColor = mix(pow(texture(unfiltered, R).rgb, vec3(2.1)), pow(texture(irradianceMap, R).rgb, vec3(2.1)), roughness).rgb;
+	//prefilteredColor = length(prefilteredColor) * skyboxTint.rgb;
+	
+	vec3 prefilteredColor = mix(getSkyColorNoSun(dayTime, R).rgb, shadowLight_g.rgb+0*vec3(1.0,0.0,0.0), clamp(5.0 * (roughness - 0.2), 0.0, 1.0));
 	
 	/*vec3 prefilteredColor = vec3(0.01, 0.05, 0.1);
 	float smoothness = 1.0 - roughness;
@@ -301,35 +308,53 @@ void main() {
 	/*float sl_distance = (1.0 - voxelLight.y) + vl_bias;
 	float sl_distanceSquared = sl_distance * sl_distance;
 	float sl_invSquared = 1.0 / sl_distanceSquared;
-	
-	//vec4 gi = texture(giBuffer, screenCoord);
-	vec4 gi = bilateralTexture(giBuffer, screenCoord, pixelNormal, 0.0) / 1.0;
+	*/
+	#ifdef globalIllumination
+	vec4 gi = texture(giBuffer, screenCoord);
+	//vec4 gi = bilateralTexture(giBuffer, screenCoord, pixelNormal, 0.0);
 	float ambientOcclusion = clamp(1.0 - 0.16 - gi.a * 1.0, 0.0, 1.0);
+	ambientOcclusion *= 4.0;
+	#endif
+	/*vec3 voxelSunlight = clamp(sl_invSquared - 1.0 / (1.0 + vl_bias), 0.0, 100.0) * vec3(1.0);*/
 	
-	vec3 voxelSunlight = clamp(sl_invSquared - 1.0 / (1.0 + vl_bias), 0.0, 100.0) * vec3(1.0);*/
-	
-    vec3 kS_a = fresnelSchlick(max(dot(N, V), 0.0), F0);
+    vec3 kS_a = F_ibl;//fresnelSchlick(max(dot(N, V), 0.0), F0);
     vec3 kD_a = 1.0 - kS_a;
     kD_a *= 1.0 - metallic;	 
 	
-	float ao = pow(voxelLight.y, 5.1) * (0.1 + 0.9 * shadowIllumination);
-	//ao = pow(voxelLight.y, 5.1);
+	float ao = pow(voxelLight.y, 5.1) * (0.5 + 0.5 * shadowIllumination);
+	ao = pow(voxelLight.y, 5.1);
+	//ao = ambientOcclusion;
+	
 	//vec3 irradiance = texture(irradianceMap, N).rgb;
-	vec3 irradiance = shadowLight_g.rgb;
+	//irradiance = length(irradiance) * skyboxTint.rgb;
+	vec3 irradiance = vec3(0.0);
+	irradiance = shadowLight_g.rgb;
+	#ifdef globalIllumination
+	irradiance += gi.rgb * pi;
+	#endif
+	
 	vec3 diffuse    = irradiance * albedoColor.rgb;
-	vec3 ambient    = (kD_a * diffuse + specular_ibl * 1.0) * ao; 
+	vec3 ambient    = (kD_a * diffuse + specular_ibl * 1.0); 
 	
-	shadedColor += 1.0 * ambient;
-	//shadedColor += 0.05 * albedoColor.xyz * shadowLight_g;
+	shadedColor += 1.0 * ambient * ao;
+	//shadedColor += 0.10 * albedoColor.xyz * shadowLight_g * ao;
 	
-	//lightColor.rgb += 0.25 * gi.rgb / pi;
+	//Adds block light
+	vec3 torchColor = vec3(255.0 / 255.0, 239.0 / 255.0, 43.0 / 140.0);
+	float vl_distance = (1.0 - voxelLight.x) + vl_bias;
+	float vl_distanceSquared = vl_distance * vl_distance;
+	float vl_invSquared = 1.0 / vl_distanceSquared;
+	shadedColor += 0.002 * albedoColor.rgb * clamp(vl_invSquared - 1.0 / (1.0 + vl_bias), 0.0, 100.0) * pow(torchColor, vec3(gamma));
 	
+	shadedColor *= 1.0;
 	fragColor = vec4(shadedColor, 1.0);
-	//fragColor = vec4(vec3(pow(voxelLight.y, 5.1)), 1.0);
+	//fragColor = vec4(vec3(pow(voxelLight.y, 1.0)), 1.0);
 	//fragColor.rgb = albedoColor.rgb;
 	
 	//fragColor = texture(brdfLUT, screenCoord);
-	//fragColor.rgb = vec3(roughness);
+	//fragColor.rgb = vec3(shadowLight_g.rgb);
+	//fragColor.rgb = vec3(ambientOcclusion);
+	//fragColor = vec4(pow(voxelLight.xy, vec2(5.1)), 0.0, 1.0);
 }
 
 void main2() {

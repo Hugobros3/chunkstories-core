@@ -145,7 +145,7 @@ public class RenderingEventsListener implements Listener {
 		
 		 // the pass declared as 'final' is considered the last one and it's outputs are shown to the screen
 		PostProcessPass postprocess = new PostProcessPass(pipeline, "final", 
-				new String[] {"water.albedoBuffer", "forward.shadedBuffer", "farTerrain.zBuffer", "bloom.bloomBuffer",/* "reflections.reflectionsBuffer",*/ "farTerrain.specularityBuffer"},
+				new String[] {"water.albedoBuffer", "forward.shadedBuffer", "water.zBuffer", "bloom.bloomBuffer",/* "reflections.reflectionsBuffer",*/},
 				sunShadowPass);
 
 		boolean debug = client.getConfiguration().getBooleanOption("client.rendering.debugGBuffers");

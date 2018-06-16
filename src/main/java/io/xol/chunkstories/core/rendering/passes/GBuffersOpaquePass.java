@@ -88,20 +88,21 @@ public class GBuffersOpaquePass extends RenderPass {
 			renderingInterface.bindTexture2D("vegetationColorTexture", worldRenderer.getWorld().getGenerator().getEnvironment().getGrassTexture(renderingInterface));
 			//renderingInterface.bindTexture2D("vegetationColorTexture", getGrassTexture());
 
+			boolean mipmap = true;
 			//Set texturing arguments
 			blocksAlbedoTexture.setTextureWrapping(false);
 			blocksAlbedoTexture.setLinearFiltering(false);
-			blocksAlbedoTexture.setMipMapping(true);
+			blocksAlbedoTexture.setMipMapping(mipmap);
 			blocksAlbedoTexture.setMipmapLevelsRange(0, 4);
 
 			blocksNormalTexture.setTextureWrapping(false);
 			blocksNormalTexture.setLinearFiltering(false);
-			blocksNormalTexture.setMipMapping(true);
+			blocksNormalTexture.setMipMapping(mipmap);
 			blocksNormalTexture.setMipmapLevelsRange(0, 4);
 
 			blocksMaterialTexture.setTextureWrapping(false);
 			blocksMaterialTexture.setLinearFiltering(false);
-			blocksMaterialTexture.setMipMapping(true);
+			blocksMaterialTexture.setMipMapping(mipmap);
 			blocksMaterialTexture.setMipmapLevelsRange(0, 4);
 
 			//World stuff

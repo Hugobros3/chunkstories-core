@@ -11,13 +11,11 @@ vec3 shallow(vec2 coords)
 vec3 water() {
 	vec3 normalMap = 0.05 * vec3(0.0, 0.0, 1.0);
 	normalMap += 0.25 * deep((vertexPassed.xz/5.0+vec2(0.0,animationTimer * 0.02))/15.0);
-	//normalMap += mixedTextures((vertexPassed.xz/2.0+vec2(-animationTimer,-2.0*animationTimer)/150.0)/2.0).yxz;
 	
 	normalMap += 0.25 * mixedTextures((vertexPassed.zx*2.0-vec2(400.0, 45.0 * 0.05+animationTimer/25.0)/350.0)/10.0);
 	
 	normalMap += 1.0 * mixedTextures((vertexPassed.zx*0.8+vec2(400.0, sin(-animationTimer/5.0)+animationTimer * 2.0)/350.0)/10.0);
 	
-	//normalMap += 0.25 * mixedTextures((vertexPassed.zx*0.1+vec2(400.0, sin(-animationTimer/5.0)-animationTimer/25.0)/250.0)/15.0);
 	
 	return normalMap;
 }

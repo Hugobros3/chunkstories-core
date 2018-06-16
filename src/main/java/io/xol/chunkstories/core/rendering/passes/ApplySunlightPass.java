@@ -57,6 +57,7 @@ public class ApplySunlightPass extends RenderPass {
 		renderer.bindTexture2D("brdfLUT", worldRenderer.getRenderingInterface().textures().getTexture("./textures/pbr_test/brdf.png"));
 		
 		worldRenderer.getRenderingInterface().textures().getTexture("./textures/pbr_test/brdf.png").setTextureWrapping(false);
+		worldRenderer.getRenderingInterface().textures().getTexture("./textures/pbr_test/brdf.png").setLinearFiltering(true);
 		
 		renderer.setDepthTestMode(DepthTestMode.DISABLED);
 		renderer.setBlendMode(BlendMode.DISABLED);
