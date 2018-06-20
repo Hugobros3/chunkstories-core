@@ -33,6 +33,14 @@ uniform float time;
 void main()
 {
 	//Straight output of library's method
-	shadedFramebufferOut = vec4(mix(getSkyColor(time, eyeDirection), getFogColor(time, 2000 * normalize(vec3(eyeDirection.x  + 1.0, 0.0, eyeDirection.z))).rgb, clamp(-300 * eyeDirection.y, 0.0, 1.0)), 1.0);
-	//shadedFramebufferOut = vec4(pow(texture(envmap, eyeDirection).rgb, vec3(2.1)), 1.0);
+	vec3 skyColor = getSkyColor(time, eyeDirection);
+	vec3 fogColor = getFogColor(time, 2000 * normalize(vec3(eyeDirection.x  + 1.0, 0.0, eyeDirection.z))).rgb;
+	
+	//fogColor = vec3(1.0, 0.0, 0.0);
+	
+	float belowHorizon = clamp(-300 * eyeDirection.y, 0.0, 1.0);
+	float weatherMist = overcastFactor * clamp(1.0 - abs(normalize(eyeDirection).y) * 1.0, 0.0, 1.0);
+	
+	shadedFramebufferOut = vec4(mix(skyColor, fogColor, clamp(belowHorizon + weatherMist, 0.0, 1.0)), 1.0);
+	
 }

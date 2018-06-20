@@ -21,9 +21,9 @@ const vec3 upVec = vec3(0.0, 1.0, 0.0);
 
 #define rCoeff vec3(0.3,0.5,0.9)	//Rayleigh coefficient //You can edit this to your liking
 #define mCoeff mix(0.1, 5.0, aWeather)	//Mie coefficient //You can edit this to your liking
-#define mieSize mix(0.05, 2.0, aWeather)	//Mie Multiscatter Radius //You can edit this to your liking
+#define mieSize mix(0.05, 5.0, aWeather)	//Mie Multiscatter Radius //You can edit this to your liking
 #define eR 8000.0			//Earth radius (not particulary accurate) //You can edit this to your liking
-#define aR 0.25				//Atmosphere radius (also not accurate) //You can edit this to your liking
+#define aR mix(0.25, 0.25, aWeather)				//Atmosphere radius (also not accurate) //You can edit this to your liking
 #define scatterBrightness 1.0	//Brightness of the sky //You can edit this to your liking
 #define sunBrightness 70.0; //Brightness of the sunspot //You can edit this to your liking
 
@@ -33,7 +33,7 @@ const vec3 upVec = vec3(0.0, 1.0, 0.0);
 #define sA(x,y,z,w)d0Fix(x-y)/d0Fix(z-w)	//Absorbs scattered light
 #define aScatter(x,y,z,w,s)sA(x,y,z,w)*s //Scatters reflected light
 
-float gDepth(float x){const float d=eR+aR,eR2=eR*eR;float b=x*eR ;return sqrt(d*d+b*b-eR2)+b;}	//Calculates the distance between the camera and the edge of the atmosphere
+float gDepth(float x){float d=eR+aR,eR2=eR*eR;float b=x*eR ;return sqrt(d*d+b*b-eR2)+b;}	//Calculates the distance between the camera and the edge of the atmosphere
 float rPhase(float x){return 0.375*(x*x+1.0);}								//Rayleigh phase function
 float gPhase(float x,float g){float g2 = g*g;return (1.0/4.0*PI)*((1.0-g2)/pow(1.0+g2-2.0*g*x,1.5));}	//Henyey greenstein phase function
 float mPhase(float x,float d){return gPhase(x,exp2(d*-mieSize));}						//Mie phase function
@@ -89,8 +89,8 @@ vec3 getAtmosphericScattering(vec3 v, vec3 sunVec, vec3 upVec, float sunspotStre
 	//vec3 sunSpot = vec3(0);
 	
 	vec3 result = (finalScatter + sunSpot) * PI * (2.0 * scatterBrightness);
-	/*result = vec3(0.01, 0.05, 0.1);
-	result += sunspotStrength * clamp(pow(max(lDotV, 0.0), 1000.0) - 0.2, 0.0, 1.0) * vec3(1000.0);*/
+	
+	
 	
 	return result;
 }

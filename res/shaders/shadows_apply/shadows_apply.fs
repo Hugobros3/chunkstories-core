@@ -62,9 +62,6 @@ uniform float fogEndDistance;
 //Gamma constants
 #include ../lib/gamma.glsl
 
-uniform vec3 shadowColor;
-uniform vec3 sunColor;
-
 out vec4 fragColor;
 
 #include ../sky/sky.glsl
@@ -199,15 +196,13 @@ void main() {
 	
 	//Apply water film on wet surfaces
 	float wet = clamp(overcastFactor * 2.0 - 1.0, 0.0, 1.0);
-	vec3 watercolor = pow(vec3(51 / 255.0, 105 / 255.0, 110 / 255.0), vec3(gamma));
-	watercolor.rgb *= 4.0;
 	float waterRoughtness = 0.03;
 	float waterMetallic = 1.0;
+	#define wetInfluence 0.7
+	roughness = mix(roughness, waterRoughtness, wet * wetInfluence);
+	metallic = mix(metallic, waterMetallic, wet * wetInfluence);
 	
-	roughness = mix(roughness, waterRoughtness, wet);
-	metallic = mix(metallic, waterMetallic, wet);
-	//albedoColor.rgb = mix(albedoColor.rgb, watercolor, wet * 0.25);
-	
+	//Clamp those to be sure
 	roughness = clamp(roughness, 0.0, 1.0);
 	metallic = clamp(metallic, 0.0, 1.0);    
 	
@@ -218,13 +213,10 @@ void main() {
 	F0 = mix(F0, albedoColor.xyz, metallic);
 	
 	//Direct sunlight contribution
-	shadedColor += 10.0 * shadowIllumination * computeDirectSunlight(N, V, H, L, F0, roughness, metallic, albedoColor.rgb);
+	float sunStrength = clamp(2.0 * (1.0 - overcastFactor * 1.75), 0.0, 1.0);
+	shadedColor += 10.0 * sunStrength * shadowIllumination * computeDirectSunlight(N, V, H, L, F0, roughness, metallic, albedoColor.rgb);
 	      
 	vec3 R = reflect(-V, N);
-	
-	/*float sl_distance = (1.0 - voxelLight.y) + vl_bias;
-	float sl_distanceSquared = sl_distance * sl_distance;
-	float sl_invSquared = 1.0 / sl_distanceSquared;*/
 	
 	#ifdef globalIllumination
 	vec4 gi = texture(giBuffer, screenCoord);
@@ -239,17 +231,8 @@ void main() {
 	//ao = giAo;
 	#endif
 	
-    /*const float MAX_REFLECTION_LOD = 4.0;
-	vec3 prefilteredColor = textureLod(prefilterMap, R,  roughness * MAX_REFLECTION_LOD).rgb;*/
-	//vec3 prefilteredColor = mix(pow(texture(unfiltered, R).rgb, vec3(2.1)), pow(texture(irradianceMap, R).rgb, vec3(2.1)), roughness).rgb;
-	//vec3 prefilteredColor = mix(getSkyColorNoSun(dayTime, R).rgb, shadowLight_g.rgb, roughness).rgb;
-	//vec3 prefilteredColor = mix(pow(texture(unfiltered, R).rgb, vec3(2.1)), pow(texture(irradianceMap, R).rgb, vec3(2.1)), roughness).rgb;
-	//prefilteredColor = length(prefilteredColor) * skyboxTint.rgb;
-	
-	vec4 smoothReflections = texture(reflectionsBuffer, screenCoord);
-	//smoothReflections.rgb = getSkyColorNoSun(dayTime, R).rgb;
+	vec3 smoothReflections = texture(reflectionsBuffer, screenCoord).rgb;
 	vec3 prefilteredColor = mix(smoothReflections.rgb, shadowLight_g.rgb, clamp(5.0 * (roughness - 0.2), 0.0, 1.0));
-	//vec3 prefilteredColor = smoothReflections.rgb;
 	
 	vec3 F_ibl = fresnelSchlickRoughness(max(dot(N, V), 0.0), F0, roughness);
 	vec2 envBRDF  = texture(brdfLUT, vec2(max(dot(N, V), 0.0), roughness)).rg;
@@ -259,8 +242,6 @@ void main() {
     vec3 kD_a = 1.0 - kS_a;
     kD_a *= 1.0 - metallic;	 
 	
-	//vec3 irradiance = texture(irradianceMap, N).rgb;
-	//irradiance = length(irradiance) * skyboxTint.rgb;
 	vec3 irradiance = vec3(0.0);
 	irradiance = shadowLight_g.rgb;
 	
@@ -272,7 +253,6 @@ void main() {
 	vec3 ambient    = (kD_a * diffuse + specular_ibl * 1.0); 
 	
 	shadedColor += 1.0 * ambient * ao;
-	//shadedColor += 0.10 * albedoColor.xyz * shadowLight_g * ao;
 	
 	//Adds block light
 	vec3 torchColor = vec3(255.0 / 255.0, 239.0 / 255.0, 43.0 / 140.0);
@@ -281,15 +261,7 @@ void main() {
 	float vl_invSquared = 1.0 / vl_distanceSquared;
 	shadedColor += 0.002 * albedoColor.rgb * clamp(vl_invSquared - 1.0 / (1.0 + vl_bias), 0.0, 100.0) * pow(torchColor, vec3(gamma));
 	
-	shadedColor *= 1.0;
 	fragColor = vec4(shadedColor, 1.0);
-	//fragColor = vec4(vec3(pow(voxelLight.y, 1.0)), 1.0);
-	//fragColor.rgb = albedoColor.rgb;
-	
-	//fragColor = texture(brdfLUT, screenCoord);
-	//fragColor.rgb = vec3(shadowLight_g.rgb);
-	//fragColor.rgb = vec3(ambientOcclusion);
-	//fragColor = vec4(pow(voxelLight.xy, vec2(5.1)), 0.0, 1.0);
 }
 
 void main2() {
