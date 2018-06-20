@@ -73,8 +73,12 @@ void main(){
 	//Discard pixels too faint
 	if(alpha <= 0.1)
 		discard;
+	
+	surfaceDiffuseColor /= alpha;
+	alpha = 1.0;
+	
 	//Color pixels with some alpha component with the vegetation color
-	else if(alpha < 1)
+	if(alpha < 1)
 		surfaceDiffuseColor *= texture(vegetationColorTexture, vertexPassed.xz / vec2(mapSize)).rgb;
 		
 	vec4 material = texture(materialTexture, texCoordPassed);

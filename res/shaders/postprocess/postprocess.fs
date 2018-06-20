@@ -1,13 +1,14 @@
 #version 330
 uniform sampler2D shadedBuffer;
 uniform sampler2D zBuffer;
-uniform sampler2D specularityBuffer;
+uniform sampler2D roughnessBuffer;
+uniform sampler2D metalnessBuffer;
 
 uniform sampler2D albedoBuffer;
-/*uniform sampler2D normalBuffer;
+uniform sampler2D normalBuffer;
 uniform sampler2D voxelLightBuffer;
 uniform usampler2D materialBuffer;
-uniform sampler2D debugBuffer;*/
+uniform sampler2D debugBuffer;
 
 uniform sampler2DShadow shadowMap;
 
@@ -140,10 +141,10 @@ void main() {
 	compositeColor = mix(compositeColor, compositeColor * waterColor, underwater);
 	
 	//Applies reflections
-	float reflectionsAmount = texture(specularityBuffer, finalCoords).x;
+	/*float reflectionsAmount = texture(specularityBuffer, finalCoords).x;
 	
 	vec4 reflection = texture(reflectionsBuffer, finalCoords);
-	//compositeColor.rgb = mix(compositeColor.rgb, reflection.rgb, reflectionsAmount);
+	compositeColor.rgb = mix(compositeColor.rgb, reflection.rgb, reflectionsAmount);*/
 	
 	//Apply the fog
 	if(texture(zBuffer, finalCoords).r < 1.0) {
@@ -179,7 +180,8 @@ void main() {
 	//Gamma-correction
 	
 	//compositeColor.rgb = pow(compositeColor.rgb, vec3(gammaInv));
-	compositeColor.rgb = pow(jodieReinhardTonemap(compositeColor.rgb), vec3(gammaInv));
+	compositeColor.rgb = jodieReinhardTonemap(compositeColor.rgb);
+	compositeColor.rgb = pow(compositeColor.rgb, vec3(gammaInv));
 
 	//Applies colour map
 	vec3 colourMapped = texture(colourMap, vec2(compositeColor.r, 0.125)).rgb + texture(colourMap, vec2(compositeColor.g, 0.125 + 0.25)).rgb + texture(colourMap, vec2(compositeColor.b, 0.125 + 0.5)).rgb;
@@ -206,11 +208,11 @@ void main() {
 	fragColor = compositeColor;
 	
 	//Debug flag
-	#ifdef debugGBuffers
+	//#ifdef client.debug.debugGBuffers
+	//#endif
 	//fragColor = getDebugShit(texCoord);
-	#endif
 }
-/*
+
 //Draws divided screen with debug buffers
 vec4 getDebugShit(vec2 coords)
 {
@@ -222,10 +224,15 @@ vec4 getDebugShit(vec2 coords)
 	vec4 shit = vec4(0.0);
 	if(coords.x > 0.5)
 	{
-		if(coords.y > 0.5)
-			shit = pow(texture(shadedBuffer, sampleCoords, 0.0), vec4(gammaInv));
-		else
-			shit = texture(normalBuffer, sampleCoords);
+		if(coords.y > 0.5) {
+			shit = texture(shadedBuffer, sampleCoords);
+			
+			shit.rgb = jodieReinhardTonemap(shit.rgb);
+			shit.rgb = pow(shit.rgb, vec3(gammaInv));
+		} else {
+			shit = texture(normalBuffer, sampleCoords, 0.0);
+			shit.a = 1.0;
+		}
 	}
 	else
 	{
@@ -236,16 +243,16 @@ vec4 getDebugShit(vec2 coords)
 		}
 		else
 		{
-			shit = vec4(texture(voxelLightBuffer, sampleCoords).xy, texture(specularityBuffer, sampleCoords).r, 1.0);
+			shit = vec4(texture(voxelLightBuffer, sampleCoords).xy, texture(roughnessBuffer, sampleCoords).r, 1.0);
+			shit = vec4(texture(reflectionsBuffer, sampleCoords).rgb, 1.0);
 			
 			#ifdef dynamicGrass
-			
 			shit = texture(debugBuffer, sampleCoords, 80.0);
 			shit = pow(texture(debugBuffer, sampleCoords, 0.0), vec4(gammaInv));
 			#endif
-			shit = vec4(texture(shadowMap, vec3(sampleCoords, 0.0)), 0.0, 0.0, 1.0);
+			//shit = vec4(texture(shadowMap, vec3(sampleCoords, 0.0)), 0.0, 0.0, 1.0);
 		}
 	}
 	shit.a = 1.0;
 	return shit;
-}*/
+}

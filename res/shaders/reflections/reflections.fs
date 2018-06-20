@@ -6,10 +6,11 @@
 uniform sampler2D zBuffer;
 
 uniform sampler2D shadedBuffer;
+uniform sampler2D albedoBuffer;
 
 uniform sampler2D voxelLightBuffer;
 uniform sampler2D normalBuffer;
-uniform sampler2D specularityBuffer;
+uniform sampler2D roughnessBuffer;
 
 //Reflections stuff
 uniform samplerCube environmentCubemap;
@@ -36,6 +37,8 @@ uniform mat4 untranslatedMV;
 uniform mat4 untranslatedMVInv;
 uniform vec3 camPos;
 uniform vec3 camUp;
+
+uniform float animationTimer;
 
 //Shadow mapping
 uniform float shadowVisiblity; // Used for night transitions, hides shadows
@@ -69,12 +72,13 @@ void main() {
 	//cameraSpacePosition.xyz / cameraSpacePosition.w;
 	
 	vec3 pixelNormal = decodeNormal(texture(normalBuffer, screenCoord));
-	float spec = texture(specularityBuffer, screenCoord).x;
+	float spec = 1.0;//texture(metalnessBuffer, screenCoord).x;
+	float roughness = texture(roughnessBuffer, screenCoord).x;
 	
 	//Discard fragments using alpha
-	if(texture(shadedBuffer, screenCoord).a > 0.0 && spec > 0.0)
+	if(texture(albedoBuffer, screenCoord).a > 0.0 && spec > 0.0)
 	{
-		fragColor = clamp(computeReflectedPixel(zBuffer, shadedBuffer, environmentCubemap, screenCoord, cameraSpacePosition.xyz, pixelNormal, texture(voxelLightBuffer, screenCoord).y), 0.0, 1000);
+		fragColor = clamp(computeReflectedPixel(zBuffer, albedoBuffer, environmentCubemap, screenCoord, cameraSpacePosition.xyz, pixelNormal, texture(voxelLightBuffer, screenCoord).y, roughness), 0.0, 1000);
 	}
 	else
 		discard;

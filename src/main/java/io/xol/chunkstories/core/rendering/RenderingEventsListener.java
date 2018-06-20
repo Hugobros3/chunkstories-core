@@ -101,25 +101,31 @@ public class RenderingEventsListener implements Listener {
 			pipeline.registerRenderPass(sunShadowPass);
 		}
 		
-		// aka shadows_apply in the current code, it takes the gbuffers and applies the shadowmapping to them, 
-		// then outputs to the shaded pixels buffers already filled with the far terrain pixels
-		String[] as_inputs = {"water.albedoBuffer", "water.normalBuffer", "water.voxelLightBuffer", "water.roughnessBuffer", "water.metalnessBuffer", "water.materialsBuffer", 
-				"water.zBuffer", "sky.shadedBuffer!"};
-		String[] as_outputs = {/*"shadedBuffer"*/}; // not needed because we appended sky.shadedBuffer with !
-		ApplySunlightPass applySunlight = new ApplySunlightPass(pipeline, "applySunlight", as_inputs, as_outputs, sunShadowPass);
-		
-		if(shadows)
-			applySunlight.requires.add("shadowsSun.shadowMap");
-		pipeline.registerRenderPass(applySunlight);	
-		
 		boolean gi = client.getConfiguration().getBooleanOption("client.rendering.globalIllumination") && shadows;
 		if(gi) {
 			GiPass giPass = new GiPass(pipeline, "gi", new String[] {"water.albedoBuffer", "water.normalBuffer", "water.zBuffer"}, new String[] {"giBuffer"}, sunShadowPass);
 			pipeline.registerRenderPass(giPass);
 		}
+		
+		ReflectionsPass reflections = new ReflectionsPass(pipeline, "reflections", 
+				new String[]{"water.albedoBuffer", "water.normalBuffer", "water.voxelLightBuffer", "water.roughnessBuffer", "water.metalnessBuffer",
+							"water.zBuffer"}, new String[] {"reflectionsBuffer"}, sky);
+		pipeline.registerRenderPass(reflections);
+		
+		// aka shadows_apply in the current code, it takes the gbuffers and applies the shadowmapping to them, 
+		// then outputs to the shaded pixels buffers already filled with the far terrain pixels
+		String[] as_inputs = {"water.albedoBuffer", "water.normalBuffer", "water.voxelLightBuffer", "water.roughnessBuffer", "water.metalnessBuffer", "water.materialsBuffer", 
+				"water.zBuffer", "sky.shadedBuffer!", "reflections.reflectionsBuffer"};
+		String[] as_outputs = {/*"shadedBuffer"*/}; // not needed because we appended sky.shadedBuffer with !
+		ApplySunlightPass applySunlight = new ApplySunlightPass(pipeline, "applySunlight", as_inputs, as_outputs, sunShadowPass);
+		
+		if(shadows)
+			applySunlight.requires.add("shadowsSun.shadowMap");
+		pipeline.registerRenderPass(applySunlight);
 
 		DefferedLightsPass lightsPass = new DefferedLightsPass(pipeline, "lights", 
-				new String[]{"applySunlight.shadedBuffer!", "water.albedoBuffer", "water.normalBuffer", "water.roughnessBuffer", "water.metalnessBuffer", "water.zBuffer"}, 
+				new String[]{"applySunlight.shadedBuffer!", "water.albedoBuffer", "water.normalBuffer", "water.roughnessBuffer", "water.metalnessBuffer", "water.zBuffer"
+						}, 
 				new String[]{});
 		pipeline.registerRenderPass(lightsPass);	
 		
@@ -138,24 +144,22 @@ public class RenderingEventsListener implements Listener {
 				new String[]{});
 		pipeline.registerRenderPass(forward);
 		
-		ReflectionsPass reflections = new ReflectionsPass(pipeline, "reflections", 
-				new String[]{"lights.shadedBuffer", "gBuffers.normalBuffer", "gBuffers.voxelLightBuffer", "water.roughnessBuffer", "water.metalnessBuffer",
-							"water.zBuffer"}, new String[] {"reflectionsBuffer"}, sky);
-		pipeline.registerRenderPass(reflections);
-		
 		 // the pass declared as 'final' is considered the last one and it's outputs are shown to the screen
 		PostProcessPass postprocess = new PostProcessPass(pipeline, "final", 
-				new String[] {"water.albedoBuffer", "forward.shadedBuffer", "water.zBuffer", "bloom.bloomBuffer",/* "reflections.reflectionsBuffer",*/},
+				new String[] {"water.albedoBuffer", "forward.shadedBuffer", "water.zBuffer", "bloom.bloomBuffer", "reflections.reflectionsBuffer"},
 				sunShadowPass);
 
-		boolean debug = client.getConfiguration().getBooleanOption("client.rendering.debugGBuffers");
+		boolean debug = client.getConfiguration().getBooleanOption("client.debug.debugGBuffers");
 		if(debug) {
-			
+			System.out.println();
+			postprocess.requires.add("water.normalBuffer");
 		}
 		
-		if(gi)
+		if(gi) {
+			applySunlight.requires.add("gi.giBuffer");
 			postprocess.requires.add("gi.giBuffer");
-		
+		}
+			
 		pipeline.registerRenderPass(postprocess);
 	}
 

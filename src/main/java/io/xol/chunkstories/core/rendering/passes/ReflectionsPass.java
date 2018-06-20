@@ -73,6 +73,8 @@ public class ReflectionsPass extends RenderPass {
 		// Matrices for screen-space transformations
 		renderer.getCamera().setupShader(reflectionsShader);
 		skyRenderer.setupShader(reflectionsShader);
+		
+		reflectionsShader.setUniform1f("animationTimer", worldRenderer.getAnimationTimer() * 500 + Math.random() * 500.0);
 
 		//Disable depth writing and run the deal
 		renderer.getRenderTargetManager().setDepthMask(false);
