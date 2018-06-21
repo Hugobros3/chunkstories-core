@@ -122,7 +122,7 @@ vec4 raytrace(sampler2D depthBuffer, sampler2D colorBuffer, vec3 fragpos, vec3 r
 	border = clamp(1.0 - pow(cdist(pos.st), 10.0), 0.0, 1.0);
 
 	color.a = texture(colorBuffer, pos.st).a * color.a;
-	color.rgb = texture(colorBuffer, pos.st).rgb * sunLightColor;
+	color.rgb = pow(texture(colorBuffer, pos.st).rgb, vec3(2.1)) * sunLightColor;
 
 	//if(i < 4)
 	//	color = vec4(1.0, 0.0, 0.0, 1.0);

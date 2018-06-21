@@ -16,6 +16,10 @@ vec3 water() {
 	
 	normalMap += 1.0 * mixedTextures((vertexPassed.zx*0.8+vec2(400.0, sin(-animationTimer/5.0)+animationTimer * 2.0)/350.0)/10.0);
 	
+	normalMap = normalize(normalMap);
+	
+	if(normalMap.z <= 0.5)
+		normalMap = vec3(0.0);
 	
 	return normalMap;
 }

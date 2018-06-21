@@ -36,8 +36,6 @@ void main()
 	vec3 skyColor = getSkyColor(time, eyeDirection);
 	vec3 fogColor = getFogColor(time, 2000 * normalize(vec3(eyeDirection.x  + 1.0, 0.0, eyeDirection.z))).rgb;
 	
-	//fogColor = vec3(1.0, 0.0, 0.0);
-	
 	float belowHorizon = clamp(-300 * eyeDirection.y, 0.0, 1.0);
 	float weatherMist = overcastFactor * clamp(1.0 - abs(normalize(eyeDirection).y) * 1.0, 0.0, 1.0);
 	

@@ -156,7 +156,7 @@ void main() {
 	
 	//Volumetric light
 	#ifdef shadows
-	//compositeColor.rgb += clamp(1.0 * ComputeVolumetricLight(compositeColor.rgb, cameraSpacePosition, sunPos, eyeDirection), 0.0, 10.0);
+	compositeColor.rgb += clamp(10.0 * ComputeVolumetricLight(compositeColor.rgb, cameraSpacePosition, sunPos, eyeDirection), 0.0, 10.0);
 	#endif
 	
 	//GI

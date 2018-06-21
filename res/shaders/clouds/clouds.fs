@@ -26,6 +26,7 @@ uniform float time;
 
 //Sky functions
 #include ../sky/sky.glsl
+#include ../sky/fog.glsl
 
 vec3 calculateCloudScattering(vec3 backColor, float density, vec3 v, vec3 l){
 	float vDotL = dot(v, l);
@@ -44,7 +45,12 @@ vec3 calculateCloudScattering(vec3 backColor, float density, vec3 v, vec3 l){
 void main()
 {
 	vec3 skyColor = getSkyColor(time, eyeDirection);
-	vec4 color = vec4(skyColor, 1.0);
+	vec3 fogColor = getFogColor(time, 2000 * normalize(vec3(eyeDirection.x  + 1.0, 0.0, eyeDirection.z))).rgb;
+	
+	float belowHorizon = clamp(-300 * eyeDirection.y, 0.0, 1.0);
+	float weatherMist = overcastFactor * clamp(1.0 - abs(normalize(eyeDirection).y) * 1.0, 0.0, 1.0);
+	
+	vec4 color = vec4(mix(skyColor, fogColor, clamp(belowHorizon + weatherMist, 0.0, 1.0)), 1.0);
 	
 	vec3 cloudsColor = calculateCloudScattering(color.rgb, alphaPassed, normalize(eyeDirection), normalize(sunPos));
 	
