@@ -38,7 +38,7 @@ uniform float mapSize;
 //Gamma constants
 #include ../lib/gamma.glsl
 #include ../lib/transformations.glsl
-
+#include ../lib/voxel_surfaces.glsl
 #include ../lib/normalmapping.glsl
 
 out vec4 outDiffuseColor;
@@ -47,6 +47,8 @@ out vec2 outVoxelLight;
 out float outRoughness;
 out float outMetalness;
 out uint outMaterial;
+
+uniform int integerOfDay;
 
 void main(){
 	//Check some normal component was made available
@@ -81,6 +83,8 @@ void main(){
 	if(alpha < 1)
 		surfaceDiffuseColor *= texture(vegetationColorTexture, vertexPassed.xz / vec2(mapSize)).rgb;
 		
+	//surfaceDiffuseColor = surfaces[integerOfDay].albedoColor;
+
 	vec4 material = texture(materialTexture, texCoordPassed);
 	
 	float dynamicFresnelTerm = 0.0 + 1.0 * clamp(0.7 + dot(normalMatrix * normalize(eyeDirection), vec3(normal)), 0.0, 1.0);

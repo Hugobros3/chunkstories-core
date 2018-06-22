@@ -180,7 +180,8 @@ void main() {
 		float edgeSmoother = 1.0-clamp(pow(max(0,abs(coordinatesInShadowmap.x-0.5) - 0.45)*20.0+max(0,abs(coordinatesInShadowmap.y-0.5) - 0.45)*20.0, 1.0), 0.0, 1.0);
 		
 		float shadowIllumination = clamp((texture(shadowMap, vec3(coordinatesInShadowmap.xy, coordinatesInShadowmap.z-bias), 0.0)), 0.0, 1.0);
-		shadowIllumination*= clamp((dot(normalize(sunPos), vec3(0.0, 1.0, 0.0)) - 0.0) * 100.0, 0.0, 1.0);
+		shadowIllumination *= clamp((dot(normalize(sunPos), vec3(0.0, 1.0, 0.0)) - 0.0) * 100.0, 0.0, 1.0);
+		shadowIllumination *= clamp((dot(normalize(sunPos), normalWorldSpace)) * 100.0, 0.0, 1.0);
 	
 	vec3 N = normalWorldSpace;
 	vec3 V = normalize(-eyeDirection);

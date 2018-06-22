@@ -5,7 +5,7 @@ vec4 computeReflectedPixel(sampler2D depthBuffer, sampler2D colorBuffer, sampler
     vec2 screenSpacePosition2D = screenSpaceCoords;
 	
     vec3 cameraSpaceViewDir = normalize(cameraSpacePosition);
-    vec3 cameraSpaceVector = normalize(reflect(cameraSpaceViewDir, pixelNormal));//normalMatrix * vec3(0.0, 1.0, 0.0)));
+    vec3 normal = normalize(reflect(cameraSpaceViewDir, pixelNormal));//normalMatrix * vec3(0.0, 1.0, 0.0)));
     
 	//if(dot(pixelNormal, cameraSpaceVector) < 0)
 	//	cameraSpaceVector = pixelNormal;
@@ -18,7 +18,6 @@ vec4 computeReflectedPixel(sampler2D depthBuffer, sampler2D colorBuffer, sampler
 		
 		//SSR stepping goes here
 		#ifdef realtimeReflections
-		vec3 normal = cameraSpaceVector;
 		
 		/*float rx = snoise(gl_FragCoord.xy * seed + 64.2 + sample + seed);
 		float ry = snoise(gl_FragCoord.yx * rx * animationTimer * 1.15);

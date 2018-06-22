@@ -6,6 +6,8 @@
 
 package io.xol.chunkstories.core.rendering.passes;
 
+import java.nio.ByteBuffer;
+
 import org.joml.Matrix4f;
 
 import io.xol.chunkstories.api.rendering.GameWindow;
@@ -16,6 +18,7 @@ import io.xol.chunkstories.api.rendering.StateMachine.DepthTestMode;
 import io.xol.chunkstories.api.rendering.pass.RenderPass;
 import io.xol.chunkstories.api.rendering.pass.RenderPasses;
 import io.xol.chunkstories.api.rendering.shader.Shader;
+import io.xol.chunkstories.api.rendering.shader.ShaderBuffer;
 import io.xol.chunkstories.api.rendering.target.RenderTargetsConfiguration;
 import io.xol.chunkstories.api.rendering.textures.Texture2D;
 import io.xol.chunkstories.api.rendering.textures.Texture2DRenderTarget;
@@ -33,11 +36,25 @@ public class GBuffersOpaquePass extends RenderPass {
 	private RenderTargetsConfiguration fbo;
 	private Texture2DRenderTarget rbZBuffer;
 
+	ShaderBuffer ubo;
+	
 	public GBuffersOpaquePass(RenderPasses pipeline, String name, String[] requires, String[] exports) {
 		super(pipeline, name, requires, exports);
 		this.worldRenderer = pipeline.getWorldRenderer();
 		this.world = worldRenderer.getWorld();
 
+		ubo = pipeline.getRenderingInterface().newUBO();
+		ByteBuffer bbuf = ByteBuffer.allocateDirect(512 * 4 * 3);
+		
+		for(int i = 0; i < 512; i++) {
+			bbuf.putFloat((float) Math.random());
+			bbuf.putFloat((float) Math.random());
+			bbuf.putFloat((float) Math.random());
+			//bbuf.putFloat(0.0f);
+		}
+		
+		ubo.upload(bbuf);
+		
 		GameWindow gameWindow = pipeline.getRenderingInterface().getWindow();
 		albedoBuffer = pipeline.getRenderingInterface().newTexture2D(TextureFormat.RGBA_8BPP, gameWindow.getWidth(), gameWindow.getHeight());
 		normalBuffer = pipeline.getRenderingInterface().newTexture2D(TextureFormat.RGB_8, gameWindow.getWidth(), gameWindow.getHeight());
@@ -76,6 +93,9 @@ public class GBuffersOpaquePass extends RenderPass {
 			
 			Shader opaqueBlocksShader = renderingInterface.useShader("blocks_opaque");
 			
+			opaqueBlocksShader.attachUBO("VoxelSurfaces", ubo);
+			//System.out.println("sucker");
+			
 			Texture2D blocksAlbedoTexture = gameWindow.getClient().getContent().voxels().textures().getDiffuseAtlasTexture();
 			Texture2D blocksNormalTexture = gameWindow.getClient().getContent().voxels().textures().getNormalAtlasTexture();
 			Texture2D blocksMaterialTexture = gameWindow.getClient().getContent().voxels().textures().getMaterialAtlasTexture();
@@ -111,6 +131,8 @@ public class GBuffersOpaquePass extends RenderPass {
 			opaqueBlocksShader.setUniform1f("wetness", world.getGenerator().getEnvironment().getWorldWetness(renderingInterface.getCamera().getCameraPosition()));
 			opaqueBlocksShader.setUniform1f("time", worldRenderer.getAnimationTimer());
 			opaqueBlocksShader.setUniform1f("animationTimer", worldRenderer.getAnimationTimer());
+			
+			opaqueBlocksShader.setUniform1i("integerOfDay", ((int)worldRenderer.getAnimationTimer() / 10) % 512);
 
 			opaqueBlocksShader.setUniform2f("screenSize", gameWindow.getWidth(), gameWindow.getHeight());
 			renderingInterface.getCamera().setupShader(opaqueBlocksShader);
