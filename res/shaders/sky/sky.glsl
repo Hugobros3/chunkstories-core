@@ -85,7 +85,7 @@ vec3 getAtmosphericScattering(vec3 v, vec3 sunVec, vec3 upVec, float sunspotStre
 	
 	vec3 finalScatter = aScatter(sunAbsorb, viewAbsorb, sunCoeff, viewCoeff, viewScatter); //Scatters all sunlight
 	vec3 sunSpot = (calcSunSpot(lDotV) * viewAbsorb) * sunBrightness; //Sunspot
-	//sunSpot *= sunspotStrength;
+	sunSpot *= sunspotStrength;
 	//vec3 sunSpot = vec3(0);
 	
 	vec3 result = (finalScatter + sunSpot) * PI * (2.0 * scatterBrightness);
