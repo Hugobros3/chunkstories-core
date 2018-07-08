@@ -41,6 +41,7 @@ import io.xol.chunkstories.api.world.cell.CellData;
 import io.xol.chunkstories.core.entity.components.EntityStance;
 import io.xol.chunkstories.core.entity.components.EntityStance.EntityHumanoidStance;
 import io.xol.chunkstories.core.entity.traits.MinerTrait;
+import io.xol.chunkstories.core.entity.traits.TraitBasicMovement;
 import io.xol.chunkstories.core.entity.traits.TraitWalkingSounds;
 import io.xol.chunkstories.core.item.ItemMiningTool;
 import io.xol.chunkstories.core.item.MiningProgress;
@@ -84,6 +85,8 @@ public abstract class EntityHumanoid extends EntityLiving {
 		};
 
 		this.stance = new EntityStance(this);
+		
+		new TraitBasicMovement(this);
 		
 		//Override the entityliving's health component with a modified version
 		this.entityHealth = new EntityHumanoidHealth(this);
