@@ -257,22 +257,21 @@ public class ItemFirearm extends ItemWeapon implements ItemOverlay, ItemZoom, It
 
 				//Raytrace shot
 				Vector3d eyeLocation = new Vector3d(entity.getLocation());
-				entity.traits.with(TraitEyeLevel.class, tel -> eyeLocation.x += tel.getEyeLevel());
+				entity.traits.with(TraitEyeLevel.class, tel -> eyeLocation.y += tel.getEyeLevel());
 
 				Vector3dc shooterDirection = entity.components.tryWith(EntityRotation.class, er -> er.getDirectionLookingAt());
 				if(shooterDirection == null)
 					return false;
 				
+				
 				//For each shot
 				for (int ss = 0; ss < shots; ss++)
 				{
 					Vector3d direction = new Vector3d(shooterDirection);
-					direction.add(new Vector3d(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).normalize().mul(accuracy / 100d));
 					direction.normalize();
 
 					//Find wall collision
 					Location shotBlock = entity.getWorld().collisionsManager().raytraceSolid(eyeLocation, direction, range);
-
 					Vector3dc nearestLocation = null;
 
 					//Loops to try and break blocks
@@ -367,21 +366,10 @@ public class ItemFirearm extends ItemWeapon implements ItemOverlay, ItemZoom, It
 
 								untouchedReflection.mul(0.25);
 
-								//Vector3d ppos = new Vector3d(particleSpawnPosition);
 								controller.getParticlesManager().spawnParticleAtPositionWithVelocity("voxel_frag", particleSpawnPosition, untouchedReflection);
-
 							}
 							
 							controller.getSoundManager().playSoundEffect(peek.getVoxel().getMaterial().resolveProperty("landingSounds"), Mode.NORMAL, particleSpawnPosition, 1, 0.05f);
-							
-							/*double bspeed = 5/60.0 * (1 + Math.random() * 3 * Math.random());
-							Vector3d ppos = new Vector3d(reflected);
-							ppos.normalize();
-							ppos.scale(0.5);
-							ppos.add(nearestLocation);
-							WorldEffects.createFireball(shooter.getWorld(), ppos, 1f, damage*0.15*bspeed, (float) (0.0 + 0.05*damage));
-							*/
-							
 							controller.getDecalsManager().drawDecal(nearestLocation, normal.negate(), new Vector3d(0.5), "bullethole");
 						}
 					}
