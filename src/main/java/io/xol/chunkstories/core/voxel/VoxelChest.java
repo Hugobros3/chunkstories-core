@@ -46,7 +46,8 @@ public class VoxelChest extends Voxel {
 		if (input.getName().equals("mouse.right") && voxelContext.getWorld() instanceof WorldMaster) {
 
 			Controller c = entity.traits.tryWith(TraitController.class, ec -> ec.getController());
-			if (c != null && c instanceof Player && ((Player) c).getLocation().distance(voxelContext.getLocation()) <= 5) {
+			if (c != null && c instanceof Player
+					&& ((Player) c).getLocation().distance(voxelContext.getLocation()) <= 5) {
 				Player p = (Player) c;
 
 				p.openInventory(getInventory(voxelContext));

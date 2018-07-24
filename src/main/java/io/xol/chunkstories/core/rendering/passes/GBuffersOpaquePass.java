@@ -30,14 +30,15 @@ public class GBuffersOpaquePass extends RenderPass {
 
 	final WorldRenderer worldRenderer;
 	final World world;
-	
-	public final Texture2DRenderTarget albedoBuffer, normalBuffer, voxelLightBuffer, roughnessBuffer, metalnessBuffer, materialsBuffer;
-	
+
+	public final Texture2DRenderTarget albedoBuffer, normalBuffer, voxelLightBuffer, roughnessBuffer, metalnessBuffer,
+			materialsBuffer;
+
 	private RenderTargetsConfiguration fbo;
 	private Texture2DRenderTarget rbZBuffer;
 
 	ShaderBuffer ubo;
-	
+
 	public GBuffersOpaquePass(RenderPasses pipeline, String name, String[] requires, String[] exports) {
 		super(pipeline, name, requires, exports);
 		this.worldRenderer = pipeline.getWorldRenderer();
@@ -45,25 +46,31 @@ public class GBuffersOpaquePass extends RenderPass {
 
 		ubo = pipeline.getRenderingInterface().newUBO();
 		ByteBuffer bbuf = ByteBuffer.allocateDirect(512 * 4 * 3);
-		
-		for(int i = 0; i < 512; i++) {
+
+		for (int i = 0; i < 512; i++) {
 			bbuf.putFloat((float) Math.random());
 			bbuf.putFloat((float) Math.random());
 			bbuf.putFloat((float) Math.random());
-			//bbuf.putFloat(0.0f);
+			// bbuf.putFloat(0.0f);
 		}
-		
+
 		ubo.upload(bbuf);
-		
+
 		GameWindow gameWindow = pipeline.getRenderingInterface().getWindow();
-		albedoBuffer = pipeline.getRenderingInterface().newTexture2D(TextureFormat.RGBA_8BPP, gameWindow.getWidth(), gameWindow.getHeight());
-		normalBuffer = pipeline.getRenderingInterface().newTexture2D(TextureFormat.RGB_8, gameWindow.getWidth(), gameWindow.getHeight());
-		voxelLightBuffer = pipeline.getRenderingInterface().newTexture2D(TextureFormat.RG_8, gameWindow.getWidth(), gameWindow.getHeight());
-		roughnessBuffer = pipeline.getRenderingInterface().newTexture2D(TextureFormat.RED_8, gameWindow.getWidth(), gameWindow.getHeight());
-		metalnessBuffer = pipeline.getRenderingInterface().newTexture2D(TextureFormat.RED_8, gameWindow.getWidth(), gameWindow.getHeight());
-		
-		materialsBuffer = pipeline.getRenderingInterface().newTexture2D(TextureFormat.RED_8UI, gameWindow.getWidth(), gameWindow.getHeight());
-		
+		albedoBuffer = pipeline.getRenderingInterface().newTexture2D(TextureFormat.RGBA_8BPP, gameWindow.getWidth(),
+				gameWindow.getHeight());
+		normalBuffer = pipeline.getRenderingInterface().newTexture2D(TextureFormat.RGB_8, gameWindow.getWidth(),
+				gameWindow.getHeight());
+		voxelLightBuffer = pipeline.getRenderingInterface().newTexture2D(TextureFormat.RG_8, gameWindow.getWidth(),
+				gameWindow.getHeight());
+		roughnessBuffer = pipeline.getRenderingInterface().newTexture2D(TextureFormat.RED_8, gameWindow.getWidth(),
+				gameWindow.getHeight());
+		metalnessBuffer = pipeline.getRenderingInterface().newTexture2D(TextureFormat.RED_8, gameWindow.getWidth(),
+				gameWindow.getHeight());
+
+		materialsBuffer = pipeline.getRenderingInterface().newTexture2D(TextureFormat.RED_8UI, gameWindow.getWidth(),
+				gameWindow.getHeight());
+
 		this.resolvedOutputs.put("albedoBuffer", albedoBuffer);
 		this.resolvedOutputs.put("normalBuffer", normalBuffer);
 		this.resolvedOutputs.put("voxelLightBuffer", voxelLightBuffer);
@@ -75,41 +82,48 @@ public class GBuffersOpaquePass extends RenderPass {
 	@Override
 	public void onResolvedInputs() {
 		rbZBuffer = (Texture2DRenderTarget) resolvedInputs.get("zBuffer");
-		fbo = pipeline.getRenderingInterface().getRenderTargetManager().newConfiguration(rbZBuffer, albedoBuffer, normalBuffer, voxelLightBuffer, roughnessBuffer, metalnessBuffer, materialsBuffer);
+		fbo = pipeline.getRenderingInterface().getRenderTargetManager().newConfiguration(rbZBuffer, albedoBuffer,
+				normalBuffer, voxelLightBuffer, roughnessBuffer, metalnessBuffer, materialsBuffer);
 	}
 
 	@Override
 	public void render(RenderingInterface renderingInterface) {
-		if(fbo != null) {
+		if (fbo != null) {
 			GameWindow gameWindow = pipeline.getRenderingInterface().getWindow();
-			
+
 			renderingInterface.getRenderTargetManager().setConfiguration(fbo);
 			renderingInterface.getRenderTargetManager().clearBoundRenderTargetAll();
-			
+
 			// Set fixed-function parameters
 			renderingInterface.setDepthTestMode(DepthTestMode.LESS_OR_EQUAL);
 			renderingInterface.setBlendMode(BlendMode.DISABLED);
 			renderingInterface.setCullingMode(CullingMode.COUNTERCLOCKWISE);
-			
+
 			Shader opaqueBlocksShader = renderingInterface.useShader("blocks_opaque");
-			
+
 			opaqueBlocksShader.attachUBO("VoxelSurfaces", ubo);
-			//System.out.println("sucker");
-			
-			Texture2D blocksAlbedoTexture = gameWindow.getClient().getContent().voxels().textures().getDiffuseAtlasTexture();
-			Texture2D blocksNormalTexture = gameWindow.getClient().getContent().voxels().textures().getNormalAtlasTexture();
-			Texture2D blocksMaterialTexture = gameWindow.getClient().getContent().voxels().textures().getMaterialAtlasTexture();
-			
+			// System.out.println("sucker");
+
+			Texture2D blocksAlbedoTexture = gameWindow.getClient().getContent().voxels().textures()
+					.getDiffuseAtlasTexture();
+			Texture2D blocksNormalTexture = gameWindow.getClient().getContent().voxels().textures()
+					.getNormalAtlasTexture();
+			Texture2D blocksMaterialTexture = gameWindow.getClient().getContent().voxels().textures()
+					.getMaterialAtlasTexture();
+
 			renderingInterface.bindAlbedoTexture(blocksAlbedoTexture);
 			renderingInterface.bindNormalTexture(blocksNormalTexture);
 			renderingInterface.bindMaterialTexture(blocksMaterialTexture);
 
-			renderingInterface.bindTexture2D("lightColors", renderingInterface.textures().getTexture("./textures/environement/light.png"));
-			renderingInterface.bindTexture2D("vegetationColorTexture", worldRenderer.getWorld().getGenerator().getEnvironment().getGrassTexture(renderingInterface));
-			//renderingInterface.bindTexture2D("vegetationColorTexture", getGrassTexture());
+			renderingInterface.bindTexture2D("lightColors",
+					renderingInterface.textures().getTexture("./textures/environement/light.png"));
+			renderingInterface.bindTexture2D("vegetationColorTexture",
+					worldRenderer.getWorld().getGenerator().getEnvironment().getGrassTexture(renderingInterface));
+			// renderingInterface.bindTexture2D("vegetationColorTexture",
+			// getGrassTexture());
 
 			boolean mipmap = true;
-			//Set texturing arguments
+			// Set texturing arguments
 			blocksAlbedoTexture.setTextureWrapping(false);
 			blocksAlbedoTexture.setLinearFiltering(false);
 			blocksAlbedoTexture.setMipMapping(mipmap);
@@ -125,23 +139,24 @@ public class GBuffersOpaquePass extends RenderPass {
 			blocksMaterialTexture.setMipMapping(mipmap);
 			blocksMaterialTexture.setMipmapLevelsRange(0, 4);
 
-			//World stuff
+			// World stuff
 			opaqueBlocksShader.setUniform1f("mapSize", world.getSizeInChunks() * 32);
 			opaqueBlocksShader.setUniform1f("overcastFactor", world.getWeather());
-			opaqueBlocksShader.setUniform1f("wetness", world.getGenerator().getEnvironment().getWorldWetness(renderingInterface.getCamera().getCameraPosition()));
+			opaqueBlocksShader.setUniform1f("wetness", world.getGenerator().getEnvironment()
+					.getWorldWetness(renderingInterface.getCamera().getCameraPosition()));
 			opaqueBlocksShader.setUniform1f("time", worldRenderer.getAnimationTimer());
 			opaqueBlocksShader.setUniform1f("animationTimer", worldRenderer.getAnimationTimer());
-			
-			opaqueBlocksShader.setUniform1i("integerOfDay", ((int)worldRenderer.getAnimationTimer() / 10) % 512);
+
+			opaqueBlocksShader.setUniform1i("integerOfDay", ((int) worldRenderer.getAnimationTimer() / 10) % 512);
 
 			opaqueBlocksShader.setUniform2f("screenSize", gameWindow.getWidth(), gameWindow.getHeight());
 			renderingInterface.getCamera().setupShader(opaqueBlocksShader);
-			
+
 			renderingInterface.setObjectMatrix(new Matrix4f());
-			
+
 			worldRenderer.getChunksRenderer().renderChunks(renderingInterface);
 			worldRenderer.getChunksRenderer().renderChunksExtras(renderingInterface);
-			
+
 			worldRenderer.getEntitiesRenderer().renderEntities(renderingInterface);
 			worldRenderer.getParticlesRenderer().renderParticles(renderingInterface);
 		}
@@ -156,6 +171,5 @@ public class GBuffersOpaquePass extends RenderPass {
 	public void setupShader(RenderingInterface renderer, Shader shader) {
 		super.setupShader(renderer, shader);
 	}
-	
-	
+
 }

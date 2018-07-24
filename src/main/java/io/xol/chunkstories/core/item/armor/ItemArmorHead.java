@@ -11,18 +11,15 @@ import java.util.Collection;
 
 import io.xol.chunkstories.api.item.ItemDefinition;
 
-public class ItemArmorHead extends ItemArmor
-{
-	public static final Collection<String> bodyParts = Arrays.asList(new String[]{"boneHead"});
+public class ItemArmorHead extends ItemArmor {
+	public static final Collection<String> bodyParts = Arrays.asList(new String[] { "boneHead" });
 
-	public ItemArmorHead(ItemDefinition type)
-	{
+	public ItemArmorHead(ItemDefinition type) {
 		super(type);
 	}
 
 	@Override
-	public Collection<String> bodyPartsAffected()
-	{
+	public Collection<String> bodyPartsAffected() {
 		return bodyParts;
 	}
 

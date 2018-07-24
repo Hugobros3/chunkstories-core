@@ -23,10 +23,10 @@ public class ForwardPass extends RenderPass {
 
 	final WorldRenderer worldRenderer;
 	final World world;
-	
+
 	public ForwardPass(RenderPasses pipeline, String name, String[] requires, String[] exports) {
 		super(pipeline, name, requires, exports);
-		
+
 		this.worldRenderer = pipeline.getWorldRenderer();
 		this.world = worldRenderer.getWorld();
 	}
@@ -42,14 +42,14 @@ public class ForwardPass extends RenderPass {
 	public void render(RenderingInterface renderer) {
 		renderer.getRenderTargetManager().setConfiguration(fbo);
 		renderer.setDepthTestMode(DepthTestMode.LESS_OR_EQUAL);
-		
+
 		worldRenderer.getParticlesRenderer().renderParticles(renderer);
 		worldRenderer.getWorldEffectsRenderer().renderEffects(renderer);
 	}
 
 	@Override
 	public void onScreenResize(int width, int height) {
-		
+
 	}
 
 }

@@ -29,7 +29,8 @@ import io.xol.chunkstories.api.world.cell.FutureCell;
 import io.xol.chunkstories.api.world.chunk.Chunk.ChunkCell;
 
 /**
- * 2-blocks tall door Requires two consecutive voxel ids, x being lower, x+1 top, the top part should be suffixed of _top
+ * 2-blocks tall door Requires two consecutive voxel ids, x being lower, x+1
+ * top, the top part should be suffixed of _top
  */
 public class VoxelDoor extends Voxel// implements VoxelCustomIcon
 {
@@ -39,8 +40,7 @@ public class VoxelDoor extends Voxel// implements VoxelCustomIcon
 
 	boolean top;
 
-	public VoxelDoor(VoxelDefinition type)
-	{
+	public VoxelDoor(VoxelDefinition type) {
 		super(type);
 
 		top = getName().endsWith("_top");
@@ -55,28 +55,26 @@ public class VoxelDoor extends Voxel// implements VoxelCustomIcon
 	}
 
 	public Voxel getUpperPart() {
-		if(top)
+		if (top)
 			return this;
 		else
-			return store().getVoxel(getName()+"_top");
+			return store().getVoxel(getName() + "_top");
 	}
-	
+
 	public Voxel getLowerPart() {
-		if(top) 
+		if (top)
 			return store.getVoxel(getName().substring(0, getName().length() - 4));
 		else
 			return this;
 	}
-	
+
 	@Override
-	public VoxelTexture getVoxelTexture(VoxelSide side, CellData info)
-	{
+	public VoxelTexture getVoxelTexture(VoxelSide side, CellData info) {
 		return doorTexture;
 	}
 
 	@Override
-	public VoxelRenderer getVoxelRenderer(CellData info)
-	{
+	public VoxelRenderer getVoxelRenderer(CellData info) {
 		int facingPassed = (info.getMetaData() >> 2) & 0x3;
 		boolean isOpen = ((info.getMetaData() >> 0) & 0x1) == 1;
 		boolean hingeSide = ((info.getMetaData() >> 1) & 0x1) == 1;
@@ -86,8 +84,7 @@ public class VoxelDoor extends Voxel// implements VoxelCustomIcon
 		if (hingeSide)
 			facingPassed += 4;
 
-		switch (facingPassed)
-		{
+		switch (facingPassed) {
 		case 0:
 			i = isOpen ? 3 : 0;
 			break;
@@ -118,19 +115,18 @@ public class VoxelDoor extends Voxel// implements VoxelCustomIcon
 		return models[i];
 	}
 
-	//Meta
-	//0x0 -> open/close
-	//0x1 -> left/right hinge || left = 0 right = 1 (left is default)
-	//0x2-0x4 -> side ( VoxelSide << 2 )
+	// Meta
+	// 0x0 -> open/close
+	// 0x1 -> left/right hinge || left = 0 right = 1 (left is default)
+	// 0x2-0x4 -> side ( VoxelSide << 2 )
 
 	@Override
-	public boolean handleInteraction(Entity entity, ChunkCell voxelContext, Input input)
-	{
+	public boolean handleInteraction(Entity entity, ChunkCell voxelContext, Input input) {
 		if (!input.getName().equals("mouse.right"))
 			return false;
 		if (!(entity.getWorld() instanceof WorldMaster))
 			return true;
-		
+
 		boolean isOpen = ((voxelContext.getMetaData() >> 0) & 0x1) == 1;
 		boolean hingeSide = ((voxelContext.getMetaData() >> 1) & 0x1) == 1;
 		int facingPassed = (voxelContext.getMetaData() >> 2) & 0x3;
@@ -146,18 +142,17 @@ public class VoxelDoor extends Voxel// implements VoxelCustomIcon
 			otherPartLocation.add(0.0, 1.0, 0.0);
 
 		EditableCell otherLocationPeek = voxelContext.getWorld().peekSafely(otherPartLocation);
-		if (otherLocationPeek.getVoxel() instanceof VoxelDoor)
-		{
+		if (otherLocationPeek.getVoxel() instanceof VoxelDoor) {
 			System.out.println("new door status : " + newState);
-			voxelContext.getWorld().getSoundManager().playSoundEffect("sounds/voxels/door.ogg", Mode.NORMAL, voxelContext.getLocation(), 1.0f, 1.0f);
+			voxelContext.getWorld().getSoundManager().playSoundEffect("sounds/voxels/door.ogg", Mode.NORMAL,
+					voxelContext.getLocation(), 1.0f, 1.0f);
 
 			voxelContext.setMetaData(newData);
 			otherLocationPeek.setMetaData(newData);
-			
-			//otherPartLocation.setVoxelDataAtLocation(VoxelFormat.changeMeta(otherPartLocation.getVoxelDataAtLocation(), newData));
-		}
-		else
-		{
+
+			// otherPartLocation.setVoxelDataAtLocation(VoxelFormat.changeMeta(otherPartLocation.getVoxelDataAtLocation(),
+			// newData));
+		} else {
 			store.parent().logger().error("Incomplete door @ " + otherPartLocation);
 		}
 
@@ -165,8 +160,7 @@ public class VoxelDoor extends Voxel// implements VoxelCustomIcon
 	}
 
 	@Override
-	public CollisionBox[] getCollisionBoxes(CellData info)
-	{
+	public CollisionBox[] getCollisionBoxes(CellData info) {
 		CollisionBox[] boxes = new CollisionBox[1];
 
 		int facingPassed = (info.getMetaData() >> 2) & 0x3;
@@ -175,10 +169,8 @@ public class VoxelDoor extends Voxel// implements VoxelCustomIcon
 
 		boxes[0] = new CollisionBox(0.125, 1.0, 1.0).translate(0.125 / 2, 0, 0.5);
 
-		if (isOpen)
-		{
-			switch (facingPassed + (hingeSide ? 4 : 0))
-			{
+		if (isOpen) {
+			switch (facingPassed + (hingeSide ? 4 : 0)) {
 			case 0:
 				boxes[0] = new CollisionBox(1.0, 1.0, 0.125).translate(0.5, 0, 0.125 / 2);
 				break;
@@ -204,11 +196,8 @@ public class VoxelDoor extends Voxel// implements VoxelCustomIcon
 				boxes[0] = new CollisionBox(0.125, 1.0, 1.0).translate(0.125 / 2, 0, 0.5);
 				break;
 			}
-		}
-		else
-		{
-			switch (facingPassed)
-			{
+		} else {
+			switch (facingPassed) {
 			case 0:
 				boxes[0] = new CollisionBox(0.125, 1.0, 1.0).translate(0.125 / 2, 0, 0.5);
 				break;
@@ -223,70 +212,64 @@ public class VoxelDoor extends Voxel// implements VoxelCustomIcon
 				break;
 			}
 		}
-		
+
 		boxes[0].translate(-boxes[0].xw / 2, 0, -boxes[0].zw / 2);
 
 		return boxes;
 	}
 
 	@Override
-	public void onPlace(FutureCell cell, WorldModificationCause cause) throws IllegalBlockModificationException
-	{
-		//Ignore all that crap on a slave world
+	public void onPlace(FutureCell cell, WorldModificationCause cause) throws IllegalBlockModificationException {
+		// Ignore all that crap on a slave world
 		if (!(cell.getWorld() instanceof WorldMaster))
 			return;
 
-		//We should only place the lower part, prevent entities from doing so !
+		// We should only place the lower part, prevent entities from doing so !
 		if (top && cause != null && cause instanceof Entity)
 			throw new IllegalBlockModificationException(cell, "Entities can't place upper doors parts");
 
-		//If the system adds the upper part, no modifications to be done on it
+		// If the system adds the upper part, no modifications to be done on it
 		if (top)
 			return;
-		
+
 		World world = cell.getWorld();
 		int x = cell.getX();
 		int y = cell.getY();
 		int z = cell.getZ();
 
-		//Check top is free
+		// Check top is free
 		int topData = world.peekRaw(x, y + 1, z);
 		if (VoxelFormat.id(topData) != 0)
 			throw new IllegalBlockModificationException(cell, "Top part isn't free");
 
-		//grab our attributes
+		// grab our attributes
 		boolean isOpen = ((cell.getMetaData() >> 0) & 0x1) == 1;
 		boolean hingeSide = ((cell.getMetaData() >> 1) & 0x1) == 1;
 		int facingPassed = (cell.getMetaData() >> 2) & 0x3;
 
-		//Default face is given by passed metadata
+		// Default face is given by passed metadata
 		VoxelSide doorSideFacing = VoxelSide.values()[facingPassed];
 
-		//Determine side if placed by an entity and not internal code
-		if (cause != null && cause instanceof Entity)
-		{
+		// Determine side if placed by an entity and not internal code
+		if (cause != null && cause instanceof Entity) {
 			Location loc = ((Entity) cause).getLocation();
 			double dx = loc.x() - (x + 0.5);
 			double dz = loc.z() - (z + 0.5);
-			if (Math.abs(dx) > Math.abs(dz))
-			{
+			if (Math.abs(dx) > Math.abs(dz)) {
 				if (dx > 0)
 					doorSideFacing = VoxelSide.RIGHT;
 				else
 					doorSideFacing = VoxelSide.LEFT;
-			}
-			else
-			{
+			} else {
 				if (dz > 0)
 					doorSideFacing = VoxelSide.FRONT;
 				else
 					doorSideFacing = VoxelSide.BACK;
 			}
 
-			//If there is an adjacent one, set the hinge to right
+			// If there is an adjacent one, set the hinge to right
 			Voxel adjacent = null;
-			switch (doorSideFacing)
-			{
+			switch (doorSideFacing) {
 			case LEFT:
 				adjacent = world.peekSimple(x, y, z - 1);
 				break;
@@ -302,70 +285,65 @@ public class VoxelDoor extends Voxel// implements VoxelCustomIcon
 			default:
 				break;
 			}
-			if (adjacent instanceof VoxelDoor)
-			{
+			if (adjacent instanceof VoxelDoor) {
 				hingeSide = true;
 			}
 
 			cell.setMetaData(computeMeta(isOpen, hingeSide, doorSideFacing));
 		}
 
-		//Place the upper part and we're good to go
+		// Place the upper part and we're good to go
 		world.pokeSimple(x, y + 1, z, this.getUpperPart(), -1, -1, cell.getMetaData());
 	}
 
-	public static int computeMeta(boolean isOpen, boolean hingeSide, VoxelSide doorFacingSide)
-	{
+	public static int computeMeta(boolean isOpen, boolean hingeSide, VoxelSide doorFacingSide) {
 		return computeMeta(isOpen, hingeSide, doorFacingSide.ordinal());
 	}
 
-	public static int computeMeta(boolean isOpen, boolean hingeSide, int doorFacingsSide)
-	{
-		//System.out.println(doorFacingsSide + " open: " + isOpen + " hinge:" + hingeSide);
+	public static int computeMeta(boolean isOpen, boolean hingeSide, int doorFacingsSide) {
+		// System.out.println(doorFacingsSide + " open: " + isOpen + " hinge:" +
+		// hingeSide);
 		return (doorFacingsSide << 2) | (((hingeSide ? 1 : 0) & 0x1) << 1) | (isOpen ? 1 : 0) & 0x1;
 	}
 
 	@Override
-	public void onRemove(ChunkCell context, WorldModificationCause cause)
-	{
-		//Don't interfere with system pokes, else we get stuck in a loop
-		if(cause == null || !(cause instanceof Entity))
+	public void onRemove(ChunkCell context, WorldModificationCause cause) {
+		// Don't interfere with system pokes, else we get stuck in a loop
+		if (cause == null || !(cause instanceof Entity))
 			return;
-			
+
 		World world = context.getWorld();
 		int x = context.getX();
 		int y = context.getY();
 		int z = context.getZ();
-		
-		//Ignore all that crap on a slave world
+
+		// Ignore all that crap on a slave world
 		if (!(world instanceof WorldMaster))
 			return;
 
 		int otherPartOfTheDoorY = y;
-		
+
 		if (top)
 			otherPartOfTheDoorY--;
 		else
 			otherPartOfTheDoorY++;
 
 		Voxel restOfTheDoorVoxel = world.peekSimple(x, otherPartOfTheDoorY, z);
-		//Remove the other part as well, if it still exists
+		// Remove the other part as well, if it still exists
 		if (restOfTheDoorVoxel instanceof VoxelDoor)
 			world.pokeSimple(x, otherPartOfTheDoorY, z, store().air(), -1, -1, 0);
-		
+
 	}
 
 	@Override
-	public ItemPile[] getItems()
-	{
-		//Top part shouldn't be placed
+	public ItemPile[] getItems() {
+		// Top part shouldn't be placed
 		if (top)
 			return new ItemPile[] {};
 
+		ItemVoxel itemVoxel = (ItemVoxel) store.parent().items().getItemDefinition("item_voxel_1x2").newItem();
+		itemVoxel.voxel = this;
 
-		ItemVoxel itemVoxel = (ItemVoxel)store.parent().items().getItemDefinition("item_voxel_1x2").newItem();
-		itemVoxel.voxel = this;		
-		
 		return new ItemPile[] { new ItemPile(itemVoxel) };
 	}
 }

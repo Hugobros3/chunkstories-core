@@ -21,26 +21,23 @@ public class Chest extends NonTrivialMapper {
 
 	@Override
 	public void output(World csWorld, int csX, int csY, int csZ, int minecraftBlockId, int minecraftMetaData,
-			MinecraftRegion region, int minecraftCuurrentChunkXinsideRegion,
-			int minecraftCuurrentChunkZinsideRegion, int x, int y, int z) {
+			MinecraftRegion region, int minecraftCuurrentChunkXinsideRegion, int minecraftCuurrentChunkZinsideRegion,
+			int x, int y, int z) {
 
 		Chunk chunk = csWorld.getChunkWorldCoordinates(csX, csY, csZ);
 		assert chunk != null;
-		
-		/*int baked = voxelID;
-		
-		if (voxel instanceof VoxelChest)
-			try {
-				baked = ((VoxelChest) voxel).onPlace(chunk.peek(csX, csY, csZ), baked, null);
-			} catch (WorldException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		else
-			System.out.println("fuck you 666");
-		
-		csWorld.pokeRawSilently(csX, csY, csZ, baked);*/
+
+		/*
+		 * int baked = voxelID;
+		 * 
+		 * if (voxel instanceof VoxelChest) try { baked = ((VoxelChest)
+		 * voxel).onPlace(chunk.peek(csX, csY, csZ), baked, null); } catch
+		 * (WorldException e) { // TODO Auto-generated catch block e.printStackTrace();
+		 * } else System.out.println("fuck you 666");
+		 * 
+		 * csWorld.pokeRawSilently(csX, csY, csZ, baked);
+		 */
 		csWorld.pokeSimpleSilently(new FutureCell(csWorld, csX, csY, csZ, voxel));
 	}
-	
+
 }

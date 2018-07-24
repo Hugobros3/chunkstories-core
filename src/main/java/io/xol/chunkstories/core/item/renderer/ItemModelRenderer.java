@@ -18,52 +18,50 @@ import io.xol.chunkstories.api.rendering.item.ItemRenderer;
 import io.xol.chunkstories.api.rendering.mesh.ClientMeshLibrary;
 import io.xol.chunkstories.api.world.World;
 
-public class ItemModelRenderer extends ItemRenderer
-{
+public class ItemModelRenderer extends ItemRenderer {
 	final String objName;
 	final String albedoTextureName;
 	final String normalTextureName;
 	final String materialTextureName;
-	
+
 	private final TexturesLibrary textures;
 	private final ClientMeshLibrary models;
 
-	public ItemModelRenderer(Item item, ItemRenderer fallbackRenderer, String objName, String albedoTextureName)
-	{
+	public ItemModelRenderer(Item item, ItemRenderer fallbackRenderer, String objName, String albedoTextureName) {
 		this(item, fallbackRenderer, objName, albedoTextureName, "./textures/normalnormal.png");
 	}
-	
-	public ItemModelRenderer(Item item, ItemRenderer fallbackRenderer, String objName, String albedoTextureName, String normalTextureName)
-	{
+
+	public ItemModelRenderer(Item item, ItemRenderer fallbackRenderer, String objName, String albedoTextureName,
+			String normalTextureName) {
 		this(item, fallbackRenderer, objName, albedoTextureName, normalTextureName, "./textures/defaultmaterial.png");
 	}
-	
-	public ItemModelRenderer(Item item, ItemRenderer fallbackRenderer, String objName, String albedoTextureName, String normalTextureName, String materialTextureName)
-	{
+
+	public ItemModelRenderer(Item item, ItemRenderer fallbackRenderer, String objName, String albedoTextureName,
+			String normalTextureName, String materialTextureName) {
 		super(fallbackRenderer);
-		
+
 		this.objName = objName;
 		this.albedoTextureName = albedoTextureName;
 		this.normalTextureName = normalTextureName;
 		this.materialTextureName = materialTextureName;
-		
-		this.textures = ((ClientContent)item.getDefinition().store().parent()).textures();
-		this.models = ((ClientContent)item.getDefinition().store().parent()).meshes();
+
+		this.textures = ((ClientContent) item.getDefinition().store().parent()).textures();
+		this.models = ((ClientContent) item.getDefinition().store().parent()).meshes();
 	}
 
 	@Override
-	public void renderItemInInventory(RenderingInterface context, ItemPile pile, float screenPositionX, float screenPositionY, int scaling) {
+	public void renderItemInInventory(RenderingInterface context, ItemPile pile, float screenPositionX,
+			float screenPositionY, int scaling) {
 		super.renderItemInInventory(context, pile, screenPositionX, screenPositionY, scaling);
 	}
 
 	@Override
-	public void renderItemInWorld(RenderingInterface renderingContext, ItemPile pile, World world, Location location, Matrix4f handTransformation) {
-		/*Matrix4f c = new Matrix4f();
-		c.m11(0);
-		c.m22(0);
-		c.m12(1);
-		c.m21(-1);
-		handTransformation.mul(c);*/
+	public void renderItemInWorld(RenderingInterface renderingContext, ItemPile pile, World world, Location location,
+			Matrix4f handTransformation) {
+		/*
+		 * Matrix4f c = new Matrix4f(); c.m11(0); c.m22(0); c.m12(1); c.m21(-1);
+		 * handTransformation.mul(c);
+		 */
 		renderingContext.setObjectMatrix(handTransformation);
 
 		renderingContext.bindAlbedoTexture(textures.getTexture(albedoTextureName));

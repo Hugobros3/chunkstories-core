@@ -25,40 +25,47 @@ public class ApplySunlightPass extends RenderPass {
 	final World world;
 	RenderTargetsConfiguration fbo = null;
 	Texture2DRenderTarget shadedBuffer = null;
-	
+
 	final ShadowPass shadowPass;
-	
-	public ApplySunlightPass(RenderPasses pipeline, String name, String[] requires, String[] exports, ShadowPass shadowPass) {
+
+	public ApplySunlightPass(RenderPasses pipeline, String name, String[] requires, String[] exports,
+			ShadowPass shadowPass) {
 		super(pipeline, name, requires, exports);
-		
+
 		this.worldRenderer = pipeline.getWorldRenderer();
 		this.world = worldRenderer.getWorld();
-		
+
 		this.shadowPass = shadowPass;
 	}
 
 	@Override
 	public void onResolvedInputs() {
 		this.shadedBuffer = (Texture2DRenderTarget) resolvedInputs.get("shadedBuffer");
-		this.fbo = pipeline.getRenderingInterface().getRenderTargetManager().newConfiguration(null, shadedBuffer);	
+		this.fbo = pipeline.getRenderingInterface().getRenderTargetManager().newConfiguration(null, shadedBuffer);
 	}
 
 	@Override
 	public void render(RenderingInterface renderer) {
 		Shader shadows_apply = renderer.useShader("shadows_apply");
 		world.getGenerator().getEnvironment().setupShadowColors(renderer, shadows_apply);
-		
+
 		shadows_apply.setUniform1f("animationTimer", worldRenderer.getAnimationTimer());
 		shadows_apply.setUniform1f("overcastFactor", world.getWeather());
-		shadows_apply.setUniform1f("wetness", world.getGenerator().getEnvironment().getWorldWetness(renderer.getCamera().getCameraPosition()));
+		shadows_apply.setUniform1f("wetness",
+				world.getGenerator().getEnvironment().getWorldWetness(renderer.getCamera().getCameraPosition()));
 
-		renderer.bindCubemap("irradianceMap", worldRenderer.getRenderingInterface().textures().getCubemap("./textures/pbr_test/irradiance"));
-		renderer.bindCubemap("unfiltered", worldRenderer.getRenderingInterface().textures().getCubemap("./textures/pbr_test/unfiltered"));
-		renderer.bindTexture2D("brdfLUT", worldRenderer.getRenderingInterface().textures().getTexture("./textures/pbr_test/brdf.png"));
-		
-		worldRenderer.getRenderingInterface().textures().getTexture("./textures/pbr_test/brdf.png").setTextureWrapping(false);
-		worldRenderer.getRenderingInterface().textures().getTexture("./textures/pbr_test/brdf.png").setLinearFiltering(true);
-		
+		renderer.bindCubemap("irradianceMap",
+				worldRenderer.getRenderingInterface().textures().getCubemap("./textures/pbr_test/irradiance"));
+		renderer.bindCubemap("unfiltered",
+				worldRenderer.getRenderingInterface().textures().getCubemap("./textures/pbr_test/unfiltered"));
+		renderer.bindTexture2D("brdfLUT",
+				worldRenderer.getRenderingInterface().textures().getTexture("./textures/pbr_test/brdf.png"));
+
+		worldRenderer.getRenderingInterface().textures().getTexture("./textures/pbr_test/brdf.png")
+				.setTextureWrapping(false);
+		worldRenderer.getRenderingInterface().textures().getTexture("./textures/pbr_test/brdf.png")
+				.setLinearFiltering(true);
+
 		renderer.setDepthTestMode(DepthTestMode.DISABLED);
 		renderer.setBlendMode(BlendMode.DISABLED);
 		renderer.getRenderTargetManager().setConfiguration(fbo);
@@ -67,8 +74,8 @@ public class ApplySunlightPass extends RenderPass {
 		shadows_apply.setUniform1f("brightnessMultiplier", lightMultiplier);
 
 		RenderPass giPass = this.pipeline.getRenderPass("gi");
-		if(giPass != null && giPass instanceof GiPass) {
-			GiPass gi = (GiPass)giPass;
+		if (giPass != null && giPass instanceof GiPass) {
+			GiPass gi = (GiPass) giPass;
 			renderer.bindTexture2D("giBuffer", gi.giTexture());
 			renderer.bindTexture2D("giConfidence", gi.confidenceTexture());
 			shadows_apply.setUniform1f("accumulatedSamples", gi.accumulatedSamples);
@@ -81,12 +88,13 @@ public class ApplySunlightPass extends RenderPass {
 		renderer.textures().getTexture("./textures/environement/lightcolors.png").setTextureWrapping(false);
 		renderer.bindTexture2D("lightColors", lightColors);
 
-		if(shadowPass != null) {
+		if (shadowPass != null) {
 			renderer.bindTexture2D("shadowMap", (Texture2D) shadowPass.resolvedOutputs.get("shadowMap"));
-			
-			shadows_apply.setUniform1f("shadowMapResolution", ((Texture2D) shadowPass.resolvedOutputs.get("shadowMap")).getWidth());
+
+			shadows_apply.setUniform1f("shadowMapResolution",
+					((Texture2D) shadowPass.resolvedOutputs.get("shadowMap")).getWidth());
 			shadows_apply.setUniform1f("shadowVisiblity", shadowPass.getShadowVisibility());
-			
+
 			shadows_apply.setUniformMatrix4f("shadowMatrix", shadowPass.getShadowMatrix());
 		}
 

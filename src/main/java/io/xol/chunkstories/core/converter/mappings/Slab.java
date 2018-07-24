@@ -11,7 +11,7 @@ import io.xol.chunkstories.api.voxel.Voxel;
 import io.xol.chunkstories.api.world.cell.FutureCell;
 
 public class Slab extends Mapper {
-	
+
 	public Slab(Voxel voxel) {
 		super(voxel);
 	}
@@ -19,9 +19,9 @@ public class Slab extends Mapper {
 	@Override
 	public void output(int minecraftId, byte minecraftMeta, FutureCell cell) {
 		cell.setVoxel(voxel);
-		if(minecraftMeta >= 8)
+		if (minecraftMeta >= 8)
 			cell.setMetaData(1);
-			//return VoxelFormat.changeMeta(voxelID, 1);
-		//else return voxelID;
+		// return VoxelFormat.changeMeta(voxelID, 1);
+		// else return voxelID;
 	}
 }

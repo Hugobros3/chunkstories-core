@@ -55,7 +55,8 @@ public abstract class EntityHumanoid extends EntityLiving {
 	public EntityHumanoid(EntityDefinition t, Location location) {
 		super(t, location);
 
-		EntityHitbox[] hitboxes = { new EntityHitbox(this, new CollisionBox(-0.15, 0.0, -0.25, 0.30, 0.675, 0.5), "boneTorso"),
+		EntityHitbox[] hitboxes = {
+				new EntityHitbox(this, new CollisionBox(-0.15, 0.0, -0.25, 0.30, 0.675, 0.5), "boneTorso"),
 				new EntityHitbox(this, new CollisionBox(-0.25, 0.0, -0.25, 0.5, 0.5, 0.5), "boneHead"),
 				new EntityHitbox(this, new CollisionBox(-0.1, -0.375, -0.1, 0.2, 0.375, 0.2), "boneArmRU"),
 				new EntityHitbox(this, new CollisionBox(-0.1, -0.375, -0.1, 0.2, 0.375, 0.2), "boneArmLU"),
@@ -76,7 +77,8 @@ public abstract class EntityHumanoid extends EntityLiving {
 		};
 
 		this.animationTrait = new TraitAnimated(this) {
-			CachedLodSkeletonAnimator cachedSkeleton = new CachedLodSkeletonAnimator(EntityHumanoid.this, new EntityHumanoidAnimatedSkeleton(), 25f, 75f);
+			CachedLodSkeletonAnimator cachedSkeleton = new CachedLodSkeletonAnimator(EntityHumanoid.this,
+					new EntityHumanoidAnimatedSkeleton(), 25f, 75f);
 
 			@Override
 			public SkeletonAnimator getAnimatedSkeleton() {
@@ -85,27 +87,27 @@ public abstract class EntityHumanoid extends EntityLiving {
 		};
 
 		this.stance = new EntityStance(this);
-		
+
 		new TraitBasicMovement(this);
-		
-		//Override the entityliving's health component with a modified version
+
+		// Override the entityliving's health component with a modified version
 		this.entityHealth = new EntityHumanoidHealth(this);
-		
-		new TraitRenderable(this, EntityHumanoidRenderer<EntityHumanoid>::new );
-		
+
+		new TraitRenderable(this, EntityHumanoidRenderer<EntityHumanoid>::new);
+
 		new TraitCollidable(this) {
 
 			@Override
 			public CollisionBox[] getCollisionBoxes() {
-				
+
 				double height = stance.get() == EntityHumanoidStance.CROUCHING ? 1.45 : 1.9;
 				if (EntityHumanoid.this.entityHealth.isDead())
 					height = 0.2;
 				return new CollisionBox[] { new CollisionBox(0.6, height, 0.6).translate(-0.3, 0.0, -0.3) };
 			}
-			
+
 		};
-		
+
 		new TraitWalkingSounds(this);
 	}
 
@@ -113,7 +115,7 @@ public abstract class EntityHumanoid extends EntityLiving {
 	public void tick() {
 		// Tick : will move the entity, solve velocity/acceleration and so on
 		super.tick();
-		
+
 		this.traits.with(TraitWalkingSounds.class, s -> s.handleWalkingEtcSounds());
 	}
 
@@ -121,13 +123,17 @@ public abstract class EntityHumanoid extends EntityLiving {
 	public CollisionBox getBoundingBox() {
 		if (entityHealth.isDead())
 			return new CollisionBox(1.6, 1.0, 1.6).translate(-0.8, 0.0, -0.8);
-		
-		return new CollisionBox(1.0, stance.get() == EntityHumanoidStance.CROUCHING ? 1.5 : 2.0, 1.0).translate(-0.5, 0.0, -0.5);
+
+		return new CollisionBox(1.0, stance.get() == EntityHumanoidStance.CROUCHING ? 1.5 : 2.0, 1.0).translate(-0.5,
+				0.0, -0.5);
 	}
-	
-	/** Extends the original entity health component to add in support for damage multipliers */
+
+	/**
+	 * Extends the original entity health component to add in support for damage
+	 * multipliers
+	 */
 	protected class EntityHumanoidHealth extends TraitHealth {
-		
+
 		public EntityHumanoidHealth(Entity entity) {
 			super(entity);
 		}
@@ -147,7 +153,8 @@ public abstract class EntityHumanoid extends EntityLiving {
 
 			damage *= 0.5;
 
-			world.getSoundManager().playSoundEffect("sounds/entities/flesh.ogg", Mode.NORMAL, EntityHumanoid.this.getLocation(), (float) Math.random() * 0.4f + 0.4f, 1);
+			world.getSoundManager().playSoundEffect("sounds/entities/flesh.ogg", Mode.NORMAL,
+					EntityHumanoid.this.getLocation(), (float) Math.random() * 0.4f + 0.4f, 1);
 
 			return super.damage(cause, null, damage);
 		}
@@ -157,9 +164,11 @@ public abstract class EntityHumanoid extends EntityLiving {
 		@Override
 		public SkeletalAnimation getAnimationPlayingForBone(String boneName, double animationTime) {
 			if (EntityHumanoid.this.entityHealth.isDead())
-				return world.getGameContext().getContent().getAnimationsLibrary().getAnimation("./animations/human/ded.bvh");
+				return world.getGameContext().getContent().getAnimationsLibrary()
+						.getAnimation("./animations/human/ded.bvh");
 
-			if (Arrays.asList(new String[] { "boneArmLU", "boneArmRU", "boneArmLD", "boneArmRD", "boneItemInHand" }).contains(boneName)) {
+			if (Arrays.asList(new String[] { "boneArmLU", "boneArmRU", "boneArmLD", "boneArmRD", "boneItemInHand" })
+					.contains(boneName)) {
 				SkeletalAnimation r = EntityHumanoid.this.traits.tryWith(TraitSelectedItem.class, ecs -> {
 					ItemPile selectedItemPile = ecs.getSelectedItem();
 
@@ -167,12 +176,13 @@ public abstract class EntityHumanoid extends EntityLiving {
 						// TODO refactor BVH subsystem to enable SkeletonAnimator to also take care of
 						// additional transforms
 						Item item = selectedItemPile.getItem();
-						
-						if(item instanceof ItemMiningTool) {
+
+						if (item instanceof ItemMiningTool) {
 							MinerTrait trait = traits.get(MinerTrait.class);
-							if(trait != null) {
-								if(trait.getProgress() != null)
-									return world.getGameContext().getContent().getAnimationsLibrary().getAnimation("./animations/human/mining.bvh");
+							if (trait != null) {
+								if (trait.getProgress() != null)
+									return world.getGameContext().getContent().getAnimationsLibrary()
+											.getAnimation("./animations/human/mining.bvh");
 							}
 						}
 
@@ -180,9 +190,10 @@ public abstract class EntityHumanoid extends EntityLiving {
 							return world.getGameContext().getContent().getAnimationsLibrary()
 									.getAnimation(((ItemCustomHoldingAnimation) item).getCustomAnimationName());
 						else
-							return world.getGameContext().getContent().getAnimationsLibrary().getAnimation("./animations/human/holding-item.bvh");
+							return world.getGameContext().getContent().getAnimationsLibrary()
+									.getAnimation("./animations/human/holding-item.bvh");
 					}
-					
+
 					return null;
 				});
 
@@ -198,19 +209,25 @@ public abstract class EntityHumanoid extends EntityLiving {
 			if (stance.get() == EntityHumanoidStance.STANDING) {
 				if (horizSpd > 0.065) {
 					// System.out.println("running");
-					return world.getGameContext().getContent().getAnimationsLibrary().getAnimation("./animations/human/running.bvh");
+					return world.getGameContext().getContent().getAnimationsLibrary()
+							.getAnimation("./animations/human/running.bvh");
 				}
 				if (horizSpd > 0.0)
-					return world.getGameContext().getContent().getAnimationsLibrary().getAnimation("./animations/human/walking.bvh");
+					return world.getGameContext().getContent().getAnimationsLibrary()
+							.getAnimation("./animations/human/walking.bvh");
 
-				return world.getGameContext().getContent().getAnimationsLibrary().getAnimation("./animations/human/standstill.bvh");
+				return world.getGameContext().getContent().getAnimationsLibrary()
+						.getAnimation("./animations/human/standstill.bvh");
 			} else if (stance.get() == EntityHumanoidStance.CROUCHING) {
 				if (horizSpd > 0.0)
-					return world.getGameContext().getContent().getAnimationsLibrary().getAnimation("./animations/human/crouched-walking.bvh");
+					return world.getGameContext().getContent().getAnimationsLibrary()
+							.getAnimation("./animations/human/crouched-walking.bvh");
 
-				return world.getGameContext().getContent().getAnimationsLibrary().getAnimation("./animations/human/crouched.bvh");
+				return world.getGameContext().getContent().getAnimationsLibrary()
+						.getAnimation("./animations/human/crouched.bvh");
 			} else {
-				return world.getGameContext().getContent().getAnimationsLibrary().getAnimation("./animations/human/ded.bvh");
+				return world.getGameContext().getContent().getAnimationsLibrary()
+						.getAnimation("./animations/human/ded.bvh");
 			}
 
 		}
@@ -220,8 +237,9 @@ public abstract class EntityHumanoid extends EntityLiving {
 			// Only the torso is modified, the effect is replicated accross the other bones
 			// later
 			if (boneName.endsWith("boneTorso"))
-				characterRotationMatrix.rotate((90 - entityRotation.getHorizontalRotation()) / 180f * 3.14159f, new Vector3f(0, 1, 0));
-			
+				characterRotationMatrix.rotate((90 - entityRotation.getHorizontalRotation()) / 180f * 3.14159f,
+						new Vector3f(0, 1, 0));
+
 			Vector3d vel = entityVelocity.getVelocity();
 
 			double horizSpd = Math.sqrt(vel.x() * vel.x() + vel.z() * vel.z());
@@ -229,8 +247,10 @@ public abstract class EntityHumanoid extends EntityLiving {
 			animationTime *= 0.75;
 
 			if (boneName.endsWith("boneHead")) {
-				Matrix4f modify = new Matrix4f(getAnimationPlayingForBone(boneName, animationTime).getBone(boneName).getTransformationMatrix(animationTime));
-				modify.rotate((float) (-EntityHumanoid.this.entityRotation.getVerticalRotation() / 180 * Math.PI), new Vector3f(0, 0, 1));
+				Matrix4f modify = new Matrix4f(getAnimationPlayingForBone(boneName, animationTime).getBone(boneName)
+						.getTransformationMatrix(animationTime));
+				modify.rotate((float) (-EntityHumanoid.this.entityRotation.getVerticalRotation() / 180 * Math.PI),
+						new Vector3f(0, 0, 1));
 				return modify;
 			}
 
@@ -239,49 +259,51 @@ public abstract class EntityHumanoid extends EntityLiving {
 
 			if (horizSpd > 0.060)
 				animationTime *= 1.5;
-			else if (Arrays.asList(new String[] { "boneArmLU", "boneArmRU", "boneArmLD", "boneArmRD", "boneItemInHand", "boneTorso" }).contains(boneName)) {
-				
+			else if (Arrays.asList(
+					new String[] { "boneArmLU", "boneArmRU", "boneArmLD", "boneArmRD", "boneItemInHand", "boneTorso" })
+					.contains(boneName)) {
+
 				MinerTrait trait = traits.get(MinerTrait.class);
-				if(trait != null && Arrays.asList(new String[] { "boneArmLU", "boneArmLD", "boneItemInHand"}).contains(boneName)) {
+				if (trait != null && Arrays.asList(new String[] { "boneArmLU", "boneArmLD", "boneItemInHand" })
+						.contains(boneName)) {
 					MiningProgress miningProgress = trait.getProgress();
-					if(miningProgress != null) {
-						SkeletalAnimation lol = world.getGameContext().getContent().getAnimationsLibrary().getAnimation("./animations/human/mining.bvh");
-						
-						return characterRotationMatrix.mul(lol.getBone(boneName).getTransformationMatrix((System.currentTimeMillis() - miningProgress.started) * 1.5f));
+					if (miningProgress != null) {
+						SkeletalAnimation lol = world.getGameContext().getContent().getAnimationsLibrary()
+								.getAnimation("./animations/human/mining.bvh");
+
+						return characterRotationMatrix.mul(lol.getBone(boneName)
+								.getTransformationMatrix((System.currentTimeMillis() - miningProgress.started) * 1.5f));
 					}
 				}
-				
-				// Vector3d vel = getVelocityComponent().getVelocity();
-				// double horizSpd = Math.sqrt(vel.getX() * vel.getX() + vel.getZ() *
-				// vel.getZ());
-
-				// System.out.println((horizSpd / 0.065) * 0.3);
 			}
 
-			ItemPile selectedItem = EntityHumanoid.this.traits.tryWith(TraitSelectedItem.class, eci -> eci.getSelectedItem());
+			ItemPile selectedItem = EntityHumanoid.this.traits.tryWith(TraitSelectedItem.class,
+					eci -> eci.getSelectedItem());
 
 			if (Arrays.asList("boneArmLU", "boneArmRU").contains(boneName)) {
 				float k = (stance.get() == EntityHumanoidStance.CROUCHING) ? 0.65f : 0.75f;
 
 				if (selectedItem != null) {
 					characterRotationMatrix.translate(new Vector3f(0f, k, 0));
-					characterRotationMatrix.rotate(
-							(entityRotation.getVerticalRotation() + ((stance.get() == EntityHumanoidStance.CROUCHING) ? -50f : 0f)) / 180f * -3.14159f,
+					characterRotationMatrix.rotate((entityRotation.getVerticalRotation()
+							+ ((stance.get() == EntityHumanoidStance.CROUCHING) ? -50f : 0f)) / 180f * -3.14159f,
 							new Vector3f(0, 0, 1));
 					characterRotationMatrix.translate(new Vector3f(0f, -k, 0));
 
-					if (stance.get() == EntityHumanoidStance.CROUCHING
-							&& EntityHumanoid.this.equals(((WorldClient) getWorld()).getClient().getPlayer().getControlledEntity()))
+					if (stance.get() == EntityHumanoidStance.CROUCHING && EntityHumanoid.this
+							.equals(((WorldClient) getWorld()).getClient().getPlayer().getControlledEntity()))
 						characterRotationMatrix.translate(new Vector3f(-0.25f, -0.2f, 0f));
 
 				}
 			}
 
 			if (boneName.equals("boneItemInHand") && selectedItem.getItem() instanceof ItemCustomHoldingAnimation) {
-				animationTime = ((ItemCustomHoldingAnimation) selectedItem.getItem()).transformAnimationTime(animationTime);
+				animationTime = ((ItemCustomHoldingAnimation) selectedItem.getItem())
+						.transformAnimationTime(animationTime);
 			}
 
-			return characterRotationMatrix.mul(getAnimationPlayingForBone(boneName, animationTime).getBone(boneName).getTransformationMatrix(animationTime));
+			return characterRotationMatrix.mul(getAnimationPlayingForBone(boneName, animationTime).getBone(boneName)
+					.getTransformationMatrix(animationTime));
 		}
 
 		public boolean shouldHideBone(RenderingInterface renderingContext, String boneName) {
@@ -289,13 +311,15 @@ public abstract class EntityHumanoid extends EntityLiving {
 				if (renderingContext.getCurrentPass().name.startsWith("shadow"))
 					return false;
 
-				ItemPile selectedItem = EntityHumanoid.this.traits.tryWith(TraitSelectedItem.class, eci -> eci.getSelectedItem());
+				ItemPile selectedItem = EntityHumanoid.this.traits.tryWith(TraitSelectedItem.class,
+						eci -> eci.getSelectedItem());
 
 				if (Arrays.asList("boneArmRU", "boneArmRD").contains(boneName) && selectedItem != null)
 					if (selectedItem.getItem() instanceof ItemVoxel || selectedItem.getItem() instanceof ItemMiningTool)
 						return true;
 
-				if (Arrays.asList("boneArmLU", "boneArmRU", "boneArmLD", "boneArmRD").contains(boneName) && selectedItem != null)
+				if (Arrays.asList("boneArmLU", "boneArmRU", "boneArmLD", "boneArmRD").contains(boneName)
+						&& selectedItem != null)
 					return false;
 
 				return true;
@@ -315,7 +339,8 @@ public abstract class EntityHumanoid extends EntityLiving {
 			renderingContext.textures().getTexture("./models/human/humanoid_normal.png").setLinearFiltering(false);
 
 			renderingContext.bindNormalTexture(renderingContext.textures().getTexture("./textures/normalnormal.png"));
-			renderingContext.bindMaterialTexture(renderingContext.textures().getTexture("./textures/defaultmaterial.png"));
+			renderingContext
+					.bindMaterialTexture(renderingContext.textures().getTexture("./textures/defaultmaterial.png"));
 		}
 
 		@Override
@@ -327,9 +352,10 @@ public abstract class EntityHumanoid extends EntityLiving {
 			int e = 0;
 
 			for (EntityHumanoid entity : renderableEntitiesIterator.getElementsInFrustrumOnly()) {
-				Location location = entity.getLocation();//entity.getPredictedLocation();
+				Location location = entity.getLocation();// entity.getPredictedLocation();
 
-				if (renderer.getCurrentPass().name.startsWith("shadow") && location.distance(renderer.getCamera().getCameraPosition()) > 15f)
+				if (renderer.getCurrentPass().name.startsWith("shadow")
+						&& location.distance(renderer.getCamera().getCameraPosition()) > 15f)
 					continue;
 
 				CellData cell = entity.getWorld().peekSafely(entity.getLocation());
@@ -342,31 +368,31 @@ public abstract class EntityHumanoid extends EntityLiving {
 				matrix.translate((float) location.x, (float) location.y, (float) location.z);
 				renderer.setObjectMatrix(matrix);
 
-				renderer.meshes().getRenderableAnimatableMesh("./models/human/human.dae").render(renderer, animation.getAnimatedSkeleton(),
-						System.currentTimeMillis() % 1000000);
+				renderer.meshes().getRenderableAnimatableMesh("./models/human/human.dae").render(renderer,
+						animation.getAnimatedSkeleton(), System.currentTimeMillis() % 1000000);
 			}
 
 			// Render items in hands
 			for (EntityHumanoid entity : renderableEntitiesIterator) {
 
-				if (renderer.getCurrentPass().name.startsWith("shadow") && entity.getLocation().distance(renderer.getCamera().getCameraPosition()) > 15f)
+				if (renderer.getCurrentPass().name.startsWith("shadow")
+						&& entity.getLocation().distance(renderer.getCamera().getCameraPosition()) > 15f)
 					continue;
 
 				TraitAnimated animation = entity.traits.get(TraitAnimated.class);
-				ItemPile selectedItemPile = entity.traits.tryWith(TraitSelectedItem.class, eci -> eci.getSelectedItem());
+				ItemPile selectedItemPile = entity.traits.tryWith(TraitSelectedItem.class,
+						eci -> eci.getSelectedItem());
 
 				if (selectedItemPile != null) {
 					Matrix4f itemMatrix = new Matrix4f();
 					itemMatrix.translate((float) entity.getLocation().x(), (float) entity.getLocation().y(),
 							(float) entity.getLocation().z());
 
-					itemMatrix.mul(animation.getAnimatedSkeleton().getBoneHierarchyTransformationMatrix("boneItemInHand", System.currentTimeMillis() % 1000000));
-					// Matrix4f.mul(itemMatrix,
-					// entity.getAnimatedSkeleton().getBoneHierarchyTransformationMatrix("boneItemInHand",
-					// System.currentTimeMillis() % 1000000), itemMatrix);
+					itemMatrix.mul(animation.getAnimatedSkeleton().getBoneHierarchyTransformationMatrix(
+							"boneItemInHand", System.currentTimeMillis() % 1000000));
 
-					selectedItemPile.getItem().getDefinition().getRenderer().renderItemInWorld(renderer, selectedItemPile, entity.world, entity.getLocation(),
-							itemMatrix);
+					selectedItemPile.getItem().getDefinition().getRenderer().renderItemInWorld(renderer,
+							selectedItemPile, entity.world, entity.getLocation(), itemMatrix);
 				}
 
 				e++;

@@ -23,13 +23,13 @@ import io.xol.chunkstories.core.item.MiningTool;
 public class MinerTrait extends Trait {
 	public MinerTrait(Entity entity) {
 		super(entity);
-		
-		if(!(entity instanceof WorldModificationCause))
+
+		if (!(entity instanceof WorldModificationCause))
 			throw new RuntimeException("Sorry but only entities implementing WorldModificationCause may be miners.");
 	}
 
 	private MiningProgress progress;
-	
+
 	private final MiningTool hands = new MiningTool() {
 
 		@Override
@@ -41,21 +41,22 @@ public class MinerTrait extends Trait {
 		public String getToolTypeName() {
 			return "hands";
 		}
-		
+
 	};
-	
+
 	public void tickTrait() {
 		MiningTool tool = hands;
-		
+
 		World world = entity.getWorld();
-		
+
 		entity.traits.with(TraitController.class, ec -> {
 			Controller controller = ec.getController();
 
 			if (controller != null && controller instanceof Player) {
 				InputsManager inputs = controller.getInputsManager();
 
-				Location lookingAt = entity.traits.tryWith(TraitVoxelSelection.class, tvs -> tvs.getBlockLookingAt(true, false)); 
+				Location lookingAt = entity.traits.tryWith(TraitVoxelSelection.class,
+						tvs -> tvs.getBlockLookingAt(true, false));
 				// entity.getBlockLookingAt(true);
 
 				if (lookingAt != null && lookingAt.distance(entity.getLocation()) > 7f)
@@ -66,7 +67,8 @@ public class MinerTrait extends Trait {
 					WorldCell cell = world.peekSafely(lookingAt);
 
 					// Cancel mining if looking away or the block changed by itself
-					if (lookingAt == null || (progress != null && (lookingAt.distance(progress.loc) > 0 || !cell.getVoxel().sameKind(progress.voxel)))) {
+					if (lookingAt == null || (progress != null
+							&& (lookingAt.distance(progress.loc) > 0 || !cell.getVoxel().sameKind(progress.voxel)))) {
 						progress = null;
 					}
 
@@ -82,7 +84,7 @@ public class MinerTrait extends Trait {
 				}
 			}
 		});
-		
+
 	}
 
 	public MiningProgress getProgress() {

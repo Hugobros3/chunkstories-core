@@ -33,7 +33,8 @@ public abstract class TraitControlledMovement extends TraitBasicMovement {
 		TraitVelocity entityVelocity = entity.traits.get(TraitVelocity.class);
 		TraitRotation entityRotation = entity.traits.get(TraitRotation.class);
 
-		if (collisions == null || entityVelocity == null || entityRotation == null || entityHealth == null || entityHealth.isDead())
+		if (collisions == null || entityVelocity == null || entityRotation == null || entityHealth == null
+				|| entityHealth.isDead())
 			return;
 
 		boolean focus = controller.hasFocus();
@@ -53,15 +54,16 @@ public abstract class TraitControlledMovement extends TraitBasicMovement {
 			}
 		}
 
-		if(focus) {
-			if(entityVelocity.getVelocity().y <= 0.02) {
-				if (!inWater && controller.getInputsManager().getInputByName("jump").isPressed() && collisions.isOnGround()) {
+		if (focus) {
+			if (entityVelocity.getVelocity().y <= 0.02) {
+				if (!inWater && controller.getInputsManager().getInputByName("jump").isPressed()
+						&& collisions.isOnGround()) {
 					jump(0.15);
 				} else if (inWater && controller.getInputsManager().getInputByName("jump").isPressed())
 					jump(0.05);
 			}
 		}
-		
+
 		// Movement
 		// Run ?
 		if (focus && controller.getInputsManager().getInputByName("forward").isPressed()) {
@@ -74,7 +76,8 @@ public abstract class TraitControlledMovement extends TraitBasicMovement {
 
 		double modif = 0;
 		if (focus) {
-			if (controller.getInputsManager().getInputByName("forward").isPressed() || controller.getInputsManager().getInputByName("left").isPressed()
+			if (controller.getInputsManager().getInputByName("forward").isPressed()
+					|| controller.getInputsManager().getInputByName("left").isPressed()
 					|| controller.getInputsManager().getInputByName("right").isPressed())
 
 				horizontalSpeed = getForwardSpeed();
@@ -102,11 +105,14 @@ public abstract class TraitControlledMovement extends TraitBasicMovement {
 		}
 
 		if (onLadder) {
-			entityVelocity.setVelocityY((float) (Math.sin((-(entityRotation.getVerticalRotation()) / 180f * Math.PI)) * horizontalSpeed));
+			entityVelocity.setVelocityY(
+					(float) (Math.sin((-(entityRotation.getVerticalRotation()) / 180f * Math.PI)) * horizontalSpeed));
 		}
 
-		targetVelocity.x = (Math.sin((180 - entityRotation.getHorizontalRotation() + modif) / 180f * Math.PI) * horizontalSpeed);
-		targetVelocity.z = (Math.cos((180 - entityRotation.getHorizontalRotation() + modif) / 180f * Math.PI) * horizontalSpeed);
+		targetVelocity.x = (Math.sin((180 - entityRotation.getHorizontalRotation() + modif) / 180f * Math.PI)
+				* horizontalSpeed);
+		targetVelocity.z = (Math.cos((180 - entityRotation.getHorizontalRotation() + modif) / 180f * Math.PI)
+				* horizontalSpeed);
 
 		super.tick();
 

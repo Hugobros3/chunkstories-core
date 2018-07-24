@@ -22,20 +22,17 @@ import io.xol.chunkstories.api.net.PacketWorld;
 import io.xol.chunkstories.api.world.World;
 import io.xol.chunkstories.core.util.WorldEffects;
 
-public class PacketExplosionEffect extends PacketWorld
-{
+public class PacketExplosionEffect extends PacketWorld {
 	Vector3d center;
 	double radius;
 	double debrisSpeed;
 	float f;
 
-	public PacketExplosionEffect(World world)
-	{
+	public PacketExplosionEffect(World world) {
 		super(world);
 	}
-	
-	public PacketExplosionEffect(World world, Vector3d center, double radius, double debrisSpeed, float f)
-	{
+
+	public PacketExplosionEffect(World world, Vector3d center, double radius, double debrisSpeed, float f) {
 		super(world);
 		this.center = center;
 		this.radius = radius;
@@ -44,31 +41,29 @@ public class PacketExplosionEffect extends PacketWorld
 	}
 
 	@Override
-	public void send(PacketDestinator destinator, DataOutputStream out, PacketSendingContext ctx) throws IOException
-	{
+	public void send(PacketDestinator destinator, DataOutputStream out, PacketSendingContext ctx) throws IOException {
 		out.writeDouble(center.x());
 		out.writeDouble(center.y());
 		out.writeDouble(center.z());
 
 		out.writeDouble(radius);
 		out.writeDouble(debrisSpeed);
-		
+
 		out.writeFloat(f);
 	}
 
 	@Override
-	public void process(PacketSender sender, DataInputStream in, PacketReceptionContext processor) throws IOException, PacketProcessingException
-	{
+	public void process(PacketSender sender, DataInputStream in, PacketReceptionContext processor)
+			throws IOException, PacketProcessingException {
 		center = new Vector3d(in.readDouble(), in.readDouble(), in.readDouble());
 		radius = in.readDouble();
 		debrisSpeed = in.readDouble();
 		f = in.readFloat();
-		
-		if(processor instanceof ClientPacketsProcessor)
-		{
-			ClientPacketsProcessor cpp = (ClientPacketsProcessor)processor;
+
+		if (processor instanceof ClientPacketsProcessor) {
+			ClientPacketsProcessor cpp = (ClientPacketsProcessor) processor;
 			WorldEffects.createFireballFx(cpp.getWorld(), center, radius, debrisSpeed, f);
 		}
 	}
-	
+
 }

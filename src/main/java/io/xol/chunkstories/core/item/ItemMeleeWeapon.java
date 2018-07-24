@@ -67,7 +67,8 @@ public class ItemMeleeWeapon extends ItemWeapon {
 
 		String modelName = getDefinition().resolveProperty("modelObj", "none");
 		if (!modelName.equals("none"))
-			itemRenderer = new ItemModelRenderer(this, fallbackRenderer, modelName, getDefinition().resolveProperty("modelDiffuse", "none"));
+			itemRenderer = new ItemModelRenderer(this, fallbackRenderer, modelName,
+					getDefinition().resolveProperty("modelDiffuse", "none"));
 		else
 			itemRenderer = new FlatIconItemRenderer(this, fallbackRenderer, getDefinition());
 
@@ -90,7 +91,8 @@ public class ItemMeleeWeapon extends ItemWeapon {
 				LocalPlayer LocalPlayer = (LocalPlayer) controller;
 
 				// Uses fake input to notify server/master of intention to attack.
-				LocalPlayer.getInputsManager().onInputPressed(LocalPlayer.getInputsManager().getInputByName("shootGun"));
+				LocalPlayer.getInputsManager()
+						.onInputPressed(LocalPlayer.getInputsManager().getInputByName("shootGun"));
 
 				hasHitYet = true;
 			}
@@ -134,13 +136,15 @@ public class ItemMeleeWeapon extends ItemWeapon {
 					for (int i = 0; i < 25; i++) {
 						Vector3d smashedVoxelParticleDirection = new Vector3d(direction);
 						smashedVoxelParticleDirection.mul(2.0);
-						smashedVoxelParticleDirection.add(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5);
+						smashedVoxelParticleDirection.add(Math.random() - 0.5, Math.random() - 0.5,
+								Math.random() - 0.5);
 						smashedVoxelParticleDirection.normalize();
 
-						entity.getWorld().getParticlesManager().spawnParticleAtPositionWithVelocity("voxel_frag", shotBlock, smashedVoxelParticleDirection);
+						entity.getWorld().getParticlesManager().spawnParticleAtPositionWithVelocity("voxel_frag",
+								shotBlock, smashedVoxelParticleDirection);
 					}
-					entity.getWorld().getSoundManager().playSoundEffect("sounds/environment/glass.ogg", Mode.NORMAL, shotBlock,
-							(float) Math.random() * 0.2f + 0.9f, 1.0f);
+					entity.getWorld().getSoundManager().playSoundEffect("sounds/environment/glass.ogg", Mode.NORMAL,
+							shotBlock, (float) Math.random() * 0.2f + 0.9f, 1.0f);
 
 					// Re-raytrace the ray
 					shotBlock = entity.getWorld().collisionsManager().raytraceSolid(eyeLocation, direction, range);
@@ -149,7 +153,8 @@ public class ItemMeleeWeapon extends ItemWeapon {
 			}
 
 			if (shotBlock != null) {
-				Location shotBlockOuter = entity.getWorld().collisionsManager().raytraceSolidOuter(eyeLocation, direction, range);
+				Location shotBlockOuter = entity.getWorld().collisionsManager().raytraceSolidOuter(eyeLocation,
+						direction, range);
 				if (shotBlockOuter != null) {
 					Vector3d normal = shotBlockOuter.sub(shotBlock);
 
@@ -166,7 +171,8 @@ public class ItemMeleeWeapon extends ItemWeapon {
 					for (CollisionBox box : peek.getTranslatedCollisionBoxes()) {
 						Vector3dc thisLocation = box.lineIntersection(eyeLocation, direction);
 						if (thisLocation != null) {
-							if (nearestLocation == null || nearestLocation.distance(eyeLocation) > thisLocation.distance(eyeLocation))
+							if (nearestLocation == null
+									|| nearestLocation.distance(eyeLocation) > thisLocation.distance(eyeLocation))
 								nearestLocation.set(thisLocation);
 						}
 					}
@@ -182,7 +188,8 @@ public class ItemMeleeWeapon extends ItemWeapon {
 					for (int i = 0; i < 25; i++) {
 						Vector3d untouchedReflection = new Vector3d(reflected);
 
-						Vector3d random = new Vector3d(Math.random() * 2.0 - 1.0, Math.random() * 2.0 - 1.0, Math.random() * 2.0 - 1.0);
+						Vector3d random = new Vector3d(Math.random() * 2.0 - 1.0, Math.random() * 2.0 - 1.0,
+								Math.random() * 2.0 - 1.0);
 						random.mul(0.5);
 						untouchedReflection.add(random);
 						untouchedReflection.normalize();
@@ -190,51 +197,58 @@ public class ItemMeleeWeapon extends ItemWeapon {
 						untouchedReflection.mul(0.25);
 
 						Vector3d ppos = new Vector3d(nearestLocation);
-						entity.getWorld().getParticlesManager().spawnParticleAtPositionWithVelocity("voxel_frag", ppos, untouchedReflection);
-						entity.getWorld().getSoundManager().playSoundEffect(
-								entity.getWorld().peekSafely(shotBlock).getVoxel().getMaterial().resolveProperty("landingSounds"), Mode.NORMAL, ppos, 1, 0.25f);
+						entity.getWorld().getParticlesManager().spawnParticleAtPositionWithVelocity("voxel_frag", ppos,
+								untouchedReflection);
+						entity.getWorld().getSoundManager().playSoundEffect(entity.getWorld().peekSafely(shotBlock)
+								.getVoxel().getMaterial().resolveProperty("landingSounds"), Mode.NORMAL, ppos, 1,
+								0.25f);
 					}
 
-					entity.getWorld().getDecalsManager().drawDecal(nearestLocation, normal.negate(), new Vector3d(0.5), "bullethole");
+					entity.getWorld().getDecalsManager().drawDecal(nearestLocation, normal.negate(), new Vector3d(0.5),
+							"bullethole");
 				}
 			}
 
 			// Hitreg takes place on server bois
 			if (entity.getWorld() instanceof WorldMaster) {
 				// Iterate over each found entities
-				Iterator<Entity> shotEntities = entity.getWorld().collisionsManager().rayTraceEntities(eyeLocation, direction, range);
+				Iterator<Entity> shotEntities = entity.getWorld().collisionsManager().rayTraceEntities(eyeLocation,
+						direction, range);
 				while (shotEntities.hasNext()) {
 					Entity shotEntity = shotEntities.next();
 					// Don't shoot itself & only living things get shot
 					if (!shotEntity.equals(entity)) {
 						TraitHitboxes hitboxes = shotEntity.traits.get(TraitHitboxes.class);
 						TraitHealth health = shotEntity.traits.get(TraitHealth.class);
-						
-						if(health != null && hitboxes != null) {
+
+						if (health != null && hitboxes != null) {
 							// Get hit location
 							for (EntityHitbox hitBox : hitboxes.getHitBoxes()) {
 								Vector3dc hitPoint = hitBox.lineIntersection(eyeLocation, direction);
-	
+
 								if (hitPoint == null)
 									continue;
-	
+
 								// Deal damage
 								health.damage(pileAsDamageCause(pile), hitBox, (float) damage);
-	
+
 								// Spawn blood particles
 								Vector3d bloodDir = new Vector3d();
 								direction.normalize(bloodDir).mul(0.25);
 								for (int i = 0; i < 250; i++) {
-									Vector3d random = new Vector3d(Math.random() * 2.0 - 1.0, Math.random() * 2.0 - 1.0, Math.random() * 2.0 - 1.0);
+									Vector3d random = new Vector3d(Math.random() * 2.0 - 1.0, Math.random() * 2.0 - 1.0,
+											Math.random() * 2.0 - 1.0);
 									random.mul(0.25);
 									random.add(bloodDir);
-	
-									shotEntity.getWorld().getParticlesManager().spawnParticleAtPositionWithVelocity("blood", hitPoint, random);
+
+									shotEntity.getWorld().getParticlesManager()
+											.spawnParticleAtPositionWithVelocity("blood", hitPoint, random);
 								}
-	
+
 								// Spawn blood on walls
 								if (nearestLocation != null)
-									shotEntity.getWorld().getDecalsManager().drawDecal(nearestLocation, bloodDir, new Vector3d(3.0), "blood");
+									shotEntity.getWorld().getDecalsManager().drawDecal(nearestLocation, bloodDir,
+											new Vector3d(3.0), "blood");
 							}
 						}
 					}
@@ -251,7 +265,8 @@ public class ItemMeleeWeapon extends ItemWeapon {
 		}
 
 		@Override
-		public void renderItemInWorld(RenderingInterface renderingInterface, ItemPile pile, World world, Location location, Matrix4f handTransformation) {
+		public void renderItemInWorld(RenderingInterface renderingInterface, ItemPile pile, World world,
+				Location location, Matrix4f handTransformation) {
 			Matrix4f matrixed = new Matrix4f(handTransformation);
 
 			float rot = 0;
@@ -261,14 +276,17 @@ public class ItemMeleeWeapon extends ItemWeapon {
 			if (System.currentTimeMillis() - instance.currentSwingStart < instance.swingDuration) {
 				if (instance.hitTime == instance.swingDuration) {
 					// Whole thing over the same duration
-					rot = (float) (0 - Math.PI / 4f * (float) (System.currentTimeMillis() - instance.currentSwingStart) / instance.hitTime);
+					rot = (float) (0 - Math.PI / 4f * (float) (System.currentTimeMillis() - instance.currentSwingStart)
+							/ instance.hitTime);
 				} else {
 					// We didn't hit yet
 					if (System.currentTimeMillis() - instance.currentSwingStart < instance.hitTime)
-						rot = (float) (0 - Math.PI / 4f * (float) (System.currentTimeMillis() - instance.currentSwingStart) / instance.hitTime);
+						rot = (float) (0 - Math.PI / 4f
+								* (float) (System.currentTimeMillis() - instance.currentSwingStart) / instance.hitTime);
 					// We did
 					else
-						rot = (float) (0 - Math.PI / 4f + Math.PI / 4f * (float) (System.currentTimeMillis() - instance.currentSwingStart - instance.hitTime)
+						rot = (float) (0 - Math.PI / 4f + Math.PI / 4f
+								* (float) (System.currentTimeMillis() - instance.currentSwingStart - instance.hitTime)
 								/ (instance.swingDuration - instance.hitTime));
 
 				}

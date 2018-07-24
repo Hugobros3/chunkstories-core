@@ -28,55 +28,63 @@ public class ReflectionsPass extends RenderPass {
 
 	RenderTargetsConfiguration fbo = null;
 	Texture2DRenderTarget reflectionsBuffer;
-	
-	public ReflectionsPass(RenderPasses pipeline, String name, String[] requires, String[] exports, SkyRenderer skyRenderer) {
+
+	public ReflectionsPass(RenderPasses pipeline, String name, String[] requires, String[] exports,
+			SkyRenderer skyRenderer) {
 		super(pipeline, name, requires, exports);
 
 		this.worldRenderer = pipeline.getWorldRenderer();
 		this.world = worldRenderer.getWorld();
-		
+
 		this.skyRenderer = skyRenderer;
 
 		GameWindow gameWindow = pipeline.getRenderingInterface().getWindow();
-		this.reflectionsBuffer = pipeline.getRenderingInterface().newTexture2D(TextureFormat.RGB_HDR, gameWindow.getWidth(), gameWindow.getHeight());
+		this.reflectionsBuffer = pipeline.getRenderingInterface().newTexture2D(TextureFormat.RGB_HDR,
+				gameWindow.getWidth(), gameWindow.getHeight());
 		this.fbo = pipeline.getRenderingInterface().getRenderTargetManager().newConfiguration(null, reflectionsBuffer);
-		
+
 		this.resolvedOutputs.put("reflectionsBuffer", reflectionsBuffer);
 	}
 
 	@Override
 	public void onResolvedInputs() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void render(RenderingInterface renderer) {
 		Shader reflectionsShader = renderer.useShader("reflections");
 
-		//This isn't a depth-buffered pass.
+		// This isn't a depth-buffered pass.
 		renderer.setDepthTestMode(DepthTestMode.DISABLED);
 		renderer.setBlendMode(BlendMode.DISABLED);
 
 		renderer.getRenderTargetManager().setConfiguration(fbo);
 		renderer.getRenderTargetManager().clearBoundRenderTargetAll();
 
-		//Required to execute SSR
-		/*renderer.bindTexture2D("shadedBuffer", worldRenderer.renderBuffers.rbShaded);
-		renderer.bindTexture2D("zBuffer", worldRenderer.renderBuffers.rbZBuffer);
-		renderer.bindTexture2D("normalBuffer", worldRenderer.renderBuffers.rbNormal);
-		renderer.bindTexture2D("specularityBuffer", worldRenderer.renderBuffers.rbSpecularity);
-		renderer.bindTexture2D("voxelLightBuffer", worldRenderer.renderBuffers.rbVoxelLight);*/
+		// Required to execute SSR
+		/*
+		 * renderer.bindTexture2D("shadedBuffer", worldRenderer.renderBuffers.rbShaded);
+		 * renderer.bindTexture2D("zBuffer", worldRenderer.renderBuffers.rbZBuffer);
+		 * renderer.bindTexture2D("normalBuffer", worldRenderer.renderBuffers.rbNormal);
+		 * renderer.bindTexture2D("specularityBuffer",
+		 * worldRenderer.renderBuffers.rbSpecularity);
+		 * renderer.bindTexture2D("voxelLightBuffer",
+		 * worldRenderer.renderBuffers.rbVoxelLight);
+		 */
 
-		//TODO renderer.bindCubemap("environmentCubemap", worldRenderer.renderBuffers.rbEnvironmentMap);
+		// TODO renderer.bindCubemap("environmentCubemap",
+		// worldRenderer.renderBuffers.rbEnvironmentMap);
 
 		// Matrices for screen-space transformations
 		renderer.getCamera().setupShader(reflectionsShader);
 		skyRenderer.setupShader(reflectionsShader);
-		
-		reflectionsShader.setUniform1f("animationTimer", worldRenderer.getAnimationTimer() * 500 + Math.random() * 500.0);
 
-		//Disable depth writing and run the deal
+		reflectionsShader.setUniform1f("animationTimer",
+				worldRenderer.getAnimationTimer() * 500 + Math.random() * 500.0);
+
+		// Disable depth writing and run the deal
 		renderer.getRenderTargetManager().setDepthMask(false);
 		renderer.drawFSQuad();
 		renderer.getRenderTargetManager().setDepthMask(true);

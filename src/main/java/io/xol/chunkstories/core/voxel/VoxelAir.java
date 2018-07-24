@@ -13,16 +13,14 @@ import io.xol.chunkstories.api.world.cell.CellData;
 
 public class VoxelAir extends Voxel {
 
-	public VoxelAir(VoxelDefinition type)
-	{
+	public VoxelAir(VoxelDefinition type) {
 		super(type);
 	}
 
 	@Override
-	public CollisionBox[] getCollisionBoxes(CellData info)
-	{
+	public CollisionBox[] getCollisionBoxes(CellData info) {
 		return noCollisionBoxes;
 	}
-	
+
 	final static CollisionBox[] noCollisionBoxes = new CollisionBox[] {};
 }

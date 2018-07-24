@@ -13,26 +13,22 @@ import io.xol.chunkstories.api.voxel.VoxelDefinition;
 import io.xol.chunkstories.api.voxel.VoxelSide;
 import io.xol.chunkstories.api.world.cell.CellData;
 
-public class VoxelHalfTile extends Voxel
-{
+public class VoxelHalfTile extends Voxel {
 	VoxelRenderer bot;
 	VoxelRenderer top;
 
-	public VoxelHalfTile(VoxelDefinition type)
-	{
+	public VoxelHalfTile(VoxelDefinition type) {
 		super(type);
 		bot = store.models().getVoxelModel("halftile.bottom");
 		top = store.models().getVoxelModel("halftile.top");
 	}
 
-	boolean bottomOrTop(int meta)
-	{
+	boolean bottomOrTop(int meta) {
 		return meta % 2 == 0;
 	}
 
 	@Override
-	public VoxelRenderer getVoxelRenderer(CellData info)
-	{
+	public VoxelRenderer getVoxelRenderer(CellData info) {
 		int meta = info.getMetaData();
 		if (bottomOrTop(meta))
 			return bot;
@@ -40,8 +36,7 @@ public class VoxelHalfTile extends Voxel
 	}
 
 	@Override
-	public CollisionBox[] getCollisionBoxes(CellData info)
-	{
+	public CollisionBox[] getCollisionBoxes(CellData info) {
 		// System.out.println("kek");
 		CollisionBox box2 = new CollisionBox(1, 0.5, 1);
 		if (bottomOrTop(info.getMetaData()))
@@ -50,17 +45,15 @@ public class VoxelHalfTile extends Voxel
 			box2.translate(0.0, +0.5, 0.0);
 		return new CollisionBox[] { box2 };
 	}
-	
+
 	@Override
-	public int getLightLevelModifier(CellData dataFrom, CellData dataTo, VoxelSide side2)
-	{
+	public int getLightLevelModifier(CellData dataFrom, CellData dataTo, VoxelSide side2) {
 		int side = side2.ordinal();
-		
-		//Special cases when half-tiles meet
-		if(dataTo.getVoxel() instanceof VoxelHalfTile && side < 4)
-		{
-			//If they are the same type, allow the light to transfer
-			if(bottomOrTop(dataFrom.getMetaData()) == bottomOrTop(dataTo.getMetaData()))
+
+		// Special cases when half-tiles meet
+		if (dataTo.getVoxel() instanceof VoxelHalfTile && side < 4) {
+			// If they are the same type, allow the light to transfer
+			if (bottomOrTop(dataFrom.getMetaData()) == bottomOrTop(dataTo.getMetaData()))
 				return 2;
 			else
 				return 15;

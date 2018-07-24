@@ -19,10 +19,10 @@ public class EntityLogicListener implements Listener {
 	public EntityLogicListener(CoreContentPlugin core) {
 		this.core = core;
 	}
-	
+
 	@EventHandler
 	public void onEntityTeleport(EntityTeleportEvent event) {
-		//If the entity can take fall damage, reset that
+		// If the entity can take fall damage, reset that
 		event.getEntity().traits.with(TraitTakesFallDamage.class, ttfd -> ttfd.resetFallDamage());
 	}
 }

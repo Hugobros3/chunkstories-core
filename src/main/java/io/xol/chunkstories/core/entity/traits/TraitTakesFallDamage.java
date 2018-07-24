@@ -20,19 +20,19 @@ public class TraitTakesFallDamage extends Trait {
 
 	protected double lastStandingHeight = Double.NaN;
 	protected boolean wasStandingLastTick = true;
-	
+
 	public void resetFallDamage() {
 		lastStandingHeight = Double.NaN;
 	}
-	
+
 	public void tick() {
 		TraitCollidable collisions = entity.traits.get(TraitCollidable.class);
-		if(collisions == null)
+		if (collisions == null)
 			return;
-		
-		//TODO water & vines cancel that
-		
-		//Fall damage
+
+		// TODO water & vines cancel that
+
+		// Fall damage
 		if (collisions.isOnGround()) {
 			if (!wasStandingLastTick && !Double.isNaN(lastStandingHeight)) {
 				double fallDistance = lastStandingHeight - entity.getLocation().y();
@@ -41,7 +41,8 @@ public class TraitTakesFallDamage extends Trait {
 						float fallDamage = (float) (fallDistance * fallDistance / 2);
 						System.out.println(this + "Took " + fallDamage + " hp of fall damage");
 
-						entity.traits.with(TraitHealth.class, eh -> eh.damage(DamageCause.DAMAGE_CAUSE_FALL, fallDamage));
+						entity.traits.with(TraitHealth.class,
+								eh -> eh.damage(DamageCause.DAMAGE_CAUSE_FALL, fallDamage));
 					}
 				}
 			}

@@ -12,17 +12,14 @@ import io.xol.chunkstories.api.voxel.VoxelSide;
 import io.xol.chunkstories.api.voxel.models.VoxelModel;
 import io.xol.chunkstories.api.world.cell.CellData;
 
-public class VoxelRail extends Voxel
-{
-	public VoxelRail(VoxelDefinition type)
-	{
+public class VoxelRail extends Voxel {
+	public VoxelRail(VoxelDefinition type) {
 		super(type);
 	}
 
 	@Override
-	public VoxelModel getVoxelRenderer(CellData info)
-	{
-		if(info.getNeightborVoxel(VoxelSide.FRONT.ordinal()).sameKind(this))
+	public VoxelModel getVoxelRenderer(CellData info) {
+		if (info.getNeightborVoxel(VoxelSide.FRONT.ordinal()).sameKind(this))
 			return store.models().getVoxelModel("rails.alt");
 
 		return store.models().getVoxelModel("rails.default");

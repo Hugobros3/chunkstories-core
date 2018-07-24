@@ -26,21 +26,21 @@ public class NearbyVoxelsVolumeTexture {
 
 	final WorldRenderer worldRenderer;
 	final World world;
-	
+
 	private int size = 128;
 
 	public NearbyVoxelsVolumeTexture(WorldRenderer worldRenderer) {
 		this.worldRenderer = worldRenderer;
 		this.world = worldRenderer.getWorld();
 	}
-	
+
 	Texture3D test = null;
-	
-	int bx,by,bz;
+
+	int bx, by, bz;
 	int offsetX, offsetY, offsetZ;
-	
+
 	public void update(RenderingInterface renderingContext) {
-		if(test == null) {
+		if (test == null) {
 			test = renderingContext.newTexture3D(TextureFormat.RGBA_8BPP, 32, 32, 32);
 		}
 
@@ -48,92 +48,94 @@ public class NearbyVoxelsVolumeTexture {
 		final int mod = SIZE / 32;
 
 		int offCenter = SIZE / 2;
-		
+
 		int chunkX = (int) ((renderingContext.getCamera().getCameraPosition().x() - offCenter) / 32);
 		int chunkY = (int) ((renderingContext.getCamera().getCameraPosition().y() - offCenter) / 32);
 		int chunkZ = (int) ((renderingContext.getCamera().getCameraPosition().z() - offCenter) / 32);
-		
+
 		offsetX = chunkX % mod;
 		offsetY = chunkY % mod;
 		offsetZ = chunkZ % mod;
-		if(bx != chunkX || by != chunkY || bz != chunkZ) {
-			
+		if (bx != chunkX || by != chunkY || bz != chunkZ) {
+
 			bx = chunkX;
 			by = chunkY;
 			bz = chunkZ;
 			ByteBuffer bb = ByteBuffer.allocateDirect(4 * SIZE * SIZE * SIZE);
-			
-			byte[] empty = {0,0,0,0};
-			
+
+			byte[] empty = { 0, 0, 0, 0 };
+
 			Chunk zChunk = null;
 
 			Vector4f col = new Vector4f();
-			for(int a = 0; a*32 < SIZE; a++)
-				for(int b = 0; b*32 < SIZE; b++)
-					for(int c = 0; c*32 < SIZE; c++) {
-						
+			for (int a = 0; a * 32 < SIZE; a++)
+				for (int b = 0; b * 32 < SIZE; b++)
+					for (int c = 0; c * 32 < SIZE; c++) {
+
 						zChunk = worldRenderer.getWorld().getChunk(chunkX + a, chunkY + b, chunkZ + c);
-						
-						if(zChunk != null) {
-							for(int z = 0; z < 32; z++)
-								for(int y = 0; y < 32; y++) {
-	
+
+						if (zChunk != null) {
+							for (int z = 0; z < 32; z++)
+								for (int y = 0; y < 32; y++) {
+
 									int dx = (0 + a) % mod;
 									int dy = (0 + b) % mod;
 									int dz = (0 + c) % mod;
-									
-									bb.position(4 * ((dz*32 + z) * SIZE * SIZE + (dy*32 + y) * SIZE + 0 + dx*32));
-									
-									for(int x = 0; x < 32; x++) {
+
+									bb.position(4 * ((dz * 32 + z) * SIZE * SIZE + (dy * 32 + y) * SIZE + 0 + dx * 32));
+
+									for (int x = 0; x < 32; x++) {
 										CellData cell = zChunk.peek(x, y, z);
-										Voxel voxel = cell.getVoxel();//zChunk.peekSimple(x, y, z);
-										
-										if(voxel.isAir() || voxel.getName().startsWith("glass") || 
-												 voxel instanceof VoxelPane || 
-												(!voxel.getDefinition().isSolid() && !voxel.getDefinition().isLiquid() && voxel.getDefinition().getEmittedLightLevel() == 0)) {
+										Voxel voxel = cell.getVoxel();// zChunk.peekSimple(x, y, z);
+
+										if (voxel.isAir() || voxel.getName().startsWith("glass")
+												|| voxel instanceof VoxelPane
+												|| (!voxel.getDefinition().isSolid()
+														&& !voxel.getDefinition().isLiquid()
+														&& voxel.getDefinition().getEmittedLightLevel() == 0)) {
 											bb.put(empty);
 										} else {
 											col.set(voxel.getVoxelTexture(VoxelSide.TOP, cell).getColor());
-											if(col.w() < 1.0) {
+											if (col.w() < 1.0) {
 												col.mul(new Vector4f(0.1f, 0.5f, 0.1f, 1.0f));
 											}
-											
-											if(voxel.getDefinition().getEmittedLightLevel() > 0) {
-												
+
+											if (voxel.getDefinition().getEmittedLightLevel() > 0) {
+
 												float alpha = col.w;
-												//if(alpha <= 0.0f)
-													alpha = 1.0f;
-													
-												if(voxel.getName().contains("torch"))
+												// if(alpha <= 0.0f)
+												alpha = 1.0f;
+
+												if (voxel.getName().contains("torch"))
 													alpha = 2f;
-												
-												bb.put((byte)(int)Math.max(0.0, col.x() * 255.0 * alpha));
-												bb.put((byte)(int)Math.max(0.0, col.y() * 255.0 * alpha));
-												bb.put((byte)(int)Math.max(0.0, col.z() * 255.0 * alpha));
+
+												bb.put((byte) (int) Math.max(0.0, col.x() * 255.0 * alpha));
+												bb.put((byte) (int) Math.max(0.0, col.y() * 255.0 * alpha));
+												bb.put((byte) (int) Math.max(0.0, col.z() * 255.0 * alpha));
 												bb.put((byte) 20);
 											} else {
 
-												bb.put((byte)(int)(col.x() * 255));
-												bb.put((byte)(int)(col.y() * 255));
-												bb.put((byte)(int)(col.z() * 255));
+												bb.put((byte) (int) (col.x() * 255));
+												bb.put((byte) (int) (col.y() * 255));
+												bb.put((byte) (int) (col.z() * 255));
 												bb.put((byte) 1);
 											}
-										} 
+										}
 									}
 								}
 						}
 					}
-			
+
 			bb.position(0);
 			bb.limit(bb.capacity());
 			test.uploadTextureData(SIZE, SIZE, SIZE, bb);
 			test.setTextureWrapping(true);
-			
+
 			System.out.println("do an upload");
-			//MemoryUtil.memFree(bb);
+			// MemoryUtil.memFree(bb);
 		}
 	}
-	
+
 	public int getSize() {
 		return size;
 	}
@@ -141,11 +143,11 @@ public class NearbyVoxelsVolumeTexture {
 	public void setSize(int size) {
 		this.size = size;
 	}
-	
+
 	public void setupForRendering(RenderingInterface renderingContext) {
 
 		renderingContext.bindTexture3D("currentChunk", test);
-		
+
 		Shader shader = renderingContext.currentShader();
 		shader.setUniform1i("voxel_size", size);
 		shader.setUniform1f("voxel_sizef", 0.0f + size);

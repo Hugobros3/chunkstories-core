@@ -19,7 +19,7 @@ public class DefferedLightsPass extends RenderPass {
 
 	RenderTargetsConfiguration fbo = null;
 	Texture2DRenderTarget shadedBuffer = null;
-	
+
 	public DefferedLightsPass(RenderPasses pipeline, String name, String[] requires, String[] exports) {
 		super(pipeline, name, requires, exports);
 	}
@@ -33,7 +33,7 @@ public class DefferedLightsPass extends RenderPass {
 	@Override
 	public void render(RenderingInterface renderer) {
 		renderer.getRenderTargetManager().setConfiguration(fbo);
-		
+
 		// Deffered lightning
 		// Disable depth read/write
 		renderer.setDepthTestMode(DepthTestMode.DISABLED);
@@ -43,13 +43,13 @@ public class DefferedLightsPass extends RenderPass {
 
 		lightShader.setUniform1f("powFactor", 5f);
 		renderer.getCamera().setupShader(lightShader);
-		//Blend parameters
+		// Blend parameters
 
 		renderer.setDepthTestMode(DepthTestMode.DISABLED);
 		renderer.setBlendMode(BlendMode.ADD);
 
 		renderer.getLightsRenderer().renderPendingLights(renderer);
-		//Cleanup
+		// Cleanup
 		renderer.getRenderTargetManager().setDepthMask(true);
 
 		renderer.setBlendMode(BlendMode.MIX);
@@ -58,7 +58,7 @@ public class DefferedLightsPass extends RenderPass {
 
 	@Override
 	public void onScreenResize(int width, int height) {
-		
+
 	}
 
 }

@@ -41,14 +41,12 @@ public class EntityStance extends TraitSerializable {
 		value = EntityHumanoidStance.values()[dis.readByte()];
 		this.pushComponentEveryoneButController();
 	}
-	
+
 	public enum EntityHumanoidStance {
-		STANDING(1.65),
-		CROUCHING(1.15),
-		;
-		
+		STANDING(1.65), CROUCHING(1.15),;
+
 		public final double eyeLevel;
-		
+
 		EntityHumanoidStance(double eyeLevel) {
 			this.eyeLevel = eyeLevel;
 		}

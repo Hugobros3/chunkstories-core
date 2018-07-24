@@ -30,58 +30,53 @@ import io.xol.chunkstories.core.voxel.renderers.SignRenderer;
 public class VoxelSign extends Voxel// implements VoxelCustomIcon
 {
 	final SignRenderer signRenderer;
-	
-	public VoxelSign(VoxelDefinition type)
-	{
+
+	public VoxelSign(VoxelDefinition type) {
 		super(type);
-		
+
 		signRenderer = new SignRenderer(voxelRenderer);
 	}
 
 	@Override
-	public boolean handleInteraction(Entity entity, ChunkCell voxelContext, Input input)
-	{
+	public boolean handleInteraction(Entity entity, ChunkCell voxelContext, Input input) {
 		return false;
 	}
-	
+
 	@Override
-	public VoxelDynamicRenderer getVoxelRenderer(CellData info)
-	{
+	public VoxelDynamicRenderer getVoxelRenderer(CellData info) {
 		return signRenderer;
 	}
-		
+
 	@Override
-	public void onPlace(FutureCell cell, WorldModificationCause cause) throws IllegalBlockModificationException
-	{
-		//We don't create the components here, as the cell isn't actually changed yet!
+	public void onPlace(FutureCell cell, WorldModificationCause cause) throws IllegalBlockModificationException {
+		// We don't create the components here, as the cell isn't actually changed yet!
 		int x = cell.getX();
 		int y = cell.getY();
 		int z = cell.getZ();
-		
-		if(cause != null && cause instanceof Entity)
-		{
+
+		if (cause != null && cause instanceof Entity) {
 			Vector3d blockLocation = new Vector3d(x + 0.5, y, z + 0.5);
 			blockLocation.sub(((Entity) cause).getLocation());
 			blockLocation.negate();
-			
-			Vector2f direction = new Vector2f((float)(double)blockLocation.x(), (float)(double)blockLocation.z());
+
+			Vector2f direction = new Vector2f((float) (double) blockLocation.x(), (float) (double) blockLocation.z());
 			direction.normalize();
-			//System.out.println("x:"+direction.x+"y:"+direction.y);
-			
+			// System.out.println("x:"+direction.x+"y:"+direction.y);
+
 			double asAngle = Math.acos(direction.y()) / Math.PI * 180;
 			asAngle *= -1;
-			if(direction.x() < 0)
+			if (direction.x() < 0)
 				asAngle *= -1;
-			
-			//asAngle += 180.0;
-			
+
+			// asAngle += 180.0;
+
 			asAngle %= 360.0;
 			asAngle += 360.0;
 			asAngle %= 360.0;
-			
-			//System.out.println(asAngle);
-			
-			int meta = (int)(16 * asAngle / 360);
+
+			// System.out.println(asAngle);
+
+			int meta = (int) (16 * asAngle / 360);
 			cell.setMetaData(meta);
 		}
 	}
@@ -92,10 +87,12 @@ public class VoxelSign extends Voxel// implements VoxelCustomIcon
 		cell.registerComponent("signData", signTextComponent);
 	}
 
-	/** Gets the sign component from a chunkcell, assuming it is indeed a sign cell */
+	/**
+	 * Gets the sign component from a chunkcell, assuming it is indeed a sign cell
+	 */
 	public VoxelComponentSignText getSignData(ChunkCell context) {
 		VoxelComponentSignText signTextComponent = (VoxelComponentSignText) context.components().get("signData");
 		return signTextComponent;
 	}
-	
+
 }

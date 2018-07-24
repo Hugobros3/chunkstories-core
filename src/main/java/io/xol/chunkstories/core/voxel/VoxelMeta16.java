@@ -14,12 +14,10 @@ import io.xol.chunkstories.api.voxel.VoxelSide;
 import io.xol.chunkstories.api.voxel.textures.VoxelTexture;
 import io.xol.chunkstories.api.world.cell.CellData;
 
-public class VoxelMeta16 extends Voxel
-{
+public class VoxelMeta16 extends Voxel {
 	VoxelTexture colors[] = new VoxelTexture[16];
 
-	public VoxelMeta16(VoxelDefinition type)
-	{
+	public VoxelMeta16(VoxelDefinition type) {
 		super(type);
 		for (int i = 0; i < 16; i++)
 			colors[i] = store.textures().getVoxelTexture(getName() + "." + i);
@@ -33,19 +31,18 @@ public class VoxelMeta16 extends Voxel
 		// System.out.println("swag");
 		return colors[info.getMetaData()];
 	}
-	
+
 	@Override
-	public ItemPile[] getItems()
-	{
+	public ItemPile[] getItems() {
 		ItemPile[] items = new ItemPile[16];
-		for(int i = 0; i < 16; i++)
-		{
-			ItemVoxel itemVoxel = (ItemVoxel)store.parent().items().getItemDefinition("item_voxel").newItem();
+		for (int i = 0; i < 16; i++) {
+			ItemVoxel itemVoxel = (ItemVoxel) store.parent().items().getItemDefinition("item_voxel").newItem();
 			itemVoxel.voxel = this;
-			itemVoxel.voxelMeta = i;			
-			
+			itemVoxel.voxelMeta = i;
+
 			items[i] = new ItemPile(itemVoxel);
-		};
+		}
+		;
 		return items;
 	}
 }

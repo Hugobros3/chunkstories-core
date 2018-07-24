@@ -26,26 +26,28 @@ public class BloomPass extends RenderPass {
 	final World world;
 	private Texture2DRenderTarget bloomBuffer, blurBuffer;
 	private RenderTargetsConfiguration fboBloom, fboBlur;
-	
+
 	public BloomPass(RenderPasses pipeline, String name, String[] requires, String[] exports) {
 		super(pipeline, name, requires, exports);
-		
+
 		this.worldRenderer = pipeline.getWorldRenderer();
 		this.world = worldRenderer.getWorld();
 
 		GameWindow gameWindow = pipeline.getRenderingInterface().getWindow();
-		bloomBuffer = pipeline.getRenderingInterface().newTexture2D(RGB_HDR, gameWindow.getWidth() / 2, gameWindow.getHeight() / 2);
+		bloomBuffer = pipeline.getRenderingInterface().newTexture2D(RGB_HDR, gameWindow.getWidth() / 2,
+				gameWindow.getHeight() / 2);
 		fboBloom = pipeline.getRenderingInterface().getRenderTargetManager().newConfiguration(null, bloomBuffer);
-		
-		blurBuffer = pipeline.getRenderingInterface().newTexture2D(RGB_HDR, gameWindow.getWidth() / 2, gameWindow.getHeight() / 2);
+
+		blurBuffer = pipeline.getRenderingInterface().newTexture2D(RGB_HDR, gameWindow.getWidth() / 2,
+				gameWindow.getHeight() / 2);
 		fboBlur = pipeline.getRenderingInterface().getRenderTargetManager().newConfiguration(null, blurBuffer);
-		
+
 		this.resolvedOutputs.put("bloomBuffer", bloomBuffer);
 	}
 
 	@Override
 	public void onResolvedInputs() {
-		
+
 	}
 
 	@Override
@@ -53,24 +55,25 @@ public class BloomPass extends RenderPass {
 
 		bloomBuffer.setLinearFiltering(true);
 		bloomBuffer.setTextureWrapping(false);
-		
+
 		blurBuffer.setLinearFiltering(true);
 		blurBuffer.setTextureWrapping(false);
-		
+
 		renderer.setDepthTestMode(DepthTestMode.DISABLED);
 		renderer.setBlendMode(BlendMode.DISABLED);
-		
+
 		Shader bloomShader = renderer.useShader("bloom");
 		renderer.getCamera().setupShader(bloomShader);
-		
-		//bloomShader.setUniform1f("apertureModifier", 1.0f);
-		bloomShader.setUniform2f("screenSize", renderer.getWindow().getWidth() / 2f, renderer.getWindow().getHeight() / 2f);
+
+		// bloomShader.setUniform1f("apertureModifier", 1.0f);
+		bloomShader.setUniform2f("screenSize", renderer.getWindow().getWidth() / 2f,
+				renderer.getWindow().getHeight() / 2f);
 
 		renderer.getRenderTargetManager().setConfiguration(fboBloom);
 		renderer.drawFSQuad();
 
 		// Blur bloom
-		
+
 		// Vertical pass
 		renderer.getRenderTargetManager().setConfiguration(fboBlur);
 

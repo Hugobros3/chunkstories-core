@@ -46,13 +46,14 @@ public abstract class EntityLiving extends Entity {
 		Controller controller = this.traits.tryWith(TraitController.class, ec -> ec.getController());
 
 		// Are we a client, that controller ?
-		boolean owns_entity = (getWorld() instanceof WorldClient) && controller == ((WorldClient) getWorld()).getClient().getPlayer();
+		boolean owns_entity = (getWorld() instanceof WorldClient)
+				&& controller == ((WorldClient) getWorld()).getClient().getPlayer();
 
 		// Servers get to tick all the entities that aren't controlled; the entities
 		// that are are updated by their respective clients
 		boolean should_tick_movement = owns_entity ? true : has_global_authority && controller == null;
 
-		if(should_tick_movement)
+		if (should_tick_movement)
 			this.traits.with(TraitBasicMovement.class, tbl -> tbl.tick());
 	}
 }

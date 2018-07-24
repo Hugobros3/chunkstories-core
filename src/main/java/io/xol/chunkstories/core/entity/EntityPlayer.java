@@ -118,9 +118,11 @@ public class EntityPlayer extends EntityHumanoid implements WorldModificationCau
 				Vector3d direction = new Vector3d(entityRotation.getDirectionLookingAt());
 
 				if (inside)
-					return world.collisionsManager().raytraceSelectable(new Location(world, initialPosition), direction, 256.0);
+					return world.collisionsManager().raytraceSelectable(new Location(world, initialPosition), direction,
+							256.0);
 				else
-					return world.collisionsManager().raytraceSolidOuter(new Location(world, initialPosition), direction, 256.0);
+					return world.collisionsManager().raytraceSolidOuter(new Location(world, initialPosition), direction,
+							256.0);
 			}
 
 		};
@@ -145,7 +147,7 @@ public class EntityPlayer extends EntityHumanoid implements WorldModificationCau
 
 		new TraitRenderable(this, EntityPlayerRenderer<EntityPlayer>::new);
 		new TraitDontSave(this);
-		
+
 		new PlayerOverlay(this);
 		new TraitEyeLevel(this) {
 
@@ -153,21 +155,14 @@ public class EntityPlayer extends EntityHumanoid implements WorldModificationCau
 			public double getEyeLevel() {
 				return stance.get().eyeLevel;
 			}
-			
+
 		};
-		
+
 		new PlayerMovement(this);
 		new PlayerWhenControlled(this);
-		
+
 		new MinerTrait(this);
 	}
-
-	/*public EntityPlayer(EntityDefinition t, Location location, String name) {
-		this(t, location);
-		this.name.setName(name);
-
-		variant = ColorsTools.getUniqueColorCode(name) % 6;
-	}*/
 
 	class PlayerWhenControlled extends TraitWhenControlled {
 
@@ -211,11 +206,14 @@ public class EntityPlayer extends EntityHumanoid implements WorldModificationCau
 				modifier = 1.0 / item.getZoomFactor();
 			}
 
-			rotH += dx * modifier / 3f * controller.getClient().getConfiguration().getDoubleOption("client.input.mouseSensitivity");
-			rotV -= dy * modifier / 3f * controller.getClient().getConfiguration().getDoubleOption("client.input.mouseSensitivity");
+			rotH += dx * modifier / 3f
+					* controller.getClient().getConfiguration().getDoubleOption("client.input.mouseSensitivity");
+			rotV -= dy * modifier / 3f
+					* controller.getClient().getConfiguration().getDoubleOption("client.input.mouseSensitivity");
 			entityRotation.setRotation(rotH, rotV);
 
-			controller.getInputsManager().getMouse().setMouseCursorLocation(controller.getWindow().getWidth() / 2.0, controller.getWindow().getHeight() / 2.0);
+			controller.getInputsManager().getMouse().setMouseCursorLocation(controller.getWindow().getWidth() / 2.0,
+					controller.getWindow().getHeight() / 2.0);
 		}
 
 		@Override
@@ -228,7 +226,8 @@ public class EntityPlayer extends EntityHumanoid implements WorldModificationCau
 			renderer.getCamera().setRotationY(entityRotation.getHorizontalRotation());
 
 			float modifier = 1.0f;
-			if (selectedItemComponent.getSelectedItem() != null && selectedItemComponent.getSelectedItem().getItem() instanceof ItemZoom) {
+			if (selectedItemComponent.getSelectedItem() != null
+					&& selectedItemComponent.getSelectedItem().getItem() instanceof ItemZoom) {
 				ItemZoom item = (ItemZoom) selectedItemComponent.getSelectedItem().getItem();
 				modifier = 1.0f / item.getZoomFactor();
 			}
@@ -250,7 +249,8 @@ public class EntityPlayer extends EntityHumanoid implements WorldModificationCau
 			if (input.getName().equals("inventory") && world instanceof WorldClient) {
 
 				if (creativeMode.get()) {
-					((WorldClient) getWorld()).getClient().openInventories(inventory, new InventoryLocalCreativeMenu(world));
+					((WorldClient) getWorld()).getClient().openInventories(inventory,
+							new InventoryLocalCreativeMenu(world));
 				} else {
 					((WorldClient) getWorld()).getClient().openInventories(inventory, armor);
 				}
@@ -276,7 +276,8 @@ public class EntityPlayer extends EntityHumanoid implements WorldModificationCau
 			Iterator<Entity> i = world.collisionsManager().rayTraceEntities(initialPosition, direction, maxLen);
 			while (i.hasNext()) {
 				Entity e = i.next();
-				if (e != EntityPlayer.this && e.traits.with(TraitInteractible.class, ti -> ti.handleInteraction(EntityPlayer.this, input)))
+				if (e != EntityPlayer.this
+						&& e.traits.with(TraitInteractible.class, ti -> ti.handleInteraction(EntityPlayer.this, input)))
 					return true;
 			}
 
@@ -301,7 +302,8 @@ public class EntityPlayer extends EntityHumanoid implements WorldModificationCau
 								future.setSunlight(0);
 								future.setMetaData(0);
 
-								PlayerVoxelModificationEvent event = new PlayerVoxelModificationEvent(cell, future, TraitCreativeMode.CREATIVE_MODE, player);
+								PlayerVoxelModificationEvent event = new PlayerVoxelModificationEvent(cell, future,
+										TraitCreativeMode.CREATIVE_MODE, player);
 
 								// Anyone has objections ?
 								world.getGameContext().getPluginManager().fireEvent(event);
@@ -315,7 +317,8 @@ public class EntityPlayer extends EntityHumanoid implements WorldModificationCau
 									rnd.add(Math.random() * 0.98, Math.random() * 0.98, Math.random() * 0.98);
 									world.getParticlesManager().spawnParticleAtPosition("voxel_frag", rnd);
 								}
-								world.getSoundManager().playSoundEffect("sounds/gameplay/voxel_remove.ogg", Mode.NORMAL, blockLocation, 1.0f, 1.0f);
+								world.getSoundManager().playSoundEffect("sounds/gameplay/voxel_remove.ogg", Mode.NORMAL,
+										blockLocation, 1.0f, 1.0f);
 
 								try {
 									world.poke(future, EntityPlayer.this);
@@ -334,7 +337,8 @@ public class EntityPlayer extends EntityHumanoid implements WorldModificationCau
 
 							if (!ctx.getVoxel().isAir()) {
 								// Spawn new itemPile in his inventory
-								ItemVoxel item = (ItemVoxel) world.getGameContext().getContent().items().getItemDefinition("item_voxel").newItem();
+								ItemVoxel item = (ItemVoxel) world.getGameContext().getContent().items()
+										.getItemDefinition("item_voxel").newItem();
 								item.voxel = ctx.getVoxel();
 								item.voxelMeta = ctx.getMetaData();
 
@@ -380,9 +384,9 @@ public class EntityPlayer extends EntityHumanoid implements WorldModificationCau
 				}
 
 				super.tick(controller);
-				
-				//if(focus)
-				//	traits.with(MinerTrait.class, mt -> mt.tickTrait());
+
+				// if(focus)
+				// traits.with(MinerTrait.class, mt -> mt.tickTrait());
 			}
 
 			// TODO check if this is needed
@@ -407,9 +411,9 @@ public class EntityPlayer extends EntityHumanoid implements WorldModificationCau
 	@Override
 	public void tick() {
 
-		//if(world instanceof WorldMaster)
+		// if(world instanceof WorldMaster)
 		traits.with(MinerTrait.class, mt -> mt.tickTrait());
-		
+
 		// Tick item in hand if one such exists
 		ItemPile pileSelected = this.traits.tryWith(TraitSelectedItem.class, eci -> eci.getSelectedItem());
 		if (pileSelected != null)
@@ -424,7 +428,8 @@ public class EntityPlayer extends EntityHumanoid implements WorldModificationCau
 					if (!eg.canBePickedUpYet())
 						continue;
 
-					world.getSoundManager().playSoundEffect("sounds/item/pickup.ogg", Mode.NORMAL, getLocation(), 1.0f, 1.0f);
+					world.getSoundManager().playSoundEffect("sounds/item/pickup.ogg", Mode.NORMAL, getLocation(), 1.0f,
+							1.0f);
 
 					ItemPile pile = eg.getItemPile();
 					if (pile != null) {
@@ -498,26 +503,31 @@ public class EntityPlayer extends EntityHumanoid implements WorldModificationCau
 
 		@Override
 		public void drawEntityOverlay(RenderingInterface renderer) {
-			// super.drawEntityOverlay(renderer);
 			if (EntityPlayer.this.equals(((WorldClient) getWorld()).getClient().getPlayer().getControlledEntity())) {
 				float scale = 2.0f;
 
 				renderer.textures().getTexture("./textures/gui/hud/hud_survival.png").setLinearFiltering(false);
-				renderer.getGuiRenderer().drawBoxWindowsSpaceWithSize(renderer.getWindow().getWidth() / 2 - 256 * 0.5f * scale,
-						64 + 64 + 16 - 32 * 0.5f * scale, 256 * scale, 32 * scale, 0, 32f / 256f, 1, 0,
+				renderer.getGuiRenderer().drawBoxWindowsSpaceWithSize(
+						renderer.getWindow().getWidth() / 2 - 256 * 0.5f * scale, 64 + 64 + 16 - 32 * 0.5f * scale,
+						256 * scale, 32 * scale, 0, 32f / 256f, 1, 0,
 						renderer.textures().getTexture("./textures/gui/hud/hud_survival.png"), false, true, null);
 
 				// Health bar
-				int horizontalBitsToDraw = (int) (8 + 118 * Math2.clamp(entityHealth.getHealth() / entityHealth.getMaxHealth(), 0.0, 1.0));
-				renderer.getGuiRenderer().drawBoxWindowsSpaceWithSize(renderer.getWindow().getWidth() / 2 - 128 * scale, 64 + 64 + 16 - 32 * 0.5f * scale,
-						horizontalBitsToDraw * scale, 32 * scale, 0, 64f / 256f, horizontalBitsToDraw / 256f, 32f / 256f,
-						renderer.textures().getTexture("./textures/gui/hud/hud_survival.png"), false, true, new Vector4f(1.0f, 1.0f, 1.0f, 0.75f));
+				int horizontalBitsToDraw = (int) (8
+						+ 118 * Math2.clamp(entityHealth.getHealth() / entityHealth.getMaxHealth(), 0.0, 1.0));
+				renderer.getGuiRenderer().drawBoxWindowsSpaceWithSize(renderer.getWindow().getWidth() / 2 - 128 * scale,
+						64 + 64 + 16 - 32 * 0.5f * scale, horizontalBitsToDraw * scale, 32 * scale, 0, 64f / 256f,
+						horizontalBitsToDraw / 256f, 32f / 256f,
+						renderer.textures().getTexture("./textures/gui/hud/hud_survival.png"), false, true,
+						new Vector4f(1.0f, 1.0f, 1.0f, 0.75f));
 
 				// Food bar
 				horizontalBitsToDraw = (int) (0 + 126 * Math2.clamp(foodLevel.getValue() / 100f, 0.0, 1.0));
-				renderer.getGuiRenderer().drawBoxWindowsSpaceWithSize(renderer.getWindow().getWidth() / 2 + 0 * 128 * scale + 0,
-						64 + 64 + 16 - 32 * 0.5f * scale, horizontalBitsToDraw * scale, 32 * scale, 0.5f, 64f / 256f, 0.5f + horizontalBitsToDraw / 256f,
-						32f / 256f, renderer.textures().getTexture("./textures/gui/hud/hud_survival.png"), false, true, new Vector4f(1.0f, 1.0f, 1.0f, 0.75f));
+				renderer.getGuiRenderer().drawBoxWindowsSpaceWithSize(
+						renderer.getWindow().getWidth() / 2 + 0 * 128 * scale + 0, 64 + 64 + 16 - 32 * 0.5f * scale,
+						horizontalBitsToDraw * scale, 32 * scale, 0.5f, 64f / 256f, 0.5f + horizontalBitsToDraw / 256f,
+						32f / 256f, renderer.textures().getTexture("./textures/gui/hud/hud_survival.png"), false, true,
+						new Vector4f(1.0f, 1.0f, 1.0f, 0.75f));
 
 				// If we're using an item that can render an overlay
 				if (selectedItemComponent.getSelectedItem() != null) {
@@ -541,16 +551,16 @@ public class EntityPlayer extends EntityHumanoid implements WorldModificationCau
 			if (entityHealth.getHealth() <= 0)
 				return;
 
-			Vector3fc posOnScreen = renderer.getCamera()
-					.transform3DCoordinate(new Vector3f((float) (double) pos.x(), (float) (double) pos.y() + 2.0f, (float) (double) pos.z()));
+			Vector3fc posOnScreen = renderer.getCamera().transform3DCoordinate(
+					new Vector3f((float) (double) pos.x(), (float) (double) pos.y() + 2.0f, (float) (double) pos.z()));
 
 			float scale = posOnScreen.z();
-			String txt = name.getName();// + rotH;
+			String txt = name.getName();
 			float dekal = renderer.getFontRenderer().defaultFont().getWidth(txt) * 16 * scale;
-			// System.out.println("dekal"+dekal);
 			if (scale > 0)
-				renderer.getFontRenderer().drawStringWithShadow(renderer.getFontRenderer().defaultFont(), posOnScreen.x() - dekal / 2, posOnScreen.y(), txt,
-						16 * scale, 16 * scale, new Vector4f(1, 1, 1, 1));
+				renderer.getFontRenderer().drawStringWithShadow(renderer.getFontRenderer().defaultFont(),
+						posOnScreen.x() - dekal / 2, posOnScreen.y(), txt, 16 * scale, 16 * scale,
+						new Vector4f(1, 1, 1, 1));
 		}
 	}
 
@@ -573,12 +583,14 @@ public class EntityPlayer extends EntityHumanoid implements WorldModificationCau
 			for (EntityPlayer entity : renderableEntitiesIterator.getElementsInFrustrumOnly()) {
 				Location location = entity.getPredictedLocation();
 				loc3f.set((float) location.x(), (float) location.y(), (float) location.z());
-				pre3f.set((float) entity.getPredictedLocation().x(), (float) entity.getPredictedLocation().y(), (float) entity.getPredictedLocation().z());
+				pre3f.set((float) entity.getPredictedLocation().x(), (float) entity.getPredictedLocation().y(),
+						(float) entity.getPredictedLocation().z());
 				TraitAnimated animation = entity.traits.get(TraitAnimated.class);
-				if(animation == null)
+				if (animation == null)
 					return 0;
 
-				if (!renderer.getCurrentPass().name.startsWith("shadow") || location.distance(renderer.getCamera().getCameraPosition()) <= 15f) {
+				if (!renderer.getCurrentPass().name.startsWith("shadow")
+						|| location.distance(renderer.getCamera().getCameraPosition()) <= 15f) {
 					((CachedLodSkeletonAnimator) animation.getAnimatedSkeleton()).lodUpdate(renderer);
 
 					Matrix4f matrix = new Matrix4f();
@@ -593,15 +605,16 @@ public class EntityPlayer extends EntityHumanoid implements WorldModificationCau
 					variant = ColorsTools.getUniqueColorCode(entity.getName()) % 6;
 
 					// Player textures
-					Texture2D playerTexture = renderer.textures().getTexture("./models/human/variant" + variant + ".png");
+					Texture2D playerTexture = renderer.textures()
+							.getTexture("./models/human/variant" + variant + ".png");
 					playerTexture.setLinearFiltering(false);
 
 					renderer.bindAlbedoTexture(playerTexture);
 					renderer.bindNormalTexture(renderer.textures().getTexture("./textures/normalnormal.png"));
 					renderer.bindMaterialTexture(renderer.textures().getTexture("./textures/defaultmaterial.png"));
 
-					renderer.meshes().getRenderableAnimatableMesh("./models/human/human.dae").render(renderer, animation.getAnimatedSkeleton(),
-							System.currentTimeMillis() % 1000000);
+					renderer.meshes().getRenderableAnimatableMesh("./models/human/human.dae").render(renderer,
+							animation.getAnimatedSkeleton(), System.currentTimeMillis() % 1000000);
 
 					for (ItemPile aip : entity.armor.iterator()) {
 						ItemArmor ia = (ItemArmor) aip.getItem();
@@ -609,27 +622,36 @@ public class EntityPlayer extends EntityHumanoid implements WorldModificationCau
 						renderer.bindAlbedoTexture(renderer.textures().getTexture(ia.getOverlayTextureName()));
 						renderer.textures().getTexture(ia.getOverlayTextureName()).setLinearFiltering(false);
 
-						SkeletonAnimator armorMask = ia.bodyPartsAffected().size() == 0 ? animation.getAnimatedSkeleton() : new SkeletonAnimator() {
+						SkeletonAnimator armorMask = ia.bodyPartsAffected().size() == 0
+								? animation.getAnimatedSkeleton()
+								: new SkeletonAnimator() {
 
-							@Override
-							public Matrix4fc getBoneHierarchyTransformationMatrix(String nameOfEndBone, double animationTime) {
-								return animation.getAnimatedSkeleton().getBoneHierarchyTransformationMatrix(nameOfEndBone, animationTime);
-							}
+									@Override
+									public Matrix4fc getBoneHierarchyTransformationMatrix(String nameOfEndBone,
+											double animationTime) {
+										return animation.getAnimatedSkeleton()
+												.getBoneHierarchyTransformationMatrix(nameOfEndBone, animationTime);
+									}
 
-							@Override
-							public Matrix4fc getBoneHierarchyTransformationMatrixWithOffset(String nameOfEndBone, double animationTime) {
-								return animation.getAnimatedSkeleton().getBoneHierarchyTransformationMatrixWithOffset(nameOfEndBone, animationTime);
-							}
+									@Override
+									public Matrix4fc getBoneHierarchyTransformationMatrixWithOffset(
+											String nameOfEndBone, double animationTime) {
+										return animation.getAnimatedSkeleton()
+												.getBoneHierarchyTransformationMatrixWithOffset(nameOfEndBone,
+														animationTime);
+									}
 
-							@Override
-							public boolean shouldHideBone(RenderingInterface renderingContext, String boneName) {
-								return animation.getAnimatedSkeleton().shouldHideBone(renderingContext, boneName) || !ia.bodyPartsAffected().contains(boneName);
-							}
+									@Override
+									public boolean shouldHideBone(RenderingInterface renderingContext,
+											String boneName) {
+										return animation.getAnimatedSkeleton().shouldHideBone(renderingContext,
+												boneName) || !ia.bodyPartsAffected().contains(boneName);
+									}
 
-						};
+								};
 
-						renderer.meshes().getRenderableAnimatableMesh("./models/human/human_overlay.dae").render(renderer, armorMask,
-								System.currentTimeMillis() % 1000000);
+						renderer.meshes().getRenderableAnimatableMesh("./models/human/human_overlay.dae")
+								.render(renderer, armorMask, System.currentTimeMillis() % 1000000);
 					}
 
 					e++;
@@ -640,24 +662,26 @@ public class EntityPlayer extends EntityHumanoid implements WorldModificationCau
 			for (EntityPlayer entity : renderableEntitiesIterator.getElementsInFrustrumOnly()) {
 
 				// don't render items in hand when far
-				if (renderer.getCurrentPass().name.startsWith("shadow") && entity.getLocation().distance(renderer.getCamera().getCameraPosition()) > 15f)
+				if (renderer.getCurrentPass().name.startsWith("shadow")
+						&& entity.getLocation().distance(renderer.getCamera().getCameraPosition()) > 15f)
 					continue;
 
 				TraitAnimated animation = entity.traits.get(TraitAnimated.class);
 
-				ItemPile selectedItemPile = entity.traits.tryWith(TraitSelectedItem.class, eci -> eci.getSelectedItem());
+				ItemPile selectedItemPile = entity.traits.tryWith(TraitSelectedItem.class,
+						eci -> eci.getSelectedItem());
 
 				if (selectedItemPile != null) {
 					Matrix4f itemMatrix = new Matrix4f();
 					itemMatrix.translate(pre3f);
 
-					itemMatrix
-							.mul(animation.getAnimatedSkeleton().getBoneHierarchyTransformationMatrix("boneItemInHand", System.currentTimeMillis() % 1000000));
+					itemMatrix.mul(animation.getAnimatedSkeleton().getBoneHierarchyTransformationMatrix(
+							"boneItemInHand", System.currentTimeMillis() % 1000000));
 
 					CellData cell = entity.getWorld().peekSafely(entity.getLocation());
 					renderer.currentShader().setUniform2f("worldLightIn", cell.getBlocklight(), cell.getSunlight());
-					selectedItemPile.getItem().getDefinition().getRenderer().renderItemInWorld(renderer, selectedItemPile, world, entity.getLocation(),
-							itemMatrix);
+					selectedItemPile.getItem().getDefinition().getRenderer().renderItemInWorld(renderer,
+							selectedItemPile, world, entity.getLocation(), itemMatrix);
 				}
 			}
 
@@ -679,8 +703,8 @@ public class EntityPlayer extends EntityHumanoid implements WorldModificationCau
 		public float damage(DamageCause cause, EntityHitbox osef, float damage) {
 			if (!isDead()) {
 				int i = 1 + (int) Math.random() * 3;
-				world.getSoundManager().playSoundEffect("sounds/entities/human/hurt" + i + ".ogg", Mode.NORMAL, EntityPlayer.this.getLocation(),
-						(float) Math.random() * 0.4f + 0.8f, 5.0f);
+				world.getSoundManager().playSoundEffect("sounds/entities/human/hurt" + i + ".ogg", Mode.NORMAL,
+						EntityPlayer.this.getLocation(), (float) Math.random() * 0.4f + 0.8f, 5.0f);
 			}
 
 			return super.damage(cause, osef, damage);

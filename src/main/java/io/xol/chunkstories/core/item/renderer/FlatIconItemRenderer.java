@@ -17,17 +17,15 @@ import io.xol.chunkstories.api.rendering.RenderingInterface;
 import io.xol.chunkstories.api.rendering.item.ItemRenderer;
 import io.xol.chunkstories.api.world.World;
 
-public class FlatIconItemRenderer extends DefaultItemRenderer
-{
-	
-	public FlatIconItemRenderer(Item item, ItemRenderer fallbackRenderer, ItemDefinition itemType)
-	{
+public class FlatIconItemRenderer extends DefaultItemRenderer {
+
+	public FlatIconItemRenderer(Item item, ItemRenderer fallbackRenderer, ItemDefinition itemType) {
 		super(item);
 	}
-	
+
 	@Override
-	public void renderItemInWorld(RenderingInterface renderingInterface, ItemPile pile, World world, Location location, Matrix4f handTransformation)
-	{
+	public void renderItemInWorld(RenderingInterface renderingInterface, ItemPile pile, World world, Location location,
+			Matrix4f handTransformation) {
 		handTransformation.translate(new Vector3f(-0.05f, -0.05f, 0.05f));
 		handTransformation.rotate((float) -(Math.PI / 4f), new Vector3f(0.0f, 0.0f, 1.0f));
 		super.renderItemInWorld(renderingInterface, pile, world, location, handTransformation);

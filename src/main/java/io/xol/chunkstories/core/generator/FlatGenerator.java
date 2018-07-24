@@ -16,13 +16,11 @@ import io.xol.chunkstories.api.world.generator.WorldGenerator;
 import io.xol.chunkstories.api.world.generator.environment.DefaultWorldEnvironment;
 import io.xol.chunkstories.api.world.generator.environment.WorldEnvironment;
 
-public class FlatGenerator extends WorldGenerator
-{
+public class FlatGenerator extends WorldGenerator {
 	DefaultWorldEnvironment worldEnv;
 	Random rnd = new Random();
 
-	public FlatGenerator(WorldGeneratorDefinition type, World world)
-	{
+	public FlatGenerator(WorldGeneratorDefinition type, World world) {
 		super(type, world);
 		worldsize = world.getSizeInChunks() * 32;
 		worldEnv = new DefaultWorldEnvironment(world);
@@ -38,30 +36,25 @@ public class FlatGenerator extends WorldGenerator
 	private final Voxel WALL_TOP_VOXEL;
 
 	@Override
-	public void generateChunk(Chunk chunk)
-	{
+	public void generateChunk(Chunk chunk) {
 		int cx = chunk.getChunkX();
 		int cy = chunk.getChunkY();
 		int cz = chunk.getChunkZ();
-		
+
 		rnd.setSeed(cx * 32 + cz + 48716148);
 
 		for (int x = 0; x < 32; x++)
-			for (int z = 0; z < 32; z++)
-			{
-				Voxel type = WALL_VOXEL; //cobble
-				
-				int v = 21; //base height
-				if ((cx * 32 + x) % 256 == 0 || (cz * 32 + z) % 256 == 0)
-				{
-					v = 30; //wall height
-				}
-				else
+			for (int z = 0; z < 32; z++) {
+				Voxel type = WALL_VOXEL; // cobble
+
+				int v = 21; // base height
+				if ((cx * 32 + x) % 256 == 0 || (cz * 32 + z) % 256 == 0) {
+					v = 30; // wall height
+				} else
 					type = GROUND_VOXEL;
-				//int v = 250;
+				// int v = 250;
 				int y = cy * 32;
-				while (y < cy * 32 + 32 && y <= v)
-				{
+				while (y < cy * 32 + 32 && y <= v) {
 					if (y == 30)
 						type = WALL_TOP_VOXEL;
 					chunk.pokeSimpleSilently(x, y, z, type, -1, -1, 0);

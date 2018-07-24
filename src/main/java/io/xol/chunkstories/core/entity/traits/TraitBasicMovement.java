@@ -23,14 +23,15 @@ public class TraitBasicMovement extends Trait {
 
 	public Vector3d acceleration = new Vector3d();
 	public Vector3d targetVelocity = new Vector3d(0);
-	//double jumpForce = 0;
+	// double jumpForce = 0;
 
 	protected long lastJump;
 
-	/*boolean justJumped = false;
-	boolean justLanded = false;
-
-	boolean running = false;*/
+	/*
+	 * boolean justJumped = false; boolean justLanded = false;
+	 * 
+	 * boolean running = false;
+	 */
 
 	public TraitBasicMovement(Entity entity) {
 		super(entity);
@@ -63,32 +64,29 @@ public class TraitBasicMovement extends Trait {
 
 		boolean inWater = isInWater();
 
-		//TODO redo jump bc it's kinda stupid right now
-		/*if (jumpForce > 0.0 && (!justJumped || inWater))
-		{
-			//Set the velocity
-			velocity.y = jumpForce;
-			justJumped = true;
-			//metersWalked = 0.0;
-			jumpForce = 0.0;
-		}*/
+		// TODO redo jump bc it's kinda stupid right now
+		/*
+		 * if (jumpForce > 0.0 && (!justJumped || inWater)) { //Set the velocity
+		 * velocity.y = jumpForce; justJumped = true; //metersWalked = 0.0; jumpForce =
+		 * 0.0; }
+		 */
 
-		//Set acceleration vector to wanted speed - actual speed
-		if(entity.traits.tryWithBoolean(TraitHealth.class, eh -> eh.isDead()))
+		// Set acceleration vector to wanted speed - actual speed
+		if (entity.traits.tryWithBoolean(TraitHealth.class, eh -> eh.isDead()))
 			targetVelocity = new Vector3d(0.0);
-		
+
 		acceleration = new Vector3d(targetVelocity.x() - velocity.x(), 0, targetVelocity.z() - velocity.z());
 
-		//Limit maximal acceleration depending if we're on the groud or not, we accelerate 2x faster on ground
+		// Limit maximal acceleration depending if we're on the groud or not, we
+		// accelerate 2x faster on ground
 		double maxAcceleration = collisions.isOnGround() ? 0.010 : 0.005;
 		if (inWater)
 			maxAcceleration = 0.005;
-		if (acceleration.length() > maxAcceleration)
-		{
+		if (acceleration.length() > maxAcceleration) {
 			acceleration.normalize();
 			acceleration.mul(maxAcceleration);
 		}
-		
+
 		// Gravity
 		double terminalVelocity = inWater ? -0.05 : -0.5;
 		if (velocity.y() > terminalVelocity)
@@ -115,7 +113,8 @@ public class TraitBasicMovement extends Trait {
 		velocity.add(acceleration);
 
 		// Eventually moves
-		Vector3dc remainingToMove = entity.world.collisionsManager().tryMovingEntityWithCollisions(entity, entity.getLocation(), velocity);
+		Vector3dc remainingToMove = entity.world.collisionsManager().tryMovingEntityWithCollisions(entity,
+				entity.getLocation(), velocity);
 		Vector2d remaining2d = new Vector2d(remainingToMove.x(), remainingToMove.z());
 
 		// Auto-step logic
@@ -135,15 +134,15 @@ public class TraitBasicMovement extends Trait {
 			for (double d = 0.25; d < 0.5; d += 0.05) {
 				// I don't want any of this to reflect on the object, because it causes ugly
 				// jumps in the animation
-				Vector3dc canMoveUp = entity.world.collisionsManager().runEntityAgainstWorldVoxelsAndEntities(entity, entity.getLocation(),
-						new Vector3d(0.0, d, 0.0));
+				Vector3dc canMoveUp = entity.world.collisionsManager().runEntityAgainstWorldVoxelsAndEntities(entity,
+						entity.getLocation(), new Vector3d(0.0, d, 0.0));
 				// It can go up that bit
 				if (canMoveUp.length() == 0.0f) {
 					// Would it help with being stuck ?
 					Vector3d tryFromHigher = new Vector3d(entity.getLocation());
 					tryFromHigher.add(new Vector3d(0.0, d, 0.0));
-					Vector3dc blockedMomentumRemaining = entity.world.collisionsManager().runEntityAgainstWorldVoxelsAndEntities(entity, tryFromHigher,
-							blockedMomentum);
+					Vector3dc blockedMomentumRemaining = entity.world.collisionsManager()
+							.runEntityAgainstWorldVoxelsAndEntities(entity, tryFromHigher, blockedMomentum);
 					// If length of remaining momentum < of what we requested it to do, that means
 					// it *did* go a bit further away
 					if (blockedMomentumRemaining.length() < blockedMomentum.length()) {
@@ -153,8 +152,8 @@ public class TraitBasicMovement extends Trait {
 						afterJump.sub(blockedMomentumRemaining);
 
 						// land distance = whatever is left of our -0.55 delta when it hits the ground
-						Vector3dc landDistance = entity.world.collisionsManager().runEntityAgainstWorldVoxelsAndEntities(entity, afterJump,
-								new Vector3d(0.0, -d, 0.0));
+						Vector3dc landDistance = entity.world.collisionsManager()
+								.runEntityAgainstWorldVoxelsAndEntities(entity, afterJump, new Vector3d(0.0, -d, 0.0));
 						afterJump.add(new Vector3d(0.0, -d, 0.0));
 						afterJump.sub(landDistance);
 
@@ -184,15 +183,15 @@ public class TraitBasicMovement extends Trait {
 		entity.traits.with(TraitVelocity.class, ev -> {
 			Vector3d velocity = ev.getVelocity();
 			velocity.y += force;
-			
+
 		});
-		
+
 		lastJump = entity.world.getTicksElapsed();
 	}
-	
+
 	public boolean isInWater() {
-		for(CellData cell : entity.world.getVoxelsWithin(entity.getTranslatedBoundingBox())) {
-			if(cell.getVoxel().getDefinition().isLiquid())
+		for (CellData cell : entity.world.getVoxelsWithin(entity.getTranslatedBoundingBox())) {
+			if (cell.getVoxel().getDefinition().isLiquid())
 				return true;
 		}
 		return false;

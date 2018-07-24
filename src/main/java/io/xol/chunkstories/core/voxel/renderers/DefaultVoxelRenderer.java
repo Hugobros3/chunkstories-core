@@ -21,71 +21,71 @@ import io.xol.chunkstories.api.world.cell.CellData;
 import io.xol.chunkstories.api.world.chunk.Chunk;
 
 /** Renders classic voxels as cubes ( and intelligently culls faces ) */
-public class DefaultVoxelRenderer implements VoxelRenderer
-{
+public class DefaultVoxelRenderer implements VoxelRenderer {
 	final Voxels store;
-	
+
 	public DefaultVoxelRenderer(Voxels store) {
 		this.store = store;
 	}
-	
+
 	@Override
-	public int bakeInto(ChunkRenderer chunkRenderer, ChunkRenderContext bakingContext, Chunk chunk, CellData cell)
-	{
+	public int bakeInto(ChunkRenderer chunkRenderer, ChunkRenderContext bakingContext, Chunk chunk, CellData cell) {
 		Voxel vox = cell.getVoxel();
-		
+
 		int i = cell.getX() & 0x1F;
 		int k = cell.getY() & 0x1F;
 		int j = cell.getZ() & 0x1F;
-		
+
 		VoxelBakerCubic vbc = chunkRenderer.getLowpolyBakerFor(LodLevel.ANY, ShadingType.OPAQUE);
-		byte wavyVegetationFlag = (byte) (vox.getDefinition().resolveProperty("affectedByWind", "false").equals("true") ? 3 : 0);
+		byte wavyVegetationFlag = (byte) (vox.getDefinition().resolveProperty("affectedByWind", "false").equals("true")
+				? 3
+				: 0);
 		vbc.setMaterialFlags(Byte.parseByte(cell.getVoxel().getDefinition().resolveProperty("materialFlags", "0")));
-		
+
 		int vertices = 0;
-		
-		if (shallBuildWallArround(cell, 5) && (k != 0 || bakingContext.isBottomChunkLoaded()))
-		{
-			addQuadBottom(chunk, bakingContext, vbc, i, k, j, vox.getVoxelTexture(VoxelSide.BOTTOM, cell), wavyVegetationFlag);
+
+		if (shallBuildWallArround(cell, 5) && (k != 0 || bakingContext.isBottomChunkLoaded())) {
+			addQuadBottom(chunk, bakingContext, vbc, i, k, j, vox.getVoxelTexture(VoxelSide.BOTTOM, cell),
+					wavyVegetationFlag);
 			vertices += 6;
 		}
-		if (shallBuildWallArround(cell, 4) && (k != 31 || bakingContext.isTopChunkLoaded()))
-		{
-			addQuadTop(chunk, bakingContext, vbc, i, k, j, vox.getVoxelTexture(VoxelSide.TOP, cell), wavyVegetationFlag);
+		if (shallBuildWallArround(cell, 4) && (k != 31 || bakingContext.isTopChunkLoaded())) {
+			addQuadTop(chunk, bakingContext, vbc, i, k, j, vox.getVoxelTexture(VoxelSide.TOP, cell),
+					wavyVegetationFlag);
 			vertices += 6;
 		}
-		if (shallBuildWallArround(cell, 2) && (i != 31 || bakingContext.isRightChunkLoaded()))
-		{
-			addQuadRight(chunk, bakingContext, vbc, i, k, j, vox.getVoxelTexture(VoxelSide.RIGHT, cell), wavyVegetationFlag);
+		if (shallBuildWallArround(cell, 2) && (i != 31 || bakingContext.isRightChunkLoaded())) {
+			addQuadRight(chunk, bakingContext, vbc, i, k, j, vox.getVoxelTexture(VoxelSide.RIGHT, cell),
+					wavyVegetationFlag);
 			vertices += 6;
 		}
-		if (shallBuildWallArround(cell, 0) && (i != 0 || bakingContext.isLeftChunkLoaded()))
-		{
-			addQuadLeft(chunk, bakingContext, vbc, i, k, j, vox.getVoxelTexture(VoxelSide.LEFT, cell), wavyVegetationFlag);
+		if (shallBuildWallArround(cell, 0) && (i != 0 || bakingContext.isLeftChunkLoaded())) {
+			addQuadLeft(chunk, bakingContext, vbc, i, k, j, vox.getVoxelTexture(VoxelSide.LEFT, cell),
+					wavyVegetationFlag);
 			vertices += 6;
 		}
-		if (shallBuildWallArround(cell, 1) && (j != 31 || bakingContext.isFrontChunkLoaded()))
-		{
-			addQuadFront(chunk, bakingContext, vbc, i, k, j, vox.getVoxelTexture(VoxelSide.FRONT, cell), wavyVegetationFlag);
+		if (shallBuildWallArround(cell, 1) && (j != 31 || bakingContext.isFrontChunkLoaded())) {
+			addQuadFront(chunk, bakingContext, vbc, i, k, j, vox.getVoxelTexture(VoxelSide.FRONT, cell),
+					wavyVegetationFlag);
 			vertices += 6;
 		}
-		if (shallBuildWallArround(cell, 3) && (j != 0 || bakingContext.isBackChunkLoaded()))
-		{
-			addQuadBack(chunk, bakingContext, vbc, i, k, j, vox.getVoxelTexture(VoxelSide.BACK, cell), wavyVegetationFlag);
+		if (shallBuildWallArround(cell, 3) && (j != 0 || bakingContext.isBackChunkLoaded())) {
+			addQuadBack(chunk, bakingContext, vbc, i, k, j, vox.getVoxelTexture(VoxelSide.BACK, cell),
+					wavyVegetationFlag);
 			vertices += 6;
 		}
-		
+
 		vbc.reset();
 
 		return vertices;
 	}
 
-	protected void addQuadTop(Chunk c, ChunkRenderContext bakingContext, VoxelBakerCubic rbbf, int sx, int sy, int sz, VoxelTexture texture, byte wavy)
-	{
+	protected void addQuadTop(Chunk c, ChunkRenderContext bakingContext, VoxelBakerCubic rbbf, int sx, int sy, int sz,
+			VoxelTexture texture, byte wavy) {
 		rbbf.usingTexture(texture);
 		rbbf.setNormal(0f, 1f, 0f);
 		rbbf.setWavyFlag(wavy != 0);
-		
+
 		rbbf.beginVertex(sx, sy + 1, sz);
 		rbbf.setTextureCoordinates(0f, 0f);
 		rbbf.setVoxelLightAuto(bakingContext.getCurrentVoxelLighter(), Corners.TOP_BACK_LEFT);
@@ -117,8 +117,8 @@ public class DefaultVoxelRenderer implements VoxelRenderer
 		rbbf.endVertex();
 	}
 
-	protected void addQuadBottom(Chunk c, ChunkRenderContext bakingContext, VoxelBakerCubic rbbf, int sx, int sy, int sz, VoxelTexture texture, byte wavy)
-	{
+	protected void addQuadBottom(Chunk c, ChunkRenderContext bakingContext, VoxelBakerCubic rbbf, int sx, int sy,
+			int sz, VoxelTexture texture, byte wavy) {
 		rbbf.usingTexture(texture);
 		rbbf.setNormal(0f, -1f, 0f);
 		rbbf.setWavyFlag(wavy != 0);
@@ -154,8 +154,8 @@ public class DefaultVoxelRenderer implements VoxelRenderer
 		rbbf.endVertex();
 	}
 
-	protected void addQuadRight(Chunk c, ChunkRenderContext bakingContext, VoxelBakerCubic rbbf, int sx, int sy, int sz, VoxelTexture texture, byte wavy)
-	{
+	protected void addQuadRight(Chunk c, ChunkRenderContext bakingContext, VoxelBakerCubic rbbf, int sx, int sy, int sz,
+			VoxelTexture texture, byte wavy) {
 		rbbf.usingTexture(texture);
 		rbbf.setNormal(1f, 0f, 0f);
 		rbbf.setWavyFlag(wavy != 0);
@@ -191,8 +191,8 @@ public class DefaultVoxelRenderer implements VoxelRenderer
 		rbbf.endVertex();
 	}
 
-	protected void addQuadLeft(Chunk c, ChunkRenderContext bakingContext, VoxelBakerCubic rbbf, int sx, int sy, int sz, VoxelTexture texture, byte wavy)
-	{
+	protected void addQuadLeft(Chunk c, ChunkRenderContext bakingContext, VoxelBakerCubic rbbf, int sx, int sy, int sz,
+			VoxelTexture texture, byte wavy) {
 		rbbf.usingTexture(texture);
 		rbbf.setNormal(-1f, 0f, 0f);
 		rbbf.setWavyFlag(wavy != 0);
@@ -229,8 +229,8 @@ public class DefaultVoxelRenderer implements VoxelRenderer
 
 	}
 
-	protected void addQuadFront(Chunk c, ChunkRenderContext bakingContext, VoxelBakerCubic rbbf, int sx, int sy, int sz, VoxelTexture texture, byte wavy)
-	{
+	protected void addQuadFront(Chunk c, ChunkRenderContext bakingContext, VoxelBakerCubic rbbf, int sx, int sy, int sz,
+			VoxelTexture texture, byte wavy) {
 		rbbf.usingTexture(texture);
 		rbbf.setNormal(0f, 0f, 1f);
 		rbbf.setWavyFlag(wavy != 0);
@@ -267,8 +267,8 @@ public class DefaultVoxelRenderer implements VoxelRenderer
 
 	}
 
-	protected void addQuadBack(Chunk c, ChunkRenderContext bakingContext, VoxelBakerCubic rbbf, int sx, int sy, int sz, VoxelTexture texture, byte wavy)
-	{
+	protected void addQuadBack(Chunk c, ChunkRenderContext bakingContext, VoxelBakerCubic rbbf, int sx, int sy, int sz,
+			VoxelTexture texture, byte wavy) {
 		rbbf.usingTexture(texture);
 		rbbf.setNormal(0f, 0f, -1f);
 		rbbf.setWavyFlag(wavy != 0);
@@ -304,16 +304,16 @@ public class DefaultVoxelRenderer implements VoxelRenderer
 		rbbf.endVertex();
 	}
 
-	protected boolean shallBuildWallArround(CellData renderInfo, int face)
-	{
+	protected boolean shallBuildWallArround(CellData renderInfo, int face) {
 		Voxel facing = renderInfo.getNeightborVoxel(face);
 		Voxel voxel = renderInfo.getVoxel();
 
 		if (voxel.getDefinition().isLiquid() && !facing.getDefinition().isLiquid())
 			return true;
-		
-		//Facing.isSideOpaque
-		if (!facing.isFaceOpaque(VoxelSide.values()[face].getOppositeSide(), renderInfo.getNeightborMetadata(face)) && (!voxel.sameKind(facing) || !voxel.getDefinition().isSelfOpaque()))
+
+		// Facing.isSideOpaque
+		if (!facing.isFaceOpaque(VoxelSide.values()[face].getOppositeSide(), renderInfo.getNeightborMetadata(face))
+				&& (!voxel.sameKind(facing) || !voxel.getDefinition().isSelfOpaque()))
 			return true;
 		return false;
 	}

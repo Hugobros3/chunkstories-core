@@ -30,7 +30,7 @@ public class MiningProgress {
 	public final Voxel voxel;
 	public final VoxelMaterial material;
 	public final Location loc;
-	
+
 	public float progress;
 	public final long started;
 
@@ -38,19 +38,20 @@ public class MiningProgress {
 	int timesSoundPlayed = 0;
 
 	MiningTool tool;
-	
+
 	public MiningProgress(CellData context, MiningTool tool) {
 		this.context = context;
 		this.loc = context.getLocation();
 
 		this.tool = tool;
-		//toolType = tool != null ? tool.toolType : "hand";
-		
+		// toolType = tool != null ? tool.toolType : "hand";
+
 		voxel = context.getVoxel();
 		material = voxel.getMaterial();
 		String hardnessString = null;
 
-		// First order, check the voxel itself if it states a certain hardness for this tool type
+		// First order, check the voxel itself if it states a certain hardness for this
+		// tool type
 		hardnessString = voxel.getDefinition().resolveProperty("hardnessFor" + tool.getToolTypeName(), null);
 
 		// Then check if the voxel states a general hardness multiplier
@@ -70,20 +71,20 @@ public class MiningProgress {
 		this.progress = 0.0f;
 		this.started = System.currentTimeMillis();
 	}
-	
+
 	public MiningProgress keepGoing(Entity owner, Controller controller) {
 		// Progress using efficiency / ticks per second
 		progress += tool.getMiningEfficiency() / 60f / materialHardnessForThisTool;
 
 		if (progress >= 1.0f) {
 			if (owner.getWorld() instanceof WorldMaster) {
-				
+
 				FutureCell future = new FutureCell(context);
 				future.setVoxel(owner.getWorld().getContent().voxels().air());
 
 				// Check no one minds
-				PlayerVoxelModificationEvent event = new PlayerVoxelModificationEvent(context, future, (WorldModificationCause) owner,
-						(Player) controller);
+				PlayerVoxelModificationEvent event = new PlayerVoxelModificationEvent(context, future,
+						(WorldModificationCause) owner, (Player) controller);
 				owner.getWorld().getGameContext().getPluginManager().fireEvent(event);
 
 				// Break the block
@@ -94,18 +95,21 @@ public class MiningProgress {
 						rnd.add(Math.random() * 0.98, Math.random() * 0.98, Math.random() * 0.98);
 						context.getWorld().getParticlesManager().spawnParticleAtPosition("voxel_frag", rnd);
 					}
-					context.getWorld().getSoundManager().playSoundEffect("sounds/gameplay/voxel_remove.ogg", Mode.NORMAL, loc, 1.0f, 1.0f);
+					context.getWorld().getSoundManager().playSoundEffect("sounds/gameplay/voxel_remove.ogg",
+							Mode.NORMAL, loc, 1.0f, 1.0f);
 
 					Location itemSpawnLocation = new Location(context.getWorld(), loc);
 					itemSpawnLocation.add(0.5, 0.0, 0.5);
-					
-					//ItemPile droppedItemPile = null;
-					for(ItemPile droppedItemPile : context.getVoxel().getLoot(context, (WorldModificationCause) owner)) {
+
+					// ItemPile droppedItemPile = null;
+					for (ItemPile droppedItemPile : context.getVoxel().getLoot(context,
+							(WorldModificationCause) owner)) {
 
 						EntityGroundItem thrownItem = (EntityGroundItem) context.getWorld().getContent().entities()
 								.getEntityDefinition("groundItem").create(itemSpawnLocation);
 						thrownItem.entityLocation.set(itemSpawnLocation);
-						thrownItem.entityVelocity.setVelocity(new Vector3d(Math.random() * 0.125 - 0.0625, 0.1, Math.random() * 0.125 - 0.0625));
+						thrownItem.entityVelocity.setVelocity(
+								new Vector3d(Math.random() * 0.125 - 0.0625, 0.1, Math.random() * 0.125 - 0.0625));
 						thrownItem.setItemPile(droppedItemPile);
 						context.getWorld().addEntity(thrownItem);
 					}
@@ -121,8 +125,8 @@ public class MiningProgress {
 
 			return null;
 		}
-		
+
 		return this;
 	}
-	
+
 }

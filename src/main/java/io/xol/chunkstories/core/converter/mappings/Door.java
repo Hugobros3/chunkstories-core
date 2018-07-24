@@ -21,27 +21,29 @@ public class Door extends NonTrivialMapper {
 	}
 
 	@Override
-	public void output(World csWorld, int csX, int csY, int csZ, int minecraftBlockId, int minecraftMetaData, MinecraftRegion region,
-			int minecraftCuurrentChunkXinsideRegion, int minecraftCuurrentChunkZinsideRegion, int x, int y, int z) {
-		
+	public void output(World csWorld, int csX, int csY, int csZ, int minecraftBlockId, int minecraftMetaData,
+			MinecraftRegion region, int minecraftCuurrentChunkXinsideRegion, int minecraftCuurrentChunkZinsideRegion,
+			int x, int y, int z) {
+
 		Chunk chunk = csWorld.getChunkWorldCoordinates(csX, csY, csZ);
 		assert chunk != null;
-		
+
 		int upper = (minecraftMetaData & 0x8) >> 3;
 		int open = (minecraftMetaData & 0x4) >> 2;
-		
-		//We only place the lower half of the door and the other half is created by the placing logic of chunk stories
-		if (upper != 1)
-		{
-			int upperMeta = region.getChunk(minecraftCuurrentChunkXinsideRegion, minecraftCuurrentChunkZinsideRegion).getBlockMeta(x, y + 1, z);
-			
+
+		// We only place the lower half of the door and the other half is created by the
+		// placing logic of chunk stories
+		if (upper != 1) {
+			int upperMeta = region.getChunk(minecraftCuurrentChunkXinsideRegion, minecraftCuurrentChunkZinsideRegion)
+					.getBlockMeta(x, y + 1, z);
+
 			int hingeSide = upperMeta & 0x01;
 			int direction = minecraftMetaData & 0x3;
-			
-			csWorld.pokeSimple(csX, csY, csZ, voxel, -1, -1, VoxelDoor.computeMeta(open == 1, hingeSide == 1, VoxelSide.getSideMcDoor(direction)));
-		}
-		else
+
+			csWorld.pokeSimple(csX, csY, csZ, voxel, -1, -1,
+					VoxelDoor.computeMeta(open == 1, hingeSide == 1, VoxelSide.getSideMcDoor(direction)));
+		} else
 			return;
-		
+
 	}
 }

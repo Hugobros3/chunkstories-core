@@ -26,99 +26,104 @@ import io.xol.chunkstories.api.rendering.world.SkyRenderer;
 import io.xol.chunkstories.api.rendering.world.WorldRenderer;
 import io.xol.chunkstories.api.world.WorldClient;
 
-public class ShadowPass extends RenderPass
-{
+public class ShadowPass extends RenderPass {
 	WorldRenderer worldRenderer;
 	WorldClient world;
-	
+
 	final SkyRenderer skyRenderer;
-	
+
 	RenderTargetsConfiguration fbo = null;
 	Texture2DRenderTarget shadowDepthTexture;
 
 	private Matrix4f shadowMatrix;
-	
-	public ShadowPass(RenderPasses pipeline, String name, String[] requires, String[] exports, SkyRenderer skyRenderer)
-	{
+
+	public ShadowPass(RenderPasses pipeline, String name, String[] requires, String[] exports,
+			SkyRenderer skyRenderer) {
 		super(pipeline, name, requires, exports);
 		this.worldRenderer = pipeline.getWorldRenderer();
 		this.world = worldRenderer.getWorld();
-		
+
 		this.skyRenderer = skyRenderer;
 
-		this.shadowDepthTexture = pipeline.getRenderingInterface().newTexture2D(TextureFormat.DEPTH_SHADOWMAP, 512, 512);
+		this.shadowDepthTexture = pipeline.getRenderingInterface().newTexture2D(TextureFormat.DEPTH_SHADOWMAP, 512,
+				512);
 		this.fbo = pipeline.getRenderingInterface().getRenderTargetManager().newConfiguration(shadowDepthTexture);
-		
+
 		this.resolvedOutputs.put("shadowMap", shadowDepthTexture);
 	}
 
-	public void render(RenderingInterface renderingContext)
-	{
+	public void render(RenderingInterface renderingContext) {
 		if (this.getShadowVisibility() == 0f)
 			return; // No shadows at night :)
-		
+
 		GameWindow gameWindow = pipeline.getRenderingInterface().getWindow();
 
-		//Resize the texture if needed
-		int shadowMapTextureSize = renderingContext.getClient().getConfiguration().getIntOption("client.rendering.shadowsResolution");
-		if(shadowDepthTexture.getWidth() != shadowMapTextureSize) {
+		// Resize the texture if needed
+		int shadowMapTextureSize = renderingContext.getClient().getConfiguration()
+				.getIntOption("client.rendering.shadowsResolution");
+		if (shadowDepthTexture.getWidth() != shadowMapTextureSize) {
 			fbo.resize(shadowMapTextureSize, shadowMapTextureSize);
 		}
-		
-		//The size of the shadow range depends on the shadowmap resolution
+
+		// The size of the shadow range depends on the shadowmap resolution
 		int shadowRange = 128;
 		if (shadowMapTextureSize > 1024)
 			shadowRange = 192;
 		else if (shadowMapTextureSize > 2048)
 			shadowRange = 256;
-		
+
 		int shadowDepthRange = 200;
-		
-		//Builds the shadow matrix
-		Matrix4f depthProjectionMatrix = new Matrix4f().ortho(-shadowRange, shadowRange, -shadowRange, shadowRange, -shadowDepthRange, shadowDepthRange);//MatrixHelper.getOrthographicMatrix(-shadowRange, shadowRange, -shadowRange, shadowRange, -shadowDepthRange, shadowDepthRange);
-		Matrix4f depthViewMatrix = new Matrix4f().lookAt(skyRenderer.getSunPosition(), new Vector3f(0, 0, 0), new Vector3f(0, 1, 0));
+
+		// Builds the shadow matrix
+		Matrix4f depthProjectionMatrix = new Matrix4f().ortho(-shadowRange, shadowRange, -shadowRange, shadowRange,
+				-shadowDepthRange, shadowDepthRange);// MatrixHelper.getOrthographicMatrix(-shadowRange, shadowRange,
+														// -shadowRange, shadowRange, -shadowDepthRange,
+														// shadowDepthRange);
+		Matrix4f depthViewMatrix = new Matrix4f().lookAt(skyRenderer.getSunPosition(), new Vector3f(0, 0, 0),
+				new Vector3f(0, 1, 0));
 		Matrix4f shadowMVP = new Matrix4f();
-		
+
 		depthProjectionMatrix.mul(depthViewMatrix, shadowMVP);
-		//Matrix4f.mul(depthProjectionMatrix, depthViewMatrix, shadowMVP);
-		
+		// Matrix4f.mul(depthProjectionMatrix, depthViewMatrix, shadowMVP);
+
 		shadowMatrix = new Matrix4f(shadowMVP);
 		Vector3dc posd = renderingContext.getCamera().getCameraPosition();
-		Vector3f pos = new Vector3f((float)posd.x(), (float)posd.y(), (float)posd.z());
+		Vector3f pos = new Vector3f((float) posd.x(), (float) posd.y(), (float) posd.z());
 		pos.negate();
-		
+
 		shadowMVP.translate(pos);
 
-		//Set appropriate fixed function stuff
+		// Set appropriate fixed function stuff
 		renderingContext.setCullingMode(CullingMode.COUNTERCLOCKWISE);
 		renderingContext.setBlendMode(BlendMode.DISABLED);
 		renderingContext.setDepthTestMode(DepthTestMode.LESS_OR_EQUAL);
 
-		//Bind relevant FBO and clear it
+		// Bind relevant FBO and clear it
 		renderingContext.getRenderTargetManager().setConfiguration(fbo);
 		renderingContext.getRenderTargetManager().clearBoundRenderTargetZ(1.0f);
 
 		Shader shadowsPassShader = renderingContext.useShader("shadows");
-		
+
 		shadowsPassShader.setUniform1f("animationTimer", worldRenderer.getAnimationTimer());
 		shadowsPassShader.setUniformMatrix4f("depthMVP", shadowMVP);
 		shadowsPassShader.setUniform1f("isUsingInstancedData", 0f);
 		shadowsPassShader.setUniform1f("useVoxelCoordinates", 1f);
 
-		Texture2D blocksAlbedoTexture = gameWindow.getClient().getContent().voxels().textures().getDiffuseAtlasTexture();
+		Texture2D blocksAlbedoTexture = gameWindow.getClient().getContent().voxels().textures()
+				.getDiffuseAtlasTexture();
 		renderingContext.bindAlbedoTexture(blocksAlbedoTexture);
 		renderingContext.setObjectMatrix(null);
-		
-		//We render the world from that perspective
-		shadowsPassShader.setUniform1f("allowForWavyStuff", 1); //Hackish way of enabling the shader input for the fake "wind" effect vegetation can have
+
+		// We render the world from that perspective
+		shadowsPassShader.setUniform1f("allowForWavyStuff", 1); // Hackish way of enabling the shader input for the fake
+																// "wind" effect vegetation can have
 		worldRenderer.getChunksRenderer().renderChunks(renderingContext);
-		
-		shadowsPassShader.setUniform1f("allowForWavyStuff", 0); //In turn, disabling it while we do the entities
+
+		shadowsPassShader.setUniform1f("allowForWavyStuff", 0); // In turn, disabling it while we do the entities
 		worldRenderer.getEntitiesRenderer().renderEntities(renderingContext);
 	}
 
-	public float getShadowVisibility()
-	{
+	public float getShadowVisibility() {
 		float worldTime = (world.getTime() % 10000 + 10000) % 10000;
 		int start = 2500;
 		int end = 7500;
@@ -131,19 +136,19 @@ public class ShadowPass extends RenderPass
 		else
 			return 1;
 	}
-	
+
 	public Matrix4f getShadowMatrix() {
 		return shadowMatrix;
 	}
 
 	@Override
 	public void onResolvedInputs() {
-		
+
 	}
 
 	@Override
 	public void onScreenResize(int width, int height) {
-		
+
 	}
 
 	@Override
@@ -152,15 +157,16 @@ public class ShadowPass extends RenderPass
 
 		renderer.getCamera().setupShader(shader);
 		renderer.getWorldRenderer().setupShaderUniforms(shader);
-		
+
 		Matrix4f edit = new Matrix4f(shadowMatrix);
-		edit.translate(-(float)renderer.getCamera().getCameraPosition().x(), -(float)renderer.getCamera().getCameraPosition().y(), -(float)renderer.getCamera().getCameraPosition().z());
-		
+		edit.translate(-(float) renderer.getCamera().getCameraPosition().x(),
+				-(float) renderer.getCamera().getCameraPosition().y(),
+				-(float) renderer.getCamera().getCameraPosition().z());
+
 		renderer.currentShader().setUniformMatrix4f("projectionMatrix", new Matrix4f());
 		renderer.currentShader().setUniformMatrix4f("modelViewMatrix", edit);
 
 		renderer.currentShader().setUniform1i("isShadowPass", 1);
 	}
-	
-	
+
 }

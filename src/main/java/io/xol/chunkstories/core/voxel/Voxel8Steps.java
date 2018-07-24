@@ -15,40 +15,36 @@ import io.xol.chunkstories.api.voxel.models.VoxelModel;
 import io.xol.chunkstories.api.world.cell.CellData;
 import io.xol.chunkstories.core.voxel.renderers.SmoothStepVoxelRenderer;
 
-public class Voxel8Steps extends Voxel
-{
+public class Voxel8Steps extends Voxel {
 	VoxelModel[] steps = new VoxelModel[8];
 	SmoothStepVoxelRenderer nextGen;
 
-	public Voxel8Steps(VoxelDefinition type)
-	{
+	public Voxel8Steps(VoxelDefinition type) {
 		super(type);
-		for(int i = 0; i < 8; i++)
-			steps[i] = store().models().getVoxelModel("steps.m"+i);
-		
+		for (int i = 0; i < 8; i++)
+			steps[i] = store().models().getVoxelModel("steps.m" + i);
+
 		nextGen = new SmoothStepVoxelRenderer(this, steps);
 	}
-	
+
 	@Override
-	public VoxelRenderer getVoxelRenderer(CellData info)
-	{
-		//return nextGen;
+	public VoxelRenderer getVoxelRenderer(CellData info) {
+		// return nextGen;
 		return steps[info.getMetaData() % 8];
 	}
 
 	@Override
 	public boolean isFaceOpaque(VoxelSide side, int data) {
-		if(side == VoxelSide.BOTTOM)
+		if (side == VoxelSide.BOTTOM)
 			return true;
-		if(side == VoxelSide.TOP)
+		if (side == VoxelSide.TOP)
 			return true;
-		
+
 		return super.isFaceOpaque(side, data);
 	}
 
 	@Override
-	public CollisionBox[] getCollisionBoxes(CellData info)
-	{
+	public CollisionBox[] getCollisionBoxes(CellData info) {
 		CollisionBox box2 = new CollisionBox(1, (info.getMetaData() % 8 + 1) / 8f, 1);
 		return new CollisionBox[] { box2 };
 	}

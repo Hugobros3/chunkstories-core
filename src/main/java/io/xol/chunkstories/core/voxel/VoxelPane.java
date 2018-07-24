@@ -12,16 +12,13 @@ import io.xol.chunkstories.api.voxel.VoxelDefinition;
 import io.xol.chunkstories.api.voxel.models.VoxelModel;
 import io.xol.chunkstories.api.world.cell.CellData;
 
-public class VoxelPane extends Voxel
-{
-	public VoxelPane(VoxelDefinition type)
-	{
+public class VoxelPane extends Voxel {
+	public VoxelPane(VoxelDefinition type) {
 		super(type);
 	}
 
 	@Override
-	public VoxelModel getVoxelRenderer(CellData info)
-	{
+	public VoxelModel getVoxelRenderer(CellData info) {
 		Voxel vox;
 		vox = info.getNeightborVoxel(0);
 		boolean connectLeft = (vox.getDefinition().isSolid() && vox.getDefinition().isOpaque()) || vox.equals(this);
@@ -70,8 +67,7 @@ public class VoxelPane extends Voxel
 	}
 
 	@Override
-	public CollisionBox[] getCollisionBoxes(CellData info)
-	{
+	public CollisionBox[] getCollisionBoxes(CellData info) {
 		// System.out.println("kek");
 		CollisionBox[] boxes = null;
 
@@ -85,30 +81,37 @@ public class VoxelPane extends Voxel
 		vox = info.getNeightborVoxel(3);
 		boolean connectBack = (vox.getDefinition().isSolid() && vox.getDefinition().isOpaque()) || vox.equals(this);
 
-		if (connectLeft && connectFront && connectRight && connectBack)
-		{
-			boxes = new CollisionBox[] { new CollisionBox(0.45, 0.0, 0.0, 0.1, 1, 1.0), new CollisionBox(0.0, 0.0, 0.45, 1.0, 1, 0.1) };
-		}
-		else if (connectLeft && connectFront && connectRight)
-			boxes = new CollisionBox[] { new CollisionBox(0.0, 0.0, 0.45, 1.0, 1, 0.1), new CollisionBox(0.1, 1, 0.5).translate(0.45, 0, 0.5) };
+		if (connectLeft && connectFront && connectRight && connectBack) {
+			boxes = new CollisionBox[] { new CollisionBox(0.45, 0.0, 0.0, 0.1, 1, 1.0),
+					new CollisionBox(0.0, 0.0, 0.45, 1.0, 1, 0.1) };
+		} else if (connectLeft && connectFront && connectRight)
+			boxes = new CollisionBox[] { new CollisionBox(0.0, 0.0, 0.45, 1.0, 1, 0.1),
+					new CollisionBox(0.1, 1, 0.5).translate(0.45, 0, 0.5) };
 		else if (connectLeft && connectFront && connectBack)
-			boxes = new CollisionBox[] { new CollisionBox(0.45, 0.0, 0.0, 0.1, 1, 1.0), new CollisionBox(0.5, 1, 0.1).translate(0.0, 0, 0.45) };
+			boxes = new CollisionBox[] { new CollisionBox(0.45, 0.0, 0.0, 0.1, 1, 1.0),
+					new CollisionBox(0.5, 1, 0.1).translate(0.0, 0, 0.45) };
 		else if (connectLeft && connectBack && connectRight)
-			boxes = new CollisionBox[] { new CollisionBox(0.0, 0.0, 0.45, 1.0, 1, 0.1), new CollisionBox(0.1, 1, 0.5).translate(0.45, 0, 0.0) };
+			boxes = new CollisionBox[] { new CollisionBox(0.0, 0.0, 0.45, 1.0, 1, 0.1),
+					new CollisionBox(0.1, 1, 0.5).translate(0.45, 0, 0.0) };
 		else if (connectBack && connectFront && connectRight)
-			boxes = new CollisionBox[] { new CollisionBox(0.45, 0.0, 0.0, 0.1, 1, 1.0), new CollisionBox(0.5, 1, 0.1).translate(0.5, 0, 0.45) };
+			boxes = new CollisionBox[] { new CollisionBox(0.45, 0.0, 0.0, 0.1, 1, 1.0),
+					new CollisionBox(0.5, 1, 0.1).translate(0.5, 0, 0.45) };
 		else if (connectLeft && connectRight)
 			boxes = new CollisionBox[] { new CollisionBox(0.0, 0.0, 0.45, 1.0, 1, 0.1) };
 		else if (connectFront && connectBack)
 			boxes = new CollisionBox[] { new CollisionBox(0.45, 0.0, 0.0, 0.1, 1, 1.0) };
 		else if (connectLeft && connectBack)
-			boxes = new CollisionBox[] { new CollisionBox(0.55, 1, 0.1).translate(0.0, 0, 0.45), new CollisionBox(0.1, 1, 0.55).translate(0.45, 0, 0.0) };
+			boxes = new CollisionBox[] { new CollisionBox(0.55, 1, 0.1).translate(0.0, 0, 0.45),
+					new CollisionBox(0.1, 1, 0.55).translate(0.45, 0, 0.0) };
 		else if (connectRight && connectBack)
-			boxes = new CollisionBox[] { new CollisionBox(0.55, 1, 0.1).translate(0.45, 0, 0.45), new CollisionBox(0.1, 1, 0.55).translate(0.45, 0, 0.0) };
+			boxes = new CollisionBox[] { new CollisionBox(0.55, 1, 0.1).translate(0.45, 0, 0.45),
+					new CollisionBox(0.1, 1, 0.55).translate(0.45, 0, 0.0) };
 		else if (connectLeft && connectFront)
-			boxes = new CollisionBox[] { new CollisionBox(0.55, 1, 0.1).translate(0, 0, 0.45), new CollisionBox(0.1, 1, 0.55).translate(0.45, 0, 0.45) };
+			boxes = new CollisionBox[] { new CollisionBox(0.55, 1, 0.1).translate(0, 0, 0.45),
+					new CollisionBox(0.1, 1, 0.55).translate(0.45, 0, 0.45) };
 		else if (connectRight && connectFront)
-			boxes = new CollisionBox[] { new CollisionBox(0.55, 1, 0.1).translate(0.45, 0, 0.45), new CollisionBox(0.1, 1, 0.55).translate(0.45, 0, 0.45) };
+			boxes = new CollisionBox[] { new CollisionBox(0.55, 1, 0.1).translate(0.45, 0, 0.45),
+					new CollisionBox(0.1, 1, 0.55).translate(0.45, 0, 0.45) };
 		else if (connectLeft)
 			boxes = new CollisionBox[] { new CollisionBox(0.0, 0.0, 0.45, 0.5, 1, 0.1).translate(0, 0, 0) };
 		else if (connectRight)
@@ -118,10 +121,11 @@ public class VoxelPane extends Voxel
 		else if (connectBack)
 			boxes = new CollisionBox[] { new CollisionBox(0.45, 0.0, 0.0, 0.1, 1, 0.5).translate(0, 0, 0.0) };
 		else
-			boxes = new CollisionBox[] { new CollisionBox(0.45, 0.0, 0.0, 0.1, 1, 1.0), new CollisionBox(0.0, 0.0, 0.45, 1.0, 1, 0.1) };
-		
-		//for (CollisionBox box : boxes)
-		//	box.translate(+0.5, -0, +0.5);
+			boxes = new CollisionBox[] { new CollisionBox(0.45, 0.0, 0.0, 0.1, 1, 1.0),
+					new CollisionBox(0.0, 0.0, 0.45, 1.0, 1, 0.1) };
+
+		// for (CollisionBox box : boxes)
+		// box.translate(+0.5, -0, +0.5);
 
 		return boxes;
 	}

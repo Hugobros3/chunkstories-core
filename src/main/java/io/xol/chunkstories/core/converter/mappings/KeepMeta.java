@@ -11,7 +11,7 @@ import io.xol.chunkstories.api.voxel.Voxel;
 import io.xol.chunkstories.api.world.cell.FutureCell;
 
 public class KeepMeta extends Mapper {
-	
+
 	public KeepMeta(Voxel voxel) {
 		super(voxel);
 	}

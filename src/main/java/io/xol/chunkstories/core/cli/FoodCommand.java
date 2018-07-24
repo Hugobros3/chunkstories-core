@@ -16,19 +16,16 @@ import io.xol.chunkstories.core.entity.components.EntityFoodLevel;
 /** Heals */
 public class FoodCommand implements CommandHandler {
 
-
-	
 	// Lazy, why does Java standard lib doesn't have a clean way to do this tho
 	// http://stackoverflow.com/questions/1102891/how-to-check-if-a-string-is-numeric-in-java
-	public static boolean isNumeric(String str)
-	{
-	    for (char c : str.toCharArray())
-	    {
-	        if (!Character.isDigit(c)) return false;
-	    }
-	    return true;
+	public static boolean isNumeric(String str) {
+		for (char c : str.toCharArray()) {
+			if (!Character.isDigit(c))
+				return false;
+		}
+		return true;
 	}
-	
+
 	@Override
 	public boolean handleCommand(CommandEmitter emitter, Command command, String[] arguments) {
 
@@ -38,30 +35,28 @@ public class FoodCommand implements CommandHandler {
 		}
 
 		Player player = (Player) emitter;
-		
-		if(!emitter.hasPermission("self.setfood"))
-		{
+
+		if (!emitter.hasPermission("self.setfood")) {
 			emitter.sendMessage("You don't have the permission.");
 			return true;
 		}
-		
-		if(arguments.length < 1 || !isNumeric(arguments[0]))
-		{
+
+		if (arguments.length < 1 || !isNumeric(arguments[0])) {
 			emitter.sendMessage("Syntax: /food <hp>");
 			return true;
 		}
-		
+
 		float food = Float.parseFloat(arguments[0]);
-		
+
 		Entity entity = player.getControlledEntity();
-		if(!entity.traits.tryWithBoolean(EntityFoodLevel.class, fl -> {
+		if (!entity.traits.tryWithBoolean(EntityFoodLevel.class, fl -> {
 			fl.setValue(food);
 			player.sendMessage("Food set to: " + food);
-			
+
 			return true;
 		}))
 			emitter.sendMessage("This action doesn't apply to your current entity.");
-		
+
 		return true;
 	}
 

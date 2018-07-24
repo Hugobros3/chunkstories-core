@@ -11,20 +11,17 @@ import io.xol.chunkstories.api.entity.Entity;
 import io.xol.chunkstories.api.events.Event;
 import io.xol.chunkstories.api.events.EventListeners;
 
-public class FirearmShotEvent extends Event
-{
+public class FirearmShotEvent extends Event {
 	// Every event class has to have this
 
 	static EventListeners listeners = new EventListeners(FirearmShotEvent.class);
 
 	@Override
-	public EventListeners getListeners()
-	{
+	public EventListeners getListeners() {
 		return listeners;
 	}
 
-	public static EventListeners getListenersStatic()
-	{
+	public static EventListeners getListenersStatic() {
 		return listeners;
 	}
 
@@ -34,25 +31,21 @@ public class FirearmShotEvent extends Event
 	final Entity shooter;
 	final Controller controller;
 
-	public FirearmShotEvent(ItemFirearm itemFirearm, Entity entity, Controller controller)
-	{
+	public FirearmShotEvent(ItemFirearm itemFirearm, Entity entity, Controller controller) {
 		this.itemFirearm = itemFirearm;
 		this.shooter = entity;
 		this.controller = controller;
 	}
 
-	public ItemFirearm getItemFirearm()
-	{
+	public ItemFirearm getItemFirearm() {
 		return itemFirearm;
 	}
 
-	public Entity getShooter()
-	{
+	public Entity getShooter() {
 		return shooter;
 	}
 
-	public Controller getController()
-	{
+	public Controller getController() {
 		return controller;
 	}
 }

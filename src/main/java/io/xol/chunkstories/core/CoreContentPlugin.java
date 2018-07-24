@@ -20,12 +20,12 @@ public class CoreContentPlugin extends ChunkStoriesPlugin {
 
 	private ItemsLogicListener itemsLogic;
 	private EntityLogicListener entityLogic;
-	
+
 	private RenderingEventsListener renderingLogic;
-	
+
 	public CoreContentPlugin(PluginInformation pluginInformation, GameContext pluginExecutionContext) {
 		super(pluginInformation, pluginExecutionContext);
-		
+
 		this.getPluginManager().registerCommandHandler("food", new FoodCommand());
 	}
 
@@ -33,11 +33,11 @@ public class CoreContentPlugin extends ChunkStoriesPlugin {
 	public void onEnable() {
 		itemsLogic = new ItemsLogicListener(this);
 		pluginExecutionContext.getPluginManager().registerEventListener(itemsLogic, this);
-		
+
 		entityLogic = new EntityLogicListener(this);
 		pluginExecutionContext.getPluginManager().registerEventListener(entityLogic, this);
-		
-		if(this.getPluginExecutionContext() instanceof ClientInterface) {
+
+		if (this.getPluginExecutionContext() instanceof ClientInterface) {
 			renderingLogic = new RenderingEventsListener(this, (ClientInterface) getPluginExecutionContext());
 			pluginExecutionContext.getPluginManager().registerEventListener(renderingLogic, this);
 		}
@@ -45,7 +45,8 @@ public class CoreContentPlugin extends ChunkStoriesPlugin {
 
 	@Override
 	public void onDisable() {
-		//pluginExecutionContext.getPluginManager().unRegisterEventListener(itemsLogic, this);
+		// pluginExecutionContext.getPluginManager().unRegisterEventListener(itemsLogic,
+		// this);
 	}
 
 }

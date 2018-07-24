@@ -47,7 +47,8 @@ public class TraitWalkingSounds extends Trait {
 
 		// When the entities are too far from the player, don't play any sounds
 		if (((WorldClient) entity.getWorld()).getClient().getPlayer().getControlledEntity() != null)
-			if (((WorldClient) entity.getWorld()).getClient().getPlayer().getControlledEntity().getLocation().distance(entity.getLocation()) > 25f)
+			if (((WorldClient) entity.getWorld()).getClient().getPlayer().getControlledEntity().getLocation()
+					.distance(entity.getLocation()) > 25f)
 				return;
 
 		// Sound stuff
@@ -68,49 +69,47 @@ public class TraitWalkingSounds extends Trait {
 
 		boolean inWater = locomotion.isInWater();
 
-		Voxel voxelStandingOn = entity.world.peekSafely(new Vector3d(entity.getLocation()).add(0.0, -0.01, 0.0)).getVoxel();
+		Voxel voxelStandingOn = entity.world.peekSafely(new Vector3d(entity.getLocation()).add(0.0, -0.01, 0.0))
+				.getVoxel();
 
-		if (voxelStandingOn == null || !voxelStandingOn.getDefinition().isSolid() && !voxelStandingOn.getDefinition().isLiquid())
+		if (voxelStandingOn == null
+				|| !voxelStandingOn.getDefinition().isSolid() && !voxelStandingOn.getDefinition().isLiquid())
 			voxelStandingOn = entity.world.getContent().voxels().air();
 
 		VoxelMaterial material = voxelStandingOn.getMaterial();
 
 		if (justJumped && !inWater) {
-			//TODO useless
+			// TODO useless
 			justJumped = false;
-			entity.getWorld().getSoundManager()
-					.playSoundEffect(material.resolveProperty("jumpingSounds"), Mode.NORMAL, entity.getLocation(),
-							(float) (0.9f + Math.sqrt(entityVelocity.getVelocity().x() * entityVelocity.getVelocity().x()
-									+ entityVelocity.getVelocity().z() * entityVelocity.getVelocity().z()) * 0.1f),
-							1f)
-					.setAttenuationEnd(10);
+			entity.getWorld().getSoundManager().playSoundEffect(material.resolveProperty("jumpingSounds"), Mode.NORMAL,
+					entity.getLocation(),
+					(float) (0.9f + Math.sqrt(entityVelocity.getVelocity().x() * entityVelocity.getVelocity().x()
+							+ entityVelocity.getVelocity().z() * entityVelocity.getVelocity().z()) * 0.1f),
+					1f).setAttenuationEnd(10);
 		}
 		if (justLanded) {
 			justLanded = false;
-			entity.getWorld().getSoundManager()
-					.playSoundEffect(material.resolveProperty("landingSounds"), Mode.NORMAL, entity.getLocation(),
-							(float) (0.9f + Math.sqrt(entityVelocity.getVelocity().x() * entityVelocity.getVelocity().x()
-									+ entityVelocity.getVelocity().z() * entityVelocity.getVelocity().z()) * 0.1f),
-							1f)
-					.setAttenuationEnd(10);
+			entity.getWorld().getSoundManager().playSoundEffect(material.resolveProperty("landingSounds"), Mode.NORMAL,
+					entity.getLocation(),
+					(float) (0.9f + Math.sqrt(entityVelocity.getVelocity().x() * entityVelocity.getVelocity().x()
+							+ entityVelocity.getVelocity().z() * entityVelocity.getVelocity().z()) * 0.1f),
+					1f).setAttenuationEnd(10);
 		}
 
 		if (metersWalked > 0.2 * Math.PI * 2) {
 			metersWalked %= 0.2 * Math.PI * 2;
 			if (horizontalSpeed.length() <= 0.06)
-				entity.getWorld().getSoundManager()
-						.playSoundEffect(material.resolveProperty("walkingSounds"), Mode.NORMAL, entity.getLocation(),
-								(float) (0.9f + Math.sqrt(entityVelocity.getVelocity().x() * entityVelocity.getVelocity().x()
-										+ entityVelocity.getVelocity().z() * entityVelocity.getVelocity().z()) * 0.1f),
-								1f)
-						.setAttenuationEnd(10);
+				entity.getWorld().getSoundManager().playSoundEffect(material.resolveProperty("walkingSounds"),
+						Mode.NORMAL, entity.getLocation(),
+						(float) (0.9f + Math.sqrt(entityVelocity.getVelocity().x() * entityVelocity.getVelocity().x()
+								+ entityVelocity.getVelocity().z() * entityVelocity.getVelocity().z()) * 0.1f),
+						1f).setAttenuationEnd(10);
 			else
-				entity.getWorld().getSoundManager()
-						.playSoundEffect(material.resolveProperty("runningSounds"), Mode.NORMAL, entity.getLocation(),
-								(float) (0.9f + Math.sqrt(entityVelocity.getVelocity().x() * entityVelocity.getVelocity().x()
-										+ entityVelocity.getVelocity().z() * entityVelocity.getVelocity().z()) * 0.1f),
-								1f)
-						.setAttenuationEnd(10);
+				entity.getWorld().getSoundManager().playSoundEffect(material.resolveProperty("runningSounds"),
+						Mode.NORMAL, entity.getLocation(),
+						(float) (0.9f + Math.sqrt(entityVelocity.getVelocity().x() * entityVelocity.getVelocity().x()
+								+ entityVelocity.getVelocity().z() * entityVelocity.getVelocity().z()) * 0.1f),
+						1f).setAttenuationEnd(10);
 
 		}
 	}
