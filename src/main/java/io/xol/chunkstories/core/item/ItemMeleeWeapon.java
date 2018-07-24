@@ -17,10 +17,10 @@ import io.xol.chunkstories.api.Location;
 import io.xol.chunkstories.api.client.LocalPlayer;
 import io.xol.chunkstories.api.entity.Controller;
 import io.xol.chunkstories.api.entity.Entity;
-import io.xol.chunkstories.api.entity.components.EntityController;
-import io.xol.chunkstories.api.entity.components.EntityHealth;
-import io.xol.chunkstories.api.entity.components.EntityRotation;
 import io.xol.chunkstories.api.entity.traits.TraitHitboxes;
+import io.xol.chunkstories.api.entity.traits.serializable.TraitController;
+import io.xol.chunkstories.api.entity.traits.serializable.TraitHealth;
+import io.xol.chunkstories.api.entity.traits.serializable.TraitRotation;
 import io.xol.chunkstories.api.input.Input;
 import io.xol.chunkstories.api.item.ItemDefinition;
 import io.xol.chunkstories.api.item.inventory.ItemPile;
@@ -80,7 +80,7 @@ public class ItemMeleeWeapon extends ItemWeapon {
 	public void tickInHand(Entity owner, ItemPile itemPile) {
 
 		if (currentSwingStart != 0 && !hasHitYet && (System.currentTimeMillis() - currentSwingStart > hitTime)) {
-			Controller controller = owner.components.tryWith(EntityController.class, ec -> ec.getController());
+			Controller controller = owner.traits.tryWith(TraitController.class, ec -> ec.getController());
 
 			// For now only client-side players can trigger shooting actions
 			if (controller != null && controller instanceof LocalPlayer) {
@@ -111,7 +111,7 @@ public class ItemMeleeWeapon extends ItemWeapon {
 			return true;
 		} else if (input.getName().equals("shootGun") && entity.getWorld() instanceof WorldMaster) {
 			// Actually hits
-			Vector3dc direction = entity.components.tryWith(EntityRotation.class, er -> er.getDirectionLookingAt());
+			Vector3dc direction = entity.traits.tryWith(TraitRotation.class, er -> er.getDirectionLookingAt());
 
 			Vector3d eyeLocation = new Vector3d(entity.getLocation());
 			entity.traits.with(TraitEyeLevel.class, tel -> eyeLocation.x += tel.getEyeLevel());
@@ -208,7 +208,7 @@ public class ItemMeleeWeapon extends ItemWeapon {
 					// Don't shoot itself & only living things get shot
 					if (!shotEntity.equals(entity)) {
 						TraitHitboxes hitboxes = shotEntity.traits.get(TraitHitboxes.class);
-						EntityHealth health = shotEntity.components.get(EntityHealth.class);
+						TraitHealth health = shotEntity.traits.get(TraitHealth.class);
 						
 						if(health != null && hitboxes != null) {
 							// Get hit location

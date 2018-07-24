@@ -54,7 +54,7 @@ public class FoodCommand implements CommandHandler {
 		float food = Float.parseFloat(arguments[0]);
 		
 		Entity entity = player.getControlledEntity();
-		if(!entity.components.tryWithBoolean(EntityFoodLevel.class, fl -> {
+		if(!entity.traits.tryWithBoolean(EntityFoodLevel.class, fl -> {
 			fl.setValue(food);
 			player.sendMessage("Food set to: " + food);
 			

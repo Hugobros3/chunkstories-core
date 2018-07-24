@@ -18,10 +18,10 @@ import io.xol.chunkstories.api.Location;
 import io.xol.chunkstories.api.entity.DamageCause;
 import io.xol.chunkstories.api.entity.Entity;
 import io.xol.chunkstories.api.entity.EntityDefinition;
-import io.xol.chunkstories.api.entity.components.EntityComponent;
-import io.xol.chunkstories.api.entity.components.EntityHealth;
 import io.xol.chunkstories.api.entity.traits.TraitAnimated;
 import io.xol.chunkstories.api.entity.traits.TraitRenderable;
+import io.xol.chunkstories.api.entity.traits.serializable.TraitHealth;
+import io.xol.chunkstories.api.entity.traits.serializable.TraitSerializable;
 import io.xol.chunkstories.api.physics.EntityHitbox;
 import io.xol.chunkstories.api.rendering.RenderingInterface;
 import io.xol.chunkstories.api.rendering.entity.RenderingIterator;
@@ -61,7 +61,7 @@ public class EntityZombie extends EntityHumanoid implements DamageCause
 		public final float hp;
 	}
 	
-	static class StageComponent extends EntityComponent {
+	static class StageComponent extends TraitSerializable {
 
 		Stage stage;
 		
@@ -116,7 +116,7 @@ public class EntityZombie extends EntityHumanoid implements DamageCause
 		this.stageComponent = new StageComponent(this);
 		this.stageComponent.setStage(stage);
 		
-		this.entityHealth = new EntityHealth(this) {
+		this.entityHealth = new TraitHealth(this) {
 
 			@Override
 			public float damage(DamageCause cause, EntityHitbox osef, float damage)

@@ -9,11 +9,11 @@ package io.xol.chunkstories.core.entity.traits;
 import io.xol.chunkstories.api.client.LocalPlayer;
 import io.xol.chunkstories.api.entity.Controller;
 import io.xol.chunkstories.api.entity.Entity;
-import io.xol.chunkstories.api.entity.components.EntityController;
-import io.xol.chunkstories.api.entity.components.EntityHealth;
-import io.xol.chunkstories.api.entity.components.EntityRotation;
-import io.xol.chunkstories.api.entity.components.EntityVelocity;
 import io.xol.chunkstories.api.entity.traits.TraitCollidable;
+import io.xol.chunkstories.api.entity.traits.serializable.TraitController;
+import io.xol.chunkstories.api.entity.traits.serializable.TraitHealth;
+import io.xol.chunkstories.api.entity.traits.serializable.TraitRotation;
+import io.xol.chunkstories.api.entity.traits.serializable.TraitVelocity;
 import io.xol.chunkstories.api.physics.CollisionBox;
 import io.xol.chunkstories.api.world.cell.CellData;
 import io.xol.chunkstories.core.voxel.VoxelClimbable;
@@ -29,9 +29,9 @@ public abstract class TraitControlledMovement extends TraitBasicMovement {
 	public void tick(LocalPlayer controller) {
 		TraitCollidable collisions = entity.traits.get(TraitCollidable.class);
 
-		EntityHealth entityHealth = entity.components.get(EntityHealth.class);
-		EntityVelocity entityVelocity = entity.components.get(EntityVelocity.class);
-		EntityRotation entityRotation = entity.components.get(EntityRotation.class);
+		TraitHealth entityHealth = entity.traits.get(TraitHealth.class);
+		TraitVelocity entityVelocity = entity.traits.get(TraitVelocity.class);
+		TraitRotation entityRotation = entity.traits.get(TraitRotation.class);
 
 		if (collisions == null || entityVelocity == null || entityRotation == null || entityHealth == null || entityHealth.isDead())
 			return;
@@ -118,7 +118,7 @@ public abstract class TraitControlledMovement extends TraitBasicMovement {
 
 	@Override
 	public void tick() {
-		Controller controller = entity.components.tryWith(EntityController.class, ec -> ec.getController());
+		Controller controller = entity.traits.tryWith(TraitController.class, ec -> ec.getController());
 
 		// Consider player inputs...
 		if (controller != null && controller instanceof LocalPlayer) {

@@ -17,11 +17,11 @@ import io.xol.chunkstories.api.Location;
 import io.xol.chunkstories.api.client.LocalPlayer;
 import io.xol.chunkstories.api.entity.Controller;
 import io.xol.chunkstories.api.entity.Entity;
-import io.xol.chunkstories.api.entity.components.EntityController;
-import io.xol.chunkstories.api.entity.components.EntityCreativeMode;
-import io.xol.chunkstories.api.entity.components.EntityHealth;
-import io.xol.chunkstories.api.entity.components.EntityRotation;
 import io.xol.chunkstories.api.entity.traits.TraitHitboxes;
+import io.xol.chunkstories.api.entity.traits.serializable.TraitController;
+import io.xol.chunkstories.api.entity.traits.serializable.TraitCreativeMode;
+import io.xol.chunkstories.api.entity.traits.serializable.TraitHealth;
+import io.xol.chunkstories.api.entity.traits.serializable.TraitRotation;
 import io.xol.chunkstories.api.input.Input;
 import io.xol.chunkstories.api.item.ItemDefinition;
 import io.xol.chunkstories.api.item.interfaces.ItemCustomHoldingAnimation;
@@ -167,7 +167,7 @@ public class ItemFirearm extends ItemWeapon implements ItemOverlay, ItemZoom, It
 	public void tickInHand(Entity owner, ItemPile itemPile)
 	{
 		
-			Controller controller = owner.components.tryWith(EntityController.class, ec -> ec.getController());
+			Controller controller = owner.traits.tryWith(TraitController.class, ec -> ec.getController());
 
 			//For now only client-side players can trigger shooting actions
 			if (controller != null && controller instanceof LocalPlayer)
@@ -180,7 +180,7 @@ public class ItemFirearm extends ItemWeapon implements ItemOverlay, ItemZoom, It
 				if (LocalPlayer.getInputsManager().getInputByName("mouse.left").isPressed())
 				{
 					//Check for bullet presence (or creative mode)
-					boolean bulletPresence = owner.components.tryWithBoolean(EntityCreativeMode.class, ecm -> ecm.get()) || checkBullet(itemPile);
+					boolean bulletPresence = owner.traits.tryWithBoolean(TraitCreativeMode.class, ecm -> ecm.get()) || checkBullet(itemPile);
 					if (!bulletPresence && !wasTriggerPressedLastTick)
 					{
 						//Play sounds
@@ -226,13 +226,13 @@ public class ItemFirearm extends ItemWeapon implements ItemOverlay, ItemZoom, It
 						return false;
 
 					//Do we have any bullets to shoot
-					boolean bulletPresence = entity.components.tryWithBoolean(EntityCreativeMode.class, ecm -> ecm.get()) || checkBullet(pile);
+					boolean bulletPresence = entity.traits.tryWithBoolean(TraitCreativeMode.class, ecm -> ecm.get()) || checkBullet(pile);
 					if (!bulletPresence)
 					{
 						//Dry.ogg
 						return true;
 					}
-					else if (!entity.components.tryWithBoolean(EntityCreativeMode.class, ecm -> ecm.get()))
+					else if (!entity.traits.tryWithBoolean(TraitCreativeMode.class, ecm -> ecm.get()))
 					{
 						consumeBullet(pile);
 					}
@@ -241,7 +241,7 @@ public class ItemFirearm extends ItemWeapon implements ItemOverlay, ItemZoom, It
 				//Jerk client view a bit
 				if (entity.getWorld() instanceof WorldClient)
 				{
-					entity.components.with(EntityRotation.class, rot -> {
+					entity.traits.with(TraitRotation.class, rot -> {
 						rot.applyInpulse(shake * (Math.random() - 0.5) * 3.0, shake * -(Math.random() - 0.25) * 5.0);
 					});
 				}
@@ -259,7 +259,7 @@ public class ItemFirearm extends ItemWeapon implements ItemOverlay, ItemZoom, It
 				Vector3d eyeLocation = new Vector3d(entity.getLocation());
 				entity.traits.with(TraitEyeLevel.class, tel -> eyeLocation.y += tel.getEyeLevel());
 
-				Vector3dc shooterDirection = entity.components.tryWith(EntityRotation.class, er -> er.getDirectionLookingAt());
+				Vector3dc shooterDirection = entity.traits.tryWith(TraitRotation.class, er -> er.getDirectionLookingAt());
 				if(shooterDirection == null)
 					return false;
 				
@@ -386,7 +386,7 @@ public class ItemFirearm extends ItemWeapon implements ItemOverlay, ItemZoom, It
 							if (!shotEntity.equals(entity))
 							{
 								TraitHitboxes hitboxes = shotEntity.traits.get(TraitHitboxes.class);
-								EntityHealth health = shotEntity.components.get(EntityHealth.class);
+								TraitHealth health = shotEntity.traits.get(TraitHealth.class);
 								
 								if(health != null && hitboxes != null) {
 									
@@ -500,7 +500,7 @@ public class ItemFirearm extends ItemWeapon implements ItemOverlay, ItemZoom, It
 			clientControlledEntity.traits.with(TraitEyeLevel.class, tel -> eyeLocation.x += tel.getEyeLevel());
 				
 			Vector3d direction = new Vector3d();
-			clientControlledEntity.components.tryWith(EntityRotation.class, er -> direction.set(er.getDirectionLookingAt()));
+			clientControlledEntity.traits.tryWith(TraitRotation.class, er -> direction.set(er.getDirectionLookingAt()));
 			
 			direction.add(new Vector3d(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).normalize().mul(accuracy / 100d));
 			direction.normalize();

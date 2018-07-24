@@ -10,9 +10,9 @@ import org.joml.Vector3d;
 
 import io.xol.chunkstories.api.Location;
 import io.xol.chunkstories.api.entity.Entity;
-import io.xol.chunkstories.api.entity.components.EntityInventory;
-import io.xol.chunkstories.api.entity.components.EntityRotation;
-import io.xol.chunkstories.api.entity.components.EntityVelocity;
+import io.xol.chunkstories.api.entity.traits.serializable.TraitInventory;
+import io.xol.chunkstories.api.entity.traits.serializable.TraitRotation;
+import io.xol.chunkstories.api.entity.traits.serializable.TraitVelocity;
 import io.xol.chunkstories.api.events.EventHandler;
 import io.xol.chunkstories.api.events.Listener;
 import io.xol.chunkstories.api.events.item.EventItemDroppedToWorld;
@@ -35,23 +35,23 @@ public class ItemsLogicListener implements Listener {
 		
 		//Throw it when dropping it from a player's inventory ?
 		System.out.println(event.getInventoryFrom());
-		if(event.getInventoryFrom() != null && event.getInventoryFrom() instanceof EntityInventory) {
+		if(event.getInventoryFrom() != null && event.getInventoryFrom() instanceof TraitInventory) {
 			System.out.println("from som 1");
-			EntityInventory entityInventory = (EntityInventory) event.getInventoryFrom();
-			Entity entity = entityInventory.entity;
+			TraitInventory TraitInventory = (TraitInventory) event.getInventoryFrom();
+			Entity entity = TraitInventory.entity;
 			
-			entity.components.with(EntityRotation.class, er -> {
+			entity.traits.with(TraitRotation.class, er -> {
 				
 				throwForce.set(new Vector3d(er.getDirectionLookingAt()).mul(0.15 - Math2.clampd(er.getVerticalRotation(), -45, 20) / 45f * 0.0f));
 				
-				if(entity.components.has(EntityVelocity.class))
-					throwForce.add(entity.components.get(EntityVelocity.class).getVelocity());
+				if(entity.traits.has(TraitVelocity.class))
+					throwForce.add(entity.traits.get(TraitVelocity.class).getVelocity());
 			});
 			
 			/*
 			 * TODO remake
-			 * if(entityInventory instanceof EntityLiving) {
-				EntityLiving owner = (EntityLiving)entityInventory;
+			 * if(TraitInventory instanceof EntityLiving) {
+				EntityLiving owner = (EntityLiving)TraitInventory;
 				throwLocation = new Location(pos.getWorld(), pos.x(), pos.y() + ((EntityPlayer)owner).eyePosition, pos.z());
 				
 			}*/

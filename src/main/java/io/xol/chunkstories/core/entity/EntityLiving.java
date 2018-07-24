@@ -10,25 +10,25 @@ import io.xol.chunkstories.api.Location;
 import io.xol.chunkstories.api.entity.Controller;
 import io.xol.chunkstories.api.entity.Entity;
 import io.xol.chunkstories.api.entity.EntityDefinition;
-import io.xol.chunkstories.api.entity.components.EntityController;
-import io.xol.chunkstories.api.entity.components.EntityHealth;
-import io.xol.chunkstories.api.entity.components.EntityRotation;
-import io.xol.chunkstories.api.entity.components.EntityVelocity;
+import io.xol.chunkstories.api.entity.traits.serializable.TraitController;
+import io.xol.chunkstories.api.entity.traits.serializable.TraitHealth;
+import io.xol.chunkstories.api.entity.traits.serializable.TraitRotation;
+import io.xol.chunkstories.api.entity.traits.serializable.TraitVelocity;
 import io.xol.chunkstories.api.world.WorldClient;
 import io.xol.chunkstories.api.world.WorldMaster;
 import io.xol.chunkstories.core.entity.traits.TraitBasicMovement;
 
 public abstract class EntityLiving extends Entity {
-	protected EntityRotation entityRotation;
-	protected EntityVelocity entityVelocity;
-	protected EntityHealth entityHealth;
+	protected TraitRotation entityRotation;
+	protected TraitVelocity entityVelocity;
+	protected TraitHealth entityHealth;
 
 	public EntityLiving(EntityDefinition t, Location location) {
 		super(t, location);
 
-		entityVelocity = new EntityVelocity(this);
-		entityRotation = new EntityRotation(this);
-		entityHealth = new EntityHealth(this);
+		entityVelocity = new TraitVelocity(this);
+		entityRotation = new TraitRotation(this);
+		entityHealth = new TraitHealth(this);
 	}
 
 	@Override
@@ -43,7 +43,7 @@ public abstract class EntityLiving extends Entity {
 		boolean has_global_authority = getWorld() instanceof WorldMaster;
 
 		// Does this entity has a controller ?
-		Controller controller = this.components.tryWith(EntityController.class, ec -> ec.getController());
+		Controller controller = this.traits.tryWith(TraitController.class, ec -> ec.getController());
 
 		// Are we a client, that controller ?
 		boolean owns_entity = (getWorld() instanceof WorldClient) && controller == ((WorldClient) getWorld()).getClient().getPlayer();

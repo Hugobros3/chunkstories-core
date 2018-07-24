@@ -14,9 +14,9 @@ import org.joml.Vector3f;
 import io.xol.chunkstories.api.Location;
 import io.xol.chunkstories.api.entity.Entity;
 import io.xol.chunkstories.api.entity.EntityDefinition;
-import io.xol.chunkstories.api.entity.components.EntityVelocity;
 import io.xol.chunkstories.api.entity.traits.TraitCollidable;
 import io.xol.chunkstories.api.entity.traits.TraitRenderable;
+import io.xol.chunkstories.api.entity.traits.serializable.TraitVelocity;
 import io.xol.chunkstories.api.item.inventory.ItemPile;
 import io.xol.chunkstories.api.physics.CollisionBox;
 import io.xol.chunkstories.api.rendering.RenderingInterface;
@@ -31,7 +31,7 @@ import io.xol.chunkstories.core.entity.components.EntityGroundItemPileComponent;
 public class EntityGroundItem extends Entity {
 	protected float rotation = 0f;
 	
-	public final EntityVelocity entityVelocity = new EntityVelocity(this);
+	public final TraitVelocity entityVelocity = new TraitVelocity(this);
 	public final TraitCollidable collisions = new TraitCollidable(this);
 	public final TraitRenderable renderable = new TraitRenderable(this, EntityGroundItemRenderer::new );
 	

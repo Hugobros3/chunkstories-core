@@ -12,8 +12,8 @@ import org.joml.Vector3d;
 
 import io.xol.chunkstories.api.entity.Entity;
 import io.xol.chunkstories.api.entity.ai.AI;
-import io.xol.chunkstories.api.entity.components.EntityHealth;
-import io.xol.chunkstories.api.entity.components.EntityVelocity;
+import io.xol.chunkstories.api.entity.traits.serializable.TraitHealth;
+import io.xol.chunkstories.api.entity.traits.serializable.TraitVelocity;
 import io.xol.chunkstories.api.sound.SoundSource.Mode;
 import io.xol.chunkstories.core.entity.EntityHumanoid;
 import io.xol.chunkstories.core.entity.EntityLiving;
@@ -43,7 +43,7 @@ public class ZombieAI extends GenericHumanoidAI
 	{
 		super.tick();
 
-		if(entity.components.get(EntityHealth.class).isDead())
+		if(entity.traits.get(TraitHealth.class).isDead())
 			return;
 		
 		if (attackEntityCooldown > 0)
@@ -63,16 +63,16 @@ public class ZombieAI extends GenericHumanoidAI
 					EntityPlayer player = (EntityPlayer)entityToLook;
 					
 					//Crouched players are 70% less visible
-					if(player.components.get(EntityStance.class).get().equals(EntityHumanoidStance.CROUCHING))
+					if(player.traits.get(EntityStance.class).get().equals(EntityHumanoidStance.CROUCHING))
 						visibilityModifier -= 0.7f;
 				
 					//If the entity is sprinting
-					if (player.components.get(EntityVelocity.class).getVelocity().length() > 0.7)
+					if (player.traits.get(TraitVelocity.class).getVelocity().length() > 0.7)
 						visibilityModifier += 1.0f;
 				
 				}
 				
-				if (!entityToLook.equals(entity) && entityToLook.getLocation().distance(entity.getLocation()) * visibilityModifier <= entity.stage().aggroRadius && entityToLook instanceof EntityHumanoid && !((EntityHumanoid) entityToLook).components.get(EntityHealth.class).isDead())
+				if (!entityToLook.equals(entity) && entityToLook.getLocation().distance(entity.getLocation()) * visibilityModifier <= entity.stage().aggroRadius && entityToLook instanceof EntityHumanoid && !((EntityHumanoid) entityToLook).traits.get(TraitHealth.class).isDead())
 				{
 					//Check target is in set
 					if (targetsTypes.contains(entityToLook.getClass()))
@@ -129,7 +129,7 @@ public class ZombieAI extends GenericHumanoidAI
 				if (System.currentTimeMillis() - lastAttackMS > attackCooldownMS)
 				{
 					//System.out.println("Attacking");
-					entityFollowed.components.with(EntityHealth.class, eh -> eh.damage(entity, damage));
+					entityFollowed.traits.with(TraitHealth.class, eh -> eh.damage(entity, damage));
 					lastAttackMS = System.currentTimeMillis();
 				}
 			}

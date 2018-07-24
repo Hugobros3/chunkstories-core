@@ -23,12 +23,6 @@ import io.xol.chunkstories.api.entity.Controller;
 import io.xol.chunkstories.api.entity.DamageCause;
 import io.xol.chunkstories.api.entity.Entity;
 import io.xol.chunkstories.api.entity.EntityDefinition;
-import io.xol.chunkstories.api.entity.components.EntityController;
-import io.xol.chunkstories.api.entity.components.EntityCreativeMode;
-import io.xol.chunkstories.api.entity.components.EntityFlyingMode;
-import io.xol.chunkstories.api.entity.components.EntityInventory;
-import io.xol.chunkstories.api.entity.components.EntityName;
-import io.xol.chunkstories.api.entity.components.EntitySelectedItem;
 import io.xol.chunkstories.api.entity.traits.TraitAnimated;
 import io.xol.chunkstories.api.entity.traits.TraitCollidable;
 import io.xol.chunkstories.api.entity.traits.TraitDontSave;
@@ -37,6 +31,12 @@ import io.xol.chunkstories.api.entity.traits.TraitInteractible;
 import io.xol.chunkstories.api.entity.traits.TraitRenderable;
 import io.xol.chunkstories.api.entity.traits.TraitVoxelSelection;
 import io.xol.chunkstories.api.entity.traits.TraitWhenControlled;
+import io.xol.chunkstories.api.entity.traits.serializable.TraitController;
+import io.xol.chunkstories.api.entity.traits.serializable.TraitCreativeMode;
+import io.xol.chunkstories.api.entity.traits.serializable.TraitFlyingMode;
+import io.xol.chunkstories.api.entity.traits.serializable.TraitInventory;
+import io.xol.chunkstories.api.entity.traits.serializable.TraitName;
+import io.xol.chunkstories.api.entity.traits.serializable.TraitSelectedItem;
 import io.xol.chunkstories.api.events.player.voxel.PlayerVoxelModificationEvent;
 import io.xol.chunkstories.api.events.voxel.WorldModificationCause;
 import io.xol.chunkstories.api.exceptions.world.WorldException;
@@ -74,14 +74,14 @@ import io.xol.chunkstories.core.item.inventory.InventoryLocalCreativeMenu;
  * creative/survival mode, flying and walking controller...
  */
 public class EntityPlayer extends EntityHumanoid implements WorldModificationCause, InventoryHolder {
-	protected EntityController controllerComponent;
+	protected TraitController controllerComponent;
 
-	protected EntityInventory inventory;
-	protected EntitySelectedItem selectedItemComponent;
+	protected TraitInventory inventory;
+	protected TraitSelectedItem selectedItemComponent;
 
-	protected EntityName name;
-	protected EntityCreativeMode creativeMode;
-	protected EntityFlyingMode flyMode;
+	protected TraitName name;
+	protected TraitCreativeMode creativeMode;
+	protected TraitFlyingMode flyMode;
 
 	protected EntityArmorInventory armor;
 	protected EntityFoodLevel foodLevel;
@@ -97,12 +97,12 @@ public class EntityPlayer extends EntityHumanoid implements WorldModificationCau
 	public EntityPlayer(EntityDefinition t, Location location) {
 		super(t, location);
 
-		controllerComponent = new EntityController(this);
-		inventory = new EntityInventory(this, 10, 4);
-		selectedItemComponent = new EntitySelectedItem(this, inventory);
-		name = new EntityName(this);
-		creativeMode = new EntityCreativeMode(this);
-		flyMode = new EntityFlyingMode(this);
+		controllerComponent = new TraitController(this);
+		inventory = new TraitInventory(this, 10, 4);
+		selectedItemComponent = new TraitSelectedItem(this, inventory);
+		name = new TraitName(this);
+		creativeMode = new TraitCreativeMode(this);
+		flyMode = new TraitFlyingMode(this);
 		foodLevel = new EntityFoodLevel(this, 100);
 		armor = new EntityArmorInventory(this, 4, 1);
 
@@ -131,7 +131,7 @@ public class EntityPlayer extends EntityHumanoid implements WorldModificationCau
 			public boolean handleInteraction(Entity entity, Input input) {
 				if (entityHealth.isDead() && input.getName().equals("mouse.right")) {
 
-					Controller controller = entity.components.tryWith(EntityController.class, ec -> ec.getController());
+					Controller controller = entity.traits.tryWith(TraitController.class, ec -> ec.getController());
 					if (controller != null && controller instanceof Player) {
 						Player p = (Player) controller;
 						p.openInventory(inventory);
@@ -204,7 +204,7 @@ public class EntityPlayer extends EntityHumanoid implements WorldModificationCau
 			double rotV = entityRotation.getVerticalRotation();
 
 			double modifier = 1.0f;
-			ItemPile selectedItem = components.tryWith(EntitySelectedItem.class, eci -> eci.getSelectedItem());
+			ItemPile selectedItem = traits.tryWith(TraitSelectedItem.class, eci -> eci.getSelectedItem());
 
 			if (selectedItem != null && selectedItem.getItem() instanceof ItemZoom) {
 				ItemZoom item = (ItemZoom) selectedItem.getItem();
@@ -301,7 +301,7 @@ public class EntityPlayer extends EntityHumanoid implements WorldModificationCau
 								future.setSunlight(0);
 								future.setMetaData(0);
 
-								PlayerVoxelModificationEvent event = new PlayerVoxelModificationEvent(cell, future, EntityCreativeMode.CREATIVE_MODE, player);
+								PlayerVoxelModificationEvent event = new PlayerVoxelModificationEvent(cell, future, TraitCreativeMode.CREATIVE_MODE, player);
 
 								// Anyone has objections ?
 								world.getGameContext().getPluginManager().fireEvent(event);
@@ -411,7 +411,7 @@ public class EntityPlayer extends EntityHumanoid implements WorldModificationCau
 		traits.with(MinerTrait.class, mt -> mt.tickTrait());
 		
 		// Tick item in hand if one such exists
-		ItemPile pileSelected = this.components.tryWith(EntitySelectedItem.class, eci -> eci.getSelectedItem());
+		ItemPile pileSelected = this.traits.tryWith(TraitSelectedItem.class, eci -> eci.getSelectedItem());
 		if (pileSelected != null)
 			pileSelected.getItem().tickInHand(this, pileSelected);
 
@@ -645,7 +645,7 @@ public class EntityPlayer extends EntityHumanoid implements WorldModificationCau
 
 				TraitAnimated animation = entity.traits.get(TraitAnimated.class);
 
-				ItemPile selectedItemPile = entity.components.tryWith(EntitySelectedItem.class, eci -> eci.getSelectedItem());
+				ItemPile selectedItemPile = entity.traits.tryWith(TraitSelectedItem.class, eci -> eci.getSelectedItem());
 
 				if (selectedItemPile != null) {
 					Matrix4f itemMatrix = new Matrix4f();
@@ -669,9 +669,9 @@ public class EntityPlayer extends EntityHumanoid implements WorldModificationCau
 		return lastCameraLocation != null ? lastCameraLocation : getLocation();
 	}
 
-	class EntityPlayerHealth extends EntityHumanoidHealth {
+	class TraitPlayerHealth extends EntityHumanoidHealth {
 
-		public EntityPlayerHealth(Entity entity) {
+		public TraitPlayerHealth(Entity entity) {
 			super(entity);
 		}
 

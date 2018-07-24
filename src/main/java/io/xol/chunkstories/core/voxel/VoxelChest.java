@@ -9,7 +9,7 @@ package io.xol.chunkstories.core.voxel;
 import io.xol.chunkstories.api.Location;
 import io.xol.chunkstories.api.entity.Controller;
 import io.xol.chunkstories.api.entity.Entity;
-import io.xol.chunkstories.api.entity.components.EntityController;
+import io.xol.chunkstories.api.entity.traits.serializable.TraitController;
 import io.xol.chunkstories.api.events.voxel.WorldModificationCause;
 import io.xol.chunkstories.api.exceptions.world.WorldException;
 import io.xol.chunkstories.api.exceptions.world.voxel.IllegalBlockModificationException;
@@ -45,7 +45,7 @@ public class VoxelChest extends Voxel {
 	public boolean handleInteraction(Entity entity, ChunkCell voxelContext, Input input) {
 		if (input.getName().equals("mouse.right") && voxelContext.getWorld() instanceof WorldMaster) {
 
-			Controller c = entity.components.tryWith(EntityController.class, ec -> ec.getController());
+			Controller c = entity.traits.tryWith(TraitController.class, ec -> ec.getController());
 			if (c != null && c instanceof Player && ((Player) c).getLocation().distance(voxelContext.getLocation()) <= 5) {
 				Player p = (Player) c;
 

@@ -9,9 +9,9 @@ package io.xol.chunkstories.core.entity.traits;
 import org.joml.Vector3d;
 
 import io.xol.chunkstories.api.entity.Entity;
-import io.xol.chunkstories.api.entity.components.EntityVelocity;
 import io.xol.chunkstories.api.entity.traits.Trait;
 import io.xol.chunkstories.api.entity.traits.TraitCollidable;
+import io.xol.chunkstories.api.entity.traits.serializable.TraitVelocity;
 import io.xol.chunkstories.api.sound.SoundSource.Mode;
 import io.xol.chunkstories.api.voxel.Voxel;
 import io.xol.chunkstories.api.voxel.materials.VoxelMaterial;
@@ -39,7 +39,7 @@ public class TraitWalkingSounds extends Trait {
 			return;
 
 		TraitCollidable collisions = entity.traits.get(TraitCollidable.class);
-		EntityVelocity entityVelocity = entity.components.get(EntityVelocity.class);
+		TraitVelocity entityVelocity = entity.traits.get(TraitVelocity.class);
 		TraitBasicMovement locomotion = entity.traits.get(TraitBasicMovement.class);
 
 		if (collisions == null || entityVelocity == null || locomotion == null)

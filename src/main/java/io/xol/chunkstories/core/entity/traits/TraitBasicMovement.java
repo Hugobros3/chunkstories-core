@@ -12,11 +12,11 @@ import org.joml.Vector3d;
 import org.joml.Vector3dc;
 
 import io.xol.chunkstories.api.entity.Entity;
-import io.xol.chunkstories.api.entity.components.EntityHealth;
-import io.xol.chunkstories.api.entity.components.EntityRotation;
-import io.xol.chunkstories.api.entity.components.EntityVelocity;
 import io.xol.chunkstories.api.entity.traits.Trait;
 import io.xol.chunkstories.api.entity.traits.TraitCollidable;
+import io.xol.chunkstories.api.entity.traits.serializable.TraitHealth;
+import io.xol.chunkstories.api.entity.traits.serializable.TraitRotation;
+import io.xol.chunkstories.api.entity.traits.serializable.TraitVelocity;
 import io.xol.chunkstories.api.world.cell.CellData;
 
 public class TraitBasicMovement extends Trait {
@@ -39,8 +39,8 @@ public class TraitBasicMovement extends Trait {
 	public void tick() {
 		TraitCollidable collisions = entity.traits.get(TraitCollidable.class);
 
-		EntityVelocity entityVelocity = entity.components.get(EntityVelocity.class);
-		EntityRotation entityRotation = entity.components.get(EntityRotation.class);
+		TraitVelocity entityVelocity = entity.traits.get(TraitVelocity.class);
+		TraitRotation entityRotation = entity.traits.get(TraitRotation.class);
 
 		if (collisions == null || entityVelocity == null || entityRotation == null)
 			return;
@@ -74,7 +74,7 @@ public class TraitBasicMovement extends Trait {
 		}*/
 
 		//Set acceleration vector to wanted speed - actual speed
-		if(entity.components.tryWithBoolean(EntityHealth.class, eh -> eh.isDead()))
+		if(entity.traits.tryWithBoolean(TraitHealth.class, eh -> eh.isDead()))
 			targetVelocity = new Vector3d(0.0);
 		
 		acceleration = new Vector3d(targetVelocity.x() - velocity.x(), 0, targetVelocity.z() - velocity.z());
@@ -181,7 +181,7 @@ public class TraitBasicMovement extends Trait {
 	}
 
 	public void jump(double force) {
-		entity.components.with(EntityVelocity.class, ev -> {
+		entity.traits.with(TraitVelocity.class, ev -> {
 			Vector3d velocity = ev.getVelocity();
 			velocity.y += force;
 			

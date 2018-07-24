@@ -19,12 +19,12 @@ import io.xol.chunkstories.api.animation.SkeletonAnimator;
 import io.xol.chunkstories.api.entity.DamageCause;
 import io.xol.chunkstories.api.entity.Entity;
 import io.xol.chunkstories.api.entity.EntityDefinition;
-import io.xol.chunkstories.api.entity.components.EntityHealth;
-import io.xol.chunkstories.api.entity.components.EntitySelectedItem;
 import io.xol.chunkstories.api.entity.traits.TraitAnimated;
 import io.xol.chunkstories.api.entity.traits.TraitCollidable;
 import io.xol.chunkstories.api.entity.traits.TraitHitboxes;
 import io.xol.chunkstories.api.entity.traits.TraitRenderable;
+import io.xol.chunkstories.api.entity.traits.serializable.TraitHealth;
+import io.xol.chunkstories.api.entity.traits.serializable.TraitSelectedItem;
 import io.xol.chunkstories.api.item.Item;
 import io.xol.chunkstories.api.item.ItemVoxel;
 import io.xol.chunkstories.api.item.interfaces.ItemCustomHoldingAnimation;
@@ -126,7 +126,7 @@ public abstract class EntityHumanoid extends EntityLiving {
 	}
 	
 	/** Extends the original entity health component to add in support for damage multipliers */
-	protected class EntityHumanoidHealth extends EntityHealth {
+	protected class EntityHumanoidHealth extends TraitHealth {
 		
 		public EntityHumanoidHealth(Entity entity) {
 			super(entity);
@@ -160,7 +160,7 @@ public abstract class EntityHumanoid extends EntityLiving {
 				return world.getGameContext().getContent().getAnimationsLibrary().getAnimation("./animations/human/ded.bvh");
 
 			if (Arrays.asList(new String[] { "boneArmLU", "boneArmRU", "boneArmLD", "boneArmRD", "boneItemInHand" }).contains(boneName)) {
-				SkeletalAnimation r = EntityHumanoid.this.components.tryWith(EntitySelectedItem.class, ecs -> {
+				SkeletalAnimation r = EntityHumanoid.this.traits.tryWith(TraitSelectedItem.class, ecs -> {
 					ItemPile selectedItemPile = ecs.getSelectedItem();
 
 					if (selectedItemPile != null) {
@@ -258,7 +258,7 @@ public abstract class EntityHumanoid extends EntityLiving {
 				// System.out.println((horizSpd / 0.065) * 0.3);
 			}
 
-			ItemPile selectedItem = EntityHumanoid.this.components.tryWith(EntitySelectedItem.class, eci -> eci.getSelectedItem());
+			ItemPile selectedItem = EntityHumanoid.this.traits.tryWith(TraitSelectedItem.class, eci -> eci.getSelectedItem());
 
 			if (Arrays.asList("boneArmLU", "boneArmRU").contains(boneName)) {
 				float k = (stance.get() == EntityHumanoidStance.CROUCHING) ? 0.65f : 0.75f;
@@ -289,7 +289,7 @@ public abstract class EntityHumanoid extends EntityLiving {
 				if (renderingContext.getCurrentPass().name.startsWith("shadow"))
 					return false;
 
-				ItemPile selectedItem = EntityHumanoid.this.components.tryWith(EntitySelectedItem.class, eci -> eci.getSelectedItem());
+				ItemPile selectedItem = EntityHumanoid.this.traits.tryWith(TraitSelectedItem.class, eci -> eci.getSelectedItem());
 
 				if (Arrays.asList("boneArmRU", "boneArmRD").contains(boneName) && selectedItem != null)
 					if (selectedItem.getItem() instanceof ItemVoxel || selectedItem.getItem() instanceof ItemMiningTool)
@@ -353,7 +353,7 @@ public abstract class EntityHumanoid extends EntityLiving {
 					continue;
 
 				TraitAnimated animation = entity.traits.get(TraitAnimated.class);
-				ItemPile selectedItemPile = entity.components.tryWith(EntitySelectedItem.class, eci -> eci.getSelectedItem());
+				ItemPile selectedItemPile = entity.traits.tryWith(TraitSelectedItem.class, eci -> eci.getSelectedItem());
 
 				if (selectedItemPile != null) {
 					Matrix4f itemMatrix = new Matrix4f();

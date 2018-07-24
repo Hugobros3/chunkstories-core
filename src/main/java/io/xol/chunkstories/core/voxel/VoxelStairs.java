@@ -8,7 +8,7 @@ package io.xol.chunkstories.core.voxel;
 
 import io.xol.chunkstories.api.Location;
 import io.xol.chunkstories.api.entity.Entity;
-import io.xol.chunkstories.api.entity.components.EntityRotation;
+import io.xol.chunkstories.api.entity.traits.serializable.TraitRotation;
 import io.xol.chunkstories.api.events.voxel.WorldModificationCause;
 import io.xol.chunkstories.api.physics.CollisionBox;
 import io.xol.chunkstories.api.voxel.Voxel;
@@ -108,7 +108,7 @@ public class VoxelStairs extends Voxel
 					stairsSide = 2;
 			}
 			
-			if(entity.components.tryWithBoolean(EntityRotation.class, er -> er.getVerticalRotation() < 0))
+			if(entity.traits.tryWithBoolean(TraitRotation.class, er -> er.getVerticalRotation() < 0))
 				stairsSide += 4;
 			
 			cell.setMetaData(stairsSide);

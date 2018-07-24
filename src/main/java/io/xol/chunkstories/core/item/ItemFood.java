@@ -28,7 +28,7 @@ public class ItemFood extends Item {
 		if (entity.getWorld() instanceof WorldMaster) {
 			if (input.getName().equals("mouse.right")) {
 				//Any entity with a food level can eat
-				if (entity.components.tryWithBoolean(EntityFoodLevel.class, efl -> {
+				if (entity.traits.tryWithBoolean(EntityFoodLevel.class, efl -> {
 					if (efl.getValue() >= 100)
 						return true;
 

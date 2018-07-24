@@ -9,9 +9,9 @@ package io.xol.chunkstories.core.entity.traits;
 import io.xol.chunkstories.api.Location;
 import io.xol.chunkstories.api.entity.Controller;
 import io.xol.chunkstories.api.entity.Entity;
-import io.xol.chunkstories.api.entity.components.EntityController;
 import io.xol.chunkstories.api.entity.traits.Trait;
 import io.xol.chunkstories.api.entity.traits.TraitVoxelSelection;
+import io.xol.chunkstories.api.entity.traits.serializable.TraitController;
 import io.xol.chunkstories.api.events.voxel.WorldModificationCause;
 import io.xol.chunkstories.api.input.InputsManager;
 import io.xol.chunkstories.api.player.Player;
@@ -49,7 +49,7 @@ public class MinerTrait extends Trait {
 		
 		World world = entity.getWorld();
 		
-		entity.components.with(EntityController.class, ec -> {
+		entity.traits.with(TraitController.class, ec -> {
 			Controller controller = ec.getController();
 
 			if (controller != null && controller instanceof Player) {

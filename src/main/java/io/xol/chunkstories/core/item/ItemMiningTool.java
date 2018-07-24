@@ -10,7 +10,7 @@ import org.joml.Matrix4f;
 
 import io.xol.chunkstories.api.Location;
 import io.xol.chunkstories.api.entity.Entity;
-import io.xol.chunkstories.api.entity.components.EntityInventory;
+import io.xol.chunkstories.api.entity.traits.serializable.TraitInventory;
 import io.xol.chunkstories.api.item.Item;
 import io.xol.chunkstories.api.item.ItemDefinition;
 import io.xol.chunkstories.api.item.inventory.ItemPile;
@@ -53,8 +53,8 @@ public class ItemMiningTool extends Item implements MiningTool {
 						Location location, Matrix4f handTransformation) {
 					
 					boolean mining = false;
-					if(pile.getInventory() instanceof EntityInventory) {
-						Entity entity = ((EntityInventory)pile.getInventory()).entity;
+					if(pile.getInventory() instanceof TraitInventory) {
+						Entity entity = ((TraitInventory)pile.getInventory()).entity;
 						//System.out.println(entity);
 						MinerTrait miningTrait = entity.traits.get(MinerTrait.class);
 						if(miningTrait != null) {
@@ -142,8 +142,8 @@ public class ItemMiningTool extends Item implements MiningTool {
 
 			MinerTrait trait = null;
 			Inventory inv = pile.getInventory();
-			if(inv instanceof EntityInventory)
-				trait = ((EntityInventory)inv).entity.traits.get(MinerTrait.class);
+			if(inv instanceof TraitInventory)
+				trait = ((TraitInventory)inv).entity.traits.get(MinerTrait.class);
 				
 			if(trait != null){
 				Matrix4f rotated = new Matrix4f(transformation);
