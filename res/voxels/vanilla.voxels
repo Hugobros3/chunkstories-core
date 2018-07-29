@@ -111,7 +111,9 @@ voxel birchleaves
 end
 
 voxel whool
-	customClass: io.xol.chunkstories.core.voxel.VoxelMeta16
+	customClass: io.xol.chunkstories.core.voxel.Voxel16Variants
+	texture: whool
+	variants: white, orange, purple, turquoise, yellow, lime, pink, darkgrey, grey, cyan, purple, sea, brown, kaki, red, black
 end
 
 voxel redbricks
@@ -119,8 +121,9 @@ voxel redbricks
 end
 
 voxel colored
-	customClass: io.xol.chunkstories.core.voxel.VoxelMeta16
+	customClass: io.xol.chunkstories.core.voxel.Voxel16Variants
 	material: concrete
+	texture: concrete.colored
 end
 
 voxel ironGrill

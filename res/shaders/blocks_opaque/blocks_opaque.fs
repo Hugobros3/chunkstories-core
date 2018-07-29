@@ -77,7 +77,7 @@ void main(){
 		discard;
 	
 	surfaceDiffuseColor /= alpha;
-	alpha = 1.0;
+	//alpha = 1.0;
 	
 	//Color pixels with some alpha component with the vegetation color
 	if(alpha < 1)
