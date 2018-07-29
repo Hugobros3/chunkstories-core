@@ -1,5 +1,0 @@
-# Special textures data
-
-texture notex
-	textureScale: 8
-end
