@@ -38,8 +38,7 @@ public class FarTerrainPass extends RenderPass {
 		this.shadedBuffer = (Texture2DRenderTarget) resolvedInputs.get("shadedBuffer");
 		this.specularBuffer = (Texture2DRenderTarget) resolvedInputs.get("specularityBuffer");
 
-		this.fbo = pipeline.getRenderingInterface().getRenderTargetManager().newConfiguration(zBuffer, shadedBuffer,
-				specularBuffer);
+		this.fbo = pipeline.getRenderingInterface().getRenderTargetManager().newConfiguration(zBuffer, shadedBuffer);
 	}
 
 	@Override
@@ -47,6 +46,8 @@ public class FarTerrainPass extends RenderPass {
 		renderer.getRenderTargetManager().setConfiguration(fbo);
 		worldRenderer.getFarTerrainRenderer().renderTerrain(renderer,
 				worldRenderer.getChunksRenderer().getRenderedChunksMask(renderer.getCamera()));
+		
+		//System.out.println("k");
 	}
 
 	@Override

@@ -246,5 +246,10 @@ void main() {
 	float vl_invSquared = 1.0 / vl_distanceSquared;
 	shadedColor += 0.002 * albedoColor.rgb * clamp(vl_invSquared - 1.0 / (1.0 + vl_bias), 0.0, 100.0) * pow(torchColor, vec3(gamma));
 	
+	shadedColor = vec3(0.0);
+	shadedColor.rgb += albedoColor.rgb * sunLightColor.rgb * shadowIllumination * clamp(dot(sunPos, normalWorldSpace),0.0,1.0);
+	shadedColor.rgb += albedoColor.rgb * ambientColour.rgb * 0.5;
+	
 	fragColor = vec4(shadedColor, 1.0);
+	//fragColor = vec4(gi.rgb, 1.0);
 }

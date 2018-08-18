@@ -122,7 +122,7 @@ public class GBuffersOpaquePass extends RenderPass {
 			// renderingInterface.bindTexture2D("vegetationColorTexture",
 			// getGrassTexture());
 
-			boolean mipmap = true;
+			boolean mipmap = false;
 			// Set texturing arguments
 			blocksAlbedoTexture.setTextureWrapping(false);
 			blocksAlbedoTexture.setLinearFiltering(false);

@@ -26,6 +26,7 @@ import io.xol.chunkstories.core.rendering.passes.ApplySunlightPass;
 import io.xol.chunkstories.core.rendering.passes.BloomPass;
 import io.xol.chunkstories.core.rendering.passes.DecalsPass;
 import io.xol.chunkstories.core.rendering.passes.DefferedLightsPass;
+import io.xol.chunkstories.core.rendering.passes.FarTerrainPass;
 import io.xol.chunkstories.core.rendering.passes.ForwardPass;
 import io.xol.chunkstories.core.rendering.passes.GBuffersOpaquePass;
 import io.xol.chunkstories.core.rendering.passes.PostProcessPass;
@@ -145,17 +146,17 @@ public class RenderingEventsListener implements Listener {
 		// zbuffer
 		// TODO simplify things and just make the far terrain use the same opaque
 		// gbuffers path
-//		FarTerrainPass farTerrain = new FarTerrainPass(pipeline, "farTerrain", 
-//				new String[]{"lights.shadedBuffer!", "gBuffers.specularityBuffer!", "gBuffers.zBuffer!"}, 
-//				new String[]{/*"shadedBuffer", "zBuffer", "specularityBuffer"*/} );
-//		pipeline.registerRenderPass(farTerrain);
+		FarTerrainPass farTerrain = new FarTerrainPass(pipeline, "farTerrain", 
+				new String[]{"lights.shadedBuffer!", "water.metalnessBuffer!", "water.roughnessBuffer!", "gBuffers.zBuffer!"}, 
+				new String[]{/*"shadedBuffer", "zBuffer", "specularityBuffer"*/} );
+		pipeline.registerRenderPass(farTerrain);
 
 		BloomPass bloomPass = new BloomPass(pipeline, "bloom", new String[] { "lights.shadedBuffer" },
 				new String[] { "bloomBuffer" });
 		pipeline.registerRenderPass(bloomPass);
 
 		ForwardPass forward = new ForwardPass(pipeline, "forward",
-				new String[] { "lights.shadedBuffer!", "water.zBuffer!" }, new String[] {});
+				new String[] { "farTerrain.shadedBuffer!", "water.zBuffer!" }, new String[] {});
 		pipeline.registerRenderPass(forward);
 
 		// the pass declared as 'final' is considered the last one and it's outputs are

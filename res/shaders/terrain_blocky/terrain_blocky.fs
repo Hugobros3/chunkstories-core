@@ -16,7 +16,8 @@ flat in uint voxelId;
 
 //Framebuffer outputs
 out vec4 shadedFramebufferOut;
-out float noSpecularOut;
+//out float metalnessOut;
+//out float roughnessOut;
 
 //Textures
 uniform sampler2D waterNormalShallow; // Water surface
@@ -185,7 +186,7 @@ void main()
 		//finalColor += vec3(sunSpecularReflection);
 		
 		//Mix them to obtain final colour
-		finalColor = mix(finalColor, reflected , specularity);
+		finalColor = mix(finalColor, reflected, specularity);
 	}
 	
 	//Get per-fragment fog color
@@ -193,5 +194,6 @@ void main()
 	
 	//Mix in fog 
 	shadedFramebufferOut = mix(vec4(finalColor, 1.0), vec4(fogColor.xyz, 1.0), fogColor.a * 0.0);
-	noSpecularOut = 0.0;
+	//metalnessOut = 0.0;
+	//roughnessOut = 1.0;
 }

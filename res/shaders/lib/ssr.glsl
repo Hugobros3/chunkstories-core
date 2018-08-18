@@ -2,53 +2,27 @@ vec4 raytrace(sampler2D depthBuffer, sampler2D colorBuffer, vec3 fragpos, vec3 r
 
 vec4 computeReflectedPixel(sampler2D depthBuffer, sampler2D colorBuffer, samplerCube fallbackCubemap, vec2 screenSpaceCoords, vec3 cameraSpacePosition, vec3 pixelNormal, float showSkybox, float roughness)
 {
-    vec2 screenSpacePosition2D = screenSpaceCoords;
-	
     vec3 cameraSpaceViewDir = normalize(cameraSpacePosition);
-    vec3 normal = normalize(reflect(cameraSpaceViewDir, pixelNormal));//normalMatrix * vec3(0.0, 1.0, 0.0)));
-    
-	//if(dot(pixelNormal, cameraSpaceVector) < 0)
-	//	cameraSpaceVector = pixelNormal;
+    vec3 normal = normalize(reflect(cameraSpaceViewDir, pixelNormal));
+	vec4 color = vec4(0.0);
 	
-	// Is the reflection pointing in the right direction ?
-	//vec4 finalColor = vec4(0.0);
-	//float seed = 45.0;
-	//for(int sample = 0; sample < 1; sample++) {
-		vec4 color = vec4(0.0);
-		
-		//SSR stepping goes here
-		#ifdef realtimeReflections
-		
-		/*float rx = snoise(gl_FragCoord.xy * seed + 64.2 + sample + seed);
-		float ry = snoise(gl_FragCoord.yx * rx * animationTimer * 1.15);
-		float rz = snoise(gl_FragCoord.xy * ry + 321.1);
-		
-		seed = rz;
-		normal += vec3(rx, ry, rz) * roughness;
-		normal = normalize(normal);*/
-		
-		color = raytrace(depthBuffer, colorBuffer, cameraSpacePosition, normal);
-		//vec3 result = raytrace(depthBuffer, colorBuffer, cameraSpacePosition, normal);
-		//color = vec4( texture(colorBuffer, result.st).rgb, texture(colorBuffer, result.st).a * result.z );
-		#endif
-		
-		vec3 normSkyDirection = normalMatrixInv * normal;
-			
-		vec3 skyColor = getSkyColor(dayTime, normSkyDirection);
-		
-		if(color.a == 0.0)
-		{
-			#ifdef doDynamicCubemaps
-			skyColor = texture(fallbackCubemap, vec3(normSkyDirection.x, -normSkyDirection.y, -normSkyDirection.z)).rgb;
-			#endif
-		
-			skyColor *= showSkybox;
-			color.rgb = skyColor;
-		}
-		//finalColor += color;
-	//}
-	//finalColor /= 2.0;
+	#ifdef realtimeReflections
 	
+	color = raytrace(depthBuffer, colorBuffer, cameraSpacePosition, normal);
+	#endif
+	
+	vec3 normSkyDirection = normalMatrixInv * normal;
+		
+	vec3 skyColor = getSkyColor(dayTime, normSkyDirection);
+	
+	#ifdef doDynamicCubemaps
+	skyColor = texture(fallbackCubemap, vec3(normSkyDirection.x, -normSkyDirection.y, -normSkyDirection.z)).rgb;
+	#endif
+
+	skyColor *= showSkybox;
+	
+	color = vec4(mix(skyColor.rgb, color.rgb, color.a), 1.0);
+		
 	return color;
 }
 
@@ -120,15 +94,8 @@ vec4 raytrace(sampler2D depthBuffer, sampler2D colorBuffer, vec3 fragpos, vec3 r
 
 	border = clamp(1.0 - pow(cdist(pos.st), 10.0), 0.0, 1.0);
 
-	color.a = texture(colorBuffer, pos.st).a * color.a;
+	color.a = texture(colorBuffer, pos.st).a * color.a * border;
 	color.rgb = pow(texture(colorBuffer, pos.st).rgb, vec3(2.1)) * sunLightColor;
-
-	//if(i < 4)
-	//	color = vec4(1.0, 0.0, 0.0, 1.0);
-	
-	//color = vec4(float(i) / 50.0);
-	//color.a = 1.0;
 	
 	return color;
-	//return vec3(pos.st, color.a);
 }
