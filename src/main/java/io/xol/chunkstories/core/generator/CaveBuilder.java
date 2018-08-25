@@ -6,16 +6,15 @@
 
 package io.xol.chunkstories.core.generator;
 
-import java.util.Random;
-
-import org.joml.Vector2i;
-import org.joml.Vector3d;
-import org.joml.Vector3i;
-
 import io.xol.chunkstories.api.math.Math2;
 import io.xol.chunkstories.api.world.World;
 import io.xol.chunkstories.core.generator.HorizonGenerator.SliceData;
 import io.xol.chunkstories.core.generator.HorizonGenerator.StructureToPaste;
+import org.joml.Vector2i;
+import org.joml.Vector3d;
+import org.joml.Vector3i;
+
+import java.util.Random;
 
 public class CaveBuilder {
 	final World world;

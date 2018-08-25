@@ -6,16 +6,15 @@
 
 package io.xol.chunkstories.core.particles;
 
-import org.joml.Vector3d;
-import org.joml.Vector3dc;
-import org.joml.Vector3fc;
-
 import io.xol.chunkstories.api.particles.ParticleDataWithVelocity;
 import io.xol.chunkstories.api.particles.ParticleTypeDefinition;
 import io.xol.chunkstories.api.particles.ParticleTypeHandler;
 import io.xol.chunkstories.api.particles.ParticlesRenderer;
 import io.xol.chunkstories.api.rendering.RenderingInterface;
 import io.xol.chunkstories.api.world.World;
+import org.joml.Vector3d;
+import org.joml.Vector3dc;
+import org.joml.Vector3fc;
 
 public class ParticleBlood extends ParticleTypeHandler {
 	public ParticleBlood(ParticleTypeDefinition type) {

@@ -6,12 +6,6 @@
 
 package io.xol.chunkstories.core.generator;
 
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-
-import javax.imageio.ImageIO;
-
 import io.xol.chunkstories.api.content.Content.WorldGenerators.WorldGeneratorDefinition;
 import io.xol.chunkstories.api.math.Math2;
 import io.xol.chunkstories.api.world.World;

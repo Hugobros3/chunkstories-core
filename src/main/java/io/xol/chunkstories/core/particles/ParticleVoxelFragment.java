@@ -6,22 +6,17 @@
 
 package io.xol.chunkstories.core.particles;
 
-import org.joml.Vector3d;
-import org.joml.Vector3dc;
-import org.joml.Vector3fc;
-
 import io.xol.chunkstories.api.content.Content.Voxels;
-import io.xol.chunkstories.api.particles.ParticleDataWithTextureCoordinates;
-import io.xol.chunkstories.api.particles.ParticleDataWithVelocity;
-import io.xol.chunkstories.api.particles.ParticleTypeDefinition;
-import io.xol.chunkstories.api.particles.ParticleTypeHandler;
-import io.xol.chunkstories.api.particles.ParticlesRenderer;
+import io.xol.chunkstories.api.particles.*;
 import io.xol.chunkstories.api.rendering.RenderingInterface;
 import io.xol.chunkstories.api.rendering.textures.Texture2D;
 import io.xol.chunkstories.api.voxel.VoxelSide;
 import io.xol.chunkstories.api.voxel.textures.VoxelTexture;
 import io.xol.chunkstories.api.world.World;
 import io.xol.chunkstories.api.world.cell.CellData;
+import org.joml.Vector3d;
+import org.joml.Vector3dc;
+import org.joml.Vector3fc;
 
 public class ParticleVoxelFragment extends ParticleTypeHandler {
 	Voxels voxelStore;

@@ -6,14 +6,14 @@
 
 package io.xol.chunkstories.core.entity.components;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-
 import io.xol.chunkstories.api.entity.Entity;
 import io.xol.chunkstories.api.entity.traits.serializable.TraitSerializable;
 import io.xol.chunkstories.api.world.serialization.StreamSource;
 import io.xol.chunkstories.api.world.serialization.StreamTarget;
+
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 
 public class EntityStance extends TraitSerializable {
 	private EntityHumanoidStance value = EntityHumanoidStance.STANDING;

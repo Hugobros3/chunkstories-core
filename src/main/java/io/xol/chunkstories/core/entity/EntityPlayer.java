@@ -6,16 +6,6 @@
 
 package io.xol.chunkstories.core.entity;
 
-import java.util.Iterator;
-
-import org.joml.Matrix4f;
-import org.joml.Matrix4fc;
-import org.joml.Vector3d;
-import org.joml.Vector3dc;
-import org.joml.Vector3f;
-import org.joml.Vector3fc;
-import org.joml.Vector4f;
-
 import io.xol.chunkstories.api.Location;
 import io.xol.chunkstories.api.animation.SkeletonAnimator;
 import io.xol.chunkstories.api.client.LocalPlayer;
@@ -23,20 +13,8 @@ import io.xol.chunkstories.api.entity.Controller;
 import io.xol.chunkstories.api.entity.DamageCause;
 import io.xol.chunkstories.api.entity.Entity;
 import io.xol.chunkstories.api.entity.EntityDefinition;
-import io.xol.chunkstories.api.entity.traits.TraitAnimated;
-import io.xol.chunkstories.api.entity.traits.TraitCollidable;
-import io.xol.chunkstories.api.entity.traits.TraitDontSave;
-import io.xol.chunkstories.api.entity.traits.TraitHasOverlay;
-import io.xol.chunkstories.api.entity.traits.TraitInteractible;
-import io.xol.chunkstories.api.entity.traits.TraitRenderable;
-import io.xol.chunkstories.api.entity.traits.TraitVoxelSelection;
-import io.xol.chunkstories.api.entity.traits.TraitWhenControlled;
-import io.xol.chunkstories.api.entity.traits.serializable.TraitController;
-import io.xol.chunkstories.api.entity.traits.serializable.TraitCreativeMode;
-import io.xol.chunkstories.api.entity.traits.serializable.TraitFlyingMode;
-import io.xol.chunkstories.api.entity.traits.serializable.TraitInventory;
-import io.xol.chunkstories.api.entity.traits.serializable.TraitName;
-import io.xol.chunkstories.api.entity.traits.serializable.TraitSelectedItem;
+import io.xol.chunkstories.api.entity.traits.*;
+import io.xol.chunkstories.api.entity.traits.serializable.*;
 import io.xol.chunkstories.api.events.player.voxel.PlayerVoxelModificationEvent;
 import io.xol.chunkstories.api.events.voxel.WorldModificationCause;
 import io.xol.chunkstories.api.exceptions.world.WorldException;
@@ -68,6 +46,9 @@ import io.xol.chunkstories.core.entity.traits.TraitEyeLevel;
 import io.xol.chunkstories.core.entity.traits.TraitTakesFallDamage;
 import io.xol.chunkstories.core.item.armor.ItemArmor;
 import io.xol.chunkstories.core.item.inventory.InventoryLocalCreativeMenu;
+import org.joml.*;
+
+import java.util.Iterator;
 
 /**
  * Core/Vanilla player, has all the functionality you'd want from it:

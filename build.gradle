@@ -1,25 +1,28 @@
 // Apply the java plugin to add support for Java
 buildscript {
+	ext.kotlin_version = '1.2.60'
+
 	repositories {
 		mavenCentral()
 		maven { url "http://maven.xol.io/repository/public/" }
-		//maven { url 'https://jitpack.io' }
 	}
 
 	dependencies {
 		//classpath 'com.github.johni0702:gradle-ecj-plugin:795736c7bd085c6ff3a5fbd3f5d2913c94fe589e'
 		classpath 'de.johni0702.gradle:gradle-ecj-plugin:1.1-JAVA9'
+
+		classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
 	}
 }
 
 plugins {
-    id "com.github.hierynomus.license" version "0.14.0"
+	id "com.diffplug.gradle.spotless" version "3.14.0"
 }
-
 
 apply plugin: 'java'
 apply plugin: 'java-library'
 apply plugin: 'maven'
+apply plugin: 'kotlin'
 
 repositories {
 	mavenLocal()
@@ -32,33 +35,38 @@ repositories {
 
 description = 'The base content chunkstories is built on.'
 group = 'io.xol.chunkstories'
-version = '130'
+version = '150'
 
 sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
 
+spotless {
+	java {
+		licenseHeaderFile 'codequality/header-include-notice.txt'
+		eclipse().configFile 'codequality/style.xml'
+	}
+
+	kotlin {
+		indentWithTabs()
+		licenseHeaderFile 'codequality/header-include-notice.txt'
+	}
+}
+
 ext {
-	apiRevisionBuiltAgainst = '123'
-	useEclipseCompiler = true
+	apiRevisionBuiltAgainst = '200'
+	useEclipseCompiler = false
 }
 
 dependencies {
 	compile group: 'io.xol.chunkstories', name: 'api', version: apiRevisionBuiltAgainst
 	compile group: 'io.xol.enklume', name: 'enklume', version: 100
+
+	implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 }
 
 if(ext.useEclipseCompiler) {
 	apply plugin: 'de.johni0702.ecj'
 	println "Using ECJ compiler"
-}
-
-license {
-    header rootProject.file('codequality/header-include-notice.txt')
-    strictCheck true
-	
-	mapping {
-        java='DOUBLESLASH_STYLE'
-    }
 }
 
 

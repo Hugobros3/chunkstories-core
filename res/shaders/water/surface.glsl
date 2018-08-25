@@ -8,6 +8,14 @@ vec3 shallow(vec2 coords)
 	return texture(waterNormalShallow, coords).rgb * 2.0 - vec3(1.0);
 }
 
+vec2 dir(float angle) {
+	return vec2(sin(angle), cos(angle));
+}
+
+vec2 wave(vec2 point) {
+	return vec2(sin(point.x), cos(point.y));
+}
+
 vec3 water() {
 	vec3 normalMap = 0.05 * vec3(0.0, 0.0, 1.0);
 	normalMap += 0.25 * deep((vertexPassed.xz/5.0+vec2(0.0,animationTimer * 0.02))/15.0);

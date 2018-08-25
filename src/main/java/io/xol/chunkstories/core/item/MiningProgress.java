@@ -6,8 +6,6 @@
 
 package io.xol.chunkstories.core.item;
 
-import org.joml.Vector3d;
-
 import io.xol.chunkstories.api.Location;
 import io.xol.chunkstories.api.entity.Controller;
 import io.xol.chunkstories.api.entity.Entity;
@@ -23,6 +21,7 @@ import io.xol.chunkstories.api.world.WorldMaster;
 import io.xol.chunkstories.api.world.cell.CellData;
 import io.xol.chunkstories.api.world.cell.FutureCell;
 import io.xol.chunkstories.core.entity.EntityGroundItem;
+import org.joml.Vector3d;
 
 public class MiningProgress {
 
@@ -47,16 +46,16 @@ public class MiningProgress {
 		// toolType = tool != null ? tool.toolType : "hand";
 
 		voxel = context.getVoxel();
-		material = voxel.getMaterial();
+		material = voxel.getVoxelMaterial();
 		String hardnessString = null;
 
 		// First order, check the voxel itself if it states a certain hardness for this
 		// tool type
-		hardnessString = voxel.getDefinition().resolveProperty("hardnessFor" + tool.getToolTypeName(), null);
+		hardnessString = voxel.getExt().get("hardnessFor" + tool.getToolTypeName());
 
 		// Then check if the voxel states a general hardness multiplier
 		if (hardnessString == null)
-			hardnessString = voxel.getDefinition().resolveProperty("hardness", null);
+			hardnessString = voxel.getExt().get("hardness");
 
 		// if the voxel is devoid of information, we do the same on the material
 		if (hardnessString == null)
@@ -106,8 +105,8 @@ public class MiningProgress {
 							(WorldModificationCause) owner)) {
 
 						EntityGroundItem thrownItem = (EntityGroundItem) context.getWorld().getContent().entities()
-								.getEntityDefinition("groundItem").create(itemSpawnLocation);
-						thrownItem.entityLocation.set(itemSpawnLocation);
+								.getEntityDefinition("groundItem").newEntity(itemSpawnLocation);
+						thrownItem.traitLocation.set(itemSpawnLocation);
 						thrownItem.entityVelocity.setVelocity(
 								new Vector3d(Math.random() * 0.125 - 0.0625, 0.1, Math.random() * 0.125 - 0.0625));
 						thrownItem.setItemPile(droppedItemPile);

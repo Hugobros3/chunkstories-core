@@ -6,15 +6,15 @@
 
 package io.xol.chunkstories.core.item.inventory;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import io.xol.chunkstories.api.content.Content.Voxels;
 import io.xol.chunkstories.api.item.inventory.BasicInventory;
 import io.xol.chunkstories.api.item.inventory.ItemPile;
 import io.xol.chunkstories.api.voxel.Voxel;
 import io.xol.chunkstories.api.world.World;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /** Creates a big inventory with all the possible building blocks */
 public class InventoryLocalCreativeMenu extends BasicInventory {

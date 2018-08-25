@@ -6,14 +6,6 @@
 
 package io.xol.chunkstories.core.generator;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
-import org.joml.Vector3i;
-
 import io.xol.chunkstories.api.content.Content.WorldGenerators.WorldGeneratorDefinition;
 import io.xol.chunkstories.api.converter.MinecraftBlocksTranslator;
 import io.xol.chunkstories.api.math.Math2;
@@ -26,6 +18,13 @@ import io.xol.chunkstories.api.world.chunk.Chunk;
 import io.xol.chunkstories.api.world.generator.WorldGenerator;
 import io.xol.chunkstories.api.world.generator.environment.DefaultWorldEnvironment;
 import io.xol.chunkstories.api.world.generator.environment.WorldEnvironment;
+import org.joml.Vector3i;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 public class HorizonGenerator extends WorldGenerator {
 	DefaultWorldEnvironment worldEnv;

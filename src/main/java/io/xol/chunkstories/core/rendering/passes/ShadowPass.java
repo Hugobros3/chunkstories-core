@@ -6,10 +6,6 @@
 
 package io.xol.chunkstories.core.rendering.passes;
 
-import org.joml.Matrix4f;
-import org.joml.Vector3dc;
-import org.joml.Vector3f;
-
 import io.xol.chunkstories.api.rendering.GameWindow;
 import io.xol.chunkstories.api.rendering.RenderingInterface;
 import io.xol.chunkstories.api.rendering.StateMachine.BlendMode;
@@ -25,6 +21,9 @@ import io.xol.chunkstories.api.rendering.textures.TextureFormat;
 import io.xol.chunkstories.api.rendering.world.SkyRenderer;
 import io.xol.chunkstories.api.rendering.world.WorldRenderer;
 import io.xol.chunkstories.api.world.WorldClient;
+import org.joml.Matrix4f;
+import org.joml.Vector3dc;
+import org.joml.Vector3f;
 
 public class ShadowPass extends RenderPass {
 	WorldRenderer worldRenderer;

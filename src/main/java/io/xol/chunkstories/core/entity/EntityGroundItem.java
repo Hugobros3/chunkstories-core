@@ -6,11 +6,6 @@
 
 package io.xol.chunkstories.core.entity;
 
-import org.joml.Matrix4f;
-import org.joml.Vector3d;
-import org.joml.Vector3dc;
-import org.joml.Vector3f;
-
 import io.xol.chunkstories.api.Location;
 import io.xol.chunkstories.api.entity.Entity;
 import io.xol.chunkstories.api.entity.EntityDefinition;
@@ -27,6 +22,10 @@ import io.xol.chunkstories.api.world.WorldClient;
 import io.xol.chunkstories.api.world.WorldMaster;
 import io.xol.chunkstories.api.world.cell.CellData;
 import io.xol.chunkstories.core.entity.components.EntityGroundItemPileComponent;
+import org.joml.Matrix4f;
+import org.joml.Vector3d;
+import org.joml.Vector3dc;
+import org.joml.Vector3f;
 
 public class EntityGroundItem extends Entity {
 	protected float rotation = 0f;

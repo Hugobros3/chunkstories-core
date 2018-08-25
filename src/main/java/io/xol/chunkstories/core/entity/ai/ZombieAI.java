@@ -6,10 +6,6 @@
 
 package io.xol.chunkstories.core.entity.ai;
 
-import java.util.Collection;
-
-import org.joml.Vector3d;
-
 import io.xol.chunkstories.api.entity.Entity;
 import io.xol.chunkstories.api.entity.ai.AI;
 import io.xol.chunkstories.api.entity.traits.serializable.TraitHealth;
@@ -21,6 +17,9 @@ import io.xol.chunkstories.core.entity.EntityPlayer;
 import io.xol.chunkstories.core.entity.EntityZombie;
 import io.xol.chunkstories.core.entity.components.EntityStance;
 import io.xol.chunkstories.core.entity.components.EntityStance.EntityHumanoidStance;
+import org.joml.Vector3d;
+
+import java.util.Collection;
 
 public class ZombieAI extends GenericHumanoidAI {
 	Collection<Class<? extends Entity>> targetsTypes;

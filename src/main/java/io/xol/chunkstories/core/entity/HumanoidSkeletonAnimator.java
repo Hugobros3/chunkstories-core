@@ -1,11 +1,5 @@
 package io.xol.chunkstories.core.entity;
 
-import java.util.Arrays;
-
-import org.joml.Matrix4f;
-import org.joml.Vector3d;
-import org.joml.Vector3f;
-
 import io.xol.chunkstories.api.animation.CompoundAnimationHelper;
 import io.xol.chunkstories.api.animation.SkeletalAnimation;
 import io.xol.chunkstories.api.entity.Entity;
@@ -24,6 +18,11 @@ import io.xol.chunkstories.core.entity.components.EntityStance.EntityHumanoidSta
 import io.xol.chunkstories.core.entity.traits.MinerTrait;
 import io.xol.chunkstories.core.item.ItemMiningTool;
 import io.xol.chunkstories.core.item.MiningProgress;
+import org.joml.Matrix4f;
+import org.joml.Vector3d;
+import org.joml.Vector3f;
+
+import java.util.Arrays;
 
 public class HumanoidSkeletonAnimator extends CompoundAnimationHelper {
 	

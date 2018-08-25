@@ -6,12 +6,11 @@
 
 package io.xol.chunkstories.core.generator;
 
-import org.joml.Vector3i;
-
 import io.xol.chunkstories.api.math.Math2;
 import io.xol.chunkstories.api.voxel.Voxel;
 import io.xol.chunkstories.api.voxel.structures.Structure;
 import io.xol.chunkstories.api.world.chunk.Chunk;
+import org.joml.Vector3i;
 
 public class CaveBuilderStructure extends Structure {
 

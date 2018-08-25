@@ -6,10 +6,6 @@
 
 package io.xol.chunkstories.core.rendering.passes;
 
-import java.nio.ByteBuffer;
-
-import org.joml.Matrix4f;
-
 import io.xol.chunkstories.api.rendering.GameWindow;
 import io.xol.chunkstories.api.rendering.RenderingInterface;
 import io.xol.chunkstories.api.rendering.StateMachine.BlendMode;
@@ -25,6 +21,9 @@ import io.xol.chunkstories.api.rendering.textures.Texture2DRenderTarget;
 import io.xol.chunkstories.api.rendering.textures.TextureFormat;
 import io.xol.chunkstories.api.rendering.world.WorldRenderer;
 import io.xol.chunkstories.api.world.World;
+import org.joml.Matrix4f;
+
+import java.nio.ByteBuffer;
 
 public class GBuffersOpaquePass extends RenderPass {
 

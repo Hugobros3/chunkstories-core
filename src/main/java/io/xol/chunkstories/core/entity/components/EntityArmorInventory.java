@@ -6,14 +6,14 @@
 
 package io.xol.chunkstories.core.entity.components;
 
-import java.util.Collection;
-import java.util.Iterator;
-
 import io.xol.chunkstories.api.entity.Entity;
 import io.xol.chunkstories.api.entity.traits.serializable.TraitInventory;
 import io.xol.chunkstories.api.item.inventory.ItemPile;
 import io.xol.chunkstories.api.util.Specialized;
 import io.xol.chunkstories.core.item.armor.ItemArmor;
+
+import java.util.Collection;
+import java.util.Iterator;
 
 @Specialized // doesn't take the place of entity inventory
 public class EntityArmorInventory extends TraitInventory {

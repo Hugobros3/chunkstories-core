@@ -6,9 +6,6 @@
 
 package io.xol.chunkstories.core.voxel.renderers;
 
-import org.joml.Matrix4f;
-import org.joml.Vector3f;
-
 import io.xol.chunkstories.api.Location;
 import io.xol.chunkstories.api.rendering.RenderingInterface;
 import io.xol.chunkstories.api.rendering.textures.Texture2D;
@@ -17,6 +14,8 @@ import io.xol.chunkstories.api.rendering.voxel.VoxelRenderer;
 import io.xol.chunkstories.api.util.IterableIterator;
 import io.xol.chunkstories.api.world.chunk.Chunk.ChunkCell;
 import io.xol.chunkstories.core.voxel.components.VoxelComponentSignText;
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
 
 public class SignRenderer implements VoxelDynamicRenderer {
 

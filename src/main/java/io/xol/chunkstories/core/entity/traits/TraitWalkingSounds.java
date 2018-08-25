@@ -6,8 +6,6 @@
 
 package io.xol.chunkstories.core.entity.traits;
 
-import org.joml.Vector3d;
-
 import io.xol.chunkstories.api.entity.Entity;
 import io.xol.chunkstories.api.entity.traits.Trait;
 import io.xol.chunkstories.api.entity.traits.TraitCollidable;
@@ -16,6 +14,7 @@ import io.xol.chunkstories.api.sound.SoundSource.Mode;
 import io.xol.chunkstories.api.voxel.Voxel;
 import io.xol.chunkstories.api.voxel.materials.VoxelMaterial;
 import io.xol.chunkstories.api.world.WorldClient;
+import org.joml.Vector3d;
 
 public class TraitWalkingSounds extends Trait {
 

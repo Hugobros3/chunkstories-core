@@ -6,15 +6,14 @@
 
 package io.xol.chunkstories.core.entity;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.joml.Matrix4fc;
-
 import io.xol.chunkstories.api.animation.SkeletonAnimator;
 import io.xol.chunkstories.api.entity.Entity;
 import io.xol.chunkstories.api.rendering.RenderingInterface;
 import io.xol.chunkstories.api.world.WorldClient;
+import org.joml.Matrix4fc;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class CachedLodSkeletonAnimator implements SkeletonAnimator {
 	final Entity entity;

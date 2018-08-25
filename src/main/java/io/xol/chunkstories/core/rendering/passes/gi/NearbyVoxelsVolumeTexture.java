@@ -6,10 +6,6 @@
 
 package io.xol.chunkstories.core.rendering.passes.gi;
 
-import java.nio.ByteBuffer;
-
-import org.joml.Vector4f;
-
 import io.xol.chunkstories.api.rendering.RenderingInterface;
 import io.xol.chunkstories.api.rendering.shader.Shader;
 import io.xol.chunkstories.api.rendering.textures.Texture3D;
@@ -21,6 +17,9 @@ import io.xol.chunkstories.api.world.World;
 import io.xol.chunkstories.api.world.cell.CellData;
 import io.xol.chunkstories.api.world.chunk.Chunk;
 import io.xol.chunkstories.core.voxel.VoxelPane;
+import org.joml.Vector4f;
+
+import java.nio.ByteBuffer;
 
 public class NearbyVoxelsVolumeTexture {
 

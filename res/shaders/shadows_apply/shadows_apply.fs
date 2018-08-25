@@ -152,7 +152,7 @@ vec3 computeAmbientSkylight(vec3 N, vec3 V, vec3 F0, float roughness, float meta
 	return ambient;
 }
 
-void main() {
+void mainPbr() {
     vec4 cameraSpacePosition = convertScreenSpaceToCameraSpace(screenCoord, zBuffer);
 	
 	vec3 pixelNormal = decodeNormal(texture(normalBuffer, screenCoord));
@@ -246,10 +246,129 @@ void main() {
 	float vl_invSquared = 1.0 / vl_distanceSquared;
 	shadedColor += 0.002 * albedoColor.rgb * clamp(vl_invSquared - 1.0 / (1.0 + vl_bias), 0.0, 100.0) * pow(torchColor, vec3(gamma));
 	
-	shadedColor = vec3(0.0);
-	shadedColor.rgb += albedoColor.rgb * sunLightColor.rgb * shadowIllumination * clamp(dot(sunPos, normalWorldSpace),0.0,1.0);
-	shadedColor.rgb += albedoColor.rgb * ambientColour.rgb * 0.5;
+	/*shadedColor = vec3(0.0);
+	
+	shadedColor.rgb += albedoColor.rgb * sunLightColor.rgb * shadowIllumination * clamp(pow(dot(sunPos, normalWorldSpace), 1.0 + (1.0 - roughness) * 50.0 ),0.0,1.0);
+	shadedColor.rgb += albedoColor.rgb * prefilteredColor.rgb * 0.5 * ao;*/
 	
 	fragColor = vec4(shadedColor, 1.0);
 	//fragColor = vec4(gi.rgb, 1.0);
+}
+
+void main() {
+    vec4 cameraSpacePosition = convertScreenSpaceToCameraSpace(screenCoord, zBuffer);
+	
+	vec3 pixelNormal = decodeNormal(texture(normalBuffer, screenCoord));
+	vec4 albedoColor = texture(albedoBuffer, screenCoord);
+	uint materialFlags = texture(materialsBuffer, screenCoord).x;
+	
+	//Discard fragments using alpha
+	if(albedoColor.a <= 0.0)
+		discard;
+	
+	vec4 worldSpacePosition = modelViewMatrixInv * cameraSpacePosition;
+	vec3 normalWorldSpace = normalize(normalMatrixInv * pixelNormal);
+	vec2 voxelLight = texture(voxelLightBuffer, screenCoord).xy;
+	
+	vec3 lightColor = vec3(0.0);
+	
+	float NdotL = dot(normalize(normalWorldSpace), normalize(sunPos));
+	
+	//Voxel light input, modified linearly according to time of day
+	
+	float sl_distance = (1.0 - voxelLight.y) + vl_bias;
+	float sl_distanceSquared = sl_distance * sl_distance;
+	float sl_invSquared = 1.0 / sl_distanceSquared;
+	#ifdef shadows
+	//vec3 voxelSunlight = textureGammaIn(blockLightmap, vec2(0.0, voxelLight.y)).rgb;
+	vec3 voxelSunlight = 0.02 * clamp(sl_invSquared - 1.0 / (1.0 + vl_bias), 0.0, 100.0) * vec3(1.0);// * pow(torchColor, vec3(gamma));
+	#else
+	vec3 voxelSunlight = 0.005 * clamp(sl_invSquared - 1.0 / (1.0 + vl_bias), 0.0, 100.0) * vec3(1.0);// * pow(torchColor, vec3(gamma));
+	#endif
+	
+	//float sunVisibility = clamp(1.0 - overcastFactor * 2.0, 0.0, 1.0);
+	//float storminess = clamp(-1.0 + overcastFactor * 2.0, 0.0, 1.0);
+	
+	vec4 gi = vec4(0.0, 0.0, 0.0, 0.0);
+	float ambientOcclusion = 1.0;
+	
+	#ifdef globalIllumination
+	float confidence = texture(giConfidence, screenCoord).x;
+	//gi = texture(giBuffer, screenCoord) / 1.0;
+	gi = bilateralTexture(giBuffer, screenCoord, pixelNormal, 0.0) / 1.0;
+	
+	ambientOcclusion = clamp(1.0 - 0.16 - gi.a * 1.0, 0.0, 1.0);
+	lightColor.rgb += gi.rgb;
+	#endif
+	
+	vec3 sunLight_g = sunLightColor * pi;//pow(sunColor, vec3(gamma));
+	vec3 shadowLight_g = getAtmosphericScatteringAmbient();//pow(shadowColor, vec3(gamma));
+		
+	#ifdef shadows
+	//Shadows sampling
+		vec4 shadowCoord = shadowMatrix * (untranslatedMVInv * cameraSpacePosition);
+		float distFactor = getDistordFactor(shadowCoord.xy);
+		vec4 coordinatesInShadowmap = accuratizeShadow(shadowCoord);
+		
+		//How much in shadows's brightness the object is
+		float shadowIllumination = 0.0;
+		
+		//How much in shadow influence's zone the object is
+		float edgeSmoother = 0.0;
+		
+		//How much does the pixel is lit by directional light
+		float directionalLightning = NdotL * 1.0;
+		
+		//Bias to avoid shadow acne
+		float bias = distFactor/32768.0 * 64.0;
+		//Are we inside the shadowmap zone edge ?
+		edgeSmoother = 1.0-clamp(pow(max(0,abs(coordinatesInShadowmap.x-0.5) - 0.45)*20.0+max(0,abs(coordinatesInShadowmap.y-0.5) - 0.45)*20.0, 1.0), 0.0, 1.0);
+		
+		shadowIllumination += clamp((texture(shadowMap, vec3(coordinatesInShadowmap.xy, coordinatesInShadowmap.z-bias), 0.0)), 0.0, 1.0);
+	
+		float sunlightAmount = shadowIllumination * ( mix( shadowIllumination, voxelLight.y, 1-edgeSmoother) ) * clamp(sunPos.y, 0.0, 1.0);
+		
+		//sunlightAmount *= directionalLightning;
+		sunlightAmount *= clamp(mix(directionalLightning, abs(directionalLightning), float(materialFlags & 1u) * 1.0), 0.0, 1.0);
+		
+		lightColor += clamp(sunLight_g * sunlightAmount, 0.0, 4096);
+		lightColor += clamp(shadowLight_g * voxelSunlight, 0.0, 4096);
+	#else
+		// Simple lightning for lower end machines
+		float flatShading = 0.0;
+		flatShading += 0.35 * clamp(dot(sunPos, normalWorldSpace), -0.5, 1.0);
+		flatShading += 0.25 * clamp(dot(sunPos, normalWorldSpace), -0.5, 1.0);
+		flatShading += 0.5 * clamp(dot(sunPos, normalWorldSpace), 0.0, 1.0);
+		
+		lightColor += clamp(sunLight_g * flatShading * voxelSunlight, 0.0, 4096);
+		lightColor += clamp(shadowLight_g * voxelSunlight, 0.0, 4096);
+	#endif
+	
+	//Adds block light
+	vec3 torchColor = vec3(255.0 / 255.0, 239.0 / 255.0, 43.0 / 140.0);
+	
+	//lightColor += vec3(0.25 * pow(voxelLight.x, 4.0));//
+	//lightColor += 0.25 * textureGammaIn(blockLightmap, vec2(voxelLight.x, 0.0)).rgb;
+	//lightColor += 0.25 * voxelLight.x * voxelLight.x * voxelLight.x * voxelLight.x * pow(torchColor, vec3(gamma));
+	//lightColor += 0.25 * textureGammaIn(blockLightmap, vec2(voxelLight.x * voxelLight.x, 0.0)).rgb;
+	
+	float vl_distance = (1.0 - voxelLight.x) + vl_bias;
+	float vl_distanceSquared = vl_distance * vl_distance;
+	float vl_invSquared = 1.0 / vl_distanceSquared;
+	lightColor += 0.005 * clamp(vl_invSquared - 1.0 / (1.0 + vl_bias), 0.0, 100.0) * pow(torchColor, vec3(gamma));
+	
+	//gamma-correct the albedo color
+	albedoColor.rgb = pow(albedoColor.rgb, vec3(gamma));
+
+	//albedoColor.rgb = vec3(1.0);
+	
+	//Multiplies the albedo by the light color
+	fragColor = vec4(albedoColor.rgb * lightColor.rgb, 1.0);
+	
+	//if(materialFlags == 1u)
+	//	fragColor = vec4(0.0, 1.0, 0.0, 1.0);
+	
+	//fragColor = vec4(gi.rgb, 1.0);
+	//fragColor = vec4(vec3(pow(clamp(1.0 - gi.a * 1.0, 0.0, 1.0), 2.1)), 1.0);
+	//fragColor = vec4(vec3(clamp(1.0 - 0.16 - gi.a * 1.0, 0.0, 1.0)), 1.0);
 }

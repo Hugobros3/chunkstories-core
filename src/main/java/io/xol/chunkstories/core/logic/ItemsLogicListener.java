@@ -6,8 +6,6 @@
 
 package io.xol.chunkstories.core.logic;
 
-import org.joml.Vector3d;
-
 import io.xol.chunkstories.api.Location;
 import io.xol.chunkstories.api.entity.Entity;
 import io.xol.chunkstories.api.entity.traits.serializable.TraitInventory;
@@ -19,6 +17,7 @@ import io.xol.chunkstories.api.events.item.EventItemDroppedToWorld;
 import io.xol.chunkstories.api.math.Math2;
 import io.xol.chunkstories.core.CoreContentPlugin;
 import io.xol.chunkstories.core.entity.EntityGroundItem;
+import org.joml.Vector3d;
 
 public class ItemsLogicListener implements Listener {
 	private final CoreContentPlugin core;

@@ -6,18 +6,13 @@
 
 package io.xol.chunkstories.core.particles;
 
-import org.joml.Vector3d;
-import org.joml.Vector3dc;
-import org.joml.Vector3fc;
-
-import io.xol.chunkstories.api.particles.ParticleDataWithTextureCoordinates;
-import io.xol.chunkstories.api.particles.ParticleDataWithVelocity;
-import io.xol.chunkstories.api.particles.ParticleTypeDefinition;
-import io.xol.chunkstories.api.particles.ParticleTypeHandler;
-import io.xol.chunkstories.api.particles.ParticlesRenderer;
+import io.xol.chunkstories.api.particles.*;
 import io.xol.chunkstories.api.rendering.RenderingInterface;
 import io.xol.chunkstories.api.rendering.StateMachine.BlendMode;
 import io.xol.chunkstories.api.world.World;
+import org.joml.Vector3d;
+import org.joml.Vector3dc;
+import org.joml.Vector3fc;
 
 public class ParticleFire extends ParticleTypeHandler {
 	final boolean ignoreCollisions;

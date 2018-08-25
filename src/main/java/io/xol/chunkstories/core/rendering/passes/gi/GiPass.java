@@ -6,9 +6,6 @@
 
 package io.xol.chunkstories.core.rendering.passes.gi;
 
-import org.joml.Matrix4f;
-import org.joml.Vector3d;
-
 import io.xol.chunkstories.api.rendering.RenderingInterface;
 import io.xol.chunkstories.api.rendering.StateMachine.BlendMode;
 import io.xol.chunkstories.api.rendering.StateMachine.DepthTestMode;
@@ -22,6 +19,8 @@ import io.xol.chunkstories.api.rendering.textures.TextureFormat;
 import io.xol.chunkstories.api.rendering.world.WorldRenderer;
 import io.xol.chunkstories.api.world.World;
 import io.xol.chunkstories.core.rendering.passes.ShadowPass;
+import org.joml.Matrix4f;
+import org.joml.Vector3d;
 
 public class GiPass extends RenderPass {
 

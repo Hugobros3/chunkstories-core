@@ -6,14 +6,6 @@
 
 package io.xol.chunkstories.core.entity;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
-
-import org.joml.Matrix4f;
-
 import io.xol.chunkstories.api.Location;
 import io.xol.chunkstories.api.entity.DamageCause;
 import io.xol.chunkstories.api.entity.Entity;
@@ -32,6 +24,13 @@ import io.xol.chunkstories.api.world.cell.CellData;
 import io.xol.chunkstories.api.world.serialization.StreamSource;
 import io.xol.chunkstories.api.world.serialization.StreamTarget;
 import io.xol.chunkstories.core.entity.ai.ZombieAI;
+import org.joml.Matrix4f;
+
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
 public class EntityZombie extends EntityHumanoid implements DamageCause {
 	ZombieAI zombieAi;

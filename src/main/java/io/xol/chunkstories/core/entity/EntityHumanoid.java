@@ -6,15 +6,7 @@
 
 package io.xol.chunkstories.core.entity;
 
-import java.util.Arrays;
-
-import org.joml.Matrix4f;
-import org.joml.Vector3d;
-import org.joml.Vector3f;
-
 import io.xol.chunkstories.api.Location;
-import io.xol.chunkstories.api.animation.CompoundAnimationHelper;
-import io.xol.chunkstories.api.animation.SkeletalAnimation;
 import io.xol.chunkstories.api.animation.SkeletonAnimator;
 import io.xol.chunkstories.api.entity.DamageCause;
 import io.xol.chunkstories.api.entity.Entity;
@@ -25,9 +17,6 @@ import io.xol.chunkstories.api.entity.traits.TraitHitboxes;
 import io.xol.chunkstories.api.entity.traits.TraitRenderable;
 import io.xol.chunkstories.api.entity.traits.serializable.TraitHealth;
 import io.xol.chunkstories.api.entity.traits.serializable.TraitSelectedItem;
-import io.xol.chunkstories.api.item.Item;
-import io.xol.chunkstories.api.item.ItemVoxel;
-import io.xol.chunkstories.api.item.interfaces.ItemCustomHoldingAnimation;
 import io.xol.chunkstories.api.item.inventory.ItemPile;
 import io.xol.chunkstories.api.physics.CollisionBox;
 import io.xol.chunkstories.api.physics.EntityHitbox;
@@ -36,15 +25,12 @@ import io.xol.chunkstories.api.rendering.entity.EntityRenderer;
 import io.xol.chunkstories.api.rendering.entity.RenderingIterator;
 import io.xol.chunkstories.api.rendering.textures.Texture2D;
 import io.xol.chunkstories.api.sound.SoundSource.Mode;
-import io.xol.chunkstories.api.world.WorldClient;
 import io.xol.chunkstories.api.world.cell.CellData;
 import io.xol.chunkstories.core.entity.components.EntityStance;
 import io.xol.chunkstories.core.entity.components.EntityStance.EntityHumanoidStance;
-import io.xol.chunkstories.core.entity.traits.MinerTrait;
 import io.xol.chunkstories.core.entity.traits.TraitBasicMovement;
 import io.xol.chunkstories.core.entity.traits.TraitWalkingSounds;
-import io.xol.chunkstories.core.item.ItemMiningTool;
-import io.xol.chunkstories.core.item.MiningProgress;
+import org.joml.Matrix4f;
 
 public abstract class EntityHumanoid extends EntityLiving {
 
@@ -76,6 +62,8 @@ public abstract class EntityHumanoid extends EntityLiving {
 			}
 		};
 
+		this.stance = new EntityStance(this);
+
 		this.animationTrait = new TraitAnimated(this) {
 			CachedLodSkeletonAnimator cachedSkeleton = new CachedLodSkeletonAnimator(EntityHumanoid.this,
 					new HumanoidSkeletonAnimator(EntityHumanoid.this), 25f, 75f);
@@ -85,8 +73,6 @@ public abstract class EntityHumanoid extends EntityLiving {
 				return cachedSkeleton;
 			}
 		};
-
-		this.stance = new EntityStance(this);
 
 		new TraitBasicMovement(this);
 

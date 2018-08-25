@@ -6,8 +6,6 @@
 
 package io.xol.chunkstories.core.util;
 
-import org.joml.Vector3d;
-
 import io.xol.chunkstories.api.Location;
 import io.xol.chunkstories.api.player.Player;
 import io.xol.chunkstories.api.sound.SoundSource.Mode;
@@ -15,6 +13,7 @@ import io.xol.chunkstories.api.world.World;
 import io.xol.chunkstories.api.world.WorldClient;
 import io.xol.chunkstories.api.world.WorldMaster;
 import io.xol.chunkstories.core.net.packets.PacketExplosionEffect;
+import org.joml.Vector3d;
 
 /** Creates an explosion with particles and sounds */
 public class WorldEffects {

@@ -6,15 +6,15 @@
 
 package io.xol.chunkstories.core.voxel.components;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-
 import io.xol.chunkstories.api.rendering.text.TextMesh;
 import io.xol.chunkstories.api.voxel.components.VoxelComponent;
 import io.xol.chunkstories.api.world.cell.CellComponents;
 import io.xol.chunkstories.api.world.serialization.StreamSource;
 import io.xol.chunkstories.api.world.serialization.StreamTarget;
+
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 
 public class VoxelComponentSignText extends VoxelComponent {
 	public VoxelComponentSignText(CellComponents holder) {

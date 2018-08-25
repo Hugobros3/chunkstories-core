@@ -6,11 +6,6 @@
 
 package io.xol.chunkstories.core.rendering.sky;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-
-import org.joml.Vector3f;
-
 import io.xol.chunkstories.api.math.Math2;
 import io.xol.chunkstories.api.rendering.RenderingInterface;
 import io.xol.chunkstories.api.rendering.StateMachine.BlendMode;
@@ -24,6 +19,10 @@ import io.xol.chunkstories.api.rendering.vertex.VertexFormat;
 import io.xol.chunkstories.api.rendering.world.SkyRenderer;
 import io.xol.chunkstories.api.rendering.world.WorldRenderer;
 import io.xol.chunkstories.api.world.World;
+import org.joml.Vector3f;
+
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 public class DefaultSkyRenderer implements SkyRenderer {
 	float dayTime = 0;

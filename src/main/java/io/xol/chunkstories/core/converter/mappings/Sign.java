@@ -17,11 +17,7 @@ import io.xol.chunkstories.core.voxel.VoxelSign;
 import io.xol.chunkstories.core.voxel.components.VoxelComponentSignText;
 import io.xol.enklume.MinecraftChunk;
 import io.xol.enklume.MinecraftRegion;
-import io.xol.enklume.nbt.NBTCompound;
-import io.xol.enklume.nbt.NBTInt;
-import io.xol.enklume.nbt.NBTList;
-import io.xol.enklume.nbt.NBTString;
-import io.xol.enklume.nbt.NBTag;
+import io.xol.enklume.nbt.*;
 import io.xol.enklume.util.SignParseUtil;
 
 public class Sign extends NonTrivialMapper {

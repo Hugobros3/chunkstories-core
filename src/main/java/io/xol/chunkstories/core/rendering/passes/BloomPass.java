@@ -6,8 +6,6 @@
 
 package io.xol.chunkstories.core.rendering.passes;
 
-import static io.xol.chunkstories.api.rendering.textures.TextureFormat.RGB_HDR;
-
 import io.xol.chunkstories.api.rendering.GameWindow;
 import io.xol.chunkstories.api.rendering.RenderingInterface;
 import io.xol.chunkstories.api.rendering.StateMachine.BlendMode;
@@ -19,6 +17,8 @@ import io.xol.chunkstories.api.rendering.target.RenderTargetsConfiguration;
 import io.xol.chunkstories.api.rendering.textures.Texture2DRenderTarget;
 import io.xol.chunkstories.api.rendering.world.WorldRenderer;
 import io.xol.chunkstories.api.world.World;
+
+import static io.xol.chunkstories.api.rendering.textures.TextureFormat.RGB_HDR;
 
 public class BloomPass extends RenderPass {
 

@@ -6,11 +6,6 @@
 
 package io.xol.chunkstories.core.entity.traits;
 
-import org.joml.Vector2d;
-import org.joml.Vector2f;
-import org.joml.Vector3d;
-import org.joml.Vector3dc;
-
 import io.xol.chunkstories.api.entity.Entity;
 import io.xol.chunkstories.api.entity.traits.Trait;
 import io.xol.chunkstories.api.entity.traits.TraitCollidable;
@@ -18,6 +13,10 @@ import io.xol.chunkstories.api.entity.traits.serializable.TraitHealth;
 import io.xol.chunkstories.api.entity.traits.serializable.TraitRotation;
 import io.xol.chunkstories.api.entity.traits.serializable.TraitVelocity;
 import io.xol.chunkstories.api.world.cell.CellData;
+import org.joml.Vector2d;
+import org.joml.Vector2f;
+import org.joml.Vector3d;
+import org.joml.Vector3dc;
 
 public class TraitBasicMovement extends Trait {
 

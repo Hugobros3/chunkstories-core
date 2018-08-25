@@ -6,9 +6,6 @@
 
 package io.xol.chunkstories.core.voxel;
 
-import org.joml.Vector2f;
-import org.joml.Vector3d;
-
 import io.xol.chunkstories.api.entity.Entity;
 import io.xol.chunkstories.api.events.voxel.WorldModificationCause;
 import io.xol.chunkstories.api.exceptions.world.voxel.IllegalBlockModificationException;
@@ -22,6 +19,8 @@ import io.xol.chunkstories.api.world.chunk.Chunk.ChunkCell;
 import io.xol.chunkstories.api.world.chunk.Chunk.FreshChunkCell;
 import io.xol.chunkstories.core.voxel.components.VoxelComponentSignText;
 import io.xol.chunkstories.core.voxel.renderers.SignRenderer;
+import org.joml.Vector2f;
+import org.joml.Vector3d;
 
 /** Signs are voxels you can write stuff on */
 //TODO implement a gui when placing a sign to actually set the text
