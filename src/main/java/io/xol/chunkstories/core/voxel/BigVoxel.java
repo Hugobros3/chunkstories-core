@@ -72,7 +72,7 @@ public class BigVoxel extends Voxel {
 
 					CellData stuff = context.getWorld().peekSafely(a, b, c);
 					if (stuff.getVoxel() == null || stuff.getVoxel().isAir()
-							|| !stuff.getVoxel().getDefinition().isSolid()) {
+							|| !stuff.getVoxel().isSolid()) {
 						// These blocks are replaceable
 						continue;
 					} else

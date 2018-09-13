@@ -6,24 +6,20 @@
 
 package io.xol.chunkstories.core.generator;
 
-import io.xol.chunkstories.api.content.Content.WorldGenerators.WorldGeneratorDefinition;
 import io.xol.chunkstories.api.voxel.Voxel;
 import io.xol.chunkstories.api.world.World;
 import io.xol.chunkstories.api.world.chunk.Chunk;
 import io.xol.chunkstories.api.world.generator.WorldGenerator;
-import io.xol.chunkstories.api.world.generator.environment.DefaultWorldEnvironment;
-import io.xol.chunkstories.api.world.generator.environment.WorldEnvironment;
+import io.xol.chunkstories.api.world.generator.WorldGeneratorDefinition;
 
 import java.util.Random;
 
 public class FlatGenerator extends WorldGenerator {
-	DefaultWorldEnvironment worldEnv;
 	Random rnd = new Random();
 
 	public FlatGenerator(WorldGeneratorDefinition type, World world) {
 		super(type, world);
 		worldsize = world.getSizeInChunks() * 32;
-		worldEnv = new DefaultWorldEnvironment(world);
 
 		this.GROUND_VOXEL = world.getGameContext().getContent().voxels().getVoxel("grass");
 		this.WALL_VOXEL = world.getGameContext().getContent().voxels().getVoxel("cobble");
@@ -61,10 +57,5 @@ public class FlatGenerator extends WorldGenerator {
 					y++;
 				}
 			}
-	}
-
-	@Override
-	public WorldEnvironment getEnvironment() {
-		return worldEnv;
 	}
 }

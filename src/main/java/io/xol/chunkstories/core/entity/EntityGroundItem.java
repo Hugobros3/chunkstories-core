@@ -6,22 +6,23 @@
 
 package io.xol.chunkstories.core.entity;
 
-import io.xol.chunkstories.api.Location;
 import io.xol.chunkstories.api.entity.Entity;
 import io.xol.chunkstories.api.entity.EntityDefinition;
 import io.xol.chunkstories.api.entity.traits.TraitCollidable;
 import io.xol.chunkstories.api.entity.traits.TraitRenderable;
 import io.xol.chunkstories.api.entity.traits.serializable.TraitVelocity;
 import io.xol.chunkstories.api.item.inventory.ItemPile;
-import io.xol.chunkstories.api.physics.CollisionBox;
+import io.xol.chunkstories.api.physics.Box;
 import io.xol.chunkstories.api.rendering.RenderingInterface;
 import io.xol.chunkstories.api.rendering.entity.EntityRenderer;
 import io.xol.chunkstories.api.rendering.entity.RenderingIterator;
 import io.xol.chunkstories.api.voxel.Voxel;
+import io.xol.chunkstories.api.world.World;
 import io.xol.chunkstories.api.world.WorldClient;
 import io.xol.chunkstories.api.world.WorldMaster;
 import io.xol.chunkstories.api.world.cell.CellData;
 import io.xol.chunkstories.core.entity.components.EntityGroundItemPileComponent;
+import io.xol.chunkstories.core.voxel.VoxelLiquid;
 import org.joml.Matrix4f;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
@@ -32,17 +33,17 @@ public class EntityGroundItem extends Entity {
 
 	public final TraitVelocity entityVelocity = new TraitVelocity(this);
 	public final TraitCollidable collisions = new TraitCollidable(this);
-	public final TraitRenderable renderable = new TraitRenderable(this, EntityGroundItemRenderer::new);
+	//public final TraitRenderable renderable = new TraitRenderable(this, EntityGroundItemRenderer::new);
 
 	private long spawnTime;
 	private final EntityGroundItemPileComponent itemPileWithin;
 
-	public EntityGroundItem(EntityDefinition t, Location location) {
+	public EntityGroundItem(EntityDefinition t, World location) {
 		super(t, location);
 		itemPileWithin = new EntityGroundItemPileComponent(this);
 	}
 
-	public EntityGroundItem(EntityDefinition t, Location location, ItemPile itemPile) {
+	public EntityGroundItem(EntityDefinition t, World location, ItemPile itemPile) {
 		super(t, location);
 		itemPileWithin = new EntityGroundItemPileComponent(this, itemPile);
 		spawnTime = System.currentTimeMillis();
@@ -68,7 +69,7 @@ public class EntityGroundItem extends Entity {
 
 		if (world instanceof WorldMaster) {
 			Voxel voxelIn = world.peekSafely(getLocation()).getVoxel();
-			boolean inWater = voxelIn.getDefinition().isLiquid();
+			boolean inWater = voxelIn instanceof VoxelLiquid;
 
 			double terminalVelocity = inWater ? -0.25 : -0.5;
 			if (velocity.y() > terminalVelocity && !collisions.isOnGround())
@@ -111,7 +112,7 @@ public class EntityGroundItem extends Entity {
 		}
 	}
 
-	static class EntityGroundItemRenderer extends EntityRenderer<EntityGroundItem> {
+	/*static class EntityGroundItemRenderer extends EntityRenderer<EntityGroundItem> {
 
 		@Override
 		public int renderEntities(RenderingInterface renderer,
@@ -153,10 +154,10 @@ public class EntityGroundItem extends Entity {
 			// Not much either
 		}
 
-	}
+	}*/
 
 	@Override
-	public CollisionBox getBoundingBox() {
-		return new CollisionBox(0.5, 0.75, 0.5).translate(-0.25, 0.0, -0.25);
+	public Box getBoundingBox() {
+		return new Box(0.5, 0.75, 0.5).translate(-0.25, 0.0, -0.25);
 	}
 }

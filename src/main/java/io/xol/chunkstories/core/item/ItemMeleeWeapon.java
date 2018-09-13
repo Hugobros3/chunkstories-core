@@ -15,9 +15,9 @@ import io.xol.chunkstories.api.entity.traits.serializable.TraitController;
 import io.xol.chunkstories.api.entity.traits.serializable.TraitHealth;
 import io.xol.chunkstories.api.entity.traits.serializable.TraitRotation;
 import io.xol.chunkstories.api.input.Input;
-import io.xol.chunkstories.api.item.ItemDeclaration;
+import io.xol.chunkstories.api.item.ItemDefinition;
 import io.xol.chunkstories.api.item.inventory.ItemPile;
-import io.xol.chunkstories.api.physics.CollisionBox;
+import io.xol.chunkstories.api.physics.Box;
 import io.xol.chunkstories.api.physics.EntityHitbox;
 import io.xol.chunkstories.api.rendering.RenderingInterface;
 import io.xol.chunkstories.api.rendering.item.ItemRenderer;
@@ -27,8 +27,6 @@ import io.xol.chunkstories.api.world.WorldMaster;
 import io.xol.chunkstories.api.world.cell.CellData;
 import io.xol.chunkstories.api.world.cell.EditableCell;
 import io.xol.chunkstories.core.entity.traits.TraitEyeLevel;
-import io.xol.chunkstories.core.item.renderer.FlatIconItemRenderer;
-import io.xol.chunkstories.core.item.renderer.ItemModelRenderer;
 import org.joml.Matrix4f;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
@@ -49,7 +47,7 @@ public class ItemMeleeWeapon extends ItemWeapon {
     boolean hasHitYet = false;
     long cooldownEnd = 0L;
 
-    public ItemMeleeWeapon(ItemDeclaration type) {
+    public ItemMeleeWeapon(ItemDefinition type) {
         super(type);
 
         swingDuration = Integer.parseInt(type.resolveProperty("swingDuration", "100"));
@@ -61,7 +59,7 @@ public class ItemMeleeWeapon extends ItemWeapon {
         itemRenderScale = Float.parseFloat(type.resolveProperty("itemRenderScale", "2"));
     }
 
-    public ItemRenderer getCustomItemRenderer(ItemRenderer fallbackRenderer) {
+    /*public ItemRenderer getCustomItemRenderer(ItemRenderer fallbackRenderer) {
         ItemRenderer itemRenderer;
 
         String modelName = getDefinition().resolveProperty("modelObj", "none");
@@ -74,7 +72,7 @@ public class ItemMeleeWeapon extends ItemWeapon {
         itemRenderer = new MeleeWeaponRenderer(fallbackRenderer);
 
         return itemRenderer;
-    }
+    }*/
 
     @Override
     public void tickInHand(Entity owner, ItemPile itemPile) {
@@ -118,41 +116,32 @@ public class ItemMeleeWeapon extends ItemWeapon {
             entity.traits.with(TraitEyeLevel.class, tel -> eyeLocation.x += tel.getEyeLevel());
 
             // Find wall collision
-            Location shotBlock = entity.getWorld().collisionsManager().raytraceSolid(eyeLocation, direction, range);
+            Location shotBlock = entity.getWorld().getCollisionsManager().raytraceSolid(eyeLocation, direction, range);
             Vector3d nearestLocation = new Vector3d();
 
             // Loops to try and break blocks
             while (entity.getWorld() instanceof WorldMaster && shotBlock != null) {
                 EditableCell peek = entity.getWorld().peekSafely(shotBlock);
 
-                if (!peek.getVoxel().isAir() && peek.getVoxel().getMaterial().resolveProperty("bulletBreakable") != null
-                        && peek.getVoxel().getMaterial().resolveProperty("bulletBreakable").equals("true")) {
+                if (!peek.getVoxel().isAir() && peek.getVoxel().getVoxelMaterial().resolveProperty("bulletBreakable") != null
+                        && peek.getVoxel().getVoxelMaterial().resolveProperty("bulletBreakable").equals("true")) {
                     // TODO: Spawn an event to check if it's okay
 
                     // Destroy it
                     peek.setVoxel(getDefinition().store().parent().voxels().air());
 
-                    for (int i = 0; i < 25; i++) {
-                        Vector3d smashedVoxelParticleDirection = new Vector3d(direction);
-                        smashedVoxelParticleDirection.mul(2.0);
-                        smashedVoxelParticleDirection.add(Math.random() - 0.5, Math.random() - 0.5,
-                                Math.random() - 0.5);
-                        smashedVoxelParticleDirection.normalize();
-
-                        entity.getWorld().getParticlesManager().spawnParticleAtPositionWithVelocity("voxel_frag",
-                                shotBlock, smashedVoxelParticleDirection);
-                    }
+                    spawnDebris(entity, direction, shotBlock);
                     entity.getWorld().getSoundManager().playSoundEffect("sounds/environment/glass.ogg", Mode.NORMAL,
                             shotBlock, (float) Math.random() * 0.2f + 0.9f, 1.0f);
 
                     // Re-raytrace the ray
-                    shotBlock = entity.getWorld().collisionsManager().raytraceSolid(eyeLocation, direction, range);
+                    shotBlock = entity.getWorld().getCollisionsManager().raytraceSolid(eyeLocation, direction, range);
                 } else
                     break;
             }
 
             if (shotBlock != null) {
-                Location shotBlockOuter = entity.getWorld().collisionsManager().raytraceSolidOuter(eyeLocation,
+                Location shotBlockOuter = entity.getWorld().getCollisionsManager().raytraceSolidOuter(eyeLocation,
                         direction, range);
                 if (shotBlockOuter != null) {
                     Vector3d normal = shotBlockOuter.sub(shotBlock);
@@ -167,7 +156,7 @@ public class ItemMeleeWeapon extends ItemWeapon {
                     CellData peek = entity.getWorld().peekSafely(shotBlock);
 
                     // This seems fine
-                    for (CollisionBox box : peek.getTranslatedCollisionBoxes()) {
+                    for (Box box : peek.getTranslatedCollisionBoxes()) {
                         Vector3dc thisLocation = box.lineIntersection(eyeLocation, direction);
                         if (thisLocation != null) {
                             if (nearestLocation == null
@@ -199,7 +188,7 @@ public class ItemMeleeWeapon extends ItemWeapon {
                         entity.getWorld().getParticlesManager().spawnParticleAtPositionWithVelocity("voxel_frag", ppos,
                                 untouchedReflection);
                         entity.getWorld().getSoundManager().playSoundEffect(entity.getWorld().peekSafely(shotBlock)
-                                        .getVoxel().getMaterial().resolveProperty("landingSounds"), Mode.NORMAL, ppos, 1,
+                                        .getVoxel().getVoxelMaterial().resolveProperty("landingSounds"), Mode.NORMAL, ppos, 1,
                                 0.25f);
                     }
 
@@ -211,7 +200,7 @@ public class ItemMeleeWeapon extends ItemWeapon {
             // Hitreg takes place on server bois
             if (entity.getWorld() instanceof WorldMaster) {
                 // Iterate over each found entities
-                Iterator<Entity> shotEntities = entity.getWorld().collisionsManager().rayTraceEntities(eyeLocation,
+                Iterator<Entity> shotEntities = entity.getWorld().getCollisionsManager().rayTraceEntities(eyeLocation,
                         direction, range);
                 while (shotEntities.hasNext()) {
                     Entity shotEntity = shotEntities.next();
@@ -256,6 +245,19 @@ public class ItemMeleeWeapon extends ItemWeapon {
 
         }
         return false;
+    }
+
+    static void spawnDebris(Entity entity, Vector3dc direction, Location shotBlock) {
+        for (int i = 0; i < 25; i++) {
+            Vector3d smashedVoxelParticleDirection = new Vector3d(direction);
+            smashedVoxelParticleDirection.mul(2.0);
+            smashedVoxelParticleDirection.add(Math.random() - 0.5, Math.random() - 0.5,
+                    Math.random() - 0.5);
+            smashedVoxelParticleDirection.normalize();
+
+            entity.getWorld().getParticlesManager().spawnParticleAtPositionWithVelocity("voxel_frag",
+                    shotBlock, smashedVoxelParticleDirection);
+        }
     }
 
     class MeleeWeaponRenderer extends ItemRenderer {

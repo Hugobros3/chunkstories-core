@@ -6,7 +6,6 @@
 
 package io.xol.chunkstories.core.generator;
 
-import io.xol.chunkstories.api.content.Content.WorldGenerators.WorldGeneratorDefinition;
 import io.xol.chunkstories.api.converter.MinecraftBlocksTranslator;
 import io.xol.chunkstories.api.math.Math2;
 import io.xol.chunkstories.api.math.random.SeededSimplexNoiseGenerator;
@@ -16,8 +15,7 @@ import io.xol.chunkstories.api.voxel.structures.Structure;
 import io.xol.chunkstories.api.world.World;
 import io.xol.chunkstories.api.world.chunk.Chunk;
 import io.xol.chunkstories.api.world.generator.WorldGenerator;
-import io.xol.chunkstories.api.world.generator.environment.DefaultWorldEnvironment;
-import io.xol.chunkstories.api.world.generator.environment.WorldEnvironment;
+import io.xol.chunkstories.api.world.generator.WorldGeneratorDefinition;
 import org.joml.Vector3i;
 
 import java.io.File;
@@ -27,7 +25,6 @@ import java.util.List;
 import java.util.Random;
 
 public class HorizonGenerator extends WorldGenerator {
-	DefaultWorldEnvironment worldEnv;
 	SeededSimplexNoiseGenerator ssng;
 
 	int worldSizeInBlocks;
@@ -61,7 +58,6 @@ public class HorizonGenerator extends WorldGenerator {
 		super(type, world);
 		ssng = new SeededSimplexNoiseGenerator(world.getWorldInfo().getSeed());
 		worldSizeInBlocks = world.getSizeInChunks() * 32;
-		worldEnv = new DefaultWorldEnvironment(world);
 
 		caveBuilder = new CaveBuilder(world, this);
 
@@ -395,10 +391,5 @@ public class HorizonGenerator extends WorldGenerator {
 		f -= mountainFactor * 0.45;
 
 		return Math2.clamp(f, 0, 1);
-	}
-
-	@Override
-	public WorldEnvironment getEnvironment() {
-		return worldEnv;
 	}
 }

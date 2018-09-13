@@ -6,17 +6,20 @@
 
 package io.xol.chunkstories.core.item.armor;
 
-import io.xol.chunkstories.api.item.Item;
-import io.xol.chunkstories.api.item.ItemDeclaration;
-
 import java.util.Collection;
 
-public abstract class ItemArmor extends Item {
-    private double damageMultiplier = 0.5;
-    private String overlay = "notexture";
+import io.xol.chunkstories.api.item.Item;
+import io.xol.chunkstories.api.item.ItemDefinition;
 
-    public ItemArmor(ItemDeclaration type) {
+public abstract class ItemArmor extends Item {
+    private final float mutiplier;
+    private final String overlay;
+
+    public ItemArmor(ItemDefinition type) {
         super(type);
+
+        mutiplier = Float.parseFloat(type.resolveProperty("damageMultiplier", "0.5"));
+        overlay = type.resolveProperty("overlay", "notexture");
     }
 
     /**
@@ -30,7 +33,7 @@ public abstract class ItemArmor extends Item {
      * case) for entities that support it
      */
     public float damageMultiplier(String bodyPartName) {
-        return (float) damageMultiplier;
+        return mutiplier;
     }
 
     public String getOverlayTextureName() {

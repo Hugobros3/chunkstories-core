@@ -6,6 +6,13 @@
 
 package io.xol.chunkstories.core.item;
 
+import java.util.Iterator;
+
+import org.joml.Matrix4f;
+import org.joml.Vector3d;
+import org.joml.Vector3dc;
+import org.joml.Vector4f;
+
 import io.xol.chunkstories.api.Location;
 import io.xol.chunkstories.api.client.LocalPlayer;
 import io.xol.chunkstories.api.entity.Controller;
@@ -16,13 +23,13 @@ import io.xol.chunkstories.api.entity.traits.serializable.TraitCreativeMode;
 import io.xol.chunkstories.api.entity.traits.serializable.TraitHealth;
 import io.xol.chunkstories.api.entity.traits.serializable.TraitRotation;
 import io.xol.chunkstories.api.input.Input;
-import io.xol.chunkstories.api.item.ItemDeclaration;
+import io.xol.chunkstories.api.item.ItemDefinition;
 import io.xol.chunkstories.api.item.interfaces.ItemCustomHoldingAnimation;
 import io.xol.chunkstories.api.item.interfaces.ItemOverlay;
 import io.xol.chunkstories.api.item.interfaces.ItemZoom;
 import io.xol.chunkstories.api.item.inventory.Inventory;
 import io.xol.chunkstories.api.item.inventory.ItemPile;
-import io.xol.chunkstories.api.physics.CollisionBox;
+import io.xol.chunkstories.api.physics.Box;
 import io.xol.chunkstories.api.physics.EntityHitbox;
 import io.xol.chunkstories.api.rendering.RenderingInterface;
 import io.xol.chunkstories.api.rendering.item.ItemRenderer;
@@ -34,35 +41,27 @@ import io.xol.chunkstories.api.world.World.WorldCell;
 import io.xol.chunkstories.api.world.WorldClient;
 import io.xol.chunkstories.api.world.WorldMaster;
 import io.xol.chunkstories.core.entity.traits.TraitEyeLevel;
-import io.xol.chunkstories.core.item.renderer.FlatIconItemRenderer;
-import io.xol.chunkstories.core.item.renderer.ItemModelRenderer;
-import org.joml.Matrix4f;
-import org.joml.Vector3d;
-import org.joml.Vector3dc;
-import org.joml.Vector4f;
-
-import java.util.Iterator;
 
 public class ItemFirearm extends ItemWeapon implements ItemOverlay, ItemZoom, ItemCustomHoldingAnimation {
-	public boolean automatic = false;
-	public double rpm = 60.0;
-	public String soundName = "sounds/weapons/ak47/shoot_old.ogg";
-	public double damage = 1.0;
-	public double accuracy = 0.0;
-	public double range = 1000.0;
-	public double soundRange = 1000.0;
-	public int shots = 1;
-	public double shake = 0.0;
-	public long reloadCooldown = 150;
+	public final boolean automatic;
+	public final double rpm;
+	public final String soundName;
+	public final double damage;
+	public final double accuracy;
+	public final double range;
+	public final double soundRange;
+	public final int shots;
+	public final double shake;
+	public final long reloadCooldown;
 
-	public boolean scopedWeapon = false;
-	public double scopeZoom = 2.0;
-	public double scopeSlow = 2.0;
-	public String scopeTexture = "./textures/gui/scope.png";
+	public final boolean scopedWeapon;
+	public final float scopeZoom;
+	public final float scopeSlow;
+	public final String scopeTexture;
 
-	public String holdingAnimationName = "./animations/human/holding-rifle.bvh";
-	public String shootingAnimationName = "./animations/human/human_shoot_pistol.bvh";
-	public long shootingAnimationDuration = 200;
+	public final String holdingAnimationName;
+	public final String shootingAnimationName;
+	public final long shootingAnimationDuration;
 
 	private boolean wasTriggerPressedLastTick = false;
 	private long lastShot = 0L;
@@ -75,12 +74,38 @@ public class ItemFirearm extends ItemWeapon implements ItemOverlay, ItemZoom, It
 
 	private ItemPile currentMagazine;
 
-	public ItemFirearm(ItemDeclaration type) {
+	public ItemFirearm(ItemDefinition type) {
 		super(type);
+
+		automatic = type.resolveProperty("fireMode", "semiauto").equals("fullauto");
+		rpm = Double.parseDouble(type.resolveProperty("roundsPerMinute", "60.0"));
+		soundName = type.resolveProperty("fireSound", "sounds/weapons/ak47/shoot_old.ogg");
+
+		damage = Double.parseDouble(type.resolveProperty("damage", "1.0"));
+		accuracy = Double.parseDouble(type.resolveProperty("accuracy", "0.0"));
+		range = Double.parseDouble(type.resolveProperty("range", "1000.0"));
+		soundRange = Double.parseDouble(type.resolveProperty("soundRange", "1000.0"));
+
+		reloadCooldown = Long.parseLong(type.resolveProperty("reloadCooldown", "150"));
+
+		shots = Integer.parseInt(type.resolveProperty("shots", "1"));
+		shake = Double.parseDouble(type.resolveProperty("shake", accuracy / 4.0 + ""));
+
+		scopedWeapon = type.resolveProperty("scoped", "false").equals("true");
+		scopeZoom = Float.parseFloat(type.resolveProperty("scopeZoom", "2.0"));
+		scopeSlow = Float.parseFloat(type.resolveProperty("scopeSlow", "2.0"));
+
+		scopeTexture = type.resolveProperty("scopeTexture", "./textures/gui/scope.png");
+
+		holdingAnimationName = type.resolveProperty("holdingAnimationName", "./animations/human/holding-rifle.bvh");
+		shootingAnimationName = type.resolveProperty("shootingAnimationName",
+				"./animations/human/human_shoot_pistol.bvh");
+
+		shootingAnimationDuration = Long.parseLong(type.resolveProperty("shootingAnimationDuration", "200"));
 	}
 
-	//** Some weapons have fancy renderers */
-	/*public ItemRenderer getCustomItemRenderer(ItemRenderer fallbackRenderer) {
+	/*
+	public ItemRenderer getCustomItemRenderer(ItemRenderer fallbackRenderer) {
 		ItemRenderer itemRenderer;
 
 		String modelName = getDefinition().resolveProperty("modelObj", "none");
@@ -107,13 +132,13 @@ public class ItemFirearm extends ItemWeapon implements ItemOverlay, ItemZoom, It
 
 		@Override
 		public void renderItemInInventory(RenderingInterface renderingInterface, ItemPile pile, float screenPositionX,
-				float screenPositionY, int scaling) {
+										  float screenPositionY, int scaling) {
 			actualRenderer.renderItemInInventory(renderingInterface, pile, screenPositionX, screenPositionY, scaling);
 		}
 
 		@Override
 		public void renderItemInWorld(RenderingInterface renderingInterface, ItemPile pile, World world,
-				Location location, Matrix4f handTransformation) {
+									  Location location, Matrix4f handTransformation) {
 			if (pile.getInventory() != null) {
 				if (pile.getInventory().getHolder() != null) {
 					Entity clientEntity = renderingInterface.getClient().getPlayer().getControlledEntity();
@@ -129,7 +154,7 @@ public class ItemFirearm extends ItemWeapon implements ItemOverlay, ItemZoom, It
 
 	/**
 	 * Should be called when the owner has this item selected
-	 * 
+	 *
 	 * @param owner
 	 */
 	@Override
@@ -230,7 +255,7 @@ public class ItemFirearm extends ItemWeapon implements ItemOverlay, ItemZoom, It
 				direction.normalize();
 
 				// Find wall collision
-				Location shotBlock = entity.getWorld().collisionsManager().raytraceSolid(eyeLocation, direction, range);
+				Location shotBlock = entity.getWorld().getCollisionsManager().raytraceSolid(eyeLocation, direction, range);
 				Vector3dc nearestLocation = null;
 
 				// Loops to try and break blocks
@@ -249,28 +274,19 @@ public class ItemFirearm extends ItemWeapon implements ItemOverlay, ItemZoom, It
 						peek.setVoxel(voxel.store().air());
 
 						brokeLastBlock = true;
-						for (int i = 0; i < 25; i++) {
-							Vector3d smashedVoxelParticleDirection = new Vector3d(direction);
-							smashedVoxelParticleDirection.mul(2.0);
-							smashedVoxelParticleDirection.add(Math.random() - 0.5, Math.random() - 0.5,
-									Math.random() - 0.5);
-							smashedVoxelParticleDirection.normalize();
-
-							entity.getWorld().getParticlesManager().spawnParticleAtPositionWithVelocity("voxel_frag",
-									shotBlock, smashedVoxelParticleDirection);
-						}
+						ItemMeleeWeapon.spawnDebris(entity, direction, shotBlock);
 						entity.getWorld().getSoundManager().playSoundEffect("sounds/environment/glass.ogg", Mode.NORMAL,
 								shotBlock, (float) Math.random() * 0.2f + 0.9f, 1.0f);
 
 						// Re-raytrace the ray
-						shotBlock = entity.getWorld().collisionsManager().raytraceSolid(eyeLocation, direction, range);
+						shotBlock = entity.getWorld().getCollisionsManager().raytraceSolid(eyeLocation, direction, range);
 					} else
 						break;
 				}
 
 				// Spawn decal and particles on block the bullet embedded itself in
 				if (shotBlock != null && !brokeLastBlock) {
-					Location shotBlockOuter = entity.getWorld().collisionsManager().raytraceSolidOuter(eyeLocation,
+					Location shotBlockOuter = entity.getWorld().getCollisionsManager().raytraceSolidOuter(eyeLocation,
 							direction, range);
 
 					if (shotBlockOuter != null) {
@@ -293,7 +309,7 @@ public class ItemFirearm extends ItemWeapon implements ItemOverlay, ItemZoom, It
 
 						// This seems fine
 
-						for (CollisionBox box : peek.getTranslatedCollisionBoxes()) {
+						for (Box box : peek.getTranslatedCollisionBoxes()) {
 							Vector3dc thisLocation = box.lineIntersection(eyeLocation, direction);
 							if (thisLocation != null) {
 								if (nearestLocation == null
@@ -338,7 +354,7 @@ public class ItemFirearm extends ItemWeapon implements ItemOverlay, ItemZoom, It
 				// Hitreg takes place on server bois
 				if (entity.getWorld() instanceof WorldMaster) {
 					// Iterate over each found entities
-					Iterator<Entity> shotEntities = entity.getWorld().collisionsManager().rayTraceEntities(eyeLocation,
+					Iterator<Entity> shotEntities = entity.getWorld().getCollisionsManager().rayTraceEntities(eyeLocation,
 							direction, 256f);
 					while (shotEntities.hasNext()) {
 						Entity shotEntity = shotEntities.next();
@@ -499,11 +515,11 @@ public class ItemFirearm extends ItemWeapon implements ItemOverlay, ItemZoom, It
 	}
 
 	public float getZoomFactor() {
-		return (float)(isScoped ? scopeZoom : 1f);
+		return isScoped ? scopeZoom : 1f;
 	}
 
 	public float getScopeSlow() {
-		return (float) scopeSlow;
+		return scopeSlow;
 	}
 
 	public void playAnimation() {

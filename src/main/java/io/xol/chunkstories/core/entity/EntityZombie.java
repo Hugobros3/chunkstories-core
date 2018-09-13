@@ -19,6 +19,7 @@ import io.xol.chunkstories.api.rendering.RenderingInterface;
 import io.xol.chunkstories.api.rendering.entity.RenderingIterator;
 import io.xol.chunkstories.api.rendering.textures.Texture2D;
 import io.xol.chunkstories.api.sound.SoundSource.Mode;
+import io.xol.chunkstories.api.world.World;
 import io.xol.chunkstories.api.world.WorldMaster;
 import io.xol.chunkstories.api.world.cell.CellData;
 import io.xol.chunkstories.api.world.serialization.StreamSource;
@@ -93,12 +94,12 @@ public class EntityZombie extends EntityHumanoid implements DamageCause {
 		zombieTargets.add(EntityPlayer.class);
 	}
 
-	public EntityZombie(EntityDefinition t, Location location) {
-		this(t, location, Stage.values()[(int) Math.floor(Math.random() * Stage.values().length)]);
+	public EntityZombie(EntityDefinition t, World world) {
+		this(t, world, Stage.values()[(int) Math.floor(Math.random() * Stage.values().length)]);
 	}
 
-	public EntityZombie(EntityDefinition t, Location location, Stage stage) {
-		super(t, location);
+	public EntityZombie(EntityDefinition t, World world, Stage stage) {
+		super(t, world);
 		zombieAi = new ZombieAI(this, zombieTargets);
 
 		this.stageComponent = new StageComponent(this);
@@ -109,7 +110,7 @@ public class EntityZombie extends EntityHumanoid implements DamageCause {
 			@Override
 			public float damage(DamageCause cause, EntityHitbox osef, float damage) {
 				if (!this.isDead())
-					world.getSoundManager().playSoundEffect("sounds/entities/zombie/hurt.ogg", Mode.NORMAL,
+					EntityZombie.this.world.getSoundManager().playSoundEffect("sounds/entities/zombie/hurt.ogg", Mode.NORMAL,
 							getLocation(), (float) Math.random() * 0.4f + 0.8f, 1.5f + Math.min(0.5f, damage / 15.0f));
 
 				if (cause instanceof EntityLiving) {

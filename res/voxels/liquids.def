@@ -1,0 +1,15 @@
+voxel water {
+	class: io.xol.chunkstories.core.voxel.VoxelLiquid
+	solid: false
+	opaque: false
+	selfOpaque: false
+	shadingLightLevel: 1
+}
+
+voxel lava {
+	class: io.xol.chunkstories.core.voxel.VoxelLiquid
+	solid: false
+	opaque: false
+	selfOpaque: false
+	emittingLightLevel: 15
+}

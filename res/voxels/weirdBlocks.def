@@ -1,0 +1,11 @@
+voxel glowing {
+	emittedLightLevel: 15
+}
+
+voxel glowoff {
+	emittedLightLevel: 0
+}
+
+voxel hellearth {
+	material: stone
+}

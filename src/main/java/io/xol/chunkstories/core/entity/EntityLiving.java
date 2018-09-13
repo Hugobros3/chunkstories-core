@@ -14,6 +14,7 @@ import io.xol.chunkstories.api.entity.traits.serializable.TraitController;
 import io.xol.chunkstories.api.entity.traits.serializable.TraitHealth;
 import io.xol.chunkstories.api.entity.traits.serializable.TraitRotation;
 import io.xol.chunkstories.api.entity.traits.serializable.TraitVelocity;
+import io.xol.chunkstories.api.world.World;
 import io.xol.chunkstories.api.world.WorldClient;
 import io.xol.chunkstories.api.world.WorldMaster;
 import io.xol.chunkstories.core.entity.traits.TraitBasicMovement;
@@ -23,8 +24,8 @@ public abstract class EntityLiving extends Entity {
 	protected TraitVelocity entityVelocity;
 	protected TraitHealth entityHealth;
 
-	public EntityLiving(EntityDefinition t, Location location) {
-		super(t, location);
+	public EntityLiving(EntityDefinition t, World world) {
+		super(t, world);
 
 		entityVelocity = new TraitVelocity(this);
 		entityRotation = new TraitRotation(this);

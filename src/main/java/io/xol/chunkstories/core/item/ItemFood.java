@@ -10,16 +10,18 @@ import io.xol.chunkstories.api.entity.Controller;
 import io.xol.chunkstories.api.entity.Entity;
 import io.xol.chunkstories.api.input.Input;
 import io.xol.chunkstories.api.item.Item;
-import io.xol.chunkstories.api.item.ItemDeclaration;
+import io.xol.chunkstories.api.item.ItemDefinition;
 import io.xol.chunkstories.api.item.inventory.ItemPile;
 import io.xol.chunkstories.api.world.WorldMaster;
 import io.xol.chunkstories.core.entity.components.EntityFoodLevel;
 
 public class ItemFood extends Item {
-	public float calories;
 
-	public ItemFood(ItemDeclaration type) {
+	private final float calories;
+
+	public ItemFood(ItemDefinition type) {
 		super(type);
+		calories = Float.parseFloat(type.resolveProperty("calories", "10.0"));
 	}
 
 	public boolean onControllerInput(Entity entity, ItemPile itemPile, Input input, Controller controller) {

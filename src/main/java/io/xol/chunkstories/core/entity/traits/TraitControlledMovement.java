@@ -14,7 +14,7 @@ import io.xol.chunkstories.api.entity.traits.serializable.TraitController;
 import io.xol.chunkstories.api.entity.traits.serializable.TraitHealth;
 import io.xol.chunkstories.api.entity.traits.serializable.TraitRotation;
 import io.xol.chunkstories.api.entity.traits.serializable.TraitVelocity;
-import io.xol.chunkstories.api.physics.CollisionBox;
+import io.xol.chunkstories.api.physics.Box;
 import io.xol.chunkstories.api.world.cell.CellData;
 import io.xol.chunkstories.core.voxel.VoxelClimbable;
 
@@ -44,7 +44,7 @@ public abstract class TraitControlledMovement extends TraitBasicMovement {
 
 		all: for (CellData vctx : entity.world.getVoxelsWithin(entity.getTranslatedBoundingBox())) {
 			if (vctx.getVoxel() instanceof VoxelClimbable) {
-				for (CollisionBox box : vctx.getTranslatedCollisionBoxes()) {
+				for (Box box : vctx.getTranslatedCollisionBoxes()) {
 					// TODO use actual collision model of the entity here
 					if (box.collidesWith(entity.getTranslatedBoundingBox())) {
 						onLadder = true;

@@ -1,0 +1,14 @@
+voxel {
+	name = "glowing"
+	emittedLightLevel = 15
+}
+
+voxel {
+	name = "glowoff"
+	emittedLightLevel = 0
+}
+
+voxel {
+	name = "hellearth"
+	material = "stone"
+}

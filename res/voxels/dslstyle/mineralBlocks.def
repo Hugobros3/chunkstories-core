@@ -1,0 +1,131 @@
+/** In this file we declare the 'mineral' blocks, those are solid and not life-based */
+
+voxel {
+	name = "stone"
+}
+
+voxel {
+	name = "gravel"
+}
+
+voxel {
+	name = "dirt"
+}
+
+voxel {
+	name = "sand"
+}
+
+voxel {
+	name = "hard_sand"
+}
+
+voxel {
+	name = "cobble"
+	material = "stone"
+}
+
+voxel {
+	name = "cobble_mossy"
+	material = "stone"
+}
+
+voxel {
+	//todo unused ?
+	name = "rock"
+	material = "stone"
+}
+
+voxel {
+	//todo unused ?
+	name = "hard_rock"
+	material = "stone"
+}
+
+voxel {
+	name = "andesite"
+	material = "stone"
+}
+
+voxel {
+	name = "granite"
+	material = "stone"
+}
+
+voxel {
+	name = "andesite"
+	material = "stone"
+}
+
+/* SNOW & ICE */
+voxel {
+	name = "snowblock"
+	
+	material = "snow"
+	texture = "snow"
+}
+
+voxel(io.xol.chunkstories.core.voxel.Voxel8Steps::class) {
+	name = "snow"
+	
+	opaque = false
+	selfOpaque = true
+	material = "snow"
+}
+
+voxel {
+	name = "ice"
+}
+
+/** ORES & MINERALS */
+voxel {
+	name = "coal_ore"
+	
+	texture = "stone_coal_ore"
+	material = "stone"
+}
+
+voxel {
+	name = "copper_ore"
+	
+	texture = "stone_copper_ore"
+	material = "stone"
+}
+
+voxel {
+	name = "diamond_ore"
+	
+	texture = "stone_diamond_ore"
+	material = "stone"
+}
+
+voxel {
+	name = "gold_ore"
+	
+	texture = "stone_gold_ore"
+	material = "stone"
+}
+
+voxel {
+	name = "silver_ore"
+	
+	texture = "stone_silver_ore"
+	material = "stone"
+}
+
+voxel {
+	name = "iron_ore"
+	
+	texture = "stone_iron_ore"
+	material = "stone"
+}
+
+
+/*
+
+
+voxel {
+	name = ""
+}
+
+*/

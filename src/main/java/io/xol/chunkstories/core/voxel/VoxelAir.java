@@ -6,21 +6,21 @@
 
 package io.xol.chunkstories.core.voxel;
 
-import io.xol.chunkstories.api.content.Content;
-import io.xol.chunkstories.api.physics.CollisionBox;
+import io.xol.chunkstories.api.physics.Box;
 import io.xol.chunkstories.api.voxel.Voxel;
+import io.xol.chunkstories.api.voxel.VoxelDefinition;
 import io.xol.chunkstories.api.world.cell.CellData;
 
 public class VoxelAir extends Voxel {
 
-    public VoxelAir(Content.Voxels store) {
-        super(store);
+    public VoxelAir(VoxelDefinition definition) {
+        super(definition);
     }
 
     @Override
-    public CollisionBox[] getCollisionBoxes(CellData info) {
+    public Box[] getCollisionBoxes(CellData info) {
         return noCollisionBoxes;
     }
 
-    final static CollisionBox[] noCollisionBoxes = new CollisionBox[]{};
+    final static Box[] noCollisionBoxes = new Box[]{};
 }

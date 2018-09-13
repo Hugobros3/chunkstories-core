@@ -6,19 +6,19 @@
 
 package io.xol.chunkstories.core.item;
 
-import io.xol.chunkstories.api.item.Item;
-import io.xol.chunkstories.api.item.ItemDeclaration;
-
 import java.util.HashSet;
 import java.util.Set;
 
-public class ItemFirearmMagazine extends Item {
-    Set<String> supportedWeaponsSet = new HashSet<String>();
+import io.xol.chunkstories.api.item.Item;
+import io.xol.chunkstories.api.item.ItemDefinition;
 
-    public ItemFirearmMagazine(ItemDeclaration type) {
+public class ItemFirearmMagazine extends Item {
+    Set<String> supportedWeaponsSet = new HashSet<>();
+
+    public ItemFirearmMagazine(ItemDefinition type) {
         super(type);
 
-        for (String s : type.getExt().getOrDefault("forWeapon", "").split(","))
+        for (String s : type.resolveProperty("forWeapon", "").split(","))
             supportedWeaponsSet.add(s);
     }
 

@@ -13,6 +13,7 @@ import io.xol.chunkstories.api.entity.traits.serializable.TraitHealth;
 import io.xol.chunkstories.api.entity.traits.serializable.TraitRotation;
 import io.xol.chunkstories.api.entity.traits.serializable.TraitVelocity;
 import io.xol.chunkstories.api.world.cell.CellData;
+import io.xol.chunkstories.core.voxel.VoxelLiquid;
 import org.joml.Vector2d;
 import org.joml.Vector2f;
 import org.joml.Vector3d;
@@ -112,7 +113,7 @@ public class TraitBasicMovement extends Trait {
 		velocity.add(acceleration);
 
 		// Eventually moves
-		Vector3dc remainingToMove = entity.world.collisionsManager().tryMovingEntityWithCollisions(entity,
+		Vector3dc remainingToMove = entity.world.getCollisionsManager().tryMovingEntityWithCollisions(entity,
 				entity.getLocation(), velocity);
 		Vector2d remaining2d = new Vector2d(remainingToMove.x(), remainingToMove.z());
 
@@ -133,14 +134,14 @@ public class TraitBasicMovement extends Trait {
 			for (double d = 0.25; d < 0.5; d += 0.05) {
 				// I don't want any of this to reflect on the object, because it causes ugly
 				// jumps in the animation
-				Vector3dc canMoveUp = entity.world.collisionsManager().runEntityAgainstWorldVoxelsAndEntities(entity,
+				Vector3dc canMoveUp = entity.world.getCollisionsManager().runEntityAgainstWorldVoxelsAndEntities(entity,
 						entity.getLocation(), new Vector3d(0.0, d, 0.0));
 				// It can go up that bit
 				if (canMoveUp.length() == 0.0f) {
 					// Would it help with being stuck ?
 					Vector3d tryFromHigher = new Vector3d(entity.getLocation());
 					tryFromHigher.add(new Vector3d(0.0, d, 0.0));
-					Vector3dc blockedMomentumRemaining = entity.world.collisionsManager()
+					Vector3dc blockedMomentumRemaining = entity.world.getCollisionsManager()
 							.runEntityAgainstWorldVoxelsAndEntities(entity, tryFromHigher, blockedMomentum);
 					// If length of remaining momentum < of what we requested it to do, that means
 					// it *did* go a bit further away
@@ -151,12 +152,12 @@ public class TraitBasicMovement extends Trait {
 						afterJump.sub(blockedMomentumRemaining);
 
 						// land distance = whatever is left of our -0.55 delta when it hits the ground
-						Vector3dc landDistance = entity.world.collisionsManager()
+						Vector3dc landDistance = entity.world.getCollisionsManager()
 								.runEntityAgainstWorldVoxelsAndEntities(entity, afterJump, new Vector3d(0.0, -d, 0.0));
 						afterJump.add(new Vector3d(0.0, -d, 0.0));
 						afterJump.sub(landDistance);
 
-						entity.entityLocation.set(afterJump);
+						entity.traitLocation.set(afterJump);
 						// this.setLocation(new Location(world, afterJump));
 
 						remaining2d = new Vector2d(blockedMomentumRemaining.x(), blockedMomentumRemaining.z());
@@ -190,7 +191,7 @@ public class TraitBasicMovement extends Trait {
 
 	public boolean isInWater() {
 		for (CellData cell : entity.world.getVoxelsWithin(entity.getTranslatedBoundingBox())) {
-			if (cell.getVoxel().getDefinition().isLiquid())
+			if (cell instanceof VoxelLiquid)
 				return true;
 		}
 		return false;

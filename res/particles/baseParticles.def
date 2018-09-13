@@ -1,0 +1,87 @@
+particle voxel_frag {
+	handlerClass: io.xol.chunkstories.core.particles.ParticleVoxelFragment
+	billboardSize: 0.06125
+	renderPass: gBuffers
+}
+
+particle blood {
+	handlerClass: io.xol.chunkstories.core.particles.ParticleBlood
+	renderPass: gBuffers
+	billboardSize: 0.1
+	albedoTexture: ./particles/textures/blood.png
+}
+
+particle muzzle {
+	handlerClass: io.xol.chunkstories.core.particles.ParticleMuzzleFlash
+	renderPass: lights
+	billboardSize: 0.0
+}
+
+particle smoke {
+	handlerClass: io.xol.chunkstories.core.particles.ParticleSmoke
+	billboardSize: 1.0
+	shader: particles_ab
+	albedoTexture: ./particles/textures/grey_smoke.png
+	renderPass: forward
+}
+
+particle spotlight {
+	handlerClass: io.xol.chunkstories.core.particles.ParticleSetupLight
+	billboardSize: 3.0
+	renderPass: gBuffers
+	albedoTexture: ./textures/light.png
+}
+
+particle light {
+	handlerClass: io.xol.chunkstories.core.particles.ParticleLight
+	billboardSize: 0.0
+	renderPass: lights
+	albedoTexture: ./res/textures/particle.png
+}
+
+particle snow {
+	handlerClass: io.xol.chunkstories.core.particles.ParticleSnow
+	billboardSize: 0.06125
+	albedoTexture: ./particles/textures/snow.png
+	renderPass: forward
+}
+
+particle fire {
+	handlerClass: io.xol.chunkstories.core.particles.ParticleFire
+	billboardSize: 2.0
+	shader: particles_fire
+	renderPass: forward
+	albedoTexture: ./particles/textures/white_smoke.png
+}
+
+particle fire_light {
+	handlerClass: io.xol.chunkstories.core.particles.ParticleFireLight
+	billboardSize: 1.0
+	albedoTexture: ./particles/textures/white_smoke.png
+	shader: particles_fire
+	renderPass: lights
+}
+
+particle lightning_strike_illumination {
+	handlerClass: io.xol.chunkstories.core.particles.ParticleLightningStrike
+	billboardSize: 0.0
+	renderPass: lights
+}
+
+particle fire_small {
+	handlerClass: io.xol.chunkstories.core.particles.ParticleFire
+	billboardSize: 0.3
+	shader: particles_fire
+	renderPass: forward
+	albedoTexture: ./particles/textures/white_smoke.png
+	destroyOnCollision: false
+	ignoreCollisions: true
+}
+
+particle black_smoke {
+	handlerClass: io.xol.chunkstories.core.particles.ParticleSmoke
+	billboardSize: 1.5
+	shader: particles_ab
+	albedoTexture: ./particles/textures/black_smoke.png
+	renderPass: forward
+end

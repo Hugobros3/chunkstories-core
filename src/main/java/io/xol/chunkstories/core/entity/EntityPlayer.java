@@ -32,6 +32,7 @@ import io.xol.chunkstories.api.rendering.entity.RenderingIterator;
 import io.xol.chunkstories.api.rendering.textures.Texture2D;
 import io.xol.chunkstories.api.sound.SoundSource.Mode;
 import io.xol.chunkstories.api.util.ColorsTools;
+import io.xol.chunkstories.api.world.World;
 import io.xol.chunkstories.api.world.World.WorldCell;
 import io.xol.chunkstories.api.world.WorldClient;
 import io.xol.chunkstories.api.world.WorldMaster;
@@ -48,6 +49,7 @@ import io.xol.chunkstories.core.item.armor.ItemArmor;
 import io.xol.chunkstories.core.item.inventory.InventoryLocalCreativeMenu;
 import org.joml.*;
 
+import java.lang.Math;
 import java.util.Iterator;
 
 /**
@@ -75,8 +77,8 @@ public class EntityPlayer extends EntityHumanoid implements WorldModificationCau
 
 	int variant;
 
-	public EntityPlayer(EntityDefinition t, Location location) {
-		super(t, location);
+	public EntityPlayer(EntityDefinition t, World world) {
+		super(t, world);
 
 		controllerComponent = new TraitController(this);
 		inventory = new TraitInventory(this, 10, 4);
@@ -99,10 +101,10 @@ public class EntityPlayer extends EntityHumanoid implements WorldModificationCau
 				Vector3d direction = new Vector3d(entityRotation.getDirectionLookingAt());
 
 				if (inside)
-					return world.collisionsManager().raytraceSelectable(new Location(world, initialPosition), direction,
+					return EntityPlayer.this.world.getCollisionsManager().raytraceSelectable(new Location(EntityPlayer.this.world, initialPosition), direction,
 							256.0);
 				else
-					return world.collisionsManager().raytraceSolidOuter(new Location(world, initialPosition), direction,
+					return EntityPlayer.this.world.getCollisionsManager().raytraceSolidOuter(new Location(EntityPlayer.this.world, initialPosition), direction,
 							256.0);
 			}
 

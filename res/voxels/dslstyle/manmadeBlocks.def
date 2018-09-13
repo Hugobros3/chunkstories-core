@@ -1,0 +1,309 @@
+/* In this file are found all the man-made blocks, excepting the wooden ones */
+
+/* GAMEPLAY TOOLS */
+voxel {
+	name = "torch"
+	
+	solid = false
+	opaque = false
+	emittedLightLevel = 15
+	//hardness = 0.0
+	collisionBox = Box(0.0, 0.0, 0.0, 1.0, 1.0, 1.0)
+	
+	representation {
+		static {
+			model("./voxels/models/torch.obj") {
+				//texture = ???
+			}
+		}
+	}
+}
+
+voxel {
+	name = "bricks"
+	
+	material = "stone"
+	//hardness = 1.2
+}
+
+voxel(io.xol.chunkstories.core.voxel.VoxelStairs::class) {
+	name = "bricks_stairs"
+	
+	opaque = false
+	material = "stone"
+	texture = "redbricks"
+}
+
+voxel(io.xol.chunkstories.core.voxel.VoxelHalfTile::class) {
+	name = "bricks_slab"
+	
+	opaque = false
+	material = "stone"
+	texture = "redbricks"
+}
+
+voxel(io.xol.chunkstories.core.voxel.VoxelStairs::class) {
+	name = "cobble_stairs"
+	
+	opaque = false
+	material = "bluntwood"
+	texture = "cobble"
+}
+
+voxel(io.xol.chunkstories.core.voxel.VoxelHalfTile::class) {
+	name = "cobble_slab"
+	
+	opaque = false
+	material = "bluntwood"
+	texture = "cobble"
+}
+
+voxel {
+	name = "ardoise"
+}
+
+voxel(io.xol.chunkstories.core.voxel.VoxelStairs::class) {
+	name = "ardoise_stairs"
+	
+	opaque = false
+	material = "stone"
+	texture = "ardoise"
+}
+
+voxel(io.xol.chunkstories.core.voxel.VoxelHalfTile::class) {
+	name = "ardoise_slab"
+	
+	opaque = false
+	material = "stone"
+	texture = "ardoise"
+}
+
+voxel(io.xol.chunkstories.core.voxel.VoxelStairs::class) {
+	name = "hardsand_stairs"
+	
+	opaque = false
+	material = "stone"
+	texture = "hardsand"
+}
+
+voxel(io.xol.chunkstories.core.voxel.VoxelHalfTile::class) {
+	name = "hardsand_slab"
+	
+	opaque = false
+	material = "stone"
+	texture = "hardsand"
+}
+
+//one of those is redundant
+voxel {
+	name = "redbricks"
+}
+
+/** GLASS */
+voxel {
+	name = "glass"
+	
+	opaque = false
+	selfOpaque = true
+	//hardness = 1.5
+	//hardnessForAxe = 0.5
+}
+
+voxel(io.xol.chunkstories.core.voxel.VoxelPane::class) {
+	name = "glass_pane"
+	
+	opaque = false
+	selfOpaque = true
+	texture = "glass"
+	material = "glass"
+	//hardness = 0.5
+}
+
+/** SCULPTED BLOCKS */
+voxel {
+	name = "smoothstone"
+	
+	material = "stone"
+}
+
+voxel {
+	name = "stonebrick"
+}
+
+voxel {
+	name = "stonebrick_cracked"
+}
+
+voxel {
+	name = "stonebrick_mossy"
+}
+
+voxel(io.xol.chunkstories.core.voxel.VoxelStairs::class) {
+	name = "stonebrick_stairs"
+	
+	opaque = false
+	material = "stone"
+	texture = "stonebrick"
+}
+
+voxel(io.xol.chunkstories.core.voxel.VoxelHalfTile::class) {
+	name = "stonebrick_slab"
+	
+	opaque = false
+	material = "stone"
+	texture = "stonebrick"
+}
+
+voxel {
+	name = "fancy_andesite"
+	material = "stone"
+}
+
+voxel {
+	name = "fancy_granite"
+	material = "stone"
+}
+
+voxel {
+	name = "fancy_marble"
+	material = "stone"
+}
+
+voxel {
+	name = "fullslab"
+	
+	material = "stone"
+	textures {
+		sides = "slab_side"
+		top = "slab_top"
+		bottom = "slab_top"
+	}
+}
+
+voxel(io.xol.chunkstories.core.voxel.VoxelHalfTile::class) {
+	name = "slab"
+	
+	opaque = false
+	material = "stone"
+	texture = "stonebrick"
+}
+
+/** METAL-BASED */
+voxel {
+	name = "iron_block"
+}
+
+voxel {
+	name = "gold_block"
+}
+
+voxel(io.xol.chunkstories.core.voxel.VoxelPane::class) {
+	name = "ironGrill"
+	
+	opaque = false
+	selfOpaque = true
+	material = "metalbar"
+}
+
+voxel(io.xol.chunkstories.core.voxel.VoxelRail::class) {
+	name = "rails"
+	
+	solid = false
+	opaque = false
+	
+	representation {
+		static {
+			model("./voxels/models/rails.obj") {
+				// ???
+			}
+		}
+	}
+}
+
+/** CONSTRUCTION */
+
+voxel(io.xol.chunkstories.core.voxel.VoxelDoor::class) {
+	name = "iron_door"
+	
+	opaque = false
+	material = "bluntwood"
+}
+
+voxel(io.xol.chunkstories.core.voxel.VoxelDoor::class) {
+	name = "iron_door_top"
+	
+	opaque = false
+	material = "bluntwood"
+}
+
+/** DECORATION & HOME IMPROVEMENT */
+voxel(io.xol.chunkstories.core.voxel.Voxel16Variants::class) {
+	name = "whool"
+	
+	//todo improve that syntax
+	variants = "white, orange, purple, turquoise, yellow, lime, pink, darkgrey, grey, cyan, purple, sea, brown, kaki, red, black"
+}
+
+voxel(io.xol.chunkstories.core.voxel.Voxel16Variants::class) {
+	name = "colored"
+	
+	material = "concrete"
+	texture = "concrete.colored"
+	//todo improve that syntax
+	variants = "white, orange, purple, turquoise, yellow, lime, pink, darkgrey, grey, cyan, purple, sea, brown, kaki, red, black"
+}
+
+/** GARDENING */
+voxel {
+	name = "path"
+	
+	opaque = false
+	selfOpaque = true
+	material = "dirt"
+	texture = "grass"
+	collisionBox = Box(0.0, 0.0, 0.0, 1.0, 0.875, 1.0)
+	
+	representation {
+		static {
+			model("./voxels/models/soil.obj") {
+				// ???
+			}
+		}
+	}
+}
+
+voxel(io.xol.chunkstories.core.voxel.VoxelStoneWall::class) {
+	name = "cobble_wall"
+	
+	opaque = false
+	texture = "cobble"
+	material = "stone"
+}
+
+/* AGRICULTURE */
+voxel {
+	name = "soil"
+	
+	opaque = false
+	selfOpaque = true
+	material = "dirt"
+	collisionBox = Box(0.0, 0.0, 0.0, 1.0, 0.875, 1.0)
+	
+	representation {
+		static {
+			model("./voxels/models/soil.obj") {
+				// ???
+			}
+		}
+	}
+}
+
+voxel {
+	name = "hay"
+	material = "grass"
+	
+	textures {
+		top = "~_top"
+		sides = "~_side"
+	}
+}

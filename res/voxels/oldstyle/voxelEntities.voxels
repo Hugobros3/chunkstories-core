@@ -1,0 +1,20 @@
+voxel wood_sign
+	customClass: io.xol.chunkstories.core.voxel.VoxelSign
+	solid: false
+	opaque: false
+	model: none
+end
+
+voxel wood_sign_post
+	customClass: io.xol.chunkstories.core.voxel.VoxelSign
+	solid: false
+	opaque: false
+	model: none
+end
+
+voxel wood_chest
+	customClass: io.xol.chunkstories.core.voxel.VoxelChest
+	opaque: false
+	selfOpaque: true
+	textures: chesttop, chesttop, chestside, chestside, chestfront, chestside
+end

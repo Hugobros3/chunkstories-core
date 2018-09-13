@@ -6,15 +6,15 @@
 
 package io.xol.chunkstories.core.item.armor;
 
-import io.xol.chunkstories.api.item.ItemDeclaration;
-
 import java.util.Arrays;
 import java.util.Collection;
 
-public class ItemArmorBoots extends ItemArmor {
-    public static final Collection<String> bodyParts = Arrays.asList("boneFootR", "boneFootL");
+import io.xol.chunkstories.api.item.ItemDefinition;
 
-    public ItemArmorBoots(ItemDeclaration type) {
+public class ItemArmorBoots extends ItemArmor {
+    public static final Collection<String> bodyParts = Arrays.asList(new String[] { "boneFootR", "boneFootL" });
+
+    public ItemArmorBoots(ItemDefinition type) {
         super(type);
     }
 
