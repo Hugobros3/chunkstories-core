@@ -9,9 +9,6 @@ package io.xol.chunkstories.core.particles;
 import io.xol.chunkstories.api.particles.ParticleDataWithVelocity;
 import io.xol.chunkstories.api.particles.ParticleTypeDefinition;
 import io.xol.chunkstories.api.particles.ParticleTypeHandler;
-import io.xol.chunkstories.api.particles.ParticlesRenderer;
-import io.xol.chunkstories.api.rendering.RenderingInterface;
-import io.xol.chunkstories.api.rendering.StateMachine.BlendMode;
 import io.xol.chunkstories.api.world.World;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
@@ -55,55 +52,12 @@ public class ParticleSmoke extends ParticleTypeHandler {
 		b.y = ((float) (b.y() + b.vel.y()));
 		b.z = ((float) (b.z() + b.vel.z()));
 
-		/*
-		 * if (!((WorldImplementation) world).checkCollisionPoint(b.x(), b.y(), b.z()))
-		 * b.vel.setY(b.vel.y() + -0.89/60.0); else b.vel.set(0d, 0d, 0d);
-		 */
-
 		// 60th square of 0.5
 		b.vel.mul(0.98581402);
 		if (b.vel.length() < 0.1 / 60.0)
 			b.vel.set(0d, 0d, 0d);
 
-		if (b.timer < 0 || b.isCollidingAgainst(world))// ((WorldImplementation) world).checkCollisionPoint(b.x(),
-														// b.y(), b.z()))
+		if (b.timer < 0 || b.isCollidingAgainst(world))
 			b.destroy();
-	}
-
-	@Override
-	public ParticleTypeRenderer getRenderer(ParticlesRenderer particlesRenderer) {
-		return new ParticleTypeRenderer(particlesRenderer) {
-
-			@Override
-			public void beginRenderingForType(RenderingInterface renderingContext) {
-				super.beginRenderingForType(renderingContext);
-
-				renderingContext.setBlendMode(BlendMode.PREMULT_ALPHA);
-
-				renderingContext.getRenderTargetManager().setDepthMask(false);
-				// renderingContext.setDepthTestMode(DepthTestMode.DISABLED);
-				// System.out.println("k");
-
-				getAlbedoTexture().setMipMapping(true);
-				getAlbedoTexture().setLinearFiltering(false);
-			}
-
-			@Override
-			public void forEach_Rendering(RenderingInterface renderingContext, ParticleData data) {
-				data.y = ((float) (data.y() + (Math.random() - 0.1) * 0.0015));
-				data.x = ((float) (data.x() + (Math.random() - 0.5) * 0.0015));
-				data.z = ((float) (data.z() + (Math.random() - 0.5) * 0.0015));
-
-				((ParticleSmokeData) data).timer--;
-				if (((ParticleSmokeData) data).timer < 0)
-					data.destroy();
-			}
-
-			@Override
-			public void destroy() {
-
-			}
-
-		};
 	}
 }

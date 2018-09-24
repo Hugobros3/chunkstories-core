@@ -13,8 +13,7 @@ import io.xol.chunkstories.api.exceptions.world.voxel.IllegalBlockModificationEx
 import io.xol.chunkstories.api.input.Input;
 import io.xol.chunkstories.api.item.ItemVoxel;
 import io.xol.chunkstories.api.item.inventory.ItemPile;
-import io.xol.chunkstories.api.physics.CollisionBox;
-import io.xol.chunkstories.api.rendering.voxel.VoxelRenderer;
+import io.xol.chunkstories.api.physics.Box;
 import io.xol.chunkstories.api.sound.SoundSource.Mode;
 import io.xol.chunkstories.api.voxel.Voxel;
 import io.xol.chunkstories.api.voxel.VoxelDefinition;
@@ -28,17 +27,20 @@ import io.xol.chunkstories.api.world.cell.EditableCell;
 import io.xol.chunkstories.api.world.cell.FutureCell;
 import io.xol.chunkstories.api.world.chunk.Chunk.ChunkCell;
 
+import java.util.LinkedList;
+import java.util.List;
+
 /**
  * 2-blocks tall door Requires two consecutive voxel ids, x being lower, x+1
  * top, the top part should be suffixed of _top
  */
 public class VoxelDoor extends Voxel// implements VoxelCustomIcon
 {
-	VoxelTexture doorTexture;
+	private VoxelTexture doorTexture;
 
-	VoxelRenderer[] models = new VoxelRenderer[8];
+	//VoxelRenderer[] models = new VoxelRenderer[8];
 
-	boolean top;
+	private boolean top;
 
 	public VoxelDoor(VoxelDefinition type) {
 		super(type);
@@ -46,15 +48,15 @@ public class VoxelDoor extends Voxel// implements VoxelCustomIcon
 		top = getName().endsWith("_top");
 
 		if (top)
-			doorTexture = store.textures().getVoxelTexture(getName().replace("_top", "") + "_upper");
+			doorTexture = store().textures().getVoxelTexture(getName().replace("_top", "") + "_upper");
 		else
-			doorTexture = store.textures().getVoxelTexture(getName() + "_lower");
+			doorTexture = store().textures().getVoxelTexture(getName() + "_lower");
 
-		for (int i = 0; i < 8; i++)
-			models[i] = store.models().getVoxelModel("door.m" + i);
+		//for (int i = 0; i < 8; i++)
+		//	models[i] = store().models().getVoxelModel("door.m" + i);
 	}
 
-	public Voxel getUpperPart() {
+	private Voxel getUpperPart() {
 		if (top)
 			return this;
 		else
@@ -63,17 +65,17 @@ public class VoxelDoor extends Voxel// implements VoxelCustomIcon
 
 	public Voxel getLowerPart() {
 		if (top)
-			return store.getVoxel(getName().substring(0, getName().length() - 4));
+			return store().getVoxel(getName().substring(0, getName().length() - 4));
 		else
 			return this;
 	}
 
 	@Override
-	public VoxelTexture getVoxelTexture(VoxelSide side, CellData info) {
+	public VoxelTexture getVoxelTexture(CellData info, VoxelSide side) {
 		return doorTexture;
 	}
 
-	@Override
+	/*@Override
 	public VoxelRenderer getVoxelRenderer(CellData info) {
 		int facingPassed = (info.getMetaData() >> 2) & 0x3;
 		boolean isOpen = ((info.getMetaData() >> 0) & 0x1) == 1;
@@ -113,7 +115,7 @@ public class VoxelDoor extends Voxel// implements VoxelCustomIcon
 		}
 
 		return models[i];
-	}
+	}*/
 
 	// Meta
 	// 0x0 -> open/close
@@ -153,67 +155,67 @@ public class VoxelDoor extends Voxel// implements VoxelCustomIcon
 			// otherPartLocation.setVoxelDataAtLocation(VoxelFormat.changeMeta(otherPartLocation.getVoxelDataAtLocation(),
 			// newData));
 		} else {
-			store.parent().logger().error("Incomplete door @ " + otherPartLocation);
+			store().parent().logger().error("Incomplete door @ " + otherPartLocation);
 		}
 
 		return true;
 	}
 
 	@Override
-	public CollisionBox[] getCollisionBoxes(CellData info) {
-		CollisionBox[] boxes = new CollisionBox[1];
+	public Box[] getCollisionBoxes(CellData info) {
+		Box[] boxes = new Box[1];
 
 		int facingPassed = (info.getMetaData() >> 2) & 0x3;
 		boolean isOpen = ((info.getMetaData() >> 0) & 0x1) == 1;
 		boolean hingeSide = ((info.getMetaData() >> 1) & 0x1) == 1;
 
-		boxes[0] = new CollisionBox(0.125, 1.0, 1.0).translate(0.125 / 2, 0, 0.5);
+		boxes[0] = new Box(0.125, 1.0, 1.0).translate(0.125 / 2, 0, 0.5);
 
 		if (isOpen) {
 			switch (facingPassed + (hingeSide ? 4 : 0)) {
 			case 0:
-				boxes[0] = new CollisionBox(1.0, 1.0, 0.125).translate(0.5, 0, 0.125 / 2);
+				boxes[0] = new Box(1.0, 1.0, 0.125).translate(0.5, 0, 0.125 / 2);
 				break;
 			case 1:
-				boxes[0] = new CollisionBox(0.125, 1.0, 1.0).translate(0.125 / 2, 0, 0.5);
+				boxes[0] = new Box(0.125, 1.0, 1.0).translate(0.125 / 2, 0, 0.5);
 				break;
 			case 2:
-				boxes[0] = new CollisionBox(1.0, 1.0, 0.125).translate(0.5, 0, 1.0 - 0.125 / 2);
+				boxes[0] = new Box(1.0, 1.0, 0.125).translate(0.5, 0, 1.0 - 0.125 / 2);
 				break;
 			case 3:
-				boxes[0] = new CollisionBox(0.125, 1.0, 1.0).translate(1.0 - 0.125 / 2, 0, 0.5);
+				boxes[0] = new Box(0.125, 1.0, 1.0).translate(1.0 - 0.125 / 2, 0, 0.5);
 				break;
 			case 4:
-				boxes[0] = new CollisionBox(1.0, 1.0, 0.125).translate(0.5, 0, 1.0 - 0.125 / 2);
+				boxes[0] = new Box(1.0, 1.0, 0.125).translate(0.5, 0, 1.0 - 0.125 / 2);
 				break;
 			case 5:
-				boxes[0] = new CollisionBox(0.125, 1.0, 1.0).translate(1.0 - 0.125 / 2, 0, 0.5);
+				boxes[0] = new Box(0.125, 1.0, 1.0).translate(1.0 - 0.125 / 2, 0, 0.5);
 				break;
 			case 6:
-				boxes[0] = new CollisionBox(1.0, 1.0, 0.125).translate(0.5, 0, 0.125 / 2);
+				boxes[0] = new Box(1.0, 1.0, 0.125).translate(0.5, 0, 0.125 / 2);
 				break;
 			case 7:
-				boxes[0] = new CollisionBox(0.125, 1.0, 1.0).translate(0.125 / 2, 0, 0.5);
+				boxes[0] = new Box(0.125, 1.0, 1.0).translate(0.125 / 2, 0, 0.5);
 				break;
 			}
 		} else {
 			switch (facingPassed) {
 			case 0:
-				boxes[0] = new CollisionBox(0.125, 1.0, 1.0).translate(0.125 / 2, 0, 0.5);
+				boxes[0] = new Box(0.125, 1.0, 1.0).translate(0.125 / 2, 0, 0.5);
 				break;
 			case 1:
-				boxes[0] = new CollisionBox(1.0, 1.0, 0.125).translate(0.5, 0, 1.0 - 0.125 / 2);
+				boxes[0] = new Box(1.0, 1.0, 0.125).translate(0.5, 0, 1.0 - 0.125 / 2);
 				break;
 			case 2:
-				boxes[0] = new CollisionBox(0.125, 1.0, 1.0).translate(1.0 - 0.125 / 2, 0, 0.5);
+				boxes[0] = new Box(0.125, 1.0, 1.0).translate(1.0 - 0.125 / 2, 0, 0.5);
 				break;
 			case 3:
-				boxes[0] = new CollisionBox(1.0, 1.0, 0.125).translate(0.5, 0, 0.125 / 2);
+				boxes[0] = new Box(1.0, 1.0, 0.125).translate(0.5, 0, 0.125 / 2);
 				break;
 			}
 		}
 
-		boxes[0].translate(-boxes[0].xw / 2, 0, -boxes[0].zw / 2);
+		boxes[0].translate(-boxes[0].xWidth / 2, 0, -boxes[0].zWidth / 2);
 
 		return boxes;
 	}
@@ -300,7 +302,7 @@ public class VoxelDoor extends Voxel// implements VoxelCustomIcon
 		return computeMeta(isOpen, hingeSide, doorFacingSide.ordinal());
 	}
 
-	public static int computeMeta(boolean isOpen, boolean hingeSide, int doorFacingsSide) {
+	private static int computeMeta(boolean isOpen, boolean hingeSide, int doorFacingsSide) {
 		// System.out.println(doorFacingsSide + " open: " + isOpen + " hinge:" +
 		// hingeSide);
 		return (doorFacingsSide << 2) | (((hingeSide ? 1 : 0) & 0x1) << 1) | (isOpen ? 1 : 0) & 0x1;
@@ -336,14 +338,16 @@ public class VoxelDoor extends Voxel// implements VoxelCustomIcon
 	}
 
 	@Override
-	public ItemPile[] getItems() {
+	public List<ItemPile> enumerateItemsForBuilding() {
 		// Top part shouldn't be placed
 		if (top)
-			return new ItemPile[] {};
+			return new LinkedList<>();
 
-		ItemVoxel itemVoxel = (ItemVoxel) store.parent().items().getItemDefinition("item_voxel_1x2").newItem();
+		ItemVoxel itemVoxel = (ItemVoxel) store().parent().items().getItemDefinition("item_voxel_1x2").newItem();
 		itemVoxel.voxel = this;
 
-		return new ItemPile[] { new ItemPile(itemVoxel) };
+		LinkedList<ItemPile> list = new LinkedList<>();
+		list.add(new ItemPile(itemVoxel));
+		return list;
 	}
 }

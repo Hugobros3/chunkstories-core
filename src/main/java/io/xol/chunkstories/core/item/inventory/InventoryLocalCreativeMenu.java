@@ -19,7 +19,7 @@ import java.util.List;
 /** Creates a big inventory with all the possible building blocks */
 public class InventoryLocalCreativeMenu extends BasicInventory {
 	// You can't touch this inventory, only the constructor can
-	boolean initialized = false;
+	private boolean initialized = false;
 
 	public InventoryLocalCreativeMenu(World world) {
 		super(0, 0);
@@ -27,18 +27,15 @@ public class InventoryLocalCreativeMenu extends BasicInventory {
 
 		Voxels voxels = world.getGameContext().getContent().voxels();
 
-		if (voxels != null) {
-			Iterator<Voxel> i = voxels.all();
-			while (i.hasNext()) {
-				Voxel voxel = i.next();
+		Iterator<Voxel> i = voxels.all();
+		while (i.hasNext()) {
+			Voxel voxel = i.next();
 
-				// Ignore air
-				if (voxel.getDefinition().getName().equals("air"))
-					continue;
+			// Ignore air
+			if (voxel.getDefinition().getName().equals("air"))
+				continue;
 
-				for (ItemPile item : voxel.getItems())
-					allItems.add(item);
-			}
+			allItems.addAll(voxel.enumerateItemsForBuilding());
 		}
 
 		this.height = (int) Math.ceil(allItems.size() / 10.0);

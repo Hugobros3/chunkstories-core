@@ -13,8 +13,7 @@ import io.xol.chunkstories.api.events.EventListeners;
 
 public class FirearmShotEvent extends Event {
 	// Every event class has to have this
-
-	static EventListeners listeners = new EventListeners(FirearmShotEvent.class);
+	private static EventListeners listeners = new EventListeners(FirearmShotEvent.class);
 
 	@Override
 	public EventListeners getListeners() {
@@ -27,11 +26,11 @@ public class FirearmShotEvent extends Event {
 
 	// Specific event code
 
-	final ItemFirearm itemFirearm;
-	final Entity shooter;
-	final Controller controller;
+	private final ItemFirearm itemFirearm;
+	private final Entity shooter;
+	private final Controller controller;
 
-	public FirearmShotEvent(ItemFirearm itemFirearm, Entity entity, Controller controller) {
+	FirearmShotEvent(ItemFirearm itemFirearm, Entity entity, Controller controller) {
 		this.itemFirearm = itemFirearm;
 		this.shooter = entity;
 		this.controller = controller;

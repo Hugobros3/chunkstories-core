@@ -24,7 +24,7 @@ public class ItemWeapon extends Item {
         Inventory inventory = pile.getInventory();
         if (inventory != null) {
             InventoryHolder holder = inventory.getHolder();
-            if (holder != null && holder instanceof Entity) {
+            if (holder instanceof Entity) {
 
                 Entity entity = (Entity) holder;
                 return new EntityDamageCause() {
@@ -43,14 +43,8 @@ public class ItemWeapon extends Item {
             }
         }
 
-        return new DamageCause() {
-
-            @Override
-            public String getName() {
-                return ItemWeapon.this.getName();
-            }
-
-        };
+        // Damager: this !
+        return ItemWeapon.this::getName;
     }
 
 }

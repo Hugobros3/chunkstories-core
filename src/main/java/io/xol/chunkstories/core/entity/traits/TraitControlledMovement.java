@@ -10,7 +10,7 @@ import io.xol.chunkstories.api.client.LocalPlayer;
 import io.xol.chunkstories.api.entity.Controller;
 import io.xol.chunkstories.api.entity.Entity;
 import io.xol.chunkstories.api.entity.traits.TraitCollidable;
-import io.xol.chunkstories.api.entity.traits.serializable.TraitController;
+import io.xol.chunkstories.api.entity.traits.serializable.TraitControllable;
 import io.xol.chunkstories.api.entity.traits.serializable.TraitHealth;
 import io.xol.chunkstories.api.entity.traits.serializable.TraitRotation;
 import io.xol.chunkstories.api.entity.traits.serializable.TraitVelocity;
@@ -124,7 +124,7 @@ public abstract class TraitControlledMovement extends TraitBasicMovement {
 
 	@Override
 	public void tick() {
-		Controller controller = entity.traits.tryWith(TraitController.class, ec -> ec.getController());
+		Controller controller = entity.traits.tryWith(TraitControllable.class, TraitControllable::getController);
 
 		// Consider player inputs...
 		if (controller != null && controller instanceof LocalPlayer) {

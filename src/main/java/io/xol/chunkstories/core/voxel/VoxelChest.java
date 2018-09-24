@@ -9,7 +9,7 @@ package io.xol.chunkstories.core.voxel;
 import io.xol.chunkstories.api.Location;
 import io.xol.chunkstories.api.entity.Controller;
 import io.xol.chunkstories.api.entity.Entity;
-import io.xol.chunkstories.api.entity.traits.serializable.TraitController;
+import io.xol.chunkstories.api.entity.traits.serializable.TraitControllable;
 import io.xol.chunkstories.api.events.voxel.WorldModificationCause;
 import io.xol.chunkstories.api.exceptions.world.WorldException;
 import io.xol.chunkstories.api.exceptions.world.voxel.IllegalBlockModificationException;
@@ -36,16 +36,16 @@ public class VoxelChest extends Voxel {
 	public VoxelChest(VoxelDefinition type) {
 		super(type);
 
-		frontTexture = store.textures().getVoxelTexture(getName() + "_front");
-		sideTexture = store.textures().getVoxelTexture(getName() + "_side");
-		topTexture = store.textures().getVoxelTexture(getName() + "_top");
+		frontTexture = store().textures().getVoxelTexture(getName() + "_front");
+		sideTexture = store().textures().getVoxelTexture(getName() + "_side");
+		topTexture = store().textures().getVoxelTexture(getName() + "_top");
 	}
 
 	@Override
 	public boolean handleInteraction(Entity entity, ChunkCell voxelContext, Input input) {
 		if (input.getName().equals("mouse.right") && voxelContext.getWorld() instanceof WorldMaster) {
 
-			Controller c = entity.traits.tryWith(TraitController.class, ec -> ec.getController());
+			Controller c = entity.traits.tryWith(TraitControllable.class, TraitControllable::getController);
 			if (c != null && c instanceof Player
 					&& ((Player) c).getLocation().distance(voxelContext.getLocation()) <= 5) {
 				Player p = (Player) c;
@@ -57,7 +57,7 @@ public class VoxelChest extends Voxel {
 	}
 
 	private Inventory getInventory(ChunkCell context) {
-		VoxelComponent comp = context.components().get("chestInventory");
+		VoxelComponent comp = context.components().getVoxelComponent("chestInventory");
 		VoxelInventoryComponent component = (VoxelInventoryComponent) comp;
 		return component.getInventory();
 	}
@@ -70,7 +70,7 @@ public class VoxelChest extends Voxel {
 	}
 
 	@Override
-	public VoxelTexture getVoxelTexture(VoxelSide side, CellData info) {
+	public VoxelTexture getVoxelTexture(CellData info, VoxelSide side) {
 		VoxelSide actualSide = VoxelSide.getSideMcStairsChestFurnace(info.getMetaData());
 
 		if (side.equals(VoxelSide.TOP))

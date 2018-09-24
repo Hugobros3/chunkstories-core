@@ -6,11 +6,10 @@
 
 package io.xol.chunkstories.core.entity;
 
-import io.xol.chunkstories.api.Location;
 import io.xol.chunkstories.api.entity.Controller;
 import io.xol.chunkstories.api.entity.Entity;
 import io.xol.chunkstories.api.entity.EntityDefinition;
-import io.xol.chunkstories.api.entity.traits.serializable.TraitController;
+import io.xol.chunkstories.api.entity.traits.serializable.TraitControllable;
 import io.xol.chunkstories.api.entity.traits.serializable.TraitHealth;
 import io.xol.chunkstories.api.entity.traits.serializable.TraitRotation;
 import io.xol.chunkstories.api.entity.traits.serializable.TraitVelocity;
@@ -44,7 +43,7 @@ public abstract class EntityLiving extends Entity {
 		boolean has_global_authority = getWorld() instanceof WorldMaster;
 
 		// Does this entity has a controller ?
-		Controller controller = this.traits.tryWith(TraitController.class, ec -> ec.getController());
+		Controller controller = this.traits.tryWith(TraitControllable.class, TraitControllable::getController);
 
 		// Are we a client, that controller ?
 		boolean owns_entity = (getWorld() instanceof WorldClient)
@@ -52,9 +51,9 @@ public abstract class EntityLiving extends Entity {
 
 		// Servers get to tick all the entities that aren't controlled; the entities
 		// that are are updated by their respective clients
-		boolean should_tick_movement = owns_entity ? true : has_global_authority && controller == null;
+		boolean should_tick_movement = owns_entity || has_global_authority && controller == null;
 
 		if (should_tick_movement)
-			this.traits.with(TraitBasicMovement.class, tbl -> tbl.tick());
+			this.traits.with(TraitBasicMovement.class, TraitBasicMovement::tick);
 	}
 }

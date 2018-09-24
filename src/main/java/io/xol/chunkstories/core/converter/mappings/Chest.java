@@ -27,16 +27,6 @@ public class Chest extends NonTrivialMapper {
 		Chunk chunk = csWorld.getChunkWorldCoordinates(csX, csY, csZ);
 		assert chunk != null;
 
-		/*
-		 * int baked = voxelID;
-		 * 
-		 * if (voxel instanceof VoxelChest) try { baked = ((VoxelChest)
-		 * voxel).onPlace(chunk.peek(csX, csY, csZ), baked, null); } catch
-		 * (WorldException e) { // TODO Auto-generated catch block e.printStackTrace();
-		 * } else System.out.println("fuck you 666");
-		 * 
-		 * csWorld.pokeRawSilently(csX, csY, csZ, baked);
-		 */
 		csWorld.pokeSimpleSilently(new FutureCell(csWorld, csX, csY, csZ, voxel));
 	}
 

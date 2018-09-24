@@ -6,32 +6,22 @@
 
 package io.xol.chunkstories.core.entity;
 
-import io.xol.chunkstories.api.Location;
-import io.xol.chunkstories.api.animation.SkeletonAnimator;
+import io.xol.chunkstories.api.animation.Animator;
 import io.xol.chunkstories.api.entity.DamageCause;
 import io.xol.chunkstories.api.entity.Entity;
 import io.xol.chunkstories.api.entity.EntityDefinition;
 import io.xol.chunkstories.api.entity.traits.TraitAnimated;
 import io.xol.chunkstories.api.entity.traits.TraitCollidable;
 import io.xol.chunkstories.api.entity.traits.TraitHitboxes;
-import io.xol.chunkstories.api.entity.traits.TraitRenderable;
 import io.xol.chunkstories.api.entity.traits.serializable.TraitHealth;
-import io.xol.chunkstories.api.entity.traits.serializable.TraitSelectedItem;
-import io.xol.chunkstories.api.item.inventory.ItemPile;
 import io.xol.chunkstories.api.physics.Box;
 import io.xol.chunkstories.api.physics.EntityHitbox;
-import io.xol.chunkstories.api.rendering.RenderingInterface;
-import io.xol.chunkstories.api.rendering.entity.EntityRenderer;
-import io.xol.chunkstories.api.rendering.entity.RenderingIterator;
-import io.xol.chunkstories.api.rendering.textures.Texture2D;
 import io.xol.chunkstories.api.sound.SoundSource.Mode;
 import io.xol.chunkstories.api.world.World;
-import io.xol.chunkstories.api.world.cell.CellData;
 import io.xol.chunkstories.core.entity.components.EntityStance;
 import io.xol.chunkstories.core.entity.components.EntityStance.EntityHumanoidStance;
 import io.xol.chunkstories.core.entity.traits.TraitBasicMovement;
 import io.xol.chunkstories.core.entity.traits.TraitWalkingSounds;
-import org.joml.Matrix4f;
 
 public abstract class EntityHumanoid extends EntityLiving {
 
@@ -42,8 +32,7 @@ public abstract class EntityHumanoid extends EntityLiving {
 	public EntityHumanoid(EntityDefinition t, World world) {
 		super(t, world);
 
-		EntityHitbox[] hitboxes = {
-				new EntityHitbox(this, new Box(-0.15, 0.0, -0.25, 0.30, 0.675, 0.5), "boneTorso"),
+		EntityHitbox[] hitboxes = { new EntityHitbox(this, new Box(-0.15, 0.0, -0.25, 0.30, 0.675, 0.5), "boneTorso"),
 				new EntityHitbox(this, new Box(-0.25, 0.0, -0.25, 0.5, 0.5, 0.5), "boneHead"),
 				new EntityHitbox(this, new Box(-0.1, -0.375, -0.1, 0.2, 0.375, 0.2), "boneArmRU"),
 				new EntityHitbox(this, new Box(-0.1, -0.375, -0.1, 0.2, 0.375, 0.2), "boneArmLU"),
@@ -57,8 +46,7 @@ public abstract class EntityHumanoid extends EntityLiving {
 				new EntityHitbox(this, new Box(-0.15, -0.075, -0.125, 0.35, 0.075, 0.25), "boneFootR"), };
 
 		this.hitboxes = new TraitHitboxes(this) {
-			@Override
-			public EntityHitbox[] getHitBoxes() {
+			@Override public EntityHitbox[] getHitBoxes() {
 				return hitboxes;
 			}
 		};
@@ -66,12 +54,10 @@ public abstract class EntityHumanoid extends EntityLiving {
 		this.stance = new EntityStance(this);
 
 		this.animationTrait = new TraitAnimated(this) {
-			CachedLodSkeletonAnimator cachedSkeleton = new CachedLodSkeletonAnimator(EntityHumanoid.this,
-					new HumanoidSkeletonAnimator(EntityHumanoid.this), 25f, 75f);
+			Animator humanoidSkeletonAnimator = new HumanoidSkeletonAnimator(EntityHumanoid.this);
 
-			@Override
-			public SkeletonAnimator getAnimatedSkeleton() {
-				return cachedSkeleton;
+			@Override public Animator getAnimatedSkeleton() {
+				return humanoidSkeletonAnimator;
 			}
 		};
 
@@ -84,8 +70,7 @@ public abstract class EntityHumanoid extends EntityLiving {
 
 		new TraitCollidable(this) {
 
-			@Override
-			public Box[] getCollisionBoxes() {
+			@Override public Box[] getCollisionBoxes() {
 
 				double height = stance.get() == EntityHumanoidStance.CROUCHING ? 1.45 : 1.9;
 				if (EntityHumanoid.this.entityHealth.isDead())
@@ -98,21 +83,18 @@ public abstract class EntityHumanoid extends EntityLiving {
 		new TraitWalkingSounds(this);
 	}
 
-	@Override
-	public void tick() {
+	@Override public void tick() {
 		// Tick : will move the entity, solve velocity/acceleration and so on
 		super.tick();
 
 		this.traits.with(TraitWalkingSounds.class, s -> s.handleWalkingEtcSounds());
 	}
 
-	@Override
-	public Box getBoundingBox() {
+	@Override public Box getBoundingBox() {
 		if (entityHealth.isDead())
 			return new Box(1.6, 1.0, 1.6).translate(-0.8, 0.0, -0.8);
 
-		return new Box(1.0, stance.get() == EntityHumanoidStance.CROUCHING ? 1.5 : 2.0, 1.0).translate(-0.5,
-				0.0, -0.5);
+		return new Box(1.0, stance.get() == EntityHumanoidStance.CROUCHING ? 1.5 : 2.0, 1.0).translate(-0.5, 0.0, -0.5);
 	}
 
 	/**
@@ -125,8 +107,7 @@ public abstract class EntityHumanoid extends EntityLiving {
 			super(entity);
 		}
 
-		@Override
-		public float damage(DamageCause cause, EntityHitbox osef, float damage) {
+		@Override public float damage(DamageCause cause, EntityHitbox osef, float damage) {
 			if (osef != null) {
 				if (osef.getName().equals("boneHead"))
 					damage *= 2.8f;
@@ -140,8 +121,8 @@ public abstract class EntityHumanoid extends EntityLiving {
 
 			damage *= 0.5;
 
-			world.getSoundManager().playSoundEffect("sounds/entities/flesh.ogg", Mode.NORMAL,
-					EntityHumanoid.this.getLocation(), (float) Math.random() * 0.4f + 0.4f, 1);
+			world.getSoundManager()
+					.playSoundEffect("sounds/entities/flesh.ogg", Mode.NORMAL, EntityHumanoid.this.getLocation(), (float) Math.random() * 0.4f + 0.4f, 1);
 
 			return super.damage(cause, null, damage);
 		}

@@ -6,44 +6,44 @@
 
 package io.xol.chunkstories.core.voxel;
 
-import io.xol.chunkstories.api.physics.CollisionBox;
-import io.xol.chunkstories.api.rendering.voxel.VoxelRenderer;
+import io.xol.chunkstories.api.physics.Box;
+//import io.xol.chunkstories.api.rendering.voxel.VoxelRenderer;
 import io.xol.chunkstories.api.voxel.Voxel;
 import io.xol.chunkstories.api.voxel.VoxelDefinition;
 import io.xol.chunkstories.api.voxel.VoxelSide;
 import io.xol.chunkstories.api.world.cell.CellData;
 
 public class VoxelHalfTile extends Voxel {
-	VoxelRenderer bot;
-	VoxelRenderer top;
+	//VoxelRenderer bot;
+	//VoxelRenderer top;
 
 	public VoxelHalfTile(VoxelDefinition type) {
 		super(type);
-		bot = store.models().getVoxelModel("halftile.bottom");
-		top = store.models().getVoxelModel("halftile.top");
+		//bot = store.models().getVoxelModel("halftile.bottom");
+		//top = store.models().getVoxelModel("halftile.top");
 	}
 
 	boolean bottomOrTop(int meta) {
 		return meta % 2 == 0;
 	}
 
-	@Override
+	/*@Override
 	public VoxelRenderer getVoxelRenderer(CellData info) {
 		int meta = info.getMetaData();
 		if (bottomOrTop(meta))
 			return bot;
 		return top;
-	}
+	}*/
 
 	@Override
-	public CollisionBox[] getCollisionBoxes(CellData info) {
+	public Box[] getCollisionBoxes(CellData info) {
 		// System.out.println("kek");
-		CollisionBox box2 = new CollisionBox(1, 0.5, 1);
+		Box box2 = new Box(1, 0.5, 1);
 		if (bottomOrTop(info.getMetaData()))
 			box2.translate(0.0, -0, 0.0);
 		else
 			box2.translate(0.0, +0.5, 0.0);
-		return new CollisionBox[] { box2 };
+		return new Box[] { box2 };
 	}
 
 	@Override

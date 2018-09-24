@@ -51,11 +51,11 @@ public class MiningProgress {
 
 		// First order, check the voxel itself if it states a certain hardness for this
 		// tool type
-		hardnessString = voxel.getExt().get("hardnessFor" + tool.getToolTypeName());
+		hardnessString = voxel.getDefinition().resolveProperty("hardnessFor" + tool.getToolTypeName());
 
 		// Then check if the voxel states a general hardness multiplier
 		if (hardnessString == null)
-			hardnessString = voxel.getExt().get("hardness");
+			hardnessString = voxel.getDefinition().resolveProperty("hardness");
 
 		// if the voxel is devoid of information, we do the same on the material
 		if (hardnessString == null)
@@ -105,7 +105,7 @@ public class MiningProgress {
 							(WorldModificationCause) owner)) {
 
 						EntityGroundItem thrownItem = (EntityGroundItem) context.getWorld().getContent().entities()
-								.getEntityDefinition("groundItem").newEntity(itemSpawnLocation);
+								.getEntityDefinition("groundItem").newEntity(itemSpawnLocation.world);
 						thrownItem.traitLocation.set(itemSpawnLocation);
 						thrownItem.entityVelocity.setVelocity(
 								new Vector3d(Math.random() * 0.125 - 0.0625, 0.1, Math.random() * 0.125 - 0.0625));

@@ -9,7 +9,6 @@ package io.xol.chunkstories.core.voxel;
 import io.xol.chunkstories.api.voxel.Voxel;
 import io.xol.chunkstories.api.voxel.VoxelDefinition;
 import io.xol.chunkstories.api.voxel.VoxelSide;
-import io.xol.chunkstories.api.voxel.models.VoxelModel;
 import io.xol.chunkstories.api.world.cell.CellData;
 
 public class VoxelRail extends Voxel {
@@ -17,11 +16,11 @@ public class VoxelRail extends Voxel {
 		super(type);
 	}
 
-	@Override
+	/*@Override
 	public VoxelModel getVoxelRenderer(CellData info) {
 		if (info.getNeightborVoxel(VoxelSide.FRONT.ordinal()).sameKind(this))
 			return store.models().getVoxelModel("rails.alt");
 
 		return store.models().getVoxelModel("rails.default");
-	}
+	}*/
 }

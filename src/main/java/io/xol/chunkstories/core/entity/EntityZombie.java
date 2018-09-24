@@ -6,26 +6,18 @@
 
 package io.xol.chunkstories.core.entity;
 
-import io.xol.chunkstories.api.Location;
 import io.xol.chunkstories.api.entity.DamageCause;
 import io.xol.chunkstories.api.entity.Entity;
 import io.xol.chunkstories.api.entity.EntityDefinition;
-import io.xol.chunkstories.api.entity.traits.TraitAnimated;
-import io.xol.chunkstories.api.entity.traits.TraitRenderable;
 import io.xol.chunkstories.api.entity.traits.serializable.TraitHealth;
 import io.xol.chunkstories.api.entity.traits.serializable.TraitSerializable;
 import io.xol.chunkstories.api.physics.EntityHitbox;
-import io.xol.chunkstories.api.rendering.RenderingInterface;
-import io.xol.chunkstories.api.rendering.entity.RenderingIterator;
-import io.xol.chunkstories.api.rendering.textures.Texture2D;
 import io.xol.chunkstories.api.sound.SoundSource.Mode;
 import io.xol.chunkstories.api.world.World;
 import io.xol.chunkstories.api.world.WorldMaster;
-import io.xol.chunkstories.api.world.cell.CellData;
 import io.xol.chunkstories.api.world.serialization.StreamSource;
 import io.xol.chunkstories.api.world.serialization.StreamTarget;
 import io.xol.chunkstories.core.entity.ai.ZombieAI;
-import org.joml.Matrix4f;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -124,7 +116,7 @@ public class EntityZombie extends EntityHumanoid implements DamageCause {
 		};
 		this.entityHealth.setHealth(stage.hp);
 
-		new TraitRenderable(this, EntityZombieRenderer::new);
+		//new TraitRenderable(this, EntityZombieRenderer::new);
 	}
 
 	@Override
@@ -143,7 +135,7 @@ public class EntityZombie extends EntityHumanoid implements DamageCause {
 		}
 	}
 
-	class EntityZombieRenderer extends EntityHumanoidRenderer<EntityZombie> {
+	/*class EntityZombieRenderer extends EntityHumanoidRenderer<EntityZombie> {
 
 		@Override
 		public void setupRender(RenderingInterface renderingContext) {
@@ -189,7 +181,7 @@ public class EntityZombie extends EntityHumanoid implements DamageCause {
 
 			return e;
 		}
-	}
+	}*/
 
 	public Stage stage() {
 		return stageComponent.stage;

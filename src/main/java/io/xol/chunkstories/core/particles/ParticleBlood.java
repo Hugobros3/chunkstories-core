@@ -9,8 +9,6 @@ package io.xol.chunkstories.core.particles;
 import io.xol.chunkstories.api.particles.ParticleDataWithVelocity;
 import io.xol.chunkstories.api.particles.ParticleTypeDefinition;
 import io.xol.chunkstories.api.particles.ParticleTypeHandler;
-import io.xol.chunkstories.api.particles.ParticlesRenderer;
-import io.xol.chunkstories.api.rendering.RenderingInterface;
 import io.xol.chunkstories.api.world.World;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
@@ -68,22 +66,5 @@ public class ParticleBlood extends ParticleTypeHandler {
 
 		if (b.timer < 0)
 			b.destroy();
-	}
-
-	@Override
-	public ParticleTypeRenderer getRenderer(ParticlesRenderer particlesRenderer) {
-		return new ParticleTypeRenderer(particlesRenderer) {
-
-			@Override
-			public void forEach_Rendering(RenderingInterface renderingContext, ParticleData data) {
-
-			}
-
-			@Override
-			public void destroy() {
-
-			}
-
-		};
 	}
 }

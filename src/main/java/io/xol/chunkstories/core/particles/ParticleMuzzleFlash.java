@@ -8,11 +8,7 @@ package io.xol.chunkstories.core.particles;
 
 import io.xol.chunkstories.api.particles.ParticleTypeDefinition;
 import io.xol.chunkstories.api.particles.ParticleTypeHandler;
-import io.xol.chunkstories.api.particles.ParticlesRenderer;
-import io.xol.chunkstories.api.rendering.RenderingInterface;
-import io.xol.chunkstories.api.rendering.lightning.Light;
 import io.xol.chunkstories.api.world.World;
-import org.joml.Vector3f;
 
 public class ParticleMuzzleFlash extends ParticleTypeHandler {
 	public ParticleMuzzleFlash(ParticleTypeDefinition type) {
@@ -31,26 +27,6 @@ public class ParticleMuzzleFlash extends ParticleTypeHandler {
 	@Override
 	public ParticleData createNew(World world, float x, float y, float z) {
 		return new MuzzleData(x, y, z);
-	}
-
-	@Override
-	public ParticleTypeRenderer getRenderer(ParticlesRenderer particlesRenderer) {
-		return new ParticleTypeRenderer(particlesRenderer) {
-
-			@Override
-			public void forEach_Rendering(RenderingInterface renderingContext, ParticleData data) {
-				renderingContext.getLightsRenderer()
-						.queueLight(new Light(new Vector3f(1.0f, 181f / 255f, 79 / 255f),
-								new Vector3f((float) data.x(), (float) data.y(), (float) data.z()),
-								15f + (float) Math.random() * 5f));
-			}
-
-			@Override
-			public void destroy() {
-
-			}
-
-		};
 	}
 
 	@Override

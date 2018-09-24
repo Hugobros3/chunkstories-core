@@ -9,8 +9,6 @@ package io.xol.chunkstories.core.particles;
 import io.xol.chunkstories.api.particles.ParticleDataWithVelocity;
 import io.xol.chunkstories.api.particles.ParticleTypeDefinition;
 import io.xol.chunkstories.api.particles.ParticleTypeHandler;
-import io.xol.chunkstories.api.particles.ParticlesRenderer;
-import io.xol.chunkstories.api.rendering.RenderingInterface;
 import io.xol.chunkstories.api.world.World;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
@@ -55,34 +53,12 @@ public class ParticleSnow extends ParticleTypeHandler {
 		b.z = ((float) (b.z() + b.vel.z()));
 
 		if (b.isCollidingAgainst(world))
-		// if (((WorldImplementation) world).checkCollisionPoint(b.x(), b.y(), b.z()))
 		{
 			b.hp--;
 			b.vel.set(0d, 0d, 0d);
 		}
 
-		// 60th square of 0.5
-		// b.vel.scale(0.98581402);
-		// if(b.vel.length() < 0.1/60.0)
-		// b.vel.zero();
-
 		if (b.hp < 0 || b.y() < 0)
 			b.destroy();
-	}
-
-	@Override
-	public ParticleTypeRenderer getRenderer(ParticlesRenderer particlesRenderer) {
-		return new ParticleTypeRenderer(particlesRenderer) {
-			@Override
-			public void forEach_Rendering(RenderingInterface renderingContext, ParticleData data) {
-
-			}
-
-			@Override
-			public void destroy() {
-
-			}
-
-		};
 	}
 }

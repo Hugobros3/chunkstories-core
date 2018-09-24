@@ -14,6 +14,7 @@ import io.xol.chunkstories.api.sound.SoundSource.Mode;
 import io.xol.chunkstories.api.voxel.Voxel;
 import io.xol.chunkstories.api.voxel.materials.VoxelMaterial;
 import io.xol.chunkstories.api.world.WorldClient;
+import io.xol.chunkstories.core.voxel.VoxelLiquid;
 import org.joml.Vector3d;
 
 public class TraitWalkingSounds extends Trait {
@@ -72,10 +73,10 @@ public class TraitWalkingSounds extends Trait {
 				.getVoxel();
 
 		if (voxelStandingOn == null
-				|| !voxelStandingOn.getDefinition().isSolid() && !voxelStandingOn.getDefinition().isLiquid())
+				|| !voxelStandingOn.isSolid() && !(voxelStandingOn instanceof VoxelLiquid))
 			voxelStandingOn = entity.world.getContent().voxels().air();
 
-		VoxelMaterial material = voxelStandingOn.getMaterial();
+		VoxelMaterial material = voxelStandingOn.getVoxelMaterial();
 
 		if (justJumped && !inWater) {
 			// TODO useless

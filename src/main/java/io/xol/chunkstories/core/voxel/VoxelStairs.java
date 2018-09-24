@@ -10,48 +10,47 @@ import io.xol.chunkstories.api.Location;
 import io.xol.chunkstories.api.entity.Entity;
 import io.xol.chunkstories.api.entity.traits.serializable.TraitRotation;
 import io.xol.chunkstories.api.events.voxel.WorldModificationCause;
-import io.xol.chunkstories.api.physics.CollisionBox;
+import io.xol.chunkstories.api.physics.Box;
 import io.xol.chunkstories.api.voxel.Voxel;
 import io.xol.chunkstories.api.voxel.VoxelDefinition;
-import io.xol.chunkstories.api.voxel.models.VoxelModel;
 import io.xol.chunkstories.api.world.cell.CellData;
 import io.xol.chunkstories.api.world.cell.FutureCell;
 
 public class VoxelStairs extends Voxel {
-	VoxelModel[] models = new VoxelModel[8];
+	//VoxelModel[] models = new VoxelModel[8];
 
 	public VoxelStairs(VoxelDefinition type) {
 		super(type);
-		for (int i = 0; i < 8; i++)
-			models[i] = store.models().getVoxelModel("stairs.m" + i);
+		//for (int i = 0; i < 8; i++)
+		//	models[i] = store.models().getVoxelModel("stairs.m" + i);
 	}
 
-	@Override
+	/*@Override
 	public VoxelModel getVoxelRenderer(CellData info) {
 		int meta = info.getMetaData();
 		return models[meta % 8];
-	}
+	}*/
 
 	@Override
-	public CollisionBox[] getCollisionBoxes(CellData info) {
+	public Box[] getCollisionBoxes(CellData info) {
 		int meta = info.getMetaData();
-		CollisionBox[] boxes = new CollisionBox[2];
-		boxes[0] = new CollisionBox(1, 0.5, 1);// .translate(0.5, -1, 0.5);
+		Box[] boxes = new Box[2];
+		boxes[0] = new Box(1, 0.5, 1);// .translate(0.5, -1, 0.5);
 		switch (meta % 4) {
 		case 0:
-			boxes[1] = new CollisionBox(0.5, 0.5, 1.0).translate(0.5, -0.0, 0.0);
+			boxes[1] = new Box(0.5, 0.5, 1.0).translate(0.5, -0.0, 0.0);
 			break;
 		case 1:
-			boxes[1] = new CollisionBox(0.5, 0.5, 1.0).translate(0.0, -0.0, 0.0);
+			boxes[1] = new Box(0.5, 0.5, 1.0).translate(0.0, -0.0, 0.0);
 			break;
 		case 2:
-			boxes[1] = new CollisionBox(1.0, 0.5, 0.5).translate(0.0, -0.0, 0.5);
+			boxes[1] = new Box(1.0, 0.5, 0.5).translate(0.0, -0.0, 0.5);
 			break;
 		case 3:
-			boxes[1] = new CollisionBox(1.0, 0.5, 0.5).translate(0.0, -0.0, 0.0);
+			boxes[1] = new Box(1.0, 0.5, 0.5).translate(0.0, -0.0, 0.0);
 			break;
 		default:
-			boxes[1] = new CollisionBox(0.5, 0.5, 1.0).translate(0.5, -0.0, 0.25);
+			boxes[1] = new Box(0.5, 0.5, 1.0).translate(0.5, -0.0, 0.25);
 			break;
 		}
 

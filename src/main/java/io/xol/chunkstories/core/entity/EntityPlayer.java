@@ -7,7 +7,6 @@
 package io.xol.chunkstories.core.entity;
 
 import io.xol.chunkstories.api.Location;
-import io.xol.chunkstories.api.animation.SkeletonAnimator;
 import io.xol.chunkstories.api.client.LocalPlayer;
 import io.xol.chunkstories.api.entity.Controller;
 import io.xol.chunkstories.api.entity.DamageCause;
@@ -20,18 +19,12 @@ import io.xol.chunkstories.api.events.voxel.WorldModificationCause;
 import io.xol.chunkstories.api.exceptions.world.WorldException;
 import io.xol.chunkstories.api.input.Input;
 import io.xol.chunkstories.api.item.ItemVoxel;
-import io.xol.chunkstories.api.item.interfaces.ItemOverlay;
 import io.xol.chunkstories.api.item.interfaces.ItemZoom;
 import io.xol.chunkstories.api.item.inventory.InventoryHolder;
 import io.xol.chunkstories.api.item.inventory.ItemPile;
-import io.xol.chunkstories.api.math.Math2;
 import io.xol.chunkstories.api.physics.EntityHitbox;
 import io.xol.chunkstories.api.player.Player;
-import io.xol.chunkstories.api.rendering.RenderingInterface;
-import io.xol.chunkstories.api.rendering.entity.RenderingIterator;
-import io.xol.chunkstories.api.rendering.textures.Texture2D;
 import io.xol.chunkstories.api.sound.SoundSource.Mode;
-import io.xol.chunkstories.api.util.ColorsTools;
 import io.xol.chunkstories.api.world.World;
 import io.xol.chunkstories.api.world.World.WorldCell;
 import io.xol.chunkstories.api.world.WorldClient;
@@ -45,7 +38,6 @@ import io.xol.chunkstories.core.entity.traits.MinerTrait;
 import io.xol.chunkstories.core.entity.traits.TraitControlledMovement;
 import io.xol.chunkstories.core.entity.traits.TraitEyeLevel;
 import io.xol.chunkstories.core.entity.traits.TraitTakesFallDamage;
-import io.xol.chunkstories.core.item.armor.ItemArmor;
 import io.xol.chunkstories.core.item.inventory.InventoryLocalCreativeMenu;
 import org.joml.*;
 
@@ -57,7 +49,7 @@ import java.util.Iterator;
  * creative/survival mode, flying and walking controller...
  */
 public class EntityPlayer extends EntityHumanoid implements WorldModificationCause, InventoryHolder {
-	protected TraitController controllerComponent;
+	protected TraitControllable controllerComponent;
 
 	protected TraitInventory inventory;
 	protected TraitSelectedItem selectedItemComponent;
@@ -80,7 +72,7 @@ public class EntityPlayer extends EntityHumanoid implements WorldModificationCau
 	public EntityPlayer(EntityDefinition t, World world) {
 		super(t, world);
 
-		controllerComponent = new TraitController(this);
+		//controllerComponent = new TraitController(this);
 		inventory = new TraitInventory(this, 10, 4);
 		selectedItemComponent = new TraitSelectedItem(this, inventory);
 		name = new TraitName(this);
@@ -116,11 +108,10 @@ public class EntityPlayer extends EntityHumanoid implements WorldModificationCau
 			public boolean handleInteraction(Entity entity, Input input) {
 				if (entityHealth.isDead() && input.getName().equals("mouse.right")) {
 
-					Controller controller = entity.traits.tryWith(TraitController.class, ec -> ec.getController());
-					if (controller != null && controller instanceof Player) {
+					Controller controller = controllerComponent.getController();//entity.traits.tryWith(TraitControllable.class, TraitControllable::getController);
+					if (controller instanceof Player) {
 						Player p = (Player) controller;
 						p.openInventory(inventory);
-						// p.sendMessage("HELLO THIS MY CADAVERER, PLZ FUCK OFF");
 						return true;
 					}
 				}
@@ -128,10 +119,10 @@ public class EntityPlayer extends EntityHumanoid implements WorldModificationCau
 			}
 		};
 
-		new TraitRenderable(this, EntityPlayerRenderer<EntityPlayer>::new);
+		//new PlayerOverlay(this);
+		//new TraitRenderable(this, EntityPlayerRenderer<EntityPlayer>::new);
 		new TraitDontSave(this);
 
-		new PlayerOverlay(this);
 		new TraitEyeLevel(this) {
 
 			@Override
@@ -142,22 +133,25 @@ public class EntityPlayer extends EntityHumanoid implements WorldModificationCau
 		};
 
 		new PlayerMovement(this);
-		new PlayerWhenControlled(this);
+		controllerComponent = new PlayerWhenControlled(this);
 
 		new MinerTrait(this);
 	}
 
-	class PlayerWhenControlled extends TraitWhenControlled {
+	class PlayerWhenControlled extends TraitControllable {
 
 		public PlayerWhenControlled(Entity entity) {
 			super(entity);
 		}
 
 		@Override
-		public void onEachFrame(LocalPlayer controller) {
-			if (controller.hasFocus()) {
-				moveCamera(controller);
+		public boolean onEachFrame() {
+			Controller controller = getController();
+			if (controller instanceof LocalPlayer && ((LocalPlayer) controller).hasFocus()) {
+				moveCamera((LocalPlayer) controller);
+				return true;
 			}
+			return false;
 		}
 
 		double lastPX = -1f;
@@ -189,17 +183,15 @@ public class EntityPlayer extends EntityHumanoid implements WorldModificationCau
 				modifier = 1.0 / item.getZoomFactor();
 			}
 
-			rotH += dx * modifier / 3f
-					* controller.getClient().getConfiguration().getDoubleOption("client.input.mouseSensitivity");
-			rotV -= dy * modifier / 3f
-					* controller.getClient().getConfiguration().getDoubleOption("client.input.mouseSensitivity");
+			rotH += dx * modifier / 3f	* controller.getClient().getConfiguration().getDoubleValue("client.input.mouseSensitivity");
+			rotV -= dy * modifier / 3f	* controller.getClient().getConfiguration().getDoubleValue("client.input.mouseSensitivity");
 			entityRotation.setRotation(rotH, rotV);
 
 			controller.getInputsManager().getMouse().setMouseCursorLocation(controller.getWindow().getWidth() / 2.0,
 					controller.getWindow().getHeight() / 2.0);
 		}
 
-		@Override
+		/*@Override
 		public void setupCamera(RenderingInterface renderer) {
 			lastCameraLocation = getLocation();
 
@@ -224,18 +216,19 @@ public class EntityPlayer extends EntityHumanoid implements WorldModificationCau
 			speedEffect *= 500.0f;
 
 			renderer.getCamera().setFOV(modifier * (float) (videoFov + speedEffect));
-		}
+		}*/
 
 		@Override
-		public boolean onControllerInput(Input input, Controller controller) {
+		public boolean onControllerInput(Input input) {
+			Controller controller = getController();
+
 			// We are moving inventory bringup here !
 			if (input.getName().equals("inventory") && world instanceof WorldClient) {
 
 				if (creativeMode.get()) {
-					((WorldClient) getWorld()).getClient().openInventories(inventory,
-							new InventoryLocalCreativeMenu(world));
+					((WorldClient) getWorld()).getClient().getGui().openInventories(inventory, new InventoryLocalCreativeMenu(world));
 				} else {
-					((WorldClient) getWorld()).getClient().openInventories(inventory, armor);
+					((WorldClient) getWorld()).getClient().getGui().openInventories(inventory, armor);
 				}
 
 				return true;
@@ -256,7 +249,7 @@ public class EntityPlayer extends EntityHumanoid implements WorldModificationCau
 
 			Vector3dc direction = entityRotation.getDirectionLookingAt();
 
-			Iterator<Entity> i = world.collisionsManager().rayTraceEntities(initialPosition, direction, maxLen);
+			Iterator<Entity> i = world.getCollisionsManager().rayTraceEntities(initialPosition, direction, maxLen);
 			while (i.hasNext()) {
 				Entity e = i.next();
 				if (e != EntityPlayer.this
@@ -375,7 +368,7 @@ public class EntityPlayer extends EntityHumanoid implements WorldModificationCau
 			// TODO check if this is needed
 			// Instead of creating a packet and dealing with it ourselves, we instead push
 			// the relevant components
-			entityLocation.pushComponentEveryoneButController();
+			traitLocation.pushComponentEveryoneButController();
 			// In that case that means pushing to the server.
 		}
 
@@ -457,7 +450,7 @@ public class EntityPlayer extends EntityHumanoid implements WorldModificationCau
 			// It restores hp
 			// TODO move to trait
 			if (foodLevel.getValue() > 20 && !entityHealth.isDead()) {
-				if (entityHealth.getHealth() < entityHealth.getMaxHealth()) {
+				if (entityHealth.getHealth() < entityHealth.maxHealth) {
 					entityHealth.setHealth(entityHealth.getHealth() + 0.01f);
 
 					float newfoodLevel = foodLevel.getValue() - 0.01f;
@@ -478,7 +471,7 @@ public class EntityPlayer extends EntityHumanoid implements WorldModificationCau
 
 	}
 
-	class PlayerOverlay extends TraitHasOverlay {
+	/*class PlayerOverlay extends TraitHasOverlay {
 
 		public PlayerOverlay(Entity entity) {
 			super(entity);
@@ -545,9 +538,9 @@ public class EntityPlayer extends EntityHumanoid implements WorldModificationCau
 						posOnScreen.x() - dekal / 2, posOnScreen.y(), txt, 16 * scale, 16 * scale,
 						new Vector4f(1, 1, 1, 1));
 		}
-	}
+	}*/
 
-	class EntityPlayerRenderer<H extends EntityPlayer> extends EntityHumanoidRenderer<H> {
+	/*class EntityPlayerRenderer<H extends EntityPlayer> extends EntityHumanoidRenderer<H> {
 		@Override
 		public void setupRender(RenderingInterface renderingContext) {
 			super.setupRender(renderingContext);
@@ -670,7 +663,7 @@ public class EntityPlayer extends EntityHumanoid implements WorldModificationCau
 
 			return e;
 		}
-	}
+	}*/
 
 	public Location getPredictedLocation() {
 		return lastCameraLocation != null ? lastCameraLocation : getLocation();

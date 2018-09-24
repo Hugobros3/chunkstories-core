@@ -8,9 +8,6 @@ package io.xol.chunkstories.core.particles;
 
 import io.xol.chunkstories.api.particles.ParticleTypeDefinition;
 import io.xol.chunkstories.api.particles.ParticleTypeHandler;
-import io.xol.chunkstories.api.particles.ParticlesRenderer;
-import io.xol.chunkstories.api.rendering.RenderingInterface;
-import io.xol.chunkstories.api.rendering.lightning.Light;
 import io.xol.chunkstories.api.world.World;
 import org.joml.Vector3f;
 
@@ -24,7 +21,6 @@ public class ParticleSetupLight extends ParticleTypeHandler {
 
 		public int timer = 4800;
 		public Vector3f c;
-		public Light light;
 
 		public ParticleSetupLightData(float x, float y, float z) {
 			super(x, y, z);
@@ -35,24 +31,6 @@ public class ParticleSetupLight extends ParticleTypeHandler {
 	@Override
 	public ParticleData createNew(World world, float x, float y, float z) {
 		return new ParticleSetupLightData(x, y, z);
-	}
-
-	@Override
-	public ParticleTypeRenderer getRenderer(ParticlesRenderer particlesRenderer) {
-		return new ParticleTypeRenderer(particlesRenderer) {
-
-			@Override
-			public void forEach_Rendering(RenderingInterface renderingContext, ParticleData data) {
-				if (((ParticleSetupLightData) data).light != null)
-					renderingContext.getLightsRenderer().queueLight(((ParticleSetupLightData) data).light);
-			}
-
-			@Override
-			public void destroy() {
-
-			}
-
-		};
 	}
 
 	@Override

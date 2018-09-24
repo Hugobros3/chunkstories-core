@@ -8,6 +8,12 @@ package io.xol.chunkstories.core.item;
 
 import java.util.Iterator;
 
+import io.xol.chunkstories.api.client.Client;
+import io.xol.chunkstories.api.entity.traits.generic.TraitSerializableBoolean;
+import io.xol.chunkstories.api.entity.traits.serializable.TraitControllable;
+import io.xol.chunkstories.api.gui.Font;
+import io.xol.chunkstories.api.gui.GuiDrawer;
+import io.xol.chunkstories.api.item.inventory.InventoryHolder;
 import org.joml.Matrix4f;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
@@ -18,7 +24,6 @@ import io.xol.chunkstories.api.client.LocalPlayer;
 import io.xol.chunkstories.api.entity.Controller;
 import io.xol.chunkstories.api.entity.Entity;
 import io.xol.chunkstories.api.entity.traits.TraitHitboxes;
-import io.xol.chunkstories.api.entity.traits.serializable.TraitController;
 import io.xol.chunkstories.api.entity.traits.serializable.TraitCreativeMode;
 import io.xol.chunkstories.api.entity.traits.serializable.TraitHealth;
 import io.xol.chunkstories.api.entity.traits.serializable.TraitRotation;
@@ -31,9 +36,6 @@ import io.xol.chunkstories.api.item.inventory.Inventory;
 import io.xol.chunkstories.api.item.inventory.ItemPile;
 import io.xol.chunkstories.api.physics.Box;
 import io.xol.chunkstories.api.physics.EntityHitbox;
-import io.xol.chunkstories.api.rendering.RenderingInterface;
-import io.xol.chunkstories.api.rendering.item.ItemRenderer;
-import io.xol.chunkstories.api.rendering.text.FontRenderer.Font;
 import io.xol.chunkstories.api.sound.SoundSource.Mode;
 import io.xol.chunkstories.api.voxel.Voxel;
 import io.xol.chunkstories.api.world.World;
@@ -122,7 +124,7 @@ public class ItemFirearm extends ItemWeapon implements ItemOverlay, ItemZoom, It
 	}*/
 
 	/** Displays a scope sometimes */
-	class ScopedWeaponItemRenderer extends ItemRenderer {
+	/*class ScopedWeaponItemRenderer extends ItemRenderer {
 		ItemRenderer actualRenderer;
 
 		public ScopedWeaponItemRenderer(ItemRenderer itemRenderer) {
@@ -150,7 +152,7 @@ public class ItemFirearm extends ItemWeapon implements ItemOverlay, ItemZoom, It
 			}
 			actualRenderer.renderItemInWorld(renderingInterface, pile, world, location, handTransformation);
 		}
-	}
+	}*/
 
 	/**
 	 * Should be called when the owner has this item selected
@@ -160,7 +162,7 @@ public class ItemFirearm extends ItemWeapon implements ItemOverlay, ItemZoom, It
 	@Override
 	public void tickInHand(Entity owner, ItemPile itemPile) {
 
-		Controller controller = owner.traits.tryWith(TraitController.class, ec -> ec.getController());
+		Controller controller = owner.traits.tryWith(TraitControllable.class, TraitControllable::getController);
 
 		// For now only client-side players can trigger shooting actions
 		if (controller != null && controller instanceof LocalPlayer) {
@@ -171,7 +173,7 @@ public class ItemFirearm extends ItemWeapon implements ItemOverlay, ItemZoom, It
 
 			if (LocalPlayer.getInputsManager().getInputByName("mouse.left").isPressed()) {
 				// Check for bullet presence (or creative mode)
-				boolean bulletPresence = owner.traits.tryWithBoolean(TraitCreativeMode.class, ecm -> ecm.get())
+				boolean bulletPresence = owner.traits.tryWithBoolean(TraitCreativeMode.class, TraitSerializableBoolean::get)
 						|| checkBullet(itemPile);
 				if (!bulletPresence && !wasTriggerPressedLastTick) {
 					// Play sounds
@@ -346,7 +348,7 @@ public class ItemFirearm extends ItemWeapon implements ItemOverlay, ItemZoom, It
 						controller.getSoundManager().playSoundEffect(
 								peek.getVoxel().getVoxelMaterial().resolveProperty("landingSounds"), Mode.NORMAL,
 								particleSpawnPosition, 1, 0.05f);
-						controller.getDecalsManager().drawDecal(nearestLocation, normal.negate(), new Vector3d(0.5),
+						controller.getDecalsManager().add(nearestLocation, normal.negate(), new Vector3d(0.5),
 								"bullethole");
 					}
 				}
@@ -391,7 +393,7 @@ public class ItemFirearm extends ItemWeapon implements ItemOverlay, ItemZoom, It
 
 									// Spawn blood on walls
 									if (nearestLocation != null)
-										entity.getWorld().getDecalsManager().drawDecal(nearestLocation, bloodDir,
+										entity.getWorld().getDecalsManager().add(nearestLocation, bloodDir,
 												new Vector3d(Math.min(3, shots) * damage / 20f), "blood");
 								}
 							}
@@ -456,54 +458,36 @@ public class ItemFirearm extends ItemWeapon implements ItemOverlay, ItemZoom, It
 	}
 
 	@Override
-	public void drawItemOverlay(RenderingInterface renderingInterface, ItemPile pile) {
-		Entity clientControlledEntity = renderingInterface.getClient().getPlayer().getControlledEntity();
-		if (clientControlledEntity != null && pile.getInventory() != null && pile.getInventory().getHolder() != null
-				&& pile.getInventory().getHolder().equals(clientControlledEntity)) {
-			if (isScoped())
-				drawScope(renderingInterface);
+	public void drawItemOverlay(GuiDrawer drawer, ItemPile pile) {
+		InventoryHolder holder = getHolder();
+		if (holder instanceof Entity) {
+			Controller controller = ((Entity) holder).traits.tryWith(TraitControllable.class, TraitControllable::getController);
+			if(controller instanceof LocalPlayer) {
+				if (isScoped())
+					drawScope(drawer);
 
-			Vector3d eyeLocation = new Vector3d(clientControlledEntity.getLocation());
-			clientControlledEntity.traits.with(TraitEyeLevel.class, tel -> eyeLocation.x += tel.getEyeLevel());
+				if (cooldownEnd > System.currentTimeMillis()) {
+					String reloadText = "Reloading weapon, please wait";
 
-			Vector3d direction = new Vector3d();
-			clientControlledEntity.traits.tryWith(TraitRotation.class, er -> direction.set(er.getDirectionLookingAt()));
-
-			direction.add(new Vector3d(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).normalize()
-					.mul(accuracy / 100d));
-			direction.normalize();
-
-			// display reload cooldownt text
-			if (cooldownEnd > System.currentTimeMillis()) {
-				String reloadText = "Reloading weapon, please wait";
-
-				Font font = renderingInterface.getFontRenderer().defaultFont();
-
-				int cooldownLength = font.getWidth(reloadText);// TrueTypeFont.arial11px.getWidth(reloadText);
-				renderingInterface.getFontRenderer().drawString(font,
-						-cooldownLength + renderingInterface.getWindow().getWidth() / 2,
-						renderingInterface.getWindow().getHeight() / 2, reloadText, 2);
+					Font font = drawer.getFonts().defaultFont();
+					int cooldownLength = font.getWidth(reloadText);
+					drawer.drawString(-cooldownLength + drawer.getGui().getViewportWidth() / 2,drawer.getGui().getViewportHeight() / 2, reloadText);
+				}
 			}
 		}
 	}
 
-	private void drawScope(RenderingInterface renderingInterface) {
+	private void drawScope(GuiDrawer drawer) {
 		// Temp, rendering interface should provide us
-		int min = Math.min(renderingInterface.getWindow().getWidth(), renderingInterface.getWindow().getHeight());
-		int max = Math.max(renderingInterface.getWindow().getWidth(), renderingInterface.getWindow().getHeight());
+		int min = Math.min(drawer.getGui().getViewportWidth(), drawer.getGui().getViewportHeight());
+		int max = Math.max(drawer.getGui().getViewportWidth(), drawer.getGui().getViewportHeight());
 
 		int bandwidth = (max - min) / 2;
 		int x = 0;
 
-		renderingInterface.getGuiRenderer().drawBoxWindowsSpace(x, 0, x += bandwidth,
-				renderingInterface.getWindow().getHeight(), 0, 0, 0, 0, null, false, false,
-				new Vector4f(0.0f, 0.0f, 0.0f, 1.0f));
-		renderingInterface.getGuiRenderer().drawBoxWindowsSpace(x, 0, x += min,
-				renderingInterface.getWindow().getHeight(), 0, 1, 1, 0,
-				renderingInterface.textures().getTexture(scopeTexture), false, false, null);
-		renderingInterface.getGuiRenderer().drawBoxWindowsSpace(x, 0, x += bandwidth,
-				renderingInterface.getWindow().getHeight(), 0, 0, 0, 0, null, false, false,
-				new Vector4f(0.0f, 0.0f, 0.0f, 1.0f));
+		drawer.drawBox(x, 0, x += bandwidth, drawer.getGui().getViewportHeight(), new Vector4f(0.0f, 0.0f, 0.0f, 1.0f));
+		drawer.drawBox(x, 0, x += min, drawer.getGui().getViewportHeight(), scopeTexture);
+		drawer.drawBox(x, 0, x += bandwidth, drawer.getGui().getViewportHeight(), new Vector4f(0.0f, 0.0f, 0.0f, 1.0f));
 	}
 
 	public boolean isScoped() {
@@ -537,15 +521,8 @@ public class ItemFirearm extends ItemWeapon implements ItemOverlay, ItemZoom, It
 	@Override
 	public double transformAnimationTime(double originalTime) {
 		if (this.animationCooldownEnd > System.currentTimeMillis()) {
-			long delta = System.currentTimeMillis() - this.animationStart;
-			return delta;
-			/*
-			 * double deltaD = delta; double durationD =
-			 * 200;//this.shootingAnimationDuration; double time = deltaD / durationD; time
-			 * *= 200; //System.out.println(time); return time;
-			 */
+			return System.currentTimeMillis() - this.animationStart;
 		}
-
 		return originalTime;
 	}
 }

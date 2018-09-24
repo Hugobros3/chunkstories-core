@@ -10,7 +10,6 @@ import io.xol.chunkstories.api.entity.Entity;
 import io.xol.chunkstories.api.events.voxel.WorldModificationCause;
 import io.xol.chunkstories.api.exceptions.world.voxel.IllegalBlockModificationException;
 import io.xol.chunkstories.api.input.Input;
-import io.xol.chunkstories.api.rendering.voxel.VoxelDynamicRenderer;
 import io.xol.chunkstories.api.voxel.Voxel;
 import io.xol.chunkstories.api.voxel.VoxelDefinition;
 import io.xol.chunkstories.api.world.cell.CellData;
@@ -18,7 +17,6 @@ import io.xol.chunkstories.api.world.cell.FutureCell;
 import io.xol.chunkstories.api.world.chunk.Chunk.ChunkCell;
 import io.xol.chunkstories.api.world.chunk.Chunk.FreshChunkCell;
 import io.xol.chunkstories.core.voxel.components.VoxelComponentSignText;
-import io.xol.chunkstories.core.voxel.renderers.SignRenderer;
 import org.joml.Vector2f;
 import org.joml.Vector3d;
 
@@ -28,12 +26,12 @@ import org.joml.Vector3d;
 //TODO expose the gui to the api to enable this
 public class VoxelSign extends Voxel// implements VoxelCustomIcon
 {
-	final SignRenderer signRenderer;
+	//final SignRenderer signRenderer;
 
 	public VoxelSign(VoxelDefinition type) {
 		super(type);
 
-		signRenderer = new SignRenderer(voxelRenderer);
+		//signRenderer = new SignRenderer(voxelRenderer);
 	}
 
 	@Override
@@ -41,10 +39,10 @@ public class VoxelSign extends Voxel// implements VoxelCustomIcon
 		return false;
 	}
 
-	@Override
+	/*@Override
 	public VoxelDynamicRenderer getVoxelRenderer(CellData info) {
 		return signRenderer;
-	}
+	}*/
 
 	@Override
 	public void onPlace(FutureCell cell, WorldModificationCause cause) throws IllegalBlockModificationException {
@@ -90,7 +88,7 @@ public class VoxelSign extends Voxel// implements VoxelCustomIcon
 	 * Gets the sign component from a chunkcell, assuming it is indeed a sign cell
 	 */
 	public VoxelComponentSignText getSignData(ChunkCell context) {
-		VoxelComponentSignText signTextComponent = (VoxelComponentSignText) context.components().get("signData");
+		VoxelComponentSignText signTextComponent = (VoxelComponentSignText) context.components().getVoxelComponent("signData");
 		return signTextComponent;
 	}
 

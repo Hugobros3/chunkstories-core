@@ -8,8 +8,6 @@ package io.xol.chunkstories.core.particles;
 
 import io.xol.chunkstories.api.content.Content.Voxels;
 import io.xol.chunkstories.api.particles.*;
-import io.xol.chunkstories.api.rendering.RenderingInterface;
-import io.xol.chunkstories.api.rendering.textures.Texture2D;
 import io.xol.chunkstories.api.voxel.VoxelSide;
 import io.xol.chunkstories.api.voxel.textures.VoxelTexture;
 import io.xol.chunkstories.api.world.World;
@@ -19,7 +17,7 @@ import org.joml.Vector3dc;
 import org.joml.Vector3fc;
 
 public class ParticleVoxelFragment extends ParticleTypeHandler {
-	Voxels voxelStore;
+	private Voxels voxelStore;
 
 	public ParticleVoxelFragment(ParticleTypeDefinition type) {
 		super(type);
@@ -40,7 +38,7 @@ public class ParticleVoxelFragment extends ParticleTypeHandler {
 		public FragmentData(float x, float y, float z, CellData cell) {
 			super(x, y, z);
 
-			tex = cell.getTexture(VoxelSide.LEFT);
+			tex = null;//cell.getTexture(VoxelSide.LEFT);
 
 			int qx = (int) Math.floor(Math.random() * 4.0);
 			int rx = qx + 1;
@@ -138,28 +136,5 @@ public class ParticleVoxelFragment extends ParticleTypeHandler {
 
 		if (b.timer < 0)
 			b.destroy();
-	}
-
-	@Override
-	public ParticleTypeRenderer getRenderer(ParticlesRenderer particlesRenderer) {
-		return new ParticleTypeRenderer(particlesRenderer) {
-
-			@Override
-			public Texture2D getAlbedoTexture() {
-				return particlesRenderer.getContent().voxels().textures().getDiffuseAtlasTexture();
-			}
-
-			@Override
-			public void forEach_Rendering(RenderingInterface renderingContext, ParticleData data) {
-				// TODO Auto-generated method stub
-
-			}
-
-			@Override
-			public void destroy() {
-
-			}
-
-		};
 	}
 }

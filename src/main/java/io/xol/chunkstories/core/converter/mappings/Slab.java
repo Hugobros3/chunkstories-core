@@ -21,7 +21,5 @@ public class Slab extends Mapper {
 		cell.setVoxel(voxel);
 		if (minecraftMeta >= 8)
 			cell.setMetaData(1);
-		// return VoxelFormat.changeMeta(voxelID, 1);
-		// else return voxelID;
 	}
 }

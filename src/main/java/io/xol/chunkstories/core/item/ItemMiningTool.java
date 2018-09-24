@@ -16,8 +16,6 @@ public class ItemMiningTool extends Item implements MiningTool {
 
     public final long animationCycleDuration;
 
-    // public static MiningProgress myProgress;
-
     public ItemMiningTool(ItemDefinition type) {
         super(type);
 

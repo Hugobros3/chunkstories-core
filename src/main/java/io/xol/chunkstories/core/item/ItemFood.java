@@ -14,6 +14,7 @@ import io.xol.chunkstories.api.item.ItemDefinition;
 import io.xol.chunkstories.api.item.inventory.ItemPile;
 import io.xol.chunkstories.api.world.WorldMaster;
 import io.xol.chunkstories.core.entity.components.EntityFoodLevel;
+import org.jetbrains.annotations.NotNull;
 
 public class ItemFood extends Item {
 
@@ -24,7 +25,7 @@ public class ItemFood extends Item {
 		calories = Float.parseFloat(type.resolveProperty("calories", "10.0"));
 	}
 
-	public boolean onControllerInput(Entity entity, ItemPile itemPile, Input input, Controller controller) {
+	public boolean onControllerInput(@NotNull Entity entity, @NotNull ItemPile itemPile, @NotNull Input input, @NotNull Controller controller) {
 		if (entity.getWorld() instanceof WorldMaster) {
 			if (input.getName().equals("mouse.right")) {
 				// Any entity with a food level can eat

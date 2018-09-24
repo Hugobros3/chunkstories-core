@@ -7,8 +7,6 @@
 package io.xol.chunkstories.core.particles;
 
 import io.xol.chunkstories.api.particles.*;
-import io.xol.chunkstories.api.rendering.RenderingInterface;
-import io.xol.chunkstories.api.rendering.StateMachine.BlendMode;
 import io.xol.chunkstories.api.world.World;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
@@ -137,49 +135,5 @@ public class ParticleFire extends ParticleTypeHandler {
 			// if(((WorldImplementation) world).checkCollisionPoint(b.x(), b.y(), b.z()) &&
 			// destroyOnCollision)
 			b.destroy();
-	}
-
-	@Override
-	public ParticleTypeRenderer getRenderer(ParticlesRenderer particlesRenderer) {
-		return new ParticleTypeRenderer(particlesRenderer) {
-
-			@Override
-			public void beginRenderingForType(RenderingInterface renderingContext) {
-				super.beginRenderingForType(renderingContext);
-
-				renderingContext.setBlendMode(BlendMode.PREMULT_ALPHA);
-
-				renderingContext.getRenderTargetManager().setDepthMask(false);
-				// renderingContext.setDepthTestMode(DepthTestMode.DISABLED);
-				// System.out.println("k");
-
-				String temp_scale = "./textures/particles/fire_temp_scale_expl.png";
-				renderingContext.bindTexture2D("colorTempSampler",
-						particlesRenderer.getContent().textures().getTexture(temp_scale));
-				particlesRenderer.getContent().textures().getTexture(temp_scale).setLinearFiltering(true);
-				particlesRenderer.getContent().textures().getTexture(temp_scale).setTextureWrapping(false);
-
-				getAlbedoTexture().setMipMapping(true);
-				getAlbedoTexture().setLinearFiltering(true);
-				getAlbedoTexture().setTextureWrapping(false);
-			}
-
-			@Override
-			public void forEach_Rendering(RenderingInterface renderingContext, ParticleData data) {
-				data.y = ((float) (data.y() + (Math.random() - 0.1) * 0.0015));
-				data.x = ((float) (data.x() + (Math.random() - 0.5) * 0.0015));
-				data.z = ((float) (data.z() + (Math.random() - 0.5) * 0.0015));
-
-				((ParticleFireData) data).timer--;
-				if (((ParticleFireData) data).timer < 0)
-					data.destroy();
-			}
-
-			@Override
-			public void destroy() {
-
-			}
-
-		};
 	}
 }

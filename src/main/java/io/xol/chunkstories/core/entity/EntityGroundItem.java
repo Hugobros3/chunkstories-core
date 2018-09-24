@@ -9,24 +9,17 @@ package io.xol.chunkstories.core.entity;
 import io.xol.chunkstories.api.entity.Entity;
 import io.xol.chunkstories.api.entity.EntityDefinition;
 import io.xol.chunkstories.api.entity.traits.TraitCollidable;
-import io.xol.chunkstories.api.entity.traits.TraitRenderable;
 import io.xol.chunkstories.api.entity.traits.serializable.TraitVelocity;
 import io.xol.chunkstories.api.item.inventory.ItemPile;
 import io.xol.chunkstories.api.physics.Box;
-import io.xol.chunkstories.api.rendering.RenderingInterface;
-import io.xol.chunkstories.api.rendering.entity.EntityRenderer;
-import io.xol.chunkstories.api.rendering.entity.RenderingIterator;
 import io.xol.chunkstories.api.voxel.Voxel;
 import io.xol.chunkstories.api.world.World;
 import io.xol.chunkstories.api.world.WorldClient;
 import io.xol.chunkstories.api.world.WorldMaster;
-import io.xol.chunkstories.api.world.cell.CellData;
 import io.xol.chunkstories.core.entity.components.EntityGroundItemPileComponent;
 import io.xol.chunkstories.core.voxel.VoxelLiquid;
-import org.joml.Matrix4f;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
-import org.joml.Vector3f;
 
 public class EntityGroundItem extends Entity {
 	protected float rotation = 0f;

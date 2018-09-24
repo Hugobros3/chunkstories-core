@@ -6,34 +6,24 @@
 
 package io.xol.chunkstories.core.voxel;
 
-import io.xol.chunkstories.api.content.Content.Voxels;
-import io.xol.chunkstories.api.rendering.voxel.VoxelBakerCubic;
-import io.xol.chunkstories.api.rendering.voxel.VoxelRenderer;
-import io.xol.chunkstories.api.rendering.world.chunk.ChunkMeshDataSubtypes.LodLevel;
-import io.xol.chunkstories.api.rendering.world.chunk.ChunkMeshDataSubtypes.ShadingType;
-import io.xol.chunkstories.api.rendering.world.chunk.ChunkRenderer;
-import io.xol.chunkstories.api.rendering.world.chunk.ChunkRenderer.ChunkRenderContext;
 import io.xol.chunkstories.api.voxel.Voxel;
 import io.xol.chunkstories.api.voxel.VoxelDefinition;
 import io.xol.chunkstories.api.voxel.textures.VoxelTexture;
-import io.xol.chunkstories.api.world.cell.CellData;
-import io.xol.chunkstories.api.world.chunk.Chunk;
-import io.xol.chunkstories.core.voxel.renderers.DefaultVoxelRenderer;
 
 public class VoxelLeavesLod extends Voxel {
-	VoxelTexture baseTexture;
-	VoxelTexture opaqueTexture;
+	private VoxelTexture baseTexture;
+	private VoxelTexture opaqueTexture;
 
-	LodedLeavesBlocksRenderer renderer;
+	//LodedLeavesBlocksRenderer renderer;
 
 	public VoxelLeavesLod(VoxelDefinition type) {
 		super(type);
-		this.baseTexture = store.textures().getVoxelTexture(getName());
-		this.opaqueTexture = store.textures().getVoxelTexture(getName() + "Opaque");
-		this.renderer = new LodedLeavesBlocksRenderer(type.store());
+		this.baseTexture = store().textures().getVoxelTexture(getName());
+		this.opaqueTexture = store().textures().getVoxelTexture(getName() + "Opaque");
+		//this.renderer = new LodedLeavesBlocksRenderer(type.store());
 	}
 
-	@Override
+	/*@Override
 	public VoxelRenderer getVoxelRenderer(CellData info) {
 		return renderer;
 	}
@@ -116,5 +106,5 @@ public class VoxelLeavesLod extends Voxel {
 			}
 		}
 	}
-
+*/
 }

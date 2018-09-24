@@ -7,13 +7,12 @@
 package io.xol.chunkstories.core;
 
 import io.xol.chunkstories.api.GameContext;
-import io.xol.chunkstories.api.client.ClientInterface;
+import io.xol.chunkstories.api.client.Client;
 import io.xol.chunkstories.api.plugin.ChunkStoriesPlugin;
 import io.xol.chunkstories.api.plugin.PluginInformation;
 import io.xol.chunkstories.core.cli.FoodCommand;
 import io.xol.chunkstories.core.logic.EntityLogicListener;
 import io.xol.chunkstories.core.logic.ItemsLogicListener;
-import io.xol.chunkstories.core.rendering.RenderingEventsListener;
 
 /** 'Glue' for hooking core functions into the base engine */
 public class CoreContentPlugin extends ChunkStoriesPlugin {
@@ -21,7 +20,7 @@ public class CoreContentPlugin extends ChunkStoriesPlugin {
 	private ItemsLogicListener itemsLogic;
 	private EntityLogicListener entityLogic;
 
-	private RenderingEventsListener renderingLogic;
+	//private RenderingEventsListener renderingLogic;
 
 	public CoreContentPlugin(PluginInformation pluginInformation, GameContext pluginExecutionContext) {
 		super(pluginInformation, pluginExecutionContext);
@@ -37,10 +36,10 @@ public class CoreContentPlugin extends ChunkStoriesPlugin {
 		entityLogic = new EntityLogicListener(this);
 		pluginExecutionContext.getPluginManager().registerEventListener(entityLogic, this);
 
-		if (this.getPluginExecutionContext() instanceof ClientInterface) {
-			renderingLogic = new RenderingEventsListener(this, (ClientInterface) getPluginExecutionContext());
+		/*if (this.getPluginExecutionContext() instanceof Client) {
+			renderingLogic = new RenderingEventsListener(this, (Client) getPluginExecutionContext());
 			pluginExecutionContext.getPluginManager().registerEventListener(renderingLogic, this);
-		}
+		}*/
 	}
 
 	@Override

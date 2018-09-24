@@ -6,7 +6,6 @@
 
 package io.xol.chunkstories.core.voxel.components;
 
-import io.xol.chunkstories.api.rendering.text.TextMesh;
 import io.xol.chunkstories.api.voxel.components.VoxelComponent;
 import io.xol.chunkstories.api.world.cell.CellComponents;
 import io.xol.chunkstories.api.world.serialization.StreamSource;
@@ -21,20 +20,14 @@ public class VoxelComponentSignText extends VoxelComponent {
 		super(holder);
 	}
 
-	public String cachedText = null; // set to whatever renderData represents
-	public TextMesh renderData = null; // contains a mesh representing the text written on the sign
-
-	String signText = "";/*
-							 * "In soviet belgium\n" + "#FFFF00Waffles are yellow\n" +
-							 * "#FFFF00Fries are yellow\n" + "Ketchup is #FF0000red";
-							 */
-
+	private String signText = "";
 	public String getSignText() {
 		return signText;
 	}
 
 	public void setSignText(String signText) {
 		this.signText = signText;
+		getHolder().getCell().refreshRepresentation();
 	}
 
 	@Override

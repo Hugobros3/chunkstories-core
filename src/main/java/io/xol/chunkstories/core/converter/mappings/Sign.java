@@ -61,7 +61,7 @@ public class Sign extends NonTrivialMapper {
 			csWorld.pokeSimple(future);
 
 			try {
-				translateSignText(csWorld.peek(csX, csY, csZ).components().get("signData"),
+				translateSignText(csWorld.peek(csX, csY, csZ).components().getVoxelComponent("signData"),
 						region.getChunk(minecraftCuurrentChunkXinsideRegion, minecraftCuurrentChunkZinsideRegion), x, y,
 						z);
 			} catch (WorldException e) {

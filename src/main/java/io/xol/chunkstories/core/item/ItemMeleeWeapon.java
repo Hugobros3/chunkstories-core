@@ -11,7 +11,7 @@ import io.xol.chunkstories.api.client.LocalPlayer;
 import io.xol.chunkstories.api.entity.Controller;
 import io.xol.chunkstories.api.entity.Entity;
 import io.xol.chunkstories.api.entity.traits.TraitHitboxes;
-import io.xol.chunkstories.api.entity.traits.serializable.TraitController;
+import io.xol.chunkstories.api.entity.traits.serializable.TraitControllable;
 import io.xol.chunkstories.api.entity.traits.serializable.TraitHealth;
 import io.xol.chunkstories.api.entity.traits.serializable.TraitRotation;
 import io.xol.chunkstories.api.input.Input;
@@ -19,14 +19,13 @@ import io.xol.chunkstories.api.item.ItemDefinition;
 import io.xol.chunkstories.api.item.inventory.ItemPile;
 import io.xol.chunkstories.api.physics.Box;
 import io.xol.chunkstories.api.physics.EntityHitbox;
-import io.xol.chunkstories.api.rendering.RenderingInterface;
-import io.xol.chunkstories.api.rendering.item.ItemRenderer;
 import io.xol.chunkstories.api.sound.SoundSource.Mode;
 import io.xol.chunkstories.api.world.World;
 import io.xol.chunkstories.api.world.WorldMaster;
 import io.xol.chunkstories.api.world.cell.CellData;
 import io.xol.chunkstories.api.world.cell.EditableCell;
 import io.xol.chunkstories.core.entity.traits.TraitEyeLevel;
+import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
@@ -75,10 +74,10 @@ public class ItemMeleeWeapon extends ItemWeapon {
     }*/
 
     @Override
-    public void tickInHand(Entity owner, ItemPile itemPile) {
+    public void tickInHand(@NotNull Entity owner, @NotNull ItemPile itemPile) {
 
         if (currentSwingStart != 0 && !hasHitYet && (System.currentTimeMillis() - currentSwingStart > hitTime)) {
-            Controller controller = owner.traits.tryWith(TraitController.class, ec -> ec.getController());
+            Controller controller = owner.traits.tryWith(TraitControllable.class, TraitControllable::getController);
 
             // For now only client-side players can trigger shooting actions
             if (controller != null && controller instanceof LocalPlayer) {
@@ -99,7 +98,7 @@ public class ItemMeleeWeapon extends ItemWeapon {
     }
 
     @Override
-    public boolean onControllerInput(Entity entity, ItemPile pile, Input input, Controller controller) {
+    public boolean onControllerInput(@NotNull Entity entity, @NotNull ItemPile pile, @NotNull Input input, @NotNull Controller controller) {
         if (input.getName().startsWith("mouse.left")) {
             // Checks current swing is done
             if (System.currentTimeMillis() - currentSwingStart > swingDuration) {
@@ -110,7 +109,7 @@ public class ItemMeleeWeapon extends ItemWeapon {
             return true;
         } else if (input.getName().equals("shootGun") && entity.getWorld() instanceof WorldMaster) {
             // Actually hits
-            Vector3dc direction = entity.traits.tryWith(TraitRotation.class, er -> er.getDirectionLookingAt());
+            Vector3dc direction = entity.traits.tryWith(TraitRotation.class, TraitRotation::getDirectionLookingAt);
 
             Vector3d eyeLocation = new Vector3d(entity.getLocation());
             entity.traits.with(TraitEyeLevel.class, tel -> eyeLocation.x += tel.getEyeLevel());
@@ -192,7 +191,7 @@ public class ItemMeleeWeapon extends ItemWeapon {
                                 0.25f);
                     }
 
-                    entity.getWorld().getDecalsManager().drawDecal(nearestLocation, normal.negate(), new Vector3d(0.5),
+                    entity.getWorld().getDecalsManager().add(nearestLocation, normal.negate(), new Vector3d(0.5),
                             "bullethole");
                 }
             }
@@ -235,7 +234,7 @@ public class ItemMeleeWeapon extends ItemWeapon {
 
                                 // Spawn blood on walls
                                 if (nearestLocation != null)
-                                    shotEntity.getWorld().getDecalsManager().drawDecal(nearestLocation, bloodDir,
+                                    shotEntity.getWorld().getDecalsManager().add(nearestLocation, bloodDir,
                                             new Vector3d(3.0), "blood");
                             }
                         }
@@ -260,7 +259,7 @@ public class ItemMeleeWeapon extends ItemWeapon {
         }
     }
 
-    class MeleeWeaponRenderer extends ItemRenderer {
+    /*class MeleeWeaponRenderer extends ItemRenderer {
         MeleeWeaponRenderer(ItemRenderer fallbackRenderer) {
             super(fallbackRenderer);
         }
@@ -302,5 +301,5 @@ public class ItemMeleeWeapon extends ItemWeapon {
 
             super.renderItemInWorld(renderingInterface, pile, world, location, matrixed);
         }
-    }
+    }*/
 }

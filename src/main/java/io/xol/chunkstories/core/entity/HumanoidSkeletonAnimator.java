@@ -1,17 +1,15 @@
 package io.xol.chunkstories.core.entity;
 
+import io.xol.chunkstories.api.animation.Animation;
 import io.xol.chunkstories.api.animation.CompoundAnimationHelper;
-import io.xol.chunkstories.api.animation.SkeletalAnimation;
 import io.xol.chunkstories.api.entity.Entity;
 import io.xol.chunkstories.api.entity.traits.serializable.TraitHealth;
 import io.xol.chunkstories.api.entity.traits.serializable.TraitRotation;
 import io.xol.chunkstories.api.entity.traits.serializable.TraitSelectedItem;
 import io.xol.chunkstories.api.entity.traits.serializable.TraitVelocity;
 import io.xol.chunkstories.api.item.Item;
-import io.xol.chunkstories.api.item.ItemVoxel;
 import io.xol.chunkstories.api.item.interfaces.ItemCustomHoldingAnimation;
 import io.xol.chunkstories.api.item.inventory.ItemPile;
-import io.xol.chunkstories.api.rendering.RenderingInterface;
 import io.xol.chunkstories.api.world.WorldClient;
 import io.xol.chunkstories.core.entity.components.EntityStance;
 import io.xol.chunkstories.core.entity.components.EntityStance.EntityHumanoidStance;
@@ -42,7 +40,7 @@ public class HumanoidSkeletonAnimator extends CompoundAnimationHelper {
 	}
 
 	@Override
-	public SkeletalAnimation getAnimationPlayingForBone(String boneName, double animationTime) {
+	public Animation getAnimationPlayingForBone(String boneName, double animationTime) {
 		if (entityHealth.isDead())
 			return entity.getWorld().getGameContext().getContent().getAnimationsLibrary()
 					.getAnimation("./animations/human/ded.bvh");
@@ -50,7 +48,7 @@ public class HumanoidSkeletonAnimator extends CompoundAnimationHelper {
 		if (Arrays.asList(new String[] { "boneArmLU", "boneArmRU", "boneArmLD", "boneArmRD", "boneItemInHand" })
 				.contains(boneName)) {
 
-			SkeletalAnimation r = entity.traits.tryWith(TraitSelectedItem.class, ecs -> {
+			Animation r = entity.traits.tryWith(TraitSelectedItem.class, ecs -> {
 				ItemPile selectedItemPile = ecs.getSelectedItem();
 
 				if (selectedItemPile != null) {
@@ -149,7 +147,7 @@ public class HumanoidSkeletonAnimator extends CompoundAnimationHelper {
 					.contains(boneName)) {
 				MiningProgress miningProgress = trait.getProgress();
 				if (miningProgress != null) {
-					SkeletalAnimation lol = entity.world.getGameContext().getContent().getAnimationsLibrary()
+					Animation lol = entity.world.getGameContext().getContent().getAnimationsLibrary()
 							.getAnimation("./animations/human/mining.bvh");
 
 					return characterRotationMatrix.mul(lol.getBone(boneName)
@@ -187,7 +185,8 @@ public class HumanoidSkeletonAnimator extends CompoundAnimationHelper {
 				.getTransformationMatrix(animationTime));
 	}
 
-	public boolean shouldHideBone(RenderingInterface renderingContext, String boneName) {
+	//TODO
+	/*public boolean shouldHideBone(RenderingInterface renderingContext, String boneName) {
 		if (entity.equals(((WorldClient) entity.getWorld()).getClient().getPlayer().getControlledEntity())) {
 			if (renderingContext.getCurrentPass().name.startsWith("shadow"))
 				return false;
@@ -206,5 +205,5 @@ public class HumanoidSkeletonAnimator extends CompoundAnimationHelper {
 			return true;
 		}
 		return false;
-	}
+	}*/
 }

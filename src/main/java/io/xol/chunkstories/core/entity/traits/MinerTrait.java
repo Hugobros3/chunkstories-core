@@ -11,7 +11,7 @@ import io.xol.chunkstories.api.entity.Controller;
 import io.xol.chunkstories.api.entity.Entity;
 import io.xol.chunkstories.api.entity.traits.Trait;
 import io.xol.chunkstories.api.entity.traits.TraitVoxelSelection;
-import io.xol.chunkstories.api.entity.traits.serializable.TraitController;
+import io.xol.chunkstories.api.entity.traits.serializable.TraitControllable;
 import io.xol.chunkstories.api.events.voxel.WorldModificationCause;
 import io.xol.chunkstories.api.input.InputsManager;
 import io.xol.chunkstories.api.player.Player;
@@ -49,10 +49,10 @@ public class MinerTrait extends Trait {
 
 		World world = entity.getWorld();
 
-		entity.traits.with(TraitController.class, ec -> {
+		entity.traits.with(TraitControllable.class, ec -> {
 			Controller controller = ec.getController();
 
-			if (controller != null && controller instanceof Player) {
+			if (controller instanceof Player) {
 				InputsManager inputs = controller.getInputsManager();
 
 				Location lookingAt = entity.traits.tryWith(TraitVoxelSelection.class,
@@ -67,15 +67,13 @@ public class MinerTrait extends Trait {
 					WorldCell cell = world.peekSafely(lookingAt);
 
 					// Cancel mining if looking away or the block changed by itself
-					if (lookingAt == null || (progress != null
-							&& (lookingAt.distance(progress.loc) > 0 || !cell.getVoxel().sameKind(progress.voxel)))) {
+					if (progress != null && (lookingAt.distance(progress.loc) > 0 || !cell.getVoxel().sameKind(progress.voxel))) {
 						progress = null;
 					}
 
 					if (progress == null) {
 						// Try starting mining something
-						if (lookingAt != null)
-							progress = new MiningProgress(world.peekSafely(lookingAt), tool);
+						progress = new MiningProgress(world.peekSafely(lookingAt), tool);
 					} else {
 						progress.keepGoing(entity, controller);
 					}
