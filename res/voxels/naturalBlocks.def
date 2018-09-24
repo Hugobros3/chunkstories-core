@@ -1,6 +1,5 @@
-/** Dirt with grass on top */
+/* Dirt with grass on top */
 voxel grass {
-	
 	textures {
 		top: ~_top
 		sides: ~_side
@@ -112,9 +111,7 @@ voxel cactus {
 	hardness: 0.8
 }
 
-voxel {
-	name: web
-	
+voxel web {
 	solid: false
 	opaque: false
 	representation {
