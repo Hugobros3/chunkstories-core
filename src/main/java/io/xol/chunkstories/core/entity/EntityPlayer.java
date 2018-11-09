@@ -31,6 +31,7 @@ import io.xol.chunkstories.api.world.WorldClient;
 import io.xol.chunkstories.api.world.WorldMaster;
 import io.xol.chunkstories.api.world.cell.CellData;
 import io.xol.chunkstories.api.world.cell.FutureCell;
+import io.xol.chunkstories.core.CoreOptions;
 import io.xol.chunkstories.core.entity.components.EntityArmorInventory;
 import io.xol.chunkstories.core.entity.components.EntityFoodLevel;
 import io.xol.chunkstories.core.entity.components.EntityStance.EntityHumanoidStance;
@@ -185,8 +186,8 @@ public class EntityPlayer extends EntityHumanoid implements WorldModificationCau
 				modifier = 1.0 / item.getZoomFactor();
 			}
 
-			rotH += dx * modifier / 3f	* controller.getClient().getConfiguration().getDoubleValue("client.input.mouseSensitivity");
-			rotV -= dy * modifier / 3f	* controller.getClient().getConfiguration().getDoubleValue("client.input.mouseSensitivity");
+			rotH += dx * modifier / 3f	* controller.getClient().getConfiguration().getDoubleValue(CoreOptions.INSTANCE.getMouseSensitivity());
+			rotV -= dy * modifier / 3f	* controller.getClient().getConfiguration().getDoubleValue(CoreOptions.INSTANCE.getMouseSensitivity());
 			entityRotation.setRotation(rotH, rotV);
 
 			controller.getInputsManager().getMouse().setMouseCursorLocation(controller.getWindow().getWidth() / 2.0,
