@@ -1,0 +1,19 @@
+// Basic entities used for the game to initialize itself
+
+entity player {
+	class: io.xol.chunkstories.core.entity.EntityPlayer
+	collidesWithEntities: true
+	startHealth: 100
+	maxHealth: 100
+}
+
+entity zombie {
+	class: io.xol.chunkstories.core.entity.EntityZombie
+	collidesWithEntities: true
+	startHealth: 50
+	maxHealth: 100
+}
+
+entity groundItem {
+	class: io.xol.chunkstories.core.entity.EntityGroundItem
+}

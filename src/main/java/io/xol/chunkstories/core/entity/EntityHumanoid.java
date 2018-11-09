@@ -45,12 +45,6 @@ public abstract class EntityHumanoid extends EntityLiving {
 				new EntityHitbox(this, new Box(-0.15, -0.075, -0.125, 0.35, 0.075, 0.25), "boneFootL"),
 				new EntityHitbox(this, new Box(-0.15, -0.075, -0.125, 0.35, 0.075, 0.25), "boneFootR"), };
 
-		this.hitboxes = new TraitHitboxes(this) {
-			@Override public EntityHitbox[] getHitBoxes() {
-				return hitboxes;
-			}
-		};
-
 		this.stance = new EntityStance(this);
 
 		this.animationTrait = new TraitAnimated(this) {
@@ -58,6 +52,12 @@ public abstract class EntityHumanoid extends EntityLiving {
 
 			@Override public Animator getAnimatedSkeleton() {
 				return humanoidSkeletonAnimator;
+			}
+		};
+
+		this.hitboxes = new TraitHitboxes(this) {
+			@Override public EntityHitbox[] getHitBoxes() {
+				return hitboxes;
 			}
 		};
 

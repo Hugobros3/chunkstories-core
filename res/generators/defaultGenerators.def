@@ -1,0 +1,36 @@
+// Bundled world generators
+
+generator blank {
+	class: io.xol.chunkstories.api.world.generator.BlankWorldGenerator
+	maxGenerationHeight: 0
+}
+
+generator horizon {
+	class: io.xol.chunkstories.core.generator.HorizonGenerator
+	maxGenerationHeight: 512
+	
+	waterLevel: 48
+	mountainOffset: 0.3
+	mountainScale: 128
+	baseHeightScale: 64
+	plateauHeightScale: 24
+}
+
+generator island {
+	class: io.xol.chunkstories.core.generator.IslandGenerator
+	maxGenerationHeight: 384
+	
+	waterLevel: 48
+	mountainOffset: 0.3
+	mountainScale: 128
+	baseHeightScale: 16
+	plateauHeightScale: 24
+}
+
+generator flat {
+	class: io.xol.chunkstories.core.generator.FlatGenerator
+}
+
+generator noise {
+	class: io.xol.chunkstories.core.generator.NoiseWorldGenerator
+}

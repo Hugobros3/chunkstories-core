@@ -160,6 +160,8 @@ public class EntityPlayer extends EntityHumanoid implements WorldModificationCau
 		public void moveCamera(LocalPlayer controller) {
 			if (entityHealth.isDead())
 				return;
+			if(!controller.getInputsManager().getMouse().isGrabbed())
+				return;
 
 			double cPX = controller.getInputsManager().getMouse().getCursorX();
 			double cPY = controller.getInputsManager().getMouse().getCursorY();

@@ -1,28 +1,28 @@
 # Here you assign entities their ID and class. An optional name might be provided for convinience, else the simple name of the class will be used.
 # ID 0 is reserved
 
-entity player
+entity player {
 	class: io.xol.chunkstories.core.entity.EntityPlayer
 	collidesWithEntities: true
 	startHealth: 100
 	maxHealth: 100
-end
+}
 
-entity zombie
+entity zombie {
 	class: io.xol.chunkstories.core.entity.EntityZombie
 	collidesWithEntities: true
 	startHealth: 50
 	maxHealth: 100
-end
+}
 
-voxel_entity chest
+/*voxel_entity chest {
 	class: io.xol.chunkstories.core.entity.voxel.EntityChest
-end
+}
 
-voxel_entity sign
+voxel_entity sign {
 	class: io.xol.chunkstories.core.entity.voxel.EntitySign
-end
+}*/
 
-entity groundItem
+entity groundItem {
 	class: io.xol.chunkstories.core.entity.EntityGroundItem
-end
+}
