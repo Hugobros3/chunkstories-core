@@ -59,7 +59,7 @@ public class MiningProgress {
 
 		// if the voxel is devoid of information, we do the same on the material
 		if (hardnessString == null)
-			hardnessString = material.resolveProperty("materialHardnessFor" + tool.getToolTypeName(), null);
+			hardnessString = material.resolveProperty("materialHardnessFor" + tool.getToolTypeName());
 
 		// Eventually we default to 1.0
 		if (hardnessString == null)
