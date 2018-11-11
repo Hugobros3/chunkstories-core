@@ -26,7 +26,7 @@ public class CoreContentPlugin extends ChunkStoriesPlugin {
 		super(pluginInformation, pluginExecutionContext);
 		this.getPluginManager().registerCommandHandler("food", new FoodCommand());
 
-		pluginExecutionContext.logger().info("INIT CORE CONTENT PLUGINgit ");
+		pluginExecutionContext.logger().info("INIT CORE CONTENT PLUGIN");
 		if(pluginExecutionContext instanceof Client) {
 			pluginExecutionContext.logger().info("Installing additional options");
 			((Client)pluginExecutionContext).getConfiguration().addOptions(CoreOptions.INSTANCE.getOptions());
