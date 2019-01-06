@@ -1,6 +1,6 @@
 #version 450
 
-in vec3 vertexIn;
+in uvec3 vertexIn;
 in vec3 colorIn;
 in vec3 normalIn;
 in vec2 texCoordIn;
@@ -16,9 +16,15 @@ out float fogStrength;
 #include struct <io.xol.chunkstories.api.graphics.structs.Camera>
 uniform Camera camera;
 
+#include struct <io.xol.chunkstories.graphics.common.world.ChunkRenderInfo>
+uniform ChunkRenderInfo chunkInfo;
+
 void main()
 {
-	vec4 viewSpace = camera.viewMatrix * vec4(vertexIn.xyz, 1.0);
+	vec3 vertexPos = vertexIn.xyz;
+	vertexPos += vec3(chunkInfo.chunkX, chunkInfo.chunkY, chunkInfo.chunkZ) * 32.0;
+
+	vec4 viewSpace = camera.viewMatrix * vec4(vertexPos, 1.0);
 	vec4 projected = camera.projectionMatrix * viewSpace;
 
 	fogStrength = clamp(1.0 - length(viewSpace) * 0.001, 0.0, 1.0);
