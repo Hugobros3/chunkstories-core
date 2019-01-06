@@ -1,12 +1,10 @@
-// 
-
 item item_voxel {
-	customClass: io.xol.chunkstories.api.item.ItemVoxel
+	class: io.xol.chunkstories.api.item.ItemVoxel
 	maxStackSize: 100
 }
 
 item item_voxel_1x2 {
-	customClass: io.xol.chunkstories.api.item.ItemVoxel
+	class: io.xol.chunkstories.api.item.ItemVoxel
 	maxStackSize: 100
 	width: 1
 	height: 2
@@ -33,43 +31,43 @@ item iron_axe {
 }
 
 item bread {
-	customClass: io.xol.chunkstories.core.item.ItemFood
+	class: io.xol.chunkstories.core.item.ItemFood
 	calories: 20
 	maxStackSize: 5
 }
 
 item soup {
-	customClass: io.xol.chunkstories.core.item.ItemFood
+	class: io.xol.chunkstories.core.item.ItemFood
 	calories: 15
 	maxStackSize: 10
 }
 
 item cookie {
-	customClass: io.xol.chunkstories.core.item.ItemFood
+	class: io.xol.chunkstories.core.item.ItemFood
 	calories: 10
 	maxStackSize: 30
 }
 
 item pie {
-	customClass: io.xol.chunkstories.core.item.ItemFood
+	class: io.xol.chunkstories.core.item.ItemFood
 	calories: 20
 	maxStackSize: 2
 }
 
 item apple {
-	customClass: io.xol.chunkstories.core.item.ItemFood
+	class: io.xol.chunkstories.core.item.ItemFood
 	calories: 25
 	maxStackSize: 5
 }
 
 item steak {
-	customClass: io.xol.chunkstories.core.item.ItemFood
+	class: io.xol.chunkstories.core.item.ItemFood
 	calories: 40
 	maxStackSize: 5
 }
 
 item ble {
-	customClass: io.xol.chunkstories.core.item.ItemFood
+	class: io.xol.chunkstories.core.item.ItemFood
 	calories: 5
 	maxStackSize: 40
 }
@@ -100,7 +98,7 @@ item coal {
 
 // Standalone demo of the weapons component
 item weapon_ak47 {
-	customClass: io.xol.chunkstories.core.item.ItemFirearm
+	class: io.xol.chunkstories.core.item.ItemFirearm
 	width: 3
 	height: 3
 	maxStackSize: 1
@@ -119,7 +117,7 @@ item weapon_ak47 {
 }
 
 item mag_ak47 {
-	customClass: io.xol.chunkstories.core.item.ItemFirearmMagazine
+	class: io.xol.chunkstories.core.item.ItemFirearmMagazine
 	width: 2
 	height: 2
 	maxStackSize: 30

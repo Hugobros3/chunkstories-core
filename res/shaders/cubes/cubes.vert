@@ -21,15 +21,13 @@ void main()
 	vec4 viewSpace = camera.viewMatrix * vec4(vertexIn.xyz, 1.0);
 	vec4 projected = camera.projectionMatrix * viewSpace;
 
-	fogStrength = clamp(1.0 - length(viewSpace) * 0.002, 0.0, 1.0);
+	fogStrength = clamp(1.0 - length(viewSpace) * 0.001, 0.0, 1.0);
 
 	color = vec4(colorIn, 1.0);
 	normal = normalIn;
 	texCoord = texCoordIn;
 	textureId = gl_VertexIndex / 2048;
 	textureId = int(textureIdIn);
-	/*texCoord = vec2(0.0);
-	textureId = 1;*/
 
 	gl_Position = projected;
 }

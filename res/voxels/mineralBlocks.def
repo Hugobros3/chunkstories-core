@@ -39,7 +39,7 @@ voxel granite {
 	material: stone
 }
 
-voxel andesite {
+voxel marble {
 	material: stone
 }
 

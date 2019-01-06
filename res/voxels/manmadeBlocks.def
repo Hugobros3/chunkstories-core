@@ -139,7 +139,7 @@ voxel fancy_marble {
 	material: stone
 }
 
-voxel fullslab {
+voxel full_slab {
 	material: stone
 	textures {
 		sides: slab_side
@@ -197,15 +197,15 @@ voxel iron_door_top {
 voxel whool {
 	class: io.xol.chunkstories.core.voxel.Voxel16Variants
 	//todo improve that syntax
-	variants: "white, orange, purple, turquoise, yellow, lime, pink, darkgrey, grey, cyan, purple, sea, brown, kaki, red, black"
+	variants: "white, orange, purple, turquoise, yellow, lime, pink, darkgrey, grey, cyan, violet, sea, brown, kaki, red, black"
 }
 
-voxel colored {
+voxel concrete {
 	class: io.xol.chunkstories.core.voxel.Voxel16Variants
 	material: concrete
-	texture: concrete.colored
+	//texture: concrete.colored
 	//todo improve that syntax
-	variants: "white, orange, purple, turquoise, yellow, lime, pink, darkgrey, grey, cyan, purple, sea, brown, kaki, red, black"
+	variants: "white, orange, purple, turquoise, yellow, lime, pink, darkgrey, grey, cyan, violet, sea, brown, kaki, red, black"
 }
 
 /** GARDENING */
