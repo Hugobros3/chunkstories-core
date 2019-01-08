@@ -18,28 +18,28 @@ voxel darkplanks {
 
 /** PLANK STAIRS */
 voxel planks_stairs {
-	class: io.xol.chunkstories.core.voxel.VoxelStairs
+	class: xyz.chunkstories.core.voxel.VoxelStairs
 	opaque: false
 	material: bluntwood
 	texture: planks
 }
 
 voxel goldplanks_stairs {
-	class: io.xol.chunkstories.core.voxel.VoxelStairs
+	class: xyz.chunkstories.core.voxel.VoxelStairs
 	opaque: false
 	material: bluntwood
 	texture: goldplanks
 }
 
 voxel whiteplanks_stairs {
-	class: io.xol.chunkstories.core.voxel.VoxelStairs
+	class: xyz.chunkstories.core.voxel.VoxelStairs
 	opaque: false
 	material: bluntwood
 	texture: whiteplanks
 }
 
 voxel darkplanks_stairs {
-	class: io.xol.chunkstories.core.voxel.VoxelStairs
+	class: xyz.chunkstories.core.voxel.VoxelStairs
 	opaque: false
 	material: bluntwood
 	texture: darkplanks
@@ -53,28 +53,28 @@ voxel wood_fence {
 }
 /** PLANK SLABS */
 voxel planks_slab {
-	class: io.xol.chunkstories.core.voxel.VoxelHalfTile
+	class: xyz.chunkstories.core.voxel.VoxelHalfTile
 	opaque: false
 	material: bluntwood
 	texture: planks
 }
 
 voxel goldplanks_slab {
-	class: io.xol.chunkstories.core.voxel.VoxelHalfTile
+	class: xyz.chunkstories.core.voxel.VoxelHalfTile
 	opaque: false
 	material: bluntwood
 	texture: goldplanks
 }
 
 voxel whiteplanks_slab {
-	class: io.xol.chunkstories.core.voxel.VoxelHalfTile
+	class: xyz.chunkstories.core.voxel.VoxelHalfTile
 	opaque: false
 	material: bluntwood
 	texture: whiteplanks
 }
 
 voxel darkplanks_slab {
-	class: io.xol.chunkstories.core.voxel.VoxelHalfTile
+	class: xyz.chunkstories.core.voxel.VoxelHalfTile
 	opaque: false
 	material: bluntwood
 	texture: darkplanks
@@ -89,14 +89,14 @@ voxel wood_fence {
 
 /** MISC */
 voxel ladder {
-	class: io.xol.chunkstories.core.voxel.VoxelLadder
+	class: xyz.chunkstories.core.voxel.VoxelLadder
 	material: bluntwood
 	opaque: false
 	//hardnessForAxe: 0.5
 }
 
 voxel wood_chest {
-	class: io.xol.chunkstories.core.voxel.VoxelChest
+	class: xyz.chunkstories.core.voxel.VoxelChest
 	opaque: false
 	selfOpaque: true
 	material: bluntwood
@@ -110,27 +110,27 @@ voxel wood_chest {
 }
 
 voxel wood_sign {
-	class: io.xol.chunkstories.core.voxel.VoxelSign
+	class: xyz.chunkstories.core.voxel.VoxelSign
 	material: bluntwood
 	solid: false
 	opaque: false
 }
 
 voxel wood_sign_post {
-	class: io.xol.chunkstories.core.voxel.VoxelSign
+	class: xyz.chunkstories.core.voxel.VoxelSign
 	material: bluntwood
 	solid: false
 	opaque: false
 }
 
 voxel wood_door {
-	class: io.xol.chunkstories.core.voxel.VoxelDoor
+	class: xyz.chunkstories.core.voxel.VoxelDoor
 	opaque: false
 	material: bluntwood
 }
 
 voxel wood_door_top {
-	class: io.xol.chunkstories.core.voxel.VoxelDoor
+	class: xyz.chunkstories.core.voxel.VoxelDoor
 	opaque: false
 	material: bluntwood
 }

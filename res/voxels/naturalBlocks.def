@@ -63,7 +63,7 @@ voxel birchwood {
 }
 
 voxel leaves {
-	class: io.xol.chunkstories.core.voxel.VoxelLeavesLod
+	class: xyz.chunkstories.core.voxel.VoxelLeavesLod
 	opaque: false
 	selfOpaque: false
 	shadingLightLevel: 2
@@ -74,7 +74,7 @@ voxel leaves {
 }
 
 voxel pineleaves {
-	class: io.xol.chunkstories.core.voxel.VoxelLeavesLod
+	class: xyz.chunkstories.core.voxel.VoxelLeavesLod
 	opaque: false
 	selfOpaque: false
 	shadingLightLevel: 2
@@ -85,7 +85,7 @@ voxel pineleaves {
 }
 
 voxel birchleaves {
-	class: io.xol.chunkstories.core.voxel.VoxelLeavesLod
+	class: xyz.chunkstories.core.voxel.VoxelLeavesLod
 	opaque: false
 	selfOpaque: false
 	shadingLightLevel: 2
@@ -96,7 +96,7 @@ voxel birchleaves {
 }
 
 voxel vine {
-	class: io.xol.chunkstories.core.voxel.VoxelVine
+	class: xyz.chunkstories.core.voxel.VoxelVine
 	opaque: false
 	solid: false
 	hardness: 0.5

@@ -34,8 +34,8 @@ repositories {
 }
 
 description = 'The base content chunkstories is built on.'
-group = 'io.xol.chunkstories'
-version = '150'
+group = 'xyz.chunkstories'
+version = '201'
 
 sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
@@ -53,12 +53,12 @@ spotless {
 }
 
 ext {
-	apiRevisionBuiltAgainst = '200'
+	apiRevisionBuiltAgainst = '201'
 	useEclipseCompiler = false
 }
 
 dependencies {
-	compile group: 'io.xol.chunkstories', name: 'api', version: apiRevisionBuiltAgainst
+	compile group: 'xyz.chunkstories', name: 'api', version: apiRevisionBuiltAgainst
 	compile group: 'io.xol.enklume', name: 'enklume', version: 100
 
 	implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"

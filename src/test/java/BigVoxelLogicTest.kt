@@ -1,4 +1,4 @@
-package io.xol.chunkstories.core.voxel
+package xyz.chunkstories.core.voxel
 
 import org.junit.Test
 

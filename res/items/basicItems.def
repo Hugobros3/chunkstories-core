@@ -1,17 +1,17 @@
 item item_voxel {
-	class: io.xol.chunkstories.api.item.ItemVoxel
+	class: xyz.chunkstories.api.item.ItemVoxel
 	maxStackSize: 100
 }
 
 item item_voxel_1x2 {
-	class: io.xol.chunkstories.api.item.ItemVoxel
+	class: xyz.chunkstories.api.item.ItemVoxel
 	maxStackSize: 100
 	width: 1
 	height: 2
 }
 
 item iron_pickaxe {
-	class: io.xol.chunkstories.core.item.ItemMiningTool
+	class: xyz.chunkstories.core.item.ItemMiningTool
 	toolType: pickaxe
 	miningEfficiency: 1.0
 	model: "./items/models/pickaxe.dae"
@@ -19,55 +19,55 @@ item iron_pickaxe {
 }
 
 item iron_shovel {
-	class: io.xol.chunkstories.core.item.ItemMiningTool
+	class: xyz.chunkstories.core.item.ItemMiningTool
 	toolType: shovel
 	miningEfficiency: 1.0
 }
 
 item iron_axe {
-	class: io.xol.chunkstories.core.item.ItemMiningTool
+	class: xyz.chunkstories.core.item.ItemMiningTool
 	toolType: axe
 	miningEfficiency: 1.0
 }
 
 item bread {
-	class: io.xol.chunkstories.core.item.ItemFood
+	class: xyz.chunkstories.core.item.ItemFood
 	calories: 20
 	maxStackSize: 5
 }
 
 item soup {
-	class: io.xol.chunkstories.core.item.ItemFood
+	class: xyz.chunkstories.core.item.ItemFood
 	calories: 15
 	maxStackSize: 10
 }
 
 item cookie {
-	class: io.xol.chunkstories.core.item.ItemFood
+	class: xyz.chunkstories.core.item.ItemFood
 	calories: 10
 	maxStackSize: 30
 }
 
 item pie {
-	class: io.xol.chunkstories.core.item.ItemFood
+	class: xyz.chunkstories.core.item.ItemFood
 	calories: 20
 	maxStackSize: 2
 }
 
 item apple {
-	class: io.xol.chunkstories.core.item.ItemFood
+	class: xyz.chunkstories.core.item.ItemFood
 	calories: 25
 	maxStackSize: 5
 }
 
 item steak {
-	class: io.xol.chunkstories.core.item.ItemFood
+	class: xyz.chunkstories.core.item.ItemFood
 	calories: 40
 	maxStackSize: 5
 }
 
 item ble {
-	class: io.xol.chunkstories.core.item.ItemFood
+	class: xyz.chunkstories.core.item.ItemFood
 	calories: 5
 	maxStackSize: 40
 }
@@ -98,7 +98,7 @@ item coal {
 
 // Standalone demo of the weapons component
 item weapon_ak47 {
-	class: io.xol.chunkstories.core.item.ItemFirearm
+	class: xyz.chunkstories.core.item.ItemFirearm
 	width: 3
 	height: 3
 	maxStackSize: 1
@@ -117,7 +117,7 @@ item weapon_ak47 {
 }
 
 item mag_ak47 {
-	class: io.xol.chunkstories.core.item.ItemFirearmMagazine
+	class: xyz.chunkstories.core.item.ItemFirearmMagazine
 	width: 2
 	height: 2
 	maxStackSize: 30

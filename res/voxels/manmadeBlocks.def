@@ -20,28 +20,28 @@ voxel bricks {
 }
 
 voxel brick_stairs {
-	class: io.xol.chunkstories.core.voxel.VoxelStairs
+	class: xyz.chunkstories.core.voxel.VoxelStairs
 	opaque: false
 	material: stone
 	texture: redbricks
 }
 
 voxel bricks_slab {
-	class: io.xol.chunkstories.core.voxel.VoxelHalfTile
+	class: xyz.chunkstories.core.voxel.VoxelHalfTile
 	opaque: false
 	material: stone
 	texture: redbricks
 }
 
 voxel cobble_stairs {
-	class: io.xol.chunkstories.core.voxel.VoxelStairs
+	class: xyz.chunkstories.core.voxel.VoxelStairs
 	opaque: false
 	material: bluntwood
 	texture: cobble
 }
 
 voxel cobble_slab {	
-	class: io.xol.chunkstories.core.voxel.VoxelHalfTile
+	class: xyz.chunkstories.core.voxel.VoxelHalfTile
 	opaque: false
 	material: bluntwood
 	texture: cobble
@@ -51,28 +51,28 @@ voxel ardoise {
 }
 
 voxel ardoise_stairs {
-	class: io.xol.chunkstories.core.voxel.VoxelStairs
+	class: xyz.chunkstories.core.voxel.VoxelStairs
 	opaque: false
 	material: stone
 	texture: ardoise
 }
 
 voxel ardoise_slab {
-	class: io.xol.chunkstories.core.voxel.VoxelHalfTile
+	class: xyz.chunkstories.core.voxel.VoxelHalfTile
 	opaque: false
 	material: stone
 	texture: ardoise
 }
 
 voxel hardsand_stairs {
-	class: io.xol.chunkstories.core.voxel.VoxelStairs
+	class: xyz.chunkstories.core.voxel.VoxelStairs
 	opaque: false
 	material: stone
 	texture: hardsand
 }
 
 voxel hardsand_slab {
-	class: io.xol.chunkstories.core.voxel.VoxelHalfTile
+	class: xyz.chunkstories.core.voxel.VoxelHalfTile
 	opaque: false
 	material: stone
 	texture: hardsand
@@ -91,7 +91,7 @@ voxel glass {
 }
 
 voxel glass_pane {
-	class: io.xol.chunkstories.core.voxel.VoxelPane
+	class: xyz.chunkstories.core.voxel.VoxelPane
 	opaque: false
 	selfOpaque: true
 	texture: glass
@@ -114,14 +114,14 @@ voxel stonebrick_mossy {
 }
 
 voxel stonebrick_stairs {
-	class: io.xol.chunkstories.core.voxel.VoxelStairs
+	class: xyz.chunkstories.core.voxel.VoxelStairs
 	opaque: false
 	material: stone
 	texture: stonebrick
 }
 
 voxel stonebrick_slab {
-	class: io.xol.chunkstories.core.voxel.VoxelHalfTile
+	class: xyz.chunkstories.core.voxel.VoxelHalfTile
 	opaque: false
 	material: stone
 	texture: stonebrick
@@ -149,7 +149,7 @@ voxel full_slab {
 }
 
 voxel slab {
-	class: io.xol.chunkstories.core.voxel.VoxelHalfTile
+	class: xyz.chunkstories.core.voxel.VoxelHalfTile
 	opaque: false
 	material: stone
 	texture: stonebrick
@@ -163,14 +163,14 @@ voxel gold_block {
 }
 
 voxel ironGrill {
-	class: io.xol.chunkstories.core.voxel.VoxelPane
+	class: xyz.chunkstories.core.voxel.VoxelPane
 	opaque: false
 	selfOpaque: true
 	material: metalbar
 }
 
 voxel rails {
-	class: io.xol.chunkstories.core.voxel.VoxelRail
+	class: xyz.chunkstories.core.voxel.VoxelRail
 	solid: false
 	opaque: false
 	
@@ -182,26 +182,26 @@ voxel rails {
 /** CONSTRUCTION */
 
 voxel iron_door {
-	class: io.xol.chunkstories.core.voxel.VoxelDoor
+	class: xyz.chunkstories.core.voxel.VoxelDoor
 	opaque: false
 	material: bluntwood
 }
 
 voxel iron_door_top {
-	class: io.xol.chunkstories.core.voxel.VoxelDoor
+	class: xyz.chunkstories.core.voxel.VoxelDoor
 	opaque: false
 	material: bluntwood
 }
 
 /** DECORATION & HOME IMPROVEMENT */
 voxel whool {
-	class: io.xol.chunkstories.core.voxel.Voxel16Variants
+	class: xyz.chunkstories.core.voxel.Voxel16Variants
 	//todo improve that syntax
 	variants: "white, orange, purple, turquoise, yellow, lime, pink, darkgrey, grey, cyan, violet, sea, brown, kaki, red, black"
 }
 
 voxel concrete {
-	class: io.xol.chunkstories.core.voxel.Voxel16Variants
+	class: xyz.chunkstories.core.voxel.Voxel16Variants
 	material: concrete
 	//texture: concrete.colored
 	//todo improve that syntax
@@ -222,7 +222,7 @@ voxel path {
 }
 
 voxel cobble_wall {
-	class: io.xol.chunkstories.core.voxel.VoxelStoneWall
+	class: xyz.chunkstories.core.voxel.VoxelStoneWall
 	opaque: false
 	texture: cobble
 	material: stone

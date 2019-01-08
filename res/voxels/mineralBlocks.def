@@ -51,7 +51,7 @@ voxel snowblock {
 }
 
 voxel snow {
-	class: io.xol.chunkstories.core.voxel.Voxel8Steps
+	class: xyz.chunkstories.core.voxel.Voxel8Steps
 	opaque: false
 	selfOpaque: true
 	material: snow

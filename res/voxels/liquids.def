@@ -1,5 +1,5 @@
 voxel water {
-	class: io.xol.chunkstories.core.voxel.VoxelLiquid
+	class: xyz.chunkstories.core.voxel.VoxelLiquid
 	solid: false
 	opaque: false
 	selfOpaque: false
@@ -7,7 +7,7 @@ voxel water {
 }
 
 voxel lava {
-	class: io.xol.chunkstories.core.voxel.VoxelLiquid
+	class: xyz.chunkstories.core.voxel.VoxelLiquid
 	solid: false
 	opaque: false
 	selfOpaque: false
