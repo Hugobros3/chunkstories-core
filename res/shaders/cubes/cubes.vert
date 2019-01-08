@@ -6,6 +6,7 @@ in vec3 normalIn;
 in vec2 texCoordIn;
 in uint textureIdIn;
 
+out vec3 vertex;
 out vec4 color;
 out vec3 normal;
 out vec2 texCoord;
@@ -29,6 +30,7 @@ void main()
 
 	fogStrength = clamp(1.0 - length(viewSpace) * 0.001, 0.0, 1.0);
 
+	vertex = vertexPos;
 	color = vec4(colorIn, 1.0);
 	normal = normalIn;
 	texCoord = texCoordIn;
