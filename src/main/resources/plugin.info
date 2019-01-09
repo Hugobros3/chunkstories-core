@@ -1,5 +1,5 @@
 name: Core
 authors: XolioWare Interactive
 version: 1.0
-main: io.xol.chunkstories.core.CoreContentPlugin
+main: xyz.chunkstories.core.CoreContentPlugin
 
