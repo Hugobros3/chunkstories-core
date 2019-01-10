@@ -1,17 +1,11 @@
 #version 450
 
-layout(set=0, location=0) uniform sampler2D virtualTextures[1024];
-
-in vec3 vertex;
-in vec4 color;
-in vec3 normal;
-in vec2 texCoord;
-flat in int textureId;
-
-in float fogStrength;
+in vec2 vertexPos;
 
 out vec4 colorOut;
-out vec4 normalOut;
+
+uniform sampler2D colorBuffer;
+uniform sampler2D normalBuffer;
 
 #include struct <xyz.chunkstories.api.graphics.structs.Camera>
 uniform Camera camera;
@@ -19,26 +13,18 @@ uniform Camera camera;
 #include struct <xyz.chunkstories.api.graphics.structs.WorldConditions>
 uniform WorldConditions world;
 
-#include ../sky/sky.glsl
-
 void main()
 {
-	// The magic virtual texturing stuff 
-	// ( requires EXT_descriptor_indexing.shaderSampledImageArrayNonUniformIndexing )
-	vec4 albedo = texture(virtualTextures[textureId], texCoord);
-	//vec4 albedo = vec4(1.0, 0.2, 0.2, 1.0);
+	vec4 albedo = texture(colorBuffer, vec2(vertexPos.x * 0.5 + 0.5, 0.5 + vertexPos.y * 0.5));
+	vec3 normal = texture(normalBuffer, vec2(vertexPos.x * 0.5 + 0.5, 0.5 + vertexPos.y * 0.5)).xyz * 2.0 - vec3(1.0);
 
-	if(albedo.a == 0.0) {
+	if(albedo.a == 0) {
 		discard;
 	}
 
-	if(albedo.a < 1.0) {
-		albedo.rgb *= vec3(0.2, 1.0, 0.5);
-		albedo.a = 1.0;
-	}
+	vec2 color = vec2(1.0, 0.0);
 
-	// Unused code ( can reproduce the crash without it )
-	/*float NdL = clamp(dot(world.sunPosition, normal.xyz), 0.0, 1.0);
+	float NdL = clamp(dot(world.sunPosition, normal.xyz), 0.0, 1.0);
 	
 	vec3 shadowLight = vec3(52.0 / 255.0, 68.0 / 255.0, 84.0 / 255.0);
 	vec3 sunLight = vec3(1.0) - shadowLight;
@@ -58,8 +44,7 @@ void main()
 
 	vec3 fog = vec3(0.0, 0.5, 1.0);
 	
-	colorOut = vec4(mix(fog, litSurface, fogStrength), albedo.a);*/
+	float fogStrength = 1.0;
 
-	colorOut = albedo;
-	normalOut = vec4(normal * 0.5 + vec3(0.5), 1.0);
+	colorOut = vec4(mix(fog, litSurface, fogStrength), albedo.a);
 }
