@@ -2,16 +2,16 @@ options.title Options Menu
 
 Rendering Rendering
 
-client.rendering.viewDistance View distance
-client.rendering.realtimeReflections Local reflections
-client.rendering.dynamicCubemaps Global reflections
-client.rendering.shadows Enable shadows
-client.rendering.shadowsResolution Shadows Quality
-client.rendering.hqTerrain Distant terrain quality
+client.graphics.viewDistance View distance
+client.graphics.realtimeReflections Local reflections
+client.graphics.dynamicCubemaps Global reflections
+client.graphics.shadows Enable shadows
+client.graphics.shadowsResolution Shadows Quality
+client.graphics.hqTerrain Distant terrain quality
 quality.low Low
 quality.high High
-client.rendering.bloom Bloom effect
-client.rendering.globalIllumination Global Illumination
+client.graphics.bloom Bloom effect
+client.graphics.globalIllumination Global Illumination
 
 Video Video
 
@@ -47,5 +47,6 @@ Debug Debug
 
 client.debug.frametimeGraph Performance graph
 client.debug.showDebugInfo Show debug info
+client.debug.showFrametimeGraph Show performance graph
 client.debug.debugGBuffers Debug render buffers
 client.debug.physicsVisualization Physics debug
