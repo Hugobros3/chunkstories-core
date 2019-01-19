@@ -14,10 +14,10 @@ flat out int textureId;
 
 out float fogStrength;
 
-#include struct <xyz.chunkstories.api.graphics.structs.Camera>
+#include struct xyz.chunkstories.api.graphics.structs.Camera
 uniform Camera camera;
 
-#include struct <xyz.chunkstories.graphics.common.world.ChunkRenderInfo>
+#include struct xyz.chunkstories.graphics.common.world.ChunkRenderInfo
 uniform ChunkRenderInfo chunkInfo;
 
 void main()

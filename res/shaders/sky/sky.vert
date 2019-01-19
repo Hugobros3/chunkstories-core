@@ -7,7 +7,7 @@ in vec2 vertexIn;
 out vec3 eyeDirection;
 
 //Common camera matrices & uniforms
-#include struct <xyz.chunkstories.api.graphics.structs.Camera>
+#include struct xyz.chunkstories.api.graphics.structs.Camera
 uniform Camera camera;
 
 void main()

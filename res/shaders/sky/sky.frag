@@ -6,11 +6,11 @@ in vec3 eyeDirection;
 //Framebuffer outputs
 out vec4 colorOut;
 
-#include struct <xyz.chunkstories.api.graphics.structs.WorldConditions>
+#include struct xyz.chunkstories.api.graphics.structs.WorldConditions
 uniform WorldConditions world;
 
 //Common camera matrices & uniforms
-#include struct <xyz.chunkstories.api.graphics.structs.Camera>
+#include struct xyz.chunkstories.api.graphics.structs.Camera
 uniform Camera camera;
 
 //Gamma constants

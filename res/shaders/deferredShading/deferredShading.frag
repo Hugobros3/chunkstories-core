@@ -10,10 +10,10 @@ uniform sampler2D depthBuffer;
 
 #include ../gamma.glsl
 
-#include struct <xyz.chunkstories.api.graphics.structs.Camera>
+#include struct xyz.chunkstories.api.graphics.structs.Camera
 uniform Camera camera;
 
-#include struct <xyz.chunkstories.api.graphics.structs.WorldConditions>
+#include struct xyz.chunkstories.api.graphics.structs.WorldConditions
 uniform WorldConditions world;
 
 vec4 convertScreenSpaceToCameraSpace(vec2 screenSpaceCoordinates, sampler2D depthBuffer)

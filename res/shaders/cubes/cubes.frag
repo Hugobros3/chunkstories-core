@@ -13,10 +13,10 @@ in float fogStrength;
 out vec4 colorOut;
 out vec4 normalOut;
 
-#include struct <xyz.chunkstories.api.graphics.structs.Camera>
+#include struct xyz.chunkstories.api.graphics.structs.Camera
 uniform Camera camera;
 
-#include struct <xyz.chunkstories.api.graphics.structs.WorldConditions>
+#include struct xyz.chunkstories.api.graphics.structs.WorldConditions
 uniform WorldConditions world;
 
 #include ../sky/sky.glsl
