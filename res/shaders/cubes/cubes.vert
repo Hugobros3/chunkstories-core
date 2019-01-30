@@ -16,7 +16,8 @@ flat out int textureId;
 uniform Camera camera;
 
 #include struct xyz.chunkstories.graphics.common.world.ChunkRenderInfo
-uniform ChunkRenderInfo chunkInfo;
+//uniform ChunkRenderInfo chunkInfo;
+instanced ChunkRenderInfo chunkInfo; // look mom, no uniforms !
 
 void main()
 {

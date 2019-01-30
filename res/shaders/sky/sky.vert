@@ -12,9 +12,13 @@ uniform Camera camera;
 
 void main()
 {
-	vec4 transformedSS = vec4(vertexIn.x, vertexIn.y, -1.0, 1.0);
+	vec4 screenSpaceCoordinates = vec4(vertexIn.x, vertexIn.y, 0.0, 1.0);
 	
-	eyeDirection = normalize(camera.normalMatrixInverted * (camera.projectionMatrixInverted * transformedSS ).xyz);
+	vec4 cameraSpaceCoordinates = (camera.projectionMatrixInverted * screenSpaceCoordinates);
+
+	eyeDirection = normalize(camera.normalMatrixInverted * (cameraSpaceCoordinates.xyz));
+	//eyeDirection = normalize(camera.normalMatrixInverted * (screenSpaceCoordinates.xyz));
+	//eyeDirection = vec3(cameraSpaceCoordinates.xy, 0.0);
 	
     gl_Position = vec4(vertexIn.xy, 0.0, 1.0);
 }

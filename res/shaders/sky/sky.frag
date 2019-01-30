@@ -31,5 +31,7 @@ void main()
 	float weatherMist = overcastFactor * clamp(1.0 - abs(normalize(eyeDirection).y) * 1.0, 0.0, 1.0);
 	
 	colorOut = vec4(mix(skyColor, fogColor, clamp(belowHorizon + weatherMist, 0.0, 1.0)), 1.0);*/
+	colorOut = vec4(clamp(eyeDirection, 0.0, 1.0), 1.0);
 	colorOut = vec4(skyColor, 1.0);
+	//colorOut = vec4(world.sunPosition, 1.0);
 }
