@@ -33,6 +33,9 @@ void main()
 	vec4 albedo = pow(texture(colorBuffer, texCoord), vec4(2.1));
 	vec3 normal = texture(normalBuffer, texCoord).xyz * 2.0 - vec3(1.0);
 
+	float ambientLight = texture(normalBuffer, texCoord).w;
+	ambientLight = pow(ambientLight, 2.1);
+
 	vec4 cameraSpacePosition = convertScreenSpaceToCameraSpace(texCoord, depthBuffer);
 	vec4 worldSpacePosition = camera.viewMatrixInverted * cameraSpacePosition;
 
@@ -40,7 +43,7 @@ void main()
 		discard;
 	}
 
-	vec2 color = vec2(1.0, 0.0);
+	vec2 color = vec2(ambientLight, 0.0);
 
 	float NdL = clamp(dot(world.sunPosition, normal.xyz), 0.0, 1.0);
 	
@@ -59,8 +62,8 @@ void main()
 		shadowFactor = 1.0;
 	}
 
-	vec3 lightColor = (NdL * sunLight * shadowFactor + shadowLight) * color.x;
-	lightColor += vec3(1.0) * pow(color.y, 2.0);
+	vec3 lightColor = (sunLight * NdL * shadowFactor + shadowLight * ambientLight);
+	//lightColor += vec3(1.0) * pow(color.y, 2.0);
 
 	vec3 litSurface = albedo.rgb * lightColor;
 	//litSurface = camera.lookingAt.rgb;
@@ -85,6 +88,6 @@ void main()
 
 	colorOut = vec4(mix(litSurface, fog, fogStrength), albedo.a);
 	//colorOut = vec4(vec3(lightColor), 1.0);
-	//colorOut = vec4(vec3(shadowFactor), 1.0);
+	//colorOut = vec4(vec3(pow(ambientLight, 2.1)), 1.0);
 	//colorOut = vec4(coordinatesInShadowmap.xyz, 1.0);
 }
