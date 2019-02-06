@@ -39,7 +39,6 @@ float calcSunSpot(float x){const float sunSize = 0.9997; return smoothstep(sunSi
 float lDotU = dot(normalize(world.sunPosition), vec3(0.0, -1.0, 0.0)); //float lDotV = dot(l, v);
 float opticalSunDepth = gDepth(lDotU);	//Get depth from lightpoint
 vec3 sunAbsorb    = aAbs(rCoeff, mCoeff, opticalSunDepth);
-vec3 sunLightColor = sunAbsorb;
 #define foggyness clamp(overcastFactor * overcastFactor * 4.0, 0.0, 1.0)
 
 vec3 getAtmosphericScatteringAmbient(){
@@ -92,4 +91,16 @@ vec3 getAtmosphericScattering(vec3 v, vec3 sunVec, vec3 upVec, float sunspotStre
 vec3 getSkyColor(float time, vec3 eyeDirection)
 {
 	return getAtmosphericScattering(eyeDirection, world.sunPosition, vec3(0.0, 1.0, 0.0), 1.0);
+}
+
+vec4 getFogColor(float time, vec3 eyePosition)
+{	
+	float overCastRatio = clamp(aWeather * 2.0, 0.0, 1.0);
+	
+	float dist = clamp(length(eyePosition) - mix(64.0, 0.0, foggyness), 0.0, 4096.0) * mix(0.002, 0.015, foggyness);
+	float fogIntensity = 1.0 - exp2(-dist);	//Proper realistic fog distribution
+	
+	vec3 fogColor = getAtmosphericScatteringAmbient();
+	
+	return vec4(fogColor, fogIntensity);
 }

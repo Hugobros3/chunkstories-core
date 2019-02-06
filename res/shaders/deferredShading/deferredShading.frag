@@ -20,6 +20,8 @@ uniform Camera shadowCamera;
 #include struct xyz.chunkstories.api.graphics.structs.WorldConditions
 uniform WorldConditions world;
 
+#include ../sky/sky.glsl
+
 vec4 convertScreenSpaceToCameraSpace(vec2 screenSpaceCoordinates, sampler2D depthBuffer)
 {
     vec4 cameraSpacePosition = camera.projectionMatrixInverted * vec4(vec3(screenSpaceCoordinates * 2.0 - vec2(1.0), texture(depthBuffer, screenSpaceCoordinates, 0.0).x), 1.0);
@@ -47,8 +49,8 @@ void main()
 
 	float NdL = clamp(dot(world.sunPosition, normal.xyz), 0.0, 1.0);
 	
-	vec3 shadowLight = pow(vec3(52.0 / 255.0, 68.0 / 255.0, 84.0 / 255.0), vec3(gamma));
-	vec3 sunLight = vec3(1.0) - shadowLight;
+	//vec3 shadowLight = pow(vec3(52.0 / 255.0, 68.0 / 255.0, 84.0 / 255.0), vec3(gamma));
+	//vec3 sunLight = vec3(1.0) - shadowLight;
 
 	vec4 coordinatesInShadowmap = shadowCamera.viewMatrix * worldSpacePosition;
 	coordinatesInShadowmap.xy *= 0.5;
@@ -62,7 +64,10 @@ void main()
 		shadowFactor = 1.0;
 	}
 
-	vec3 lightColor = (sunLight * NdL * shadowFactor + shadowLight * ambientLight);
+	vec3 sunLightColor = sunAbsorb;
+	vec3 shadowLightColor = getAtmosphericScatteringAmbient() / pi;
+
+	vec3 lightColor = (sunLightColor * NdL * shadowFactor + shadowLightColor * ambientLight);
 	//lightColor += vec3(1.0) * pow(color.y, 2.0);
 
 	vec3 litSurface = albedo.rgb * lightColor;
@@ -75,18 +80,18 @@ void main()
 	//litSurface = R;
 	//litSurface = getSkyColor(0.5, E);
 
-	vec3 fog = vec3(0.0, 0.5, 1.0);
-	
-	float fogStrength = clamp(length(worldSpacePosition.xyz - camera.position.xyz) * 0.001, 0.0, 1.0);
+	//vec3 fog = vec3(0.0, 0.5, 1.0);
+	//float fogStrength = clamp(length(worldSpacePosition.xyz - camera.position.xyz) * 0.001, 0.0, 1.0);
+	//vec3 foggedSurface = mix(litSurface, fog, fogStrength);
 
-	//litSurface *= 0.1;
-	//litSurface.xyz += worldSpacePosition.xyz / vec3(4096.0);
+	vec4 fogColor = getFogColor(world.time, (worldSpacePosition.xyz - camera.position.xyz).xyz);
+	vec3 foggedSurface = mix(litSurface, fogColor.xyz, fogColor.a);
 
 	/*if(outOfBounds > 0.5f) {
 		lightColor = vec3(1.0, 0.0, 0.0);
 	}*/
 
-	colorOut = vec4(mix(litSurface, fog, fogStrength), albedo.a);
+	colorOut = vec4(foggedSurface, albedo.a);
 	//colorOut = vec4(vec3(lightColor), 1.0);
 	//colorOut = vec4(vec3(pow(ambientLight, 2.1)), 1.0);
 	//colorOut = vec4(coordinatesInShadowmap.xyz, 1.0);
