@@ -8,14 +8,15 @@ uniform sampler2D colorBuffer;
 uniform sampler2D normalBuffer;
 uniform sampler2D depthBuffer;
 
-uniform sampler2DShadow shadowBuffer;
+uniform sampler2DShadow shadowBuffers[4];
 
 #include ../gamma.glsl
 
 #include struct xyz.chunkstories.api.graphics.structs.Camera
 uniform Camera camera;
 
-uniform Camera shadowCamera;
+#include struct xyz.chunkstories.graphics.vulkan.util.ShadowMappingInfo
+uniform ShadowMappingInfo shadowInfo;
 
 #include struct xyz.chunkstories.api.graphics.structs.WorldConditions
 uniform WorldConditions world;
@@ -52,16 +53,21 @@ void main()
 	//vec3 shadowLight = pow(vec3(52.0 / 255.0, 68.0 / 255.0, 84.0 / 255.0), vec3(gamma));
 	//vec3 sunLight = vec3(1.0) - shadowLight;
 
-	vec4 coordinatesInShadowmap = shadowCamera.viewMatrix * worldSpacePosition;
-	coordinatesInShadowmap.xy *= 0.5;
-	coordinatesInShadowmap.xy += vec2(0.5);
-	float shadowFactor = clamp((texture(shadowBuffer, vec3(coordinatesInShadowmap.xyz + vec3(0.0, 0.0, -0.01)), 0.0)), 0.0, 1.0);
-	
-	//float shadowFactor = clamp( (texture(shadowBuffer, coordinatesInShadowmap.xy).x * 0.5 + 0.5 - (coordinatesInShadowmap.z) + 0.01) * 100.0, 0.0, 1.0);
-	float outOfBounds = 0.0;
-	if(coordinatesInShadowmap.x > 1.0 || coordinatesInShadowmap.y > 1.0 || coordinatesInShadowmap.x < 0.0 || coordinatesInShadowmap.y < 0.0 || coordinatesInShadowmap.z < 0.0 || coordinatesInShadowmap.z > 1.0) {
-		outOfBounds = 1.0;
-		shadowFactor = 1.0;
+	float shadowFactor = 1.0;
+	float outOfBounds = 1.0;
+	for(int cascade = 0; cascade < shadowInfo.cascadesCount; cascade++) {
+		vec4 coordinatesInShadowmap = shadowInfo.cameras[cascade].viewMatrix * worldSpacePosition;
+		coordinatesInShadowmap.xy *= 0.5;
+		coordinatesInShadowmap.xy += vec2(0.5);
+		
+		if(coordinatesInShadowmap.x > 1.0 || coordinatesInShadowmap.y > 1.0 || coordinatesInShadowmap.x < 0.0 || coordinatesInShadowmap.y < 0.0 || coordinatesInShadowmap.z < 0.0 || coordinatesInShadowmap.z > 1.0) {
+			//outOfBounds = 1.0;
+			//shadowFactor = 1.0;
+			break;
+		} else {
+			shadowFactor = clamp((texture(shadowBuffers[cascade], vec3(coordinatesInShadowmap.xyz + vec3(0.0, 0.0, -0.01)), 0.0)), 0.0, 1.0);
+			outOfBounds = 0.0;
+		}
 	}
 
 	vec3 sunLightColor = sunAbsorb;
