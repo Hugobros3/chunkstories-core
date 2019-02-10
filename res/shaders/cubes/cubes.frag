@@ -8,8 +8,8 @@ in vec3 normal;
 in vec2 texCoord;
 flat in int textureId;
 
-out vec4 colorOut;
-out vec4 normalOut;
+out vec4 colorBuffer;
+out vec4 normalBuffer;
 
 #include struct xyz.chunkstories.api.graphics.structs.Camera
 uniform Camera camera;
@@ -34,6 +34,6 @@ void main()
 		albedo.a = 1.0;
 	}
 
-	colorOut = albedo;
-	normalOut = vec4(normal * 0.5 + vec3(0.5), 1.0);
+	colorBuffer = albedo;
+	normalBuffer = vec4(normal * 0.5 + vec3(0.5), 1.0);
 }

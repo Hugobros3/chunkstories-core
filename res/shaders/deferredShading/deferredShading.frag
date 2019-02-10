@@ -65,7 +65,7 @@ void main()
 			//shadowFactor = 1.0;
 			break;
 		} else {
-			float bias = pow(4.0, 4 - cascade) * 0.0002 * (1.0 - NdL);
+			float bias = pow(2.0, 4 - cascade) * 0.0004 * (1.0 - NdL);
 			shadowFactor = clamp((texture(shadowBuffers[cascade], vec3(coordinatesInShadowmap.xyz + vec3(0.0, 0.0, -bias)), 0.0)), 0.0, 1.0);
 			outOfBounds = 0.0;
 		}

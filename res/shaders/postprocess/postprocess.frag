@@ -64,6 +64,5 @@ void main()
 	//vec3 rnd2 = screenSpaceDitherCrazy( gl_FragCoord.xy / 1024.0 + vec2(length(greyscale.xyz) + vec2(0.0, 5.0)) );
 	//vec3 rnd2 = screenSpaceDitherCrazy( gl_FragCoord.xy / 1024.0) );
     //vec3 ditheredColor = its2 + rnd2.xyz;
-
 	fragColor = vec4(dithered, 1.0);
 }
