@@ -65,10 +65,13 @@ void main()
 			//shadowFactor = 1.0;
 			break;
 		} else {
-			shadowFactor = clamp((texture(shadowBuffers[cascade], vec3(coordinatesInShadowmap.xyz + vec3(0.0, 0.0, -0.01)), 0.0)), 0.0, 1.0);
+			float bias = pow(4.0, 4 - cascade) * 0.0002 * (1.0 - NdL);
+			shadowFactor = clamp((texture(shadowBuffers[cascade], vec3(coordinatesInShadowmap.xyz + vec3(0.0, 0.0, -bias)), 0.0)), 0.0, 1.0);
 			outOfBounds = 0.0;
 		}
 	}
+
+	shadowFactor = mix(shadowFactor, 1.0, outOfBounds);
 
 	vec3 sunLightColor = sunAbsorb;
 	vec3 shadowLightColor = getAtmosphericScatteringAmbient() / pi;
@@ -93,9 +96,9 @@ void main()
 	vec4 fogColor = getFogColor(world.time, (worldSpacePosition.xyz - camera.position.xyz).xyz);
 	vec3 foggedSurface = mix(litSurface, fogColor.xyz, fogColor.a);
 
-	/*if(outOfBounds > 0.5f) {
+	if(outOfBounds > 0.5f) {
 		lightColor = vec3(1.0, 0.0, 0.0);
-	}*/
+	}
 
 	colorOut = vec4(foggedSurface, albedo.a);
 	//colorOut = vec4(vec3(lightColor), 1.0);
