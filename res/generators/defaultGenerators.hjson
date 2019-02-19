@@ -1,0 +1,39 @@
+{
+    generators: {
+        // Bundled world generators
+        blank: {
+            class: xyz.chunkstories.api.world.generator.BlankWorldGenerator
+            maxGenerationHeight: 0 // basically does nothing
+        }
+
+        horizon: {
+            class: xyz.chunkstories.core.generator.HorizonGenerator
+            maxGenerationHeight: 512
+            
+            waterLevel: 48
+            mountainOffset: 0.3
+            mountainScale: 128
+            baseHeightScale: 64
+            plateauHeightScale: 24
+        }
+
+        island: {
+            class: xyz.chunkstories.core.generator.IslandGenerator
+            maxGenerationHeight: 384
+            
+            waterLevel: 48
+            mountainOffset: 0.3
+            mountainScale: 128
+            baseHeightScale: 16
+            plateauHeightScale: 24
+        }
+
+        flat: {
+            class: xyz.chunkstories.core.generator.FlatGenerator
+        }
+
+        noise: {
+            class: xyz.chunkstories.core.generator.NoiseWorldGenerator
+        }
+    }
+}
