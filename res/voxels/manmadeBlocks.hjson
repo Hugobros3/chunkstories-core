@@ -1,0 +1,254 @@
+/* In this file are found all the man-made blocks, excepting the wooden ones */
+{
+	blocks: {
+		/* GAMEPLAY TOOLS */
+		torch: {
+			
+			solid: false
+			opaque: false
+			emittedLightLevel: 15
+			hardness: 0.0
+			collisionBox: "0.0, 0.0, 0.0, 1.0, 1.0, 1.0"
+			
+			representation: {
+				model: ./voxels/models/torch.obj
+			}
+		}
+
+		bricks: {
+			material: stone
+			hardness: 1.2
+		}
+
+		brick_stairs: {
+			class: xyz.chunkstories.core.voxel.VoxelStairs
+			opaque: false
+			material: stone
+			texture: redbricks
+		}
+
+		bricks_slab: {
+			class: xyz.chunkstories.core.voxel.VoxelHalfTile
+			opaque: false
+			material: stone
+			texture: redbricks
+		}
+
+		cobble_stairs: {
+			class: xyz.chunkstories.core.voxel.VoxelStairs
+			opaque: false
+			material: bluntwood
+			texture: cobble
+		}
+
+		cobble_slab: {	
+			class: xyz.chunkstories.core.voxel.VoxelHalfTile
+			opaque: false
+			material: bluntwood
+			texture: cobble
+		}
+
+		ardoise: {
+		}
+
+		ardoise_stairs: {
+			class: xyz.chunkstories.core.voxel.VoxelStairs
+			opaque: false
+			material: stone
+			texture: ardoise
+		}
+
+		ardoise_slab: {
+			class: xyz.chunkstories.core.voxel.VoxelHalfTile
+			opaque: false
+			material: stone
+			texture: ardoise
+		}
+
+		hardsand_stairs: {
+			class: xyz.chunkstories.core.voxel.VoxelStairs
+			opaque: false
+			material: stone
+			texture: hardsand
+		}
+
+		hardsand_slab: {
+			class: xyz.chunkstories.core.voxel.VoxelHalfTile
+			opaque: false
+			material: stone
+			texture: hardsand
+		}
+
+		//one of those is redundant
+		redbricks: {
+		}
+
+		/** GLASS */
+		glass: {
+			opaque: false
+			selfOpaque: true
+			hardness: 1.5
+			hardnessForAxe: 0.5
+		}
+
+		glass_pane: {
+			class: xyz.chunkstories.core.voxel.VoxelPane
+			opaque: false
+			selfOpaque: true
+			texture: glass
+			material: glass
+			hardness: 0.5
+		}
+
+		/** SCULPTED BLOCKS */
+		smoothstone: {
+			material: stone
+		}
+
+		stonebrick: {
+		}
+
+		stonebrick_cracked: {
+		}
+
+		stonebrick_mossy: {
+		}
+
+		stonebrick_stairs: {
+			class: xyz.chunkstories.core.voxel.VoxelStairs
+			opaque: false
+			material: stone
+			texture: stonebrick
+		}
+
+		stonebrick_slab: {
+			class: xyz.chunkstories.core.voxel.VoxelHalfTile
+			opaque: false
+			material: stone
+			texture: stonebrick
+		}
+
+		fancy_andesite: {
+			material: stone
+		}
+
+		fancy_granite: {
+			material: stone
+		}
+
+		fancy_marble: {
+			material: stone
+		}
+
+		full_slab: {
+			material: stone
+			textures: {
+				sides: slab_side
+				top: slab_top
+				bottom: slab_top
+			}
+		}
+
+		slab: {
+			class: xyz.chunkstories.core.voxel.VoxelHalfTile
+			opaque: false
+			material: stone
+			texture: stonebrick
+		}
+
+		/** METAL-BASED */
+		iron_block: {
+		}
+
+		gold_block: {
+		}
+
+		ironGrill: {
+			class: xyz.chunkstories.core.voxel.VoxelPane
+			opaque: false
+			selfOpaque: true
+			material: metalbar
+		}
+
+		rails: {
+			class: xyz.chunkstories.core.voxel.VoxelRail
+			solid: false
+			opaque: false
+			
+			representation: {
+				model: ./voxels/models/rails.obj
+			}
+		}
+
+		/** CONSTRUCTION */
+
+		iron_door: {
+			class: xyz.chunkstories.core.voxel.VoxelDoor
+			opaque: false
+			material: bluntwood
+		}
+
+		iron_door_top: {
+			class: xyz.chunkstories.core.voxel.VoxelDoor
+			opaque: false
+			material: bluntwood
+		}
+
+		/** DECORATION & HOME IMPROVEMENT */
+		whool: {
+			class: xyz.chunkstories.core.voxel.Voxel16Variants
+			//todo improve that syntax
+			variants: "white, orange, purple, turquoise, yellow, lime, pink, darkgrey, grey, cyan, violet, sea, brown, kaki, red, black"
+		}
+
+		concrete: {
+			class: xyz.chunkstories.core.voxel.Voxel16Variants
+			material: concrete
+			//texture: concrete.colored
+			//todo improve that syntax
+			variants: "white, orange, purple, turquoise, yellow, lime, pink, darkgrey, grey, cyan, violet, sea, brown, kaki, red, black"
+		}
+
+		/** GARDENING */
+		path: {
+			opaque: false
+			selfOpaque: true
+			material: dirt
+			texture: grass
+			collisionBox: "0.0, 0.0, 0.0, 1.0, 0.875, 1.0"
+			
+			representation: {
+				model: voxels/models/soil.obj
+			}
+		}
+
+		cobble_wall: {
+			class: xyz.chunkstories.core.voxel.VoxelStoneWall
+			opaque: false
+			texture: cobble
+			material: stone
+		}
+
+		/* AGRICULTURE */
+		soil: {
+			opaque: false
+			selfOpaque: true
+			material: dirt
+			collisionBox: "0.0, 0.0, 0.0, 1.0, 0.875, 1.0"
+			
+			representation: {
+				model: ./voxels/models/soil.obj
+			}
+		}
+
+		hay: {
+			material: grass
+			
+			textures: {
+				top: ~_top
+				sides: ~_side
+			}
+		}
+
+	}
+}

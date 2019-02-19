@@ -1,0 +1,139 @@
+{
+	blocks: {
+		/** In this file goes the blocks that are *made* with wood. (not naturally occuring) */
+		planks: {
+			material: bluntwood
+		}
+
+		goldplanks: {
+			material: bluntwood
+		}
+
+		whiteplanks: {
+			material: bluntwood
+		}
+
+		darkplanks: {
+			material: bluntwood
+		}
+
+		/** PLANK STAIRS */
+		planks_stairs: {
+			class: xyz.chunkstories.core.voxel.VoxelStairs
+			opaque: false
+			material: bluntwood
+			texture: planks
+		}
+
+		goldplanks_stairs: {
+			class: xyz.chunkstories.core.voxel.VoxelStairs
+			opaque: false
+			material: bluntwood
+			texture: goldplanks
+		}
+
+		whiteplanks_stairs: {
+			class: xyz.chunkstories.core.voxel.VoxelStairs
+			opaque: false
+			material: bluntwood
+			texture: whiteplanks
+		}
+
+		darkplanks_stairs: {
+			class: xyz.chunkstories.core.voxel.VoxelStairs
+			opaque: false
+			material: bluntwood
+			texture: darkplanks
+		}
+
+		wood_fence: {
+			opaque: false
+			selfOpaque: true
+			texture: planks
+			material: bluntwood
+		}
+		/** PLANK SLABS */
+		planks_slab: {
+			class: xyz.chunkstories.core.voxel.VoxelHalfTile
+			opaque: false
+			material: bluntwood
+			texture: planks
+		}
+
+		goldplanks_slab: {
+			class: xyz.chunkstories.core.voxel.VoxelHalfTile
+			opaque: false
+			material: bluntwood
+			texture: goldplanks
+		}
+
+		whiteplanks_slab: {
+			class: xyz.chunkstories.core.voxel.VoxelHalfTile
+			opaque: false
+			material: bluntwood
+			texture: whiteplanks
+		}
+
+		darkplanks_slab: {
+			class: xyz.chunkstories.core.voxel.VoxelHalfTile
+			opaque: false
+			material: bluntwood
+			texture: darkplanks
+		}
+
+		wood_fence: {
+			opaque: false
+			selfOpaque: true
+			texture: planks
+			material: bluntwood
+		}
+
+		/** MISC */
+		ladder: {
+			class: xyz.chunkstories.core.voxel.VoxelLadder
+			material: bluntwood
+			opaque: false
+			//hardnessForAxe: 0.5
+		}
+
+		wood_chest: {
+			class: xyz.chunkstories.core.voxel.VoxelChest
+			opaque: false
+			selfOpaque: true
+			material: bluntwood
+			
+			textures: {
+				top: chesttop
+				bottom: chesttop
+				sides: chestside
+				front: chest_front
+			}
+		}
+
+		wood_sign: {
+			class: xyz.chunkstories.core.voxel.VoxelSign
+			material: bluntwood
+			solid: false
+			opaque: false
+		}
+
+		wood_sign_post: {
+			class: xyz.chunkstories.core.voxel.VoxelSign
+			material: bluntwood
+			solid: false
+			opaque: false
+		}
+
+		wood_door: {
+			class: xyz.chunkstories.core.voxel.VoxelDoor
+			opaque: false
+			material: bluntwood
+		}
+
+		wood_door_top: {
+			class: xyz.chunkstories.core.voxel.VoxelDoor
+			opaque: false
+			material: bluntwood
+		}
+	}
+}

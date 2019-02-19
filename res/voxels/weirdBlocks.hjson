@@ -1,0 +1,15 @@
+{
+	blocks: {
+		glowing: {
+			emittedLightLevel: 15
+		}
+
+		glowoff: {
+			emittedLightLevel: 0
+		}
+
+		hellearth: {
+			material: stone
+		}
+	}
+}

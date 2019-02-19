@@ -1,0 +1,197 @@
+{
+	blocks: {
+		/* Dirt with grass on top */
+		grass: {
+			textures: {
+				top: ~_top
+				sides: ~_side
+			}
+		}
+
+		forestgrass: {
+			textures: {
+				top: ~_top
+				sides: ~_side
+			}
+		}
+
+		drygrass: {
+			textures: {
+				top: ~_top
+				sides: ~_side
+			}
+		}
+
+		/** Grass blades */
+		grass_prop: {
+			solid: false
+			opaque: false
+			representation: {
+				model: ./voxels/models/grass.obj
+			}
+		}
+
+		dead_grass: {
+			solid: false
+			opaque: false
+			representation: {
+				model: ./voxels/models/grass.obj
+			}
+		}
+
+		/** Trunk woods */
+		wood: {
+			material: bluntwood
+			textures: {
+				top: ~_top
+				bottom: ~_top
+			}
+		}
+
+		pinewood: {
+			material: bluntwood
+			textures: {
+				top: ~_top
+				bottom: ~_top
+			}
+		}
+
+		birchwood: {
+			material: bluntwood
+			textures: {
+				top: ~_top
+				bottom: ~_top
+			}
+		}
+
+		leaves: {
+			class: xyz.chunkstories.core.voxel.VoxelLeavesLod
+			opaque: false
+			selfOpaque: false
+			shadingLightLevel: 2
+			
+			hardness: 0.5
+			affectedByWind: true
+			materialFlags: 1
+		}
+
+		pineleaves: {
+			class: xyz.chunkstories.core.voxel.VoxelLeavesLod
+			opaque: false
+			selfOpaque: false
+			shadingLightLevel: 2
+			
+			hardness: 0.5
+			affectedByWind: true
+			materialFlags: 1
+		}
+
+		birchleaves: {
+			class: xyz.chunkstories.core.voxel.VoxelLeavesLod
+			opaque: false
+			selfOpaque: false
+			shadingLightLevel: 2
+			
+			hardness: 0.5
+			affectedByWind: true
+			materialFlags: 1
+		}
+
+		vine: {
+			class: xyz.chunkstories.core.voxel.VoxelVine
+			opaque: false
+			solid: false
+			hardness: 0.5
+			materialFlags: 1
+		}
+
+		cactus: {
+			textures: {
+				sides: ~side
+				top: ~top
+			}
+			hardness: 0.8
+		}
+
+		web: {
+			solid: false
+			opaque: false
+			representation: {
+				model: ./voxels/models/grass.obj
+			}
+		}
+
+		flower_red: {
+			solid: false
+			opaque: false
+			representation: {
+				model: ./voxels/models/grass.obj
+			}
+		}
+
+		flower_yellow: {
+			solid: false
+			opaque: false
+			representation: {
+				model: ./voxels/models/grass.obj
+			}
+		}
+
+		flower_orange: {
+			solid: false
+			opaque: false
+			representation: {
+				model: ./voxels/models/grass.obj
+			}
+		}
+
+		flower_blue: {
+			solid: false
+			opaque: false
+			representation: {
+				model: ./voxels/models/grass.obj
+			}
+		}
+
+		flower_purple: {
+			solid: false
+			opaque: false
+			representation: {
+				model: ./voxels/models/grass.obj
+			}
+		}
+
+		flower_white: {
+			solid: false
+			opaque: false
+			representation: {
+				model: ./voxels/models/grass.obj
+			}
+		}
+
+		mushroom_red: {
+			solid: false
+			opaque: false
+			representation: {
+				model: ./voxels/models/grass.obj
+			}
+		}
+
+		mushroom_brown: {
+			solid: false
+			opaque: false
+			representation: {
+				model: ./voxels/models/grass.obj
+			}
+		}
+
+		bamboo: {
+			texture: sugar_cane
+			solid: false
+			opaque: false
+			representation: {
+				model: ./voxels/models/grass.obj
+			}
+		}
+	}
+}

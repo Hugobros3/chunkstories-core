@@ -1,0 +1,95 @@
+{
+	blocks: {
+		/** In this file we declare the 'mineral' blocks, those are solid and not life-based */
+		stone: {
+		}
+
+		gravel: {
+		}
+
+		dirt: {
+		}
+
+		sand: {
+		}
+
+		hard_sand: {
+		}
+
+		cobble: {
+			material: stone
+		}
+
+		cobble_mossy: {
+			material: stone
+		}
+
+		rock: {
+			material: stone
+		}
+
+		hard_rock: {
+			material: stone
+		}
+
+		andesite: {
+			material: stone
+		}
+
+		granite: {
+			material: stone
+		}
+
+		marble: {
+			material: stone
+		}
+
+		/* SNOW & ICE */
+		snowblock: {
+			
+			material: snow
+			texture: snow
+		}
+
+		snow: {
+			class: xyz.chunkstories.core.voxel.Voxel8Steps
+			opaque: false
+			selfOpaque: true
+			material: snow
+		}
+
+		ice: {
+		}
+
+		/** ORES & MINERALS */
+		coal_ore: {
+			texture: stone_coal_ore
+			material: stone
+		}
+
+		copper_ore: {
+			texture: stone_copper_ore
+			material: stone
+		}
+
+		diamond_ore: {
+			texture: stone_diamond_ore
+			material: stone
+		}
+
+		gold_ore: {
+			texture: stone_gold_ore
+			material: stone
+		}
+
+		silver_ore: {
+			texture: stone_silver_ore
+			material: stone
+		}
+
+		iron_ore: {
+			texture: stone_iron_ore
+			material: stone
+		}
+	}
+}

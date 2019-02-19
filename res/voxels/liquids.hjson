@@ -1,0 +1,19 @@
+{
+	blocks: {
+		water: {
+			class: xyz.chunkstories.core.voxel.VoxelLiquid
+			solid: false
+			opaque: false
+			selfOpaque: false
+			shadingLightLevel: 1
+		}
+
+		lava: {
+			class: xyz.chunkstories.core.voxel.VoxelLiquid
+			solid: false
+			opaque: false
+			selfOpaque: false
+			emittingLightLevel: 15
+		}
+	}
+}
