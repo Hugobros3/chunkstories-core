@@ -109,9 +109,9 @@ public abstract class TraitControlledMovement extends TraitBasicMovement {
 					(float) (Math.sin((-(entityRotation.getVerticalRotation()) / 180f * Math.PI)) * horizontalSpeed));
 		}
 
-		targetVelocity.x = (Math.sin((entityRotation.getHorizontalRotation() + modif) / 180f * Math.PI)
+		getTargetVelocity().x = (Math.sin((entityRotation.getHorizontalRotation() + modif) / 180f * Math.PI)
 				* horizontalSpeed);
-		targetVelocity.z = (Math.cos((entityRotation.getHorizontalRotation() + modif) / 180f * Math.PI)
+		getTargetVelocity().z = (Math.cos((entityRotation.getHorizontalRotation() + modif) / 180f * Math.PI)
 				* horizontalSpeed);
 
 		super.tick();

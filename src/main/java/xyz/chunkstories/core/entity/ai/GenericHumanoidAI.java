@@ -38,8 +38,8 @@ public class GenericHumanoidAI extends AI<EntityHumanoid> {
 	public void tick() {
 		if (entity.traits.tryWithBoolean(TraitHealth.class, eh -> eh.isDead())) {
 			// Dead entities shouldn't be moving
-			entity.traits.get(TraitBasicMovement.class).targetVelocity.x = (0d);
-			entity.traits.get(TraitBasicMovement.class).targetVelocity.z = (0d);
+			entity.traits.get(TraitBasicMovement.class).getTargetVelocity().x = (0d);
+			entity.traits.get(TraitBasicMovement.class).getTargetVelocity().z = (0d);
 			return;
 		}
 
@@ -133,8 +133,8 @@ public class GenericHumanoidAI extends AI<EntityHumanoid> {
 				return;
 			}
 
-			entity.traits.get(TraitBasicMovement.class).targetVelocity.x = (0d);
-			entity.traits.get(TraitBasicMovement.class).targetVelocity.z = (0d);
+			entity.traits.get(TraitBasicMovement.class).getTargetVelocity().x = (0d);
+			entity.traits.get(TraitBasicMovement.class).getTargetVelocity().z = (0d);
 			// entity.traits.get(TraitVelocity.class).setVelocityX(0);
 			// entity.traits.get(TraitVelocity.class).setVelocityZ(0);
 		}
@@ -176,8 +176,8 @@ public class GenericHumanoidAI extends AI<EntityHumanoid> {
 
 			makeEntityLookAt(entity, delta);
 
-			entity.traits.get(TraitBasicMovement.class).targetVelocity.x = (0d);
-			entity.traits.get(TraitBasicMovement.class).targetVelocity.z = (0d);
+			entity.traits.get(TraitBasicMovement.class).getTargetVelocity().x = (0d);
+			entity.traits.get(TraitBasicMovement.class).getTargetVelocity().z = (0d);
 			// entity.traits.get(TraitVelocity.class).setVelocityX(0);
 			// entity.traits.get(TraitVelocity.class).setVelocityZ(0);
 		}
@@ -222,15 +222,15 @@ public class GenericHumanoidAI extends AI<EntityHumanoid> {
 
 			delta.normalize().mul(entitySpeed);
 
-			entity.traits.get(TraitBasicMovement.class).targetVelocity.x = (delta.x());
-			entity.traits.get(TraitBasicMovement.class).targetVelocity.z = (delta.z());
+			entity.traits.get(TraitBasicMovement.class).getTargetVelocity().x = (delta.x());
+			entity.traits.get(TraitBasicMovement.class).getTargetVelocity().z = (delta.z());
 
 			// entity.traits.get(TraitVelocity.class).setVelocityX(delta.getX());
 			// entity.traits.get(TraitVelocity.class).setVelocityZ(delta.getZ());
 
 			if (((EntityHumanoid) entity).traits.get(TraitCollidable.class).isOnGround()) {
 				Vector3dc rem = entity.traits.get(TraitCollidable.class)
-						.canMoveWithCollisionRestrain(entity.traits.get(TraitBasicMovement.class).targetVelocity);
+						.canMoveWithCollisionRestrain(entity.traits.get(TraitBasicMovement.class).getTargetVelocity());
 
 				if (Math.sqrt(rem.x() * rem.x() + rem.z() * rem.z()) > 0.001) {
 					// System.out.println("cuck");
@@ -287,15 +287,15 @@ public class GenericHumanoidAI extends AI<EntityHumanoid> {
 
 			delta.normalize().mul(entitySpeed);
 
-			entity.traits.get(TraitBasicMovement.class).targetVelocity.x = (delta.x());
-			entity.traits.get(TraitBasicMovement.class).targetVelocity.z = (delta.z());
+			entity.traits.get(TraitBasicMovement.class).getTargetVelocity().x = (delta.x());
+			entity.traits.get(TraitBasicMovement.class).getTargetVelocity().z = (delta.z());
 
 			// entity.traits.get(TraitVelocity.class).setVelocityX(delta.getX());
 			// entity.traits.get(TraitVelocity.class).setVelocityZ(delta.getZ());
 
 			if (((EntityHumanoid) entity).traits.get(TraitCollidable.class).isOnGround()) {
 				Vector3dc rem = entity.traits.get(TraitCollidable.class)
-						.canMoveWithCollisionRestrain(entity.traits.get(TraitBasicMovement.class).targetVelocity);
+						.canMoveWithCollisionRestrain(entity.traits.get(TraitBasicMovement.class).getTargetVelocity());
 				// rem.setY(0.0D);
 
 				if (Math.sqrt(rem.x() * rem.x() + rem.z() * rem.z()) > 0.001)
