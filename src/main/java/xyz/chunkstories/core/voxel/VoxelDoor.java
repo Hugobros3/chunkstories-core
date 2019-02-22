@@ -48,9 +48,9 @@ public class VoxelDoor extends Voxel// implements VoxelCustomIcon
 		top = getName().endsWith("_top");
 
 		if (top)
-			doorTexture = store().textures().getVoxelTexture(getName().replace("_top", "") + "_upper");
+			doorTexture = store().textures().get(getName().replace("_top", "") + "_upper");
 		else
-			doorTexture = store().textures().getVoxelTexture(getName() + "_lower");
+			doorTexture = store().textures().get(getName() + "_lower");
 
 		//for (int i = 0; i < 8; i++)
 		//	models[i] = store().models().getVoxelModel("door.m" + i);

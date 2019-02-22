@@ -45,11 +45,12 @@ public class ParticleVoxelFragment extends ParticleTypeHandler {
 			int qy = (int) Math.floor(Math.random() * 4.0);
 			int ry = qy + 1;
 
-			leftX = (tex.getAtlasS()) / 32768f + tex.getAtlasOffset() / 32768f * (qx / 4.0f);
+			/*leftX = (tex.getAtlasS()) / 32768f + tex.getAtlasOffset() / 32768f * (qx / 4.0f);
 			rightX = (tex.getAtlasS()) / 32768f + tex.getAtlasOffset() / 32768f * (rx / 4.0f);
 
 			topY = (tex.getAtlasT()) / 32768f + tex.getAtlasOffset() / 32768f * (qy / 4.0f);
-			bottomY = (tex.getAtlasT()) / 32768f + tex.getAtlasOffset() / 32768f * (ry / 4.0f);
+			bottomY = (tex.getAtlasT()) / 32768f + tex.getAtlasOffset() / 32768f * (ry / 4.0f);*/
+			throw new UnsupportedOperationException("TODO");
 		}
 
 		public void setVelocity(Vector3dc vel) {
