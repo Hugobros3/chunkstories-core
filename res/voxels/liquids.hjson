@@ -4,7 +4,7 @@
 			class: xyz.chunkstories.core.voxel.VoxelLiquid
 			solid: false
 			opaque: false
-			selfOpaque: false
+			selfOpaque: true
 			shadingLightLevel: 1
 		}
 
