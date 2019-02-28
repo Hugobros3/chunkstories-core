@@ -20,6 +20,9 @@ uniform WorldConditions world;
 
 #include ../sky/sky.glsl
 
+uniform sampler2D waterNormalShallow;
+uniform sampler2D waterNormalDeep;
+
 /*vec4 convertScreenSpaceToCameraSpace(vec3 screenSpaceCoordinates) {
 
     vec4 fragposition = camera.projectionMatrixInverted * vec4(screenSpaceCoordinates * 2.0 - vec3(1.0), 1.0);
@@ -35,6 +38,10 @@ void main()
 	vec4 albedo = texture(albedoTextures, vec3(texCoord, textureId));
 
 	vec3 normal2 = normalize(normal + 0.0 * vec3(sin(vertex.x), 0.0, cos(vertex.y)));
+
+	vec3 shallow = texture(waterNormalShallow, vertex.xz * 0.125).xzy * 2.0 - vec3(1.0);
+	vec3 deep = texture(waterNormalDeep, vertex.xz * 0.125 * 0.125).xzy * 2.0 - vec3(1.0);
+	normal2 = normalize(shallow + deep * 0.5 + 5.0 * normal2);
 
 	if(albedo.a == 0.0) {
 		discard;
