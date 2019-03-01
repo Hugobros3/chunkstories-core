@@ -47,19 +47,19 @@ public class MinerTrait extends Trait {
 	public void tickTrait() {
 		MiningTool tool = hands;
 
-		World world = entity.getWorld();
+		World world = getEntity().getWorld();
 
-		entity.traits.with(TraitControllable.class, ec -> {
+		getEntity().traits.with(TraitControllable.class, ec -> {
 			Controller controller = ec.getController();
 
 			if (controller instanceof Player) {
 				InputsManager inputs = controller.getInputsManager();
 
-				Location lookingAt = entity.traits.tryWith(TraitVoxelSelection.class,
+				Location lookingAt = getEntity().traits.tryWith(TraitVoxelSelection.class,
 						tvs -> tvs.getBlockLookingAt(true, false));
 				// entity.getBlockLookingAt(true);
 
-				if (lookingAt != null && lookingAt.distance(entity.getLocation()) > 7f)
+				if (lookingAt != null && lookingAt.distance(getEntity().getLocation()) > 7f)
 					lookingAt = null;
 
 				if (lookingAt != null && inputs.getInputByName("mouse.left").isPressed()) {
@@ -75,7 +75,7 @@ public class MinerTrait extends Trait {
 						// Try starting mining something
 						progress = new MiningProgress(world.peekSafely(lookingAt), tool);
 					} else {
-						progress.keepGoing(entity, controller);
+						progress.keepGoing(getEntity(), controller);
 					}
 				} else {
 					progress = null;

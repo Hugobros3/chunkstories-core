@@ -37,7 +37,7 @@ public class ItemsLogicListener implements Listener {
 		if (event.getInventoryFrom() != null && event.getInventoryFrom() instanceof TraitInventory) {
 			System.out.println("from som 1");
 			TraitInventory TraitInventory = (TraitInventory) event.getInventoryFrom();
-			Entity entity = TraitInventory.entity;
+			Entity entity = TraitInventory.getEntity();
 
 			entity.traits.with(TraitRotation.class, er -> {
 

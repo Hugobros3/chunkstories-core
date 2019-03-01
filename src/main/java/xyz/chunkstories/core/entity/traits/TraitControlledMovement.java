@@ -27,11 +27,11 @@ public abstract class TraitControlledMovement extends TraitBasicMovement {
 	}
 
 	public void tick(LocalPlayer controller) {
-		TraitCollidable collisions = entity.traits.get(TraitCollidable.class);
+		TraitCollidable collisions = getEntity().traits.get(TraitCollidable.class);
 
-		TraitHealth entityHealth = entity.traits.get(TraitHealth.class);
-		TraitVelocity entityVelocity = entity.traits.get(TraitVelocity.class);
-		TraitRotation entityRotation = entity.traits.get(TraitRotation.class);
+		TraitHealth entityHealth = getEntity().traits.get(TraitHealth.class);
+		TraitVelocity entityVelocity = getEntity().traits.get(TraitVelocity.class);
+		TraitRotation entityRotation = getEntity().traits.get(TraitRotation.class);
 
 		if (collisions == null || entityVelocity == null || entityRotation == null || entityHealth == null
 				|| entityHealth.isDead())
@@ -42,11 +42,11 @@ public abstract class TraitControlledMovement extends TraitBasicMovement {
 		boolean inWater = isInWater();
 		boolean onLadder = false;
 
-		all: for (CellData vctx : entity.world.getVoxelsWithin(entity.getTranslatedBoundingBox())) {
+		all: for (CellData vctx : getEntity().world.getVoxelsWithin(getEntity().getTranslatedBoundingBox())) {
 			if (vctx.getVoxel() instanceof VoxelClimbable) {
 				for (Box box : vctx.getTranslatedCollisionBoxes()) {
 					// TODO use actual collision model of the entity here
-					if (box.collidesWith(entity.getTranslatedBoundingBox())) {
+					if (box.collidesWith(getEntity().getTranslatedBoundingBox())) {
 						onLadder = true;
 						break all;
 					}
@@ -124,7 +124,7 @@ public abstract class TraitControlledMovement extends TraitBasicMovement {
 
 	@Override
 	public void tick() {
-		Controller controller = entity.traits.tryWith(TraitControllable.class, TraitControllable::getController);
+		Controller controller = getEntity().traits.tryWith(TraitControllable.class, TraitControllable::getController);
 
 		// Consider player inputs...
 		if (controller != null && controller instanceof LocalPlayer) {

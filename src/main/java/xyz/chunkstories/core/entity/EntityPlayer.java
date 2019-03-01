@@ -86,7 +86,7 @@ public class EntityPlayer extends EntityHumanoid implements WorldModificationCau
 
 			@Override
 			public Location getBlockLookingAt(boolean inside, boolean can_overwrite) {
-				double eyePosition = stance.get().eyeLevel;
+				double eyePosition = stance.getStance().eyeLevel;
 
 				Vector3d initialPosition = new Vector3d(getLocation());
 				initialPosition.add(new Vector3d(0, eyePosition, 0));
@@ -128,7 +128,7 @@ public class EntityPlayer extends EntityHumanoid implements WorldModificationCau
 
 			@Override
 			public double getEyeLevel() {
-				return stance.get().eyeLevel;
+				return stance.getStance().eyeLevel;
 			}
 
 		};
@@ -248,7 +248,7 @@ public class EntityPlayer extends EntityHumanoid implements WorldModificationCau
 			}
 
 			Vector3d initialPosition = new Vector3d(getLocation());
-			initialPosition.add(new Vector3d(0, stance.get().eyeLevel, 0));
+			initialPosition.add(new Vector3d(0, stance.getStance().eyeLevel, 0));
 
 			Vector3dc direction = entityRotation.getDirectionLookingAt();
 
@@ -282,7 +282,7 @@ public class EntityPlayer extends EntityHumanoid implements WorldModificationCau
 								future.setMetaData(0);
 
 								PlayerVoxelModificationEvent event = new PlayerVoxelModificationEvent(cell, future,
-										TraitCreativeMode.CREATIVE_MODE, player);
+										TraitCreativeMode.Companion.getCREATIVE_MODE(), player);
 
 								// Anyone has objections ?
 								world.getGameContext().getPluginManager().fireEvent(event);
@@ -377,7 +377,7 @@ public class EntityPlayer extends EntityHumanoid implements WorldModificationCau
 
 		@Override
 		public double getForwardSpeed() {
-			return ((!running || stance.get() == EntityHumanoidStance.CROUCHING) ? 0.06 : 0.09);
+			return ((!running || stance.getStance() == EntityHumanoidStance.CROUCHING) ? 0.06 : 0.09);
 		}
 
 		@Override
@@ -453,7 +453,7 @@ public class EntityPlayer extends EntityHumanoid implements WorldModificationCau
 			// It restores hp
 			// TODO move to trait
 			if (foodLevel.getValue() > 20 && !entityHealth.isDead()) {
-				if (entityHealth.getHealth() < entityHealth.maxHealth) {
+				if (entityHealth.getHealth() < entityHealth.getMaxHealth()) {
 					entityHealth.setHealth(entityHealth.getHealth() + 0.01f);
 
 					float newfoodLevel = foodLevel.getValue() - 0.01f;

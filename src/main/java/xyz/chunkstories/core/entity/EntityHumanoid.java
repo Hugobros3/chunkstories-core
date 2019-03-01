@@ -68,11 +68,13 @@ public abstract class EntityHumanoid extends EntityLiving {
 
 		//new TraitRenderable(this, EntityHumanoidRenderer<EntityHumanoid>::new);
 
+		new EntityHumanoidRenderer(this);
+
 		new TraitCollidable(this) {
 
 			@Override public Box[] getCollisionBoxes() {
 
-				double height = stance.get() == EntityHumanoidStance.CROUCHING ? 1.45 : 1.9;
+				double height = stance.getStance() == EntityHumanoidStance.CROUCHING ? 1.45 : 1.9;
 				if (EntityHumanoid.this.entityHealth.isDead())
 					height = 0.2;
 				return new Box[] { new Box(0.6, height, 0.6).translate(-0.3, 0.0, -0.3) };
@@ -94,7 +96,7 @@ public abstract class EntityHumanoid extends EntityLiving {
 		if (entityHealth.isDead())
 			return new Box(1.6, 1.0, 1.6).translate(-0.8, 0.0, -0.8);
 
-		return new Box(1.0, stance.get() == EntityHumanoidStance.CROUCHING ? 1.5 : 2.0, 1.0).translate(-0.5, 0.0, -0.5);
+		return new Box(1.0, stance.getStance() == EntityHumanoidStance.CROUCHING ? 1.5 : 2.0, 1.0).translate(-0.5, 0.0, -0.5);
 	}
 
 	/**
@@ -127,84 +129,4 @@ public abstract class EntityHumanoid extends EntityLiving {
 			return super.damage(cause, null, damage);
 		}
 	}
-
-	/*protected static class EntityHumanoidRenderer<H extends EntityHumanoid> extends EntityRenderer<H> {
-		void setupRender(RenderingInterface renderingContext) {
-			// Player textures
-			Texture2D playerTexture = renderingContext.textures().getTexture("./models/human/humanoid_test.png");
-			playerTexture.setLinearFiltering(false);
-
-			renderingContext.bindAlbedoTexture(playerTexture);
-
-			renderingContext.textures().getTexture("./models/human/humanoid_normal.png").setLinearFiltering(false);
-
-			renderingContext.bindNormalTexture(renderingContext.textures().getTexture("./textures/normalnormal.png"));
-			renderingContext
-					.bindMaterialTexture(renderingContext.textures().getTexture("./textures/defaultmaterial.png"));
-		}
-
-		@Override
-		public int renderEntities(RenderingInterface renderer, RenderingIterator<H> renderableEntitiesIterator) {
-			renderer.useShader("entities_animated");
-
-			setupRender(renderer);
-
-			int e = 0;
-
-			for (EntityHumanoid entity : renderableEntitiesIterator.getElementsInFrustrumOnly()) {
-				Location location = entity.getLocation();// entity.getPredictedLocation();
-
-				if (renderer.getCurrentPass().name.startsWith("shadow")
-						&& location.distance(renderer.getCamera().getCameraPosition()) > 15f)
-					continue;
-
-				CellData cell = entity.getWorld().peekSafely(entity.getLocation());
-				renderer.currentShader().setUniform2f("worldLightIn", cell.getBlocklight(), cell.getSunlight());
-
-				TraitAnimated animation = entity.traits.get(TraitAnimated.class);
-				((CachedLodSkeletonAnimator) animation.getAnimatedSkeleton()).lodUpdate(renderer);
-
-				Matrix4f matrix = new Matrix4f();
-				matrix.translate((float) location.x, (float) location.y, (float) location.z);
-				renderer.setObjectMatrix(matrix);
-
-				renderer.meshes().getRenderableAnimatableMesh("./models/human/human.dae").render(renderer,
-						animation.getAnimatedSkeleton(), System.currentTimeMillis() % 1000000);
-			}
-
-			// Render items in hands
-			for (EntityHumanoid entity : renderableEntitiesIterator) {
-
-				if (renderer.getCurrentPass().name.startsWith("shadow")
-						&& entity.getLocation().distance(renderer.getCamera().getCameraPosition()) > 15f)
-					continue;
-
-				TraitAnimated animation = entity.traits.get(TraitAnimated.class);
-				ItemPile selectedItemPile = entity.traits.tryWith(TraitSelectedItem.class,
-						eci -> eci.getSelectedItem());
-
-				if (selectedItemPile != null) {
-					Matrix4f itemMatrix = new Matrix4f();
-					itemMatrix.translate((float) entity.getLocation().x(), (float) entity.getLocation().y(),
-							(float) entity.getLocation().z());
-
-					itemMatrix.mul(animation.getAnimatedSkeleton().getBoneHierarchyTransformationMatrix(
-							"boneItemInHand", System.currentTimeMillis() % 1000000));
-
-					selectedItemPile.getItem().getDefinition().getRenderer().renderItemInWorld(renderer,
-							selectedItemPile, entity.world, entity.getLocation(), itemMatrix);
-				}
-
-				e++;
-			}
-
-			return e;
-		}
-
-		@Override
-		public void freeRessources() {
-
-		}
-
-	}*/
 }

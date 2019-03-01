@@ -42,7 +42,7 @@ public class EntityGroundItemPileComponent extends TraitSerializable {
 	 */
 	public void setItemPile(ItemPile itemPile) {
 		this.itemPile = itemPile;
-		if (entity.getWorld() instanceof WorldMaster)
+		if (getEntity().getWorld() instanceof WorldMaster)
 			this.pushComponentEveryone();
 	}
 
@@ -51,7 +51,7 @@ public class EntityGroundItemPileComponent extends TraitSerializable {
 		if (itemPile == null)
 			dos.writeInt(0);
 		else
-			itemPile.saveIntoStream(entity.getWorld().getContentTranslator(), dos);
+			itemPile.saveIntoStream(getEntity().getWorld().getContentTranslator(), dos);
 
 		System.out.println("pushed" + itemPile + ".");
 	}
@@ -59,7 +59,7 @@ public class EntityGroundItemPileComponent extends TraitSerializable {
 	@Override
 	protected void pull(StreamSource from, DataInputStream dis) throws IOException {
 		try {
-			itemPile = ItemPile.obtainItemPileFromStream(entity.getWorld().getContentTranslator(), dis);
+			itemPile = ItemPile.obtainItemPileFromStream(getEntity().getWorld().getContentTranslator(), dis);
 		} catch (UndefinedItemTypeException | NullItemException e) {
 			// Etc
 		}

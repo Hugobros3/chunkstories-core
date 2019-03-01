@@ -16,14 +16,14 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 public class EntityStance extends TraitSerializable {
-	private EntityHumanoidStance value = EntityHumanoidStance.STANDING;
+	private EntityHumanoidStance stance = EntityHumanoidStance.STANDING;
 
-	public EntityHumanoidStance get() {
-		return value;
+	public EntityHumanoidStance getStance() {
+		return stance;
 	}
 
 	public void set(EntityHumanoidStance flying) {
-		this.value = flying;
+		this.stance = flying;
 		this.pushComponentEveryone();
 	}
 
@@ -33,12 +33,12 @@ public class EntityStance extends TraitSerializable {
 
 	@Override
 	protected void push(StreamTarget destinator, DataOutputStream dos) throws IOException {
-		dos.writeByte(this.value.ordinal());
+		dos.writeByte(this.stance.ordinal());
 	}
 
 	@Override
 	protected void pull(StreamSource from, DataInputStream dis) throws IOException {
-		value = EntityHumanoidStance.values()[dis.readByte()];
+		stance = EntityHumanoidStance.values()[dis.readByte()];
 		this.pushComponentEveryoneButController();
 	}
 

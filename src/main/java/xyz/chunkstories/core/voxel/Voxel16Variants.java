@@ -32,7 +32,6 @@ public class Voxel16Variants extends Voxel {
 		for (int i = 0; i < 16; i++) {
 			variants[i] = split[i].replaceAll(" ", "");
 			textures[i] = store().textures().get(definition.resolveProperty("texture", definition.getName()) + "." + variants[i]);
-			System.out.println(definition.resolveProperty("texture", definition.getName()) + "." + variants[i]);
 		}
 	}
 
