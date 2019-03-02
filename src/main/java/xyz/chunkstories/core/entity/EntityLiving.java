@@ -33,9 +33,6 @@ public abstract class EntityLiving extends Entity {
 
 	@Override
 	public void tick() {
-		if (getWorld() == null)
-			return;
-
 		if (getWorld() instanceof WorldMaster)
 			this.entityHealth.removeCorpseAfterDelay();
 

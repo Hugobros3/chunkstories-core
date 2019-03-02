@@ -7,16 +7,12 @@
 package xyz.chunkstories.core.entity;
 
 import xyz.chunkstories.api.animation.Animator;
-import xyz.chunkstories.api.entity.DamageCause;
-import xyz.chunkstories.api.entity.Entity;
 import xyz.chunkstories.api.entity.EntityDefinition;
 import xyz.chunkstories.api.entity.traits.TraitAnimated;
 import xyz.chunkstories.api.entity.traits.TraitCollidable;
 import xyz.chunkstories.api.entity.traits.TraitHitboxes;
-import xyz.chunkstories.api.entity.traits.serializable.TraitHealth;
 import xyz.chunkstories.api.physics.Box;
 import xyz.chunkstories.api.physics.EntityHitbox;
-import xyz.chunkstories.api.sound.SoundSource.Mode;
 import xyz.chunkstories.api.world.World;
 import xyz.chunkstories.core.entity.traits.TraitHumanoidStance;
 import xyz.chunkstories.core.entity.traits.TraitHumanoidStance.HumanoidStance;
@@ -66,10 +62,6 @@ public abstract class EntityHumanoid extends EntityLiving {
 		// Override the entityliving's health component with a modified version
 		this.entityHealth = new EntityHumanoidHealth(this);
 
-		//new TraitRenderable(this, EntityHumanoidRenderer<EntityHumanoid>::new);
-
-		//new EntityHumanoidRenderer(this);
-
 		new TraitCollidable(this) {
 
 			@Override public Box[] getCollisionBoxes() {
@@ -99,34 +91,4 @@ public abstract class EntityHumanoid extends EntityLiving {
 		return new Box(1.0, stance.getStance() == HumanoidStance.CROUCHING ? 1.5 : 2.0, 1.0).translate(-0.5, 0.0, -0.5);
 	}
 
-	/**
-	 * Extends the original entity health component to add in support for damage
-	 * multipliers
-	 */
-	protected class EntityHumanoidHealth extends TraitHealth {
-
-		public EntityHumanoidHealth(Entity entity) {
-			super(entity);
-		}
-
-		@Override public float damage(DamageCause cause, EntityHitbox osef, float damage) {
-			if (osef != null) {
-				if (osef.getName().equals("boneHead"))
-					damage *= 2.8f;
-				else if (osef.getName().contains("Arm"))
-					damage *= 0.75;
-				else if (osef.getName().contains("Leg"))
-					damage *= 0.5;
-				else if (osef.getName().contains("Foot"))
-					damage *= 0.25;
-			}
-
-			damage *= 0.5;
-
-			world.getSoundManager()
-					.playSoundEffect("sounds/entities/flesh.ogg", Mode.NORMAL, EntityHumanoid.this.getLocation(), (float) Math.random() * 0.4f + 0.4f, 1);
-
-			return super.damage(cause, null, damage);
-		}
-	}
 }

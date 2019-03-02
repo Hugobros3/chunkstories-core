@@ -10,18 +10,12 @@ import xyz.chunkstories.api.entity.DamageCause;
 import xyz.chunkstories.api.entity.Entity;
 import xyz.chunkstories.api.entity.EntityDefinition;
 import xyz.chunkstories.api.entity.traits.serializable.TraitHealth;
-import xyz.chunkstories.api.entity.traits.serializable.TraitSerializable;
 import xyz.chunkstories.api.physics.EntityHitbox;
 import xyz.chunkstories.api.sound.SoundSource.Mode;
 import xyz.chunkstories.api.world.World;
 import xyz.chunkstories.api.world.WorldMaster;
-import xyz.chunkstories.api.world.serialization.StreamSource;
-import xyz.chunkstories.api.world.serialization.StreamTarget;
 import xyz.chunkstories.core.entity.ai.ZombieAI;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -29,55 +23,6 @@ public class EntityZombie extends EntityHumanoid implements DamageCause {
 	ZombieAI zombieAi;
 
 	final TraitZombieInfectionStage stageComponent;
-
-	public enum ZombieInfectionStage {
-		INFECTION(0.045, 5, 1800, 10f, 40f), TAKEOVER(0.060, 10, 1200, 15f, 80f), WHOLESOME(0.075, 15, 800, 20f, 160f),
-		;
-
-		ZombieInfectionStage(double speed, double aggroDistance, int attackCooldown, float attackDamage, float hp) {
-			this.speed = speed;
-			this.aggroRadius = aggroDistance;
-			this.attackCooldown = attackCooldown;
-			this.attackDamage = attackDamage;
-			this.hp = hp;
-		}
-
-		public final double speed;
-		public final double aggroRadius;
-		public final int attackCooldown;
-		public final float attackDamage;
-		public final float hp;
-	}
-
-	static class TraitZombieInfectionStage extends TraitSerializable {
-
-		ZombieInfectionStage stage;
-
-		public TraitZombieInfectionStage(Entity entity) {
-			super(entity);
-		}
-
-		public String getSerializedComponentName() {
-			return "stage";
-		}
-
-		@Override protected void push(StreamTarget destinator, DataOutputStream dos) throws IOException {
-			dos.writeByte(stage.ordinal());
-		}
-
-		@Override protected void pull(StreamSource from, DataInputStream dis) throws IOException {
-			byte ok = dis.readByte();
-			int i = (int) ok;
-
-			stage = ZombieInfectionStage.values()[i];
-		}
-
-		public void setStage(ZombieInfectionStage stage2) {
-			this.stage = stage2;
-			this.pushComponentEveryone();
-		}
-
-	}
 
 	static Set<Class<? extends Entity>> zombieTargets = new HashSet<Class<? extends Entity>>();
 
@@ -93,8 +38,7 @@ public class EntityZombie extends EntityHumanoid implements DamageCause {
 		super(t, world);
 		zombieAi = new ZombieAI(this, zombieTargets);
 
-		this.stageComponent = new TraitZombieInfectionStage(this);
-		this.stageComponent.setStage(stage);
+		this.stageComponent = new TraitZombieInfectionStage(this, stage);
 
 		this.entityHealth = new TraitHealth(this) {
 
@@ -182,7 +126,7 @@ public class EntityZombie extends EntityHumanoid implements DamageCause {
 	}*/
 
 	public ZombieInfectionStage stage() {
-		return stageComponent.stage;
+		return stageComponent.getStage();
 	}
 
 	public void attack(EntityLiving target, float maxDistance) {

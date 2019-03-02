@@ -7,67 +7,50 @@
 package xyz.chunkstories.core.entity;
 
 import xyz.chunkstories.api.Location;
-import xyz.chunkstories.api.client.LocalPlayer;
 import xyz.chunkstories.api.entity.Controller;
-import xyz.chunkstories.api.entity.DamageCause;
 import xyz.chunkstories.api.entity.Entity;
 import xyz.chunkstories.api.entity.EntityDefinition;
 import xyz.chunkstories.api.entity.traits.*;
 import xyz.chunkstories.api.entity.traits.serializable.*;
-import xyz.chunkstories.api.events.player.voxel.PlayerVoxelModificationEvent;
 import xyz.chunkstories.api.events.voxel.WorldModificationCause;
-import xyz.chunkstories.api.exceptions.world.WorldException;
 import xyz.chunkstories.api.graphics.MeshMaterial;
 import xyz.chunkstories.api.input.Input;
-import xyz.chunkstories.api.item.ItemVoxel;
-import xyz.chunkstories.api.item.interfaces.ItemZoom;
 import xyz.chunkstories.api.item.inventory.InventoryHolder;
 import xyz.chunkstories.api.item.inventory.ItemPile;
-import xyz.chunkstories.api.physics.EntityHitbox;
 import xyz.chunkstories.api.player.Player;
 import xyz.chunkstories.api.sound.SoundSource.Mode;
 import xyz.chunkstories.api.util.ColorsTools;
 import xyz.chunkstories.api.world.World;
-import xyz.chunkstories.api.world.World.WorldCell;
-import xyz.chunkstories.api.world.WorldClient;
 import xyz.chunkstories.api.world.WorldMaster;
-import xyz.chunkstories.api.world.cell.CellData;
-import xyz.chunkstories.api.world.cell.FutureCell;
-import xyz.chunkstories.core.CoreOptions;
 import xyz.chunkstories.core.entity.traits.TraitArmor;
 import xyz.chunkstories.core.entity.traits.TraitFoodLevel;
-import xyz.chunkstories.core.entity.traits.TraitHumanoidStance.HumanoidStance;
 import xyz.chunkstories.core.entity.traits.MinerTrait;
-import xyz.chunkstories.core.entity.traits.TraitControlledMovement;
 import xyz.chunkstories.core.entity.traits.TraitEyeLevel;
 import xyz.chunkstories.core.entity.traits.TraitTakesFallDamage;
-import xyz.chunkstories.core.item.inventory.InventoryLocalCreativeMenu;
 import org.joml.*;
 
-import java.lang.Math;
 import java.util.HashMap;
-import java.util.Iterator;
 
 /**
  * Core/Vanilla player, has all the functionality you'd want from it:
  * creative/survival mode, flying and walking controller...
  */
 public class EntityPlayer extends EntityHumanoid implements WorldModificationCause, InventoryHolder {
-	protected TraitControllable controllerComponent;
+	private TraitControllable controllerComponent;
 
 	protected TraitInventory inventory;
-	protected TraitSelectedItem selectedItemComponent;
+	TraitSelectedItem selectedItemComponent;
 
-	protected TraitName name;
-	protected TraitCreativeMode creativeMode;
-	protected TraitFlyingMode flyMode;
+	private TraitName name;
+	TraitCreativeMode creativeMode;
+	TraitFlyingMode flyMode;
 
-	protected TraitArmor armor;
-	protected TraitFoodLevel foodLevel;
+	TraitArmor armor;
+	private TraitFoodLevel foodLevel;
 
-	protected TraitVoxelSelection raytracer;
+	TraitVoxelSelection raytracer;
 
-	protected boolean onLadder = false;
+	private boolean onLadder = false;
 
 	Location lastCameraLocation;
 
@@ -136,8 +119,8 @@ public class EntityPlayer extends EntityHumanoid implements WorldModificationCau
 
 		};
 
-		new PlayerMovement(this);
-		controllerComponent = new PlayerWhenControlled(this);
+		new PlayerMovementController(this);
+		controllerComponent = new EntityPlayerController(this);
 
 		new MinerTrait(this);
 
@@ -146,253 +129,6 @@ public class EntityPlayer extends EntityHumanoid implements WorldModificationCau
 		aaTchoum.put("albedoTexture", "./models/human/variant" + variant + ".png");
 		MeshMaterial customSkin = new MeshMaterial("playerSkin", aaTchoum);
 		new EntityHumanoidRenderer(this, customSkin);
-	}
-
-	class PlayerWhenControlled extends TraitControllable {
-
-		public PlayerWhenControlled(Entity entity) {
-			super(entity);
-		}
-
-		@Override
-		public boolean onEachFrame() {
-			Controller controller = getController();
-			if (controller instanceof LocalPlayer && ((LocalPlayer) controller).hasFocus()) {
-				moveCamera((LocalPlayer) controller);
-				return true;
-			}
-			return false;
-		}
-
-		double lastPX = -1f;
-		double lastPY = -1f;
-
-		public void moveCamera(LocalPlayer controller) {
-			if (entityHealth.isDead())
-				return;
-			if(!controller.getInputsManager().getMouse().isGrabbed())
-				return;
-
-			double cPX = controller.getInputsManager().getMouse().getCursorX();
-			double cPY = controller.getInputsManager().getMouse().getCursorY();
-
-			double dx = 0, dy = 0;
-			if (lastPX != -1f) {
-				dx = cPX - controller.getWindow().getWidth() / 2.0;
-				dy = cPY - controller.getWindow().getHeight() / 2.0;
-			}
-			lastPX = cPX;
-			lastPY = cPY;
-
-			double rotH = entityRotation.getHorizontalRotation();
-			double rotV = entityRotation.getVerticalRotation();
-
-			double modifier = 1.0f;
-			ItemPile selectedItem = traits.tryWith(TraitSelectedItem.class, eci -> eci.getSelectedItem());
-
-			if (selectedItem != null && selectedItem.getItem() instanceof ItemZoom) {
-				ItemZoom item = (ItemZoom) selectedItem.getItem();
-				modifier = 1.0 / item.getZoomFactor();
-			}
-
-			rotH -= dx * modifier / 3f	* controller.getClient().getConfiguration().getDoubleValue(CoreOptions.INSTANCE.getMouseSensitivity());
-			rotV += dy * modifier / 3f	* controller.getClient().getConfiguration().getDoubleValue(CoreOptions.INSTANCE.getMouseSensitivity());
-			entityRotation.setRotation(rotH, rotV);
-
-			controller.getInputsManager().getMouse().setMouseCursorLocation(controller.getWindow().getWidth() / 2.0,
-					controller.getWindow().getHeight() / 2.0);
-		}
-
-		/*@Override
-		public void setupCamera(RenderingInterface renderer) {
-			lastCameraLocation = getLocation();
-
-			renderer.getCamera().setCameraPosition(new Vector3d(getLocation().add(0.0, stance.get().eyeLevel, 0.0)));
-
-			renderer.getCamera().setRotationX(entityRotation.getVerticalRotation());
-			renderer.getCamera().setRotationY(entityRotation.getHorizontalRotation());
-
-			float modifier = 1.0f;
-			if (selectedItemComponent.getSelectedItem() != null
-					&& selectedItemComponent.getSelectedItem().getItem() instanceof ItemZoom) {
-				ItemZoom item = (ItemZoom) selectedItemComponent.getSelectedItem().getItem();
-				modifier = 1.0f / item.getZoomFactor();
-			}
-
-			float videoFov = (float) renderer.getClient().getConfiguration().getDoubleOption("client.video.fov");
-			float speedEffect = (float) (entityVelocity.getVelocity().x() * entityVelocity.getVelocity().x()
-					+ entityVelocity.getVelocity().z() * entityVelocity.getVelocity().z());
-
-			speedEffect -= 0.07f * 0.07f;
-			speedEffect = Math.max(0.0f, speedEffect);
-			speedEffect *= 500.0f;
-
-			renderer.getCamera().setFOV(modifier * (float) (videoFov + speedEffect));
-		}*/
-
-		@Override
-		public boolean onControllerInput(Input input) {
-			Controller controller = getController();
-
-			// We are moving inventory bringup here !
-			if (input.getName().equals("inventory") && world instanceof WorldClient) {
-
-				if (creativeMode.get()) {
-					((WorldClient) getWorld()).getClient().getGui().openInventories(inventory, new InventoryLocalCreativeMenu(world));
-				} else {
-					((WorldClient) getWorld()).getClient().getGui().openInventories(inventory, armor);
-				}
-
-				return true;
-			}
-
-			Location blockLocation = raytracer.getBlockLookingAt(true, false);
-
-			double maxLen = 1024;
-
-			if (blockLocation != null) {
-				Vector3d diff = new Vector3d(blockLocation).sub(getLocation());
-				// Vector3d dir = diff.clone().normalize();
-				maxLen = diff.length();
-			}
-
-			Vector3d initialPosition = new Vector3d(getLocation());
-			initialPosition.add(new Vector3d(0, stance.getStance().getEyeLevel(), 0));
-
-			Vector3dc direction = entityRotation.getDirectionLookingAt();
-
-			Iterator<Entity> i = world.getCollisionsManager().rayTraceEntities(initialPosition, direction, maxLen);
-			while (i.hasNext()) {
-				Entity e = i.next();
-				if (e != EntityPlayer.this
-						&& e.traits.with(TraitInteractible.class, ti -> ti.handleInteraction(EntityPlayer.this, input)))
-					return true;
-			}
-
-			ItemPile itemSelected = selectedItemComponent.getSelectedItem();
-			if (itemSelected != null) {
-				// See if the item handles the interaction
-				if (itemSelected.getItem().onControllerInput(EntityPlayer.this, itemSelected, input, controller))
-					return true;
-			}
-			if (getWorld() instanceof WorldMaster) {
-				// Creative mode features building and picking.
-				if (creativeMode.get()) {
-					if (input.getName().equals("mouse.left")) {
-						if (blockLocation != null) {
-							// Player events mod
-							if (controller instanceof Player) {
-								Player player = (Player) controller;
-								WorldCell cell = world.peekSafely(blockLocation);
-								FutureCell future = new FutureCell(cell);
-								future.setVoxel(getDefinition().store().parent().voxels().air());
-								future.setBlocklight(0);
-								future.setSunlight(0);
-								future.setMetaData(0);
-
-								PlayerVoxelModificationEvent event = new PlayerVoxelModificationEvent(cell, future,
-										TraitCreativeMode.Companion.getCREATIVE_MODE(), player);
-
-								// Anyone has objections ?
-								world.getGameContext().getPluginManager().fireEvent(event);
-
-								if (event.isCancelled())
-									return true;
-
-								Vector3d rnd = new Vector3d();
-								for (int k = 0; k < 40; k++) {
-									rnd.set(blockLocation);
-									rnd.add(Math.random() * 0.98, Math.random() * 0.98, Math.random() * 0.98);
-									world.getParticlesManager().spawnParticleAtPosition("voxel_frag", rnd);
-								}
-								world.getSoundManager().playSoundEffect("sounds/gameplay/voxel_remove.ogg", Mode.NORMAL,
-										blockLocation, 1.0f, 1.0f);
-
-								try {
-									world.poke(future, EntityPlayer.this);
-									// world.poke((int)blockLocation.x, (int)blockLocation.y, (int)blockLocation.z,
-									// null, 0, 0, 0, this);
-								} catch (WorldException e) {
-									// Discard but maybe play some effect ?
-								}
-
-								return true;
-							}
-						}
-					} else if (input.getName().equals("mouse.middle")) {
-						if (blockLocation != null) {
-							CellData ctx = getWorld().peekSafely(blockLocation);
-
-							if (!ctx.getVoxel().isAir()) {
-								// Spawn new itemPile in his inventory
-								ItemVoxel item = (ItemVoxel) world.getGameContext().getContent().items()
-										.getItemDefinition("item_voxel").newItem();
-								item.voxel = ctx.getVoxel();
-								item.voxelMeta = ctx.getMetaData();
-
-								ItemPile itemVoxel = new ItemPile(item);
-								inventory.setItemPileAt(selectedItemComponent.getSelectedSlot(), 0, itemVoxel);
-								return true;
-							}
-						}
-					}
-				}
-			}
-			// Here goes generic entity response to interaction
-
-			// n/a
-
-			// Then we check if the world minds being interacted with
-			return world.handleInteraction(EntityPlayer.this, blockLocation, input);
-		}
-	}
-
-	class PlayerMovement extends TraitControlledMovement {
-
-		public PlayerMovement(Entity entity) {
-			super(entity);
-		}
-
-		@Override
-		public void tick(LocalPlayer controller) {
-			if (flyMode.get()) {
-				// Delegate movement handling to the fly mode component
-				flyMode.tick(controller);
-
-				// Flying also means we're standing
-				stance.set(HumanoidStance.STANDING);
-			} else {
-
-				boolean focus = controller.hasFocus();
-				if (focus && traits.get(TraitCollidable.class).isOnGround()) {
-					if (controller.getInputsManager().getInputByName("crouch").isPressed())
-						stance.set(HumanoidStance.CROUCHING);
-					else
-						stance.set(HumanoidStance.STANDING);
-				}
-
-				super.tick(controller);
-
-				// if(focus)
-				// traits.with(MinerTrait.class, mt -> mt.tickTrait());
-			}
-
-			// TODO check if this is needed
-			// Instead of creating a packet and dealing with it ourselves, we instead push
-			// the relevant components
-			traitLocation.pushComponentEveryoneButController();
-			// In that case that means pushing to the server.
-		}
-
-		@Override
-		public double getForwardSpeed() {
-			return ((!running || stance.getStance() == HumanoidStance.CROUCHING) ? 0.06 : 0.09);
-		}
-
-		@Override
-		public double getBackwardsSpeed() {
-			return 0.05;
-		}
 	}
 
 	// Server-side updating
@@ -676,28 +412,6 @@ public class EntityPlayer extends EntityHumanoid implements WorldModificationCau
 			return e;
 		}
 	}*/
-
-	public Location getPredictedLocation() {
-		return lastCameraLocation != null ? lastCameraLocation : getLocation();
-	}
-
-	class TraitPlayerHealth extends EntityHumanoidHealth {
-
-		public TraitPlayerHealth(Entity entity) {
-			super(entity);
-		}
-
-		@Override
-		public float damage(DamageCause cause, EntityHitbox osef, float damage) {
-			if (!isDead()) {
-				int i = 1 + (int) Math.random() * 3;
-				world.getSoundManager().playSoundEffect("sounds/entities/human/hurt" + i + ".ogg", Mode.NORMAL,
-						EntityPlayer.this.getLocation(), (float) Math.random() * 0.4f + 0.8f, 5.0f);
-			}
-
-			return super.damage(cause, osef, damage);
-		}
-	}
 
 	@Override
 	public String getName() {
