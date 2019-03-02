@@ -13,7 +13,7 @@ import xyz.chunkstories.api.item.Item;
 import xyz.chunkstories.api.item.ItemDefinition;
 import xyz.chunkstories.api.item.inventory.ItemPile;
 import xyz.chunkstories.api.world.WorldMaster;
-import xyz.chunkstories.core.entity.components.EntityFoodLevel;
+import xyz.chunkstories.core.entity.traits.TraitFoodLevel;
 import org.jetbrains.annotations.NotNull;
 
 public class ItemFood extends Item {
@@ -29,7 +29,7 @@ public class ItemFood extends Item {
 		if (entity.getWorld() instanceof WorldMaster) {
 			if (input.getName().equals("mouse.right")) {
 				// Any entity with a food level can eat
-				if (entity.traits.tryWithBoolean(EntityFoodLevel.class, efl -> {
+				if (entity.traits.tryWithBoolean(TraitFoodLevel.class, efl -> {
 					if (efl.getValue() >= 100)
 						return true;
 

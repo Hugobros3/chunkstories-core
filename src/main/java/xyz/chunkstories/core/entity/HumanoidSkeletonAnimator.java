@@ -11,8 +11,8 @@ import xyz.chunkstories.api.item.Item;
 import xyz.chunkstories.api.item.interfaces.ItemCustomHoldingAnimation;
 import xyz.chunkstories.api.item.inventory.ItemPile;
 import xyz.chunkstories.api.world.WorldClient;
-import xyz.chunkstories.core.entity.components.EntityStance;
-import xyz.chunkstories.core.entity.components.EntityStance.EntityHumanoidStance;
+import xyz.chunkstories.core.entity.traits.TraitHumanoidStance;
+import xyz.chunkstories.core.entity.traits.TraitHumanoidStance.HumanoidStance;
 import xyz.chunkstories.core.entity.traits.MinerTrait;
 import xyz.chunkstories.core.item.ItemMiningTool;
 import xyz.chunkstories.core.item.MiningProgress;
@@ -26,7 +26,7 @@ public class HumanoidSkeletonAnimator extends CompoundAnimationHelper {
 	
 	final Entity entity;
 	final TraitHealth entityHealth;
-	final EntityStance stance;
+	final TraitHumanoidStance stance;
 	final TraitRotation entityRotation;
 	final TraitVelocity entityVelocity;
 	
@@ -34,7 +34,7 @@ public class HumanoidSkeletonAnimator extends CompoundAnimationHelper {
 		this.entity = entity;
 		
 		this.entityHealth = entity.traits.get(TraitHealth.class);
-		this.stance = entity.traits.get(EntityStance.class);
+		this.stance = entity.traits.get(TraitHumanoidStance.class);
 		this.entityRotation = entity.traits.get(TraitRotation.class);
 		this.entityVelocity = entity.traits.get(TraitVelocity.class);
 	}
@@ -85,7 +85,7 @@ public class HumanoidSkeletonAnimator extends CompoundAnimationHelper {
 		// Extract just the horizontal speed from that
 		double horizSpd = Math.sqrt(vel.x() * vel.x() + vel.z() * vel.z());
 
-		if (stance.getStance() == EntityHumanoidStance.STANDING) {
+		if (stance.getStance() == HumanoidStance.STANDING) {
 			if (horizSpd > 0.065) {
 				// System.out.println("running");
 				return entity.world.getGameContext().getContent().getAnimationsLibrary()
@@ -97,7 +97,7 @@ public class HumanoidSkeletonAnimator extends CompoundAnimationHelper {
 
 			return entity.world.getGameContext().getContent().getAnimationsLibrary()
 					.getAnimation("./animations/human/standstill.bvh");
-		} else if (stance.getStance() == EntityHumanoidStance.CROUCHING) {
+		} else if (stance.getStance() == HumanoidStance.CROUCHING) {
 			if (horizSpd > 0.0)
 				return entity.world.getGameContext().getContent().getAnimationsLibrary()
 						.getAnimation("./animations/human/crouched-walking.bvh");
@@ -160,16 +160,16 @@ public class HumanoidSkeletonAnimator extends CompoundAnimationHelper {
 				eci -> eci.getSelectedItem());
 
 		if (Arrays.asList("boneArmLU", "boneArmRU").contains(boneName)) {
-			float k = (stance.getStance() == EntityHumanoidStance.CROUCHING) ? 0.65f : 0.75f;
+			float k = (stance.getStance() == HumanoidStance.CROUCHING) ? 0.65f : 0.75f;
 
 			if (selectedItem != null) {
 				characterRotationMatrix.translate(new Vector3f(0f, k, 0));
 				characterRotationMatrix.rotate((entityRotation.getVerticalRotation()
-						+ ((stance.getStance() == EntityHumanoidStance.CROUCHING) ? -50f : 0f)) / 180f * -3.14159f,
+						+ ((stance.getStance() == HumanoidStance.CROUCHING) ? -50f : 0f)) / 180f * -3.14159f,
 						new Vector3f(0, 0, 1));
 				characterRotationMatrix.translate(new Vector3f(0f, -k, 0));
 
-				if (stance.getStance() == EntityHumanoidStance.CROUCHING && entity
+				if (stance.getStance() == HumanoidStance.CROUCHING && entity
 						.equals(((WorldClient) entity.getWorld()).getClient().getPlayer().getControlledEntity()))
 					characterRotationMatrix.translate(new Vector3f(-0.25f, -0.2f, 0f));
 

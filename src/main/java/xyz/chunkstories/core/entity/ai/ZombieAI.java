@@ -15,8 +15,8 @@ import xyz.chunkstories.core.entity.EntityHumanoid;
 import xyz.chunkstories.core.entity.EntityLiving;
 import xyz.chunkstories.core.entity.EntityPlayer;
 import xyz.chunkstories.core.entity.EntityZombie;
-import xyz.chunkstories.core.entity.components.EntityStance;
-import xyz.chunkstories.core.entity.components.EntityStance.EntityHumanoidStance;
+import xyz.chunkstories.core.entity.traits.TraitHumanoidStance;
+import xyz.chunkstories.core.entity.traits.TraitHumanoidStance.HumanoidStance;
 import org.joml.Vector3d;
 
 import java.util.Collection;
@@ -59,7 +59,7 @@ public class ZombieAI extends GenericHumanoidAI {
 					EntityPlayer player = (EntityPlayer) entityToLook;
 
 					// Crouched players are 70% less visible
-					if (player.traits.get(EntityStance.class).getStance().equals(EntityHumanoidStance.CROUCHING))
+					if (player.traits.get(TraitHumanoidStance.class).getStance().equals(HumanoidStance.CROUCHING))
 						visibilityModifier -= 0.7f;
 
 					// If the entity is sprinting

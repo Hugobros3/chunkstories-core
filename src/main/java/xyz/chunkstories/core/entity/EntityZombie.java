@@ -28,12 +28,13 @@ import java.util.Set;
 public class EntityZombie extends EntityHumanoid implements DamageCause {
 	ZombieAI zombieAi;
 
-	final StageComponent stageComponent;
+	final TraitZombieInfectionStage stageComponent;
 
-	public enum Stage {
-		INFECTION(0.045, 5, 1800, 10f, 40f), TAKEOVER(0.060, 10, 1200, 15f, 80f), WHOLESOME(0.075, 15, 800, 20f, 160f),;
+	public enum ZombieInfectionStage {
+		INFECTION(0.045, 5, 1800, 10f, 40f), TAKEOVER(0.060, 10, 1200, 15f, 80f), WHOLESOME(0.075, 15, 800, 20f, 160f),
+		;
 
-		private Stage(double speed, double aggroDistance, int attackCooldown, float attackDamage, float hp) {
+		ZombieInfectionStage(double speed, double aggroDistance, int attackCooldown, float attackDamage, float hp) {
 			this.speed = speed;
 			this.aggroRadius = aggroDistance;
 			this.attackCooldown = attackCooldown;
@@ -48,11 +49,11 @@ public class EntityZombie extends EntityHumanoid implements DamageCause {
 		public final float hp;
 	}
 
-	static class StageComponent extends TraitSerializable {
+	static class TraitZombieInfectionStage extends TraitSerializable {
 
-		Stage stage;
+		ZombieInfectionStage stage;
 
-		public StageComponent(Entity entity) {
+		public TraitZombieInfectionStage(Entity entity) {
 			super(entity);
 		}
 
@@ -60,20 +61,18 @@ public class EntityZombie extends EntityHumanoid implements DamageCause {
 			return "stage";
 		}
 
-		@Override
-		protected void push(StreamTarget destinator, DataOutputStream dos) throws IOException {
+		@Override protected void push(StreamTarget destinator, DataOutputStream dos) throws IOException {
 			dos.writeByte(stage.ordinal());
 		}
 
-		@Override
-		protected void pull(StreamSource from, DataInputStream dis) throws IOException {
+		@Override protected void pull(StreamSource from, DataInputStream dis) throws IOException {
 			byte ok = dis.readByte();
 			int i = (int) ok;
 
-			stage = Stage.values()[i];
+			stage = ZombieInfectionStage.values()[i];
 		}
 
-		public void setStage(Stage stage2) {
+		public void setStage(ZombieInfectionStage stage2) {
 			this.stage = stage2;
 			this.pushComponentEveryone();
 		}
@@ -87,28 +86,27 @@ public class EntityZombie extends EntityHumanoid implements DamageCause {
 	}
 
 	public EntityZombie(EntityDefinition t, World world) {
-		this(t, world, Stage.values()[(int) Math.floor(Math.random() * Stage.values().length)]);
+		this(t, world, ZombieInfectionStage.values()[(int) Math.floor(Math.random() * ZombieInfectionStage.values().length)]);
 	}
 
-	public EntityZombie(EntityDefinition t, World world, Stage stage) {
+	public EntityZombie(EntityDefinition t, World world, ZombieInfectionStage stage) {
 		super(t, world);
 		zombieAi = new ZombieAI(this, zombieTargets);
 
-		this.stageComponent = new StageComponent(this);
+		this.stageComponent = new TraitZombieInfectionStage(this);
 		this.stageComponent.setStage(stage);
 
 		this.entityHealth = new TraitHealth(this) {
 
-			@Override
-			public float damage(DamageCause cause, EntityHitbox osef, float damage) {
+			@Override public float damage(DamageCause cause, EntityHitbox osef, float damage) {
 				if (!this.isDead())
-					EntityZombie.this.world.getSoundManager().playSoundEffect("sounds/entities/zombie/hurt.ogg", Mode.NORMAL,
-							getLocation(), (float) Math.random() * 0.4f + 0.8f, 1.5f + Math.min(0.5f, damage / 15.0f));
+					EntityZombie.this.world.getSoundManager()
+							.playSoundEffect("sounds/entities/zombie/hurt.ogg", Mode.NORMAL, getLocation(), (float) Math.random() * 0.4f + 0.8f,
+									1.5f + Math.min(0.5f, damage / 15.0f));
 
 				if (cause instanceof EntityLiving) {
 					EntityLiving entity = (EntityLiving) cause;
-					zombieAi.setAiTask(zombieAi.new AiTaskAttackEntity(entity, 15f, 20f, zombieAi.currentTask(),
-							stage().attackCooldown, stage().attackDamage));
+					zombieAi.setAiTask(zombieAi.new AiTaskAttackEntity(entity, 15f, 20f, zombieAi.currentTask(), stage().attackCooldown, stage().attackDamage));
 				}
 
 				return super.damage(cause, osef, damage);
@@ -116,11 +114,11 @@ public class EntityZombie extends EntityHumanoid implements DamageCause {
 		};
 		this.entityHealth.setHealth(stage.hp);
 
+		new ZombieRenderer(this);
 		//new TraitRenderable(this, EntityZombieRenderer::new);
 	}
 
-	@Override
-	public void tick() {
+	@Override public void tick() {
 		// AI works on master
 		if (world instanceof WorldMaster)
 			zombieAi.tick();
@@ -183,17 +181,16 @@ public class EntityZombie extends EntityHumanoid implements DamageCause {
 		}
 	}*/
 
-	public Stage stage() {
+	public ZombieInfectionStage stage() {
 		return stageComponent.stage;
 	}
 
 	public void attack(EntityLiving target, float maxDistance) {
-		this.zombieAi.setAiTask(zombieAi.new AiTaskAttackEntity(target, 15f, maxDistance, zombieAi.currentTask(),
-				stage().attackCooldown, stage().attackDamage));
+		this.zombieAi
+				.setAiTask(zombieAi.new AiTaskAttackEntity(target, 15f, maxDistance, zombieAi.currentTask(), stage().attackCooldown, stage().attackDamage));
 	}
 
-	@Override
-	public String getName() {
+	@Override public String getName() {
 		return "Zombie";
 	}
 }

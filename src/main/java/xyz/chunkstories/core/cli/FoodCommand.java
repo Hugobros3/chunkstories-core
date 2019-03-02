@@ -11,7 +11,7 @@ import xyz.chunkstories.api.player.Player;
 import xyz.chunkstories.api.plugin.commands.Command;
 import xyz.chunkstories.api.plugin.commands.CommandEmitter;
 import xyz.chunkstories.api.plugin.commands.CommandHandler;
-import xyz.chunkstories.core.entity.components.EntityFoodLevel;
+import xyz.chunkstories.core.entity.traits.TraitFoodLevel;
 
 /** Heals */
 public class FoodCommand implements CommandHandler {
@@ -49,7 +49,7 @@ public class FoodCommand implements CommandHandler {
 		float food = Float.parseFloat(arguments[0]);
 
 		Entity entity = player.getControlledEntity();
-		if (!entity.traits.tryWithBoolean(EntityFoodLevel.class, fl -> {
+		if (!entity.traits.tryWithBoolean(TraitFoodLevel.class, fl -> {
 			fl.setValue(food);
 			player.sendMessage("Food set to: " + food);
 

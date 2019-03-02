@@ -17,6 +17,7 @@ import xyz.chunkstories.api.entity.traits.serializable.*;
 import xyz.chunkstories.api.events.player.voxel.PlayerVoxelModificationEvent;
 import xyz.chunkstories.api.events.voxel.WorldModificationCause;
 import xyz.chunkstories.api.exceptions.world.WorldException;
+import xyz.chunkstories.api.graphics.MeshMaterial;
 import xyz.chunkstories.api.input.Input;
 import xyz.chunkstories.api.item.ItemVoxel;
 import xyz.chunkstories.api.item.interfaces.ItemZoom;
@@ -25,6 +26,7 @@ import xyz.chunkstories.api.item.inventory.ItemPile;
 import xyz.chunkstories.api.physics.EntityHitbox;
 import xyz.chunkstories.api.player.Player;
 import xyz.chunkstories.api.sound.SoundSource.Mode;
+import xyz.chunkstories.api.util.ColorsTools;
 import xyz.chunkstories.api.world.World;
 import xyz.chunkstories.api.world.World.WorldCell;
 import xyz.chunkstories.api.world.WorldClient;
@@ -32,9 +34,9 @@ import xyz.chunkstories.api.world.WorldMaster;
 import xyz.chunkstories.api.world.cell.CellData;
 import xyz.chunkstories.api.world.cell.FutureCell;
 import xyz.chunkstories.core.CoreOptions;
-import xyz.chunkstories.core.entity.components.EntityArmorInventory;
-import xyz.chunkstories.core.entity.components.EntityFoodLevel;
-import xyz.chunkstories.core.entity.components.EntityStance.EntityHumanoidStance;
+import xyz.chunkstories.core.entity.traits.TraitArmor;
+import xyz.chunkstories.core.entity.traits.TraitFoodLevel;
+import xyz.chunkstories.core.entity.traits.TraitHumanoidStance.HumanoidStance;
 import xyz.chunkstories.core.entity.traits.MinerTrait;
 import xyz.chunkstories.core.entity.traits.TraitControlledMovement;
 import xyz.chunkstories.core.entity.traits.TraitEyeLevel;
@@ -43,6 +45,7 @@ import xyz.chunkstories.core.item.inventory.InventoryLocalCreativeMenu;
 import org.joml.*;
 
 import java.lang.Math;
+import java.util.HashMap;
 import java.util.Iterator;
 
 /**
@@ -59,8 +62,8 @@ public class EntityPlayer extends EntityHumanoid implements WorldModificationCau
 	protected TraitCreativeMode creativeMode;
 	protected TraitFlyingMode flyMode;
 
-	protected EntityArmorInventory armor;
-	protected EntityFoodLevel foodLevel;
+	protected TraitArmor armor;
+	protected TraitFoodLevel foodLevel;
 
 	protected TraitVoxelSelection raytracer;
 
@@ -79,14 +82,14 @@ public class EntityPlayer extends EntityHumanoid implements WorldModificationCau
 		name = new TraitName(this);
 		creativeMode = new TraitCreativeMode(this);
 		flyMode = new TraitFlyingMode(this);
-		foodLevel = new EntityFoodLevel(this, 100);
-		armor = new EntityArmorInventory(this, 4, 1);
+		foodLevel = new TraitFoodLevel(this, 100);
+		armor = new TraitArmor(this, 4, 1);
 
 		raytracer = new TraitVoxelSelection(this) {
 
 			@Override
 			public Location getBlockLookingAt(boolean inside, boolean can_overwrite) {
-				double eyePosition = stance.getStance().eyeLevel;
+				double eyePosition = stance.getStance().getEyeLevel();
 
 				Vector3d initialPosition = new Vector3d(getLocation());
 				initialPosition.add(new Vector3d(0, eyePosition, 0));
@@ -128,7 +131,7 @@ public class EntityPlayer extends EntityHumanoid implements WorldModificationCau
 
 			@Override
 			public double getEyeLevel() {
-				return stance.getStance().eyeLevel;
+				return stance.getStance().getEyeLevel();
 			}
 
 		};
@@ -137,6 +140,12 @@ public class EntityPlayer extends EntityHumanoid implements WorldModificationCau
 		controllerComponent = new PlayerWhenControlled(this);
 
 		new MinerTrait(this);
+
+		int variant = ColorsTools.getUniqueColorCode(this.getName()) % 6;
+		HashMap<String, String> aaTchoum = new HashMap<>();
+		aaTchoum.put("albedoTexture", "./models/human/variant" + variant + ".png");
+		MeshMaterial customSkin = new MeshMaterial("playerSkin", aaTchoum);
+		new EntityHumanoidRenderer(this, customSkin);
 	}
 
 	class PlayerWhenControlled extends TraitControllable {
@@ -248,7 +257,7 @@ public class EntityPlayer extends EntityHumanoid implements WorldModificationCau
 			}
 
 			Vector3d initialPosition = new Vector3d(getLocation());
-			initialPosition.add(new Vector3d(0, stance.getStance().eyeLevel, 0));
+			initialPosition.add(new Vector3d(0, stance.getStance().getEyeLevel(), 0));
 
 			Vector3dc direction = entityRotation.getDirectionLookingAt();
 
@@ -351,15 +360,15 @@ public class EntityPlayer extends EntityHumanoid implements WorldModificationCau
 				flyMode.tick(controller);
 
 				// Flying also means we're standing
-				stance.set(EntityHumanoidStance.STANDING);
+				stance.set(HumanoidStance.STANDING);
 			} else {
 
 				boolean focus = controller.hasFocus();
 				if (focus && traits.get(TraitCollidable.class).isOnGround()) {
 					if (controller.getInputsManager().getInputByName("crouch").isPressed())
-						stance.set(EntityHumanoidStance.CROUCHING);
+						stance.set(HumanoidStance.CROUCHING);
 					else
-						stance.set(EntityHumanoidStance.STANDING);
+						stance.set(HumanoidStance.STANDING);
 				}
 
 				super.tick(controller);
@@ -377,7 +386,7 @@ public class EntityPlayer extends EntityHumanoid implements WorldModificationCau
 
 		@Override
 		public double getForwardSpeed() {
-			return ((!running || stance.getStance() == EntityHumanoidStance.CROUCHING) ? 0.06 : 0.09);
+			return ((!running || stance.getStance() == HumanoidStance.CROUCHING) ? 0.06 : 0.09);
 		}
 
 		@Override
@@ -429,7 +438,7 @@ public class EntityPlayer extends EntityHumanoid implements WorldModificationCau
 			// TODO: move to trait
 			if ((world.getTicksElapsed() % 100L) == 0L) {
 				if (foodLevel.getValue() == 0)
-					entityHealth.damage(EntityFoodLevel.HUNGER_DAMAGE_CAUSE, 1);
+					entityHealth.damage(TraitFoodLevel.HUNGER_DAMAGE_CAUSE, 1);
 				else {
 					// 27 minutes to start starving at 0.1 starveFactor
 					// Takes 100hp / ( 0.6rtps * 0.1 hp/hit )

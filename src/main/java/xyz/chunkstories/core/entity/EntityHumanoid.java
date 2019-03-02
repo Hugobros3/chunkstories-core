@@ -18,8 +18,8 @@ import xyz.chunkstories.api.physics.Box;
 import xyz.chunkstories.api.physics.EntityHitbox;
 import xyz.chunkstories.api.sound.SoundSource.Mode;
 import xyz.chunkstories.api.world.World;
-import xyz.chunkstories.core.entity.components.EntityStance;
-import xyz.chunkstories.core.entity.components.EntityStance.EntityHumanoidStance;
+import xyz.chunkstories.core.entity.traits.TraitHumanoidStance;
+import xyz.chunkstories.core.entity.traits.TraitHumanoidStance.HumanoidStance;
 import xyz.chunkstories.core.entity.traits.TraitBasicMovement;
 import xyz.chunkstories.core.entity.traits.TraitWalkingSounds;
 
@@ -27,7 +27,7 @@ public abstract class EntityHumanoid extends EntityLiving {
 
 	protected TraitHitboxes hitboxes;
 	protected TraitAnimated animationTrait;
-	protected EntityStance stance;
+	protected TraitHumanoidStance stance;
 
 	public EntityHumanoid(EntityDefinition t, World world) {
 		super(t, world);
@@ -45,7 +45,7 @@ public abstract class EntityHumanoid extends EntityLiving {
 				new EntityHitbox(this, new Box(-0.15, -0.075, -0.125, 0.35, 0.075, 0.25), "boneFootL"),
 				new EntityHitbox(this, new Box(-0.15, -0.075, -0.125, 0.35, 0.075, 0.25), "boneFootR"), };
 
-		this.stance = new EntityStance(this);
+		this.stance = new TraitHumanoidStance(this);
 
 		this.animationTrait = new TraitAnimated(this) {
 			Animator humanoidSkeletonAnimator = new HumanoidSkeletonAnimator(EntityHumanoid.this);
@@ -68,13 +68,13 @@ public abstract class EntityHumanoid extends EntityLiving {
 
 		//new TraitRenderable(this, EntityHumanoidRenderer<EntityHumanoid>::new);
 
-		new EntityHumanoidRenderer(this);
+		//new EntityHumanoidRenderer(this);
 
 		new TraitCollidable(this) {
 
 			@Override public Box[] getCollisionBoxes() {
 
-				double height = stance.getStance() == EntityHumanoidStance.CROUCHING ? 1.45 : 1.9;
+				double height = stance.getStance() == HumanoidStance.CROUCHING ? 1.45 : 1.9;
 				if (EntityHumanoid.this.entityHealth.isDead())
 					height = 0.2;
 				return new Box[] { new Box(0.6, height, 0.6).translate(-0.3, 0.0, -0.3) };
@@ -96,7 +96,7 @@ public abstract class EntityHumanoid extends EntityLiving {
 		if (entityHealth.isDead())
 			return new Box(1.6, 1.0, 1.6).translate(-0.8, 0.0, -0.8);
 
-		return new Box(1.0, stance.getStance() == EntityHumanoidStance.CROUCHING ? 1.5 : 2.0, 1.0).translate(-0.5, 0.0, -0.5);
+		return new Box(1.0, stance.getStance() == HumanoidStance.CROUCHING ? 1.5 : 2.0, 1.0).translate(-0.5, 0.0, -0.5);
 	}
 
 	/**

@@ -4,7 +4,7 @@
 // Website: http://chunkstories.xyz
 //
 
-package xyz.chunkstories.core.entity.components;
+package xyz.chunkstories.core.entity.traits;
 
 import xyz.chunkstories.api.entity.Entity;
 import xyz.chunkstories.api.entity.traits.serializable.TraitInventory;
@@ -16,9 +16,9 @@ import java.util.Collection;
 import java.util.Iterator;
 
 @Specialized // doesn't take the place of entity inventory
-public class EntityArmorInventory extends TraitInventory {
+public class TraitArmor extends TraitInventory {
 
-	public EntityArmorInventory(Entity holder, int width, int height) {
+	public TraitArmor(Entity holder, int width, int height) {
 		super(holder, width, height);
 	}
 

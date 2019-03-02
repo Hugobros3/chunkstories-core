@@ -16,7 +16,7 @@ import xyz.chunkstories.api.voxel.Voxel;
 import xyz.chunkstories.api.world.World;
 import xyz.chunkstories.api.world.WorldClient;
 import xyz.chunkstories.api.world.WorldMaster;
-import xyz.chunkstories.core.entity.components.EntityGroundItemPileComponent;
+import xyz.chunkstories.core.entity.traits.ItemOnGroundContents;
 import xyz.chunkstories.core.voxel.VoxelLiquid;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
@@ -29,25 +29,25 @@ public class EntityGroundItem extends Entity {
 	//public final TraitRenderable renderable = new TraitRenderable(this, EntityGroundItemRenderer::new);
 
 	private long spawnTime;
-	private final EntityGroundItemPileComponent itemPileWithin;
+	private final ItemOnGroundContents traitContents;
 
 	public EntityGroundItem(EntityDefinition t, World location) {
 		super(t, location);
-		itemPileWithin = new EntityGroundItemPileComponent(this);
+		traitContents = new ItemOnGroundContents(this);
 	}
 
 	public EntityGroundItem(EntityDefinition t, World location, ItemPile itemPile) {
 		super(t, location);
-		itemPileWithin = new EntityGroundItemPileComponent(this, itemPile);
+		traitContents = new ItemOnGroundContents(this, itemPile);
 		spawnTime = System.currentTimeMillis();
 	}
 
 	public ItemPile getItemPile() {
-		return itemPileWithin.itemPile;
+		return traitContents.getItemPile();
 	}
 
 	public void setItemPile(ItemPile itemPile) {
-		itemPileWithin.setItemPile(itemPile);
+		traitContents.setItemPile(itemPile);
 		spawnTime = System.currentTimeMillis();
 	}
 

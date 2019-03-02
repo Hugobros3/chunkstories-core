@@ -4,14 +4,14 @@
 // Website: http://chunkstories.xyz
 //
 
-package xyz.chunkstories.core.entity.components;
+package xyz.chunkstories.core.entity.traits;
 
 import xyz.chunkstories.api.entity.DamageCause;
 import xyz.chunkstories.api.entity.Entity;
 import xyz.chunkstories.api.entity.traits.generic.TraitSerializableFloat;
 
-public class EntityFoodLevel extends TraitSerializableFloat {
-	public EntityFoodLevel(Entity entity, float defaultValue) {
+public class TraitFoodLevel extends TraitSerializableFloat {
+	public TraitFoodLevel(Entity entity, float defaultValue) {
 		super(entity, defaultValue);
 	}
 

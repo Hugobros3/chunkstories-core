@@ -18,9 +18,12 @@ uniform WorldConditions world;
 
 #include ../sky/sky.glsl
 
+#material sampler2D albedoTexture;
+#material sampler2D normalTexture;
+
 void main()
 {
-	vec4 albedo = color;
+	vec4 albedo = texture(albedoTexture, texCoord).rgba;
 
 	if(albedo.a == 0.0) {
 		discard;
