@@ -127,7 +127,7 @@ public class EntityPlayer extends EntityHumanoid implements WorldModificationCau
 		int variant = ColorsTools.getUniqueColorCode(this.getName()) % 6;
 		HashMap<String, String> aaTchoum = new HashMap<>();
 		aaTchoum.put("albedoTexture", "./models/human/variant" + variant + ".png");
-		MeshMaterial customSkin = new MeshMaterial("playerSkin", aaTchoum);
+		MeshMaterial customSkin = new MeshMaterial("playerSkin", aaTchoum, "opaque");
 		new EntityHumanoidRenderer(this, customSkin);
 	}
 
