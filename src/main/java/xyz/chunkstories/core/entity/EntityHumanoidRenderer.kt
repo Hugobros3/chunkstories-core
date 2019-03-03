@@ -2,6 +2,7 @@ package xyz.chunkstories.core.entity
 
 import org.joml.Matrix4f
 import xyz.chunkstories.api.client.Client
+import xyz.chunkstories.api.entity.traits.TraitAnimated
 import xyz.chunkstories.api.entity.traits.TraitRenderable
 import xyz.chunkstories.api.graphics.MeshMaterial
 import xyz.chunkstories.api.graphics.representation.ModelInstance
@@ -33,7 +34,7 @@ open class EntityHumanoidRenderer(entity: EntityHumanoid, private val customSkin
         else
             emptyMap()
 
-        val modelInstance = ModelInstance(model, position, materials, visibility)
+        val modelInstance = ModelInstance(model, position, materials, visibility, animator = entity.traits[TraitAnimated::class]?.animatedSkeleton)
 
         representationsGobbler.acceptRepresentation(modelInstance, visibility)
     }
