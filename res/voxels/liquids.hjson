@@ -3,6 +3,7 @@
 		water: {
 			class: xyz.chunkstories.core.voxel.VoxelLiquid
 			solid: false
+			liquid: true
 			opaque: false
 			selfOpaque: true
 			shadingLightLevel: 1
@@ -11,6 +12,7 @@
 		lava: {
 			class: xyz.chunkstories.core.voxel.VoxelLiquid
 			solid: false
+			liquid: true
 			opaque: false
 			selfOpaque: false
 			emittingLightLevel: 15
