@@ -42,7 +42,7 @@ public abstract class TraitControlledMovement extends TraitBasicMovement {
 		boolean inWater = isInWater();
 		boolean onLadder = false;
 
-		all: for (CellData vctx : getEntity().world.getVoxelsWithin(getEntity().getTranslatedBoundingBox())) {
+		all: for (CellData vctx : getEntity().getWorld().getVoxelsWithin(getEntity().getTranslatedBoundingBox())) {
 			if (vctx.getVoxel() instanceof VoxelClimbable) {
 				for (Box box : vctx.getTranslatedCollisionBoxes()) {
 					// TODO use actual collision model of the entity here

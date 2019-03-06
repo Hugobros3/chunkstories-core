@@ -81,10 +81,10 @@ public class EntityPlayer extends EntityHumanoid implements WorldModificationCau
 				Vector3d direction = new Vector3d(entityRotation.getDirectionLookingAt());
 
 				if (inside)
-					return EntityPlayer.this.world.getCollisionsManager().raytraceSelectable(new Location(EntityPlayer.this.world, initialPosition), direction,
+					return EntityPlayer.this.getWorld().getCollisionsManager().raytraceSelectable(new Location(EntityPlayer.this.getWorld(), initialPosition), direction,
 							256.0);
 				else
-					return EntityPlayer.this.world.getCollisionsManager().raytraceSolidOuter(new Location(EntityPlayer.this.world, initialPosition), direction,
+					return EntityPlayer.this.getWorld().getCollisionsManager().raytraceSolidOuter(new Location(EntityPlayer.this.getWorld(), initialPosition), direction,
 							256.0);
 			}
 
@@ -134,6 +134,8 @@ public class EntityPlayer extends EntityHumanoid implements WorldModificationCau
 	// Server-side updating
 	@Override
 	public void tick() {
+
+		World world = getWorld();
 
 		// if(world instanceof WorldMaster)
 		traits.with(MinerTrait.class, mt -> mt.tickTrait());

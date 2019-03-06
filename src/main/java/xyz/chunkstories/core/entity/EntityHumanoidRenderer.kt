@@ -4,6 +4,8 @@ import org.joml.Matrix4f
 import xyz.chunkstories.api.client.Client
 import xyz.chunkstories.api.entity.traits.TraitAnimated
 import xyz.chunkstories.api.entity.traits.TraitRenderable
+import xyz.chunkstories.api.entity.traits.serializable.TraitInventory
+import xyz.chunkstories.api.entity.traits.serializable.TraitSelectedItem
 import xyz.chunkstories.api.graphics.MeshMaterial
 import xyz.chunkstories.api.graphics.representation.ModelInstance
 import xyz.chunkstories.api.graphics.representation.ModelPosition
@@ -25,7 +27,7 @@ open class EntityHumanoidRenderer(entity: EntityHumanoid, private val customSkin
         for (i in 0 until representationsGobbler.renderingContexts.size) {
             val isPassShadow = representationsGobbler.renderingContexts[i].name.startsWith("shadow")
 
-            val ithBit = isPassShadow or !isPlayerEntity
+            val ithBit = isPassShadow or !isPlayerEntity or true
             visibility = visibility or (ithBit.toInt() shl i)
         }
 
@@ -34,9 +36,23 @@ open class EntityHumanoidRenderer(entity: EntityHumanoid, private val customSkin
         else
             emptyMap()
 
-        val modelInstance = ModelInstance(model, position, materials, visibility, animator = entity.traits[TraitAnimated::class]?.animatedSkeleton)
+        val animator = entity.traits[TraitAnimated::class]?.animatedSkeleton !!
+        val modelInstance = ModelInstance(model, position, materials, visibility, animator = animator)
 
         representationsGobbler.acceptRepresentation(modelInstance, visibility)
+
+        val itemInHand = entity.traits[TraitSelectedItem::class]?.selectedItem// ?: (entity.world.gameContext as? Client)?.ingame?.player?.controlledEntity?.traits?.get(TraitInventory::class)?.getItemPileAt(0, 0)
+        if(itemInHand != null) {
+            val itemMatrix = Matrix4f(matrix)
+
+            val realWorldTimeTruncated = (System.nanoTime() % 1000_000_000_000)
+            val realWorldTimeMs = realWorldTimeTruncated / 1000_000
+            val animationTime = (realWorldTimeMs / 1000.0) * 1000.0
+
+            itemMatrix.mul(animator.getBoneHierarchyTransformationMatrix("boneItemInHand", animationTime))
+
+            itemInHand.item.buildRepresentation(itemInHand, itemMatrix, representationsGobbler)
+        }
     }
 
 }

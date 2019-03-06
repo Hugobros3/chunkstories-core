@@ -44,7 +44,7 @@ public class EntityZombie extends EntityHumanoid implements DamageCause {
 
 			@Override public float damage(DamageCause cause, EntityHitbox osef, float damage) {
 				if (!this.isDead())
-					EntityZombie.this.world.getSoundManager()
+					EntityZombie.this.getWorld().getSoundManager()
 							.playSoundEffect("sounds/entities/zombie/hurt.ogg", Mode.NORMAL, getLocation(), (float) Math.random() * 0.4f + 0.8f,
 									1.5f + Math.min(0.5f, damage / 15.0f));
 
@@ -64,7 +64,7 @@ public class EntityZombie extends EntityHumanoid implements DamageCause {
 
 	@Override public void tick() {
 		// AI works on master
-		if (world instanceof WorldMaster)
+		if (getWorld() instanceof WorldMaster)
 			zombieAi.tick();
 
 		// Ticks the entity

@@ -117,10 +117,10 @@ class EntityPlayerController extends TraitControllable {
 		Controller controller = getController();
 
 		// We are moving inventory bringup here !
-		if (input.getName().equals("inventory") && entityPlayer.world instanceof WorldClient) {
+		if (input.getName().equals("inventory") && entityPlayer.getWorld() instanceof WorldClient) {
 
 			if (entityPlayer.creativeMode.get()) {
-				((WorldClient) entityPlayer.getWorld()).getClient().getGui().openInventories(entityPlayer.inventory, new InventoryLocalCreativeMenu(entityPlayer.world));
+				((WorldClient) entityPlayer.getWorld()).getClient().getGui().openInventories(entityPlayer.inventory, new InventoryLocalCreativeMenu(entityPlayer.getWorld()));
 			} else {
 				((WorldClient) entityPlayer.getWorld()).getClient().getGui().openInventories(entityPlayer.inventory, entityPlayer.armor);
 			}
@@ -143,7 +143,7 @@ class EntityPlayerController extends TraitControllable {
 
 		Vector3dc direction = entityPlayer.entityRotation.getDirectionLookingAt();
 
-		Iterator<Entity> i = entityPlayer.world.getCollisionsManager().rayTraceEntities(initialPosition, direction, maxLen);
+		Iterator<Entity> i = entityPlayer.getWorld().getCollisionsManager().rayTraceEntities(initialPosition, direction, maxLen);
 		while (i.hasNext()) {
 			Entity e = i.next();
 			if (e != entityPlayer
@@ -165,7 +165,7 @@ class EntityPlayerController extends TraitControllable {
 						// Player events mod
 						if (controller instanceof Player) {
 							Player player = (Player) controller;
-							World.WorldCell cell = entityPlayer.world.peekSafely(blockLocation);
+							World.WorldCell cell = entityPlayer.getWorld().peekSafely(blockLocation);
 							FutureCell future = new FutureCell(cell);
 							future.setVoxel(entityPlayer.getDefinition().store().parent().voxels().air());
 							future.setBlocklight(0);
@@ -176,7 +176,7 @@ class EntityPlayerController extends TraitControllable {
 									TraitCreativeMode.Companion.getCREATIVE_MODE(), player);
 
 							// Anyone has objections ?
-							entityPlayer.world.getGameContext().getPluginManager().fireEvent(event);
+							entityPlayer.getWorld().getGameContext().getPluginManager().fireEvent(event);
 
 							if (event.isCancelled())
 								return true;
@@ -185,13 +185,13 @@ class EntityPlayerController extends TraitControllable {
 							for (int k = 0; k < 40; k++) {
 								rnd.set(blockLocation);
 								rnd.add(Math.random() * 0.98, Math.random() * 0.98, Math.random() * 0.98);
-								entityPlayer.world.getParticlesManager().spawnParticleAtPosition("voxel_frag", rnd);
+								entityPlayer.getWorld().getParticlesManager().spawnParticleAtPosition("voxel_frag", rnd);
 							}
-							entityPlayer.world.getSoundManager().playSoundEffect("sounds/gameplay/voxel_remove.ogg", SoundSource.Mode.NORMAL,
+							entityPlayer.getWorld().getSoundManager().playSoundEffect("sounds/gameplay/voxel_remove.ogg", SoundSource.Mode.NORMAL,
 									blockLocation, 1.0f, 1.0f);
 
 							try {
-								entityPlayer.world.poke(future, entityPlayer);
+								entityPlayer.getWorld().poke(future, entityPlayer);
 								// world.poke((int)blockLocation.x, (int)blockLocation.y, (int)blockLocation.z,
 								// null, 0, 0, 0, this);
 							} catch (WorldException e) {
@@ -207,10 +207,10 @@ class EntityPlayerController extends TraitControllable {
 
 						if (!ctx.getVoxel().isAir()) {
 							// Spawn new itemPile in his inventory
-							ItemVoxel item = (ItemVoxel) entityPlayer.world.getGameContext().getContent().items()
+							ItemVoxel item = entityPlayer.getWorld().getGameContext().getContent().items()
 									.getItemDefinition("item_voxel").newItem();
-							item.voxel = ctx.getVoxel();
-							item.voxelMeta = ctx.getMetaData();
+							item.setVoxel(ctx.getVoxel());
+							item.setVoxelMeta(ctx.getMetaData());
 
 							ItemPile itemVoxel = new ItemPile(item);
 							entityPlayer.inventory.setItemPileAt(entityPlayer.selectedItemComponent.getSelectedSlot(), 0, itemVoxel);
@@ -225,6 +225,6 @@ class EntityPlayerController extends TraitControllable {
 		// n/a
 
 		// Then we check if the world minds being interacted with
-		return entityPlayer.world.handleInteraction(entityPlayer, blockLocation, input);
+		return entityPlayer.getWorld().handleInteraction(entityPlayer, blockLocation, input);
 	}
 }

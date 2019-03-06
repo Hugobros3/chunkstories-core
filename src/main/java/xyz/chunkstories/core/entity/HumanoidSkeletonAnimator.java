@@ -10,6 +10,7 @@ import xyz.chunkstories.api.entity.traits.serializable.TraitVelocity;
 import xyz.chunkstories.api.item.Item;
 import xyz.chunkstories.api.item.interfaces.ItemCustomHoldingAnimation;
 import xyz.chunkstories.api.item.inventory.ItemPile;
+import xyz.chunkstories.api.world.World;
 import xyz.chunkstories.api.world.WorldClient;
 import xyz.chunkstories.core.entity.traits.TraitHumanoidStance;
 import xyz.chunkstories.core.entity.traits.TraitHumanoidStance.HumanoidStance;
@@ -45,6 +46,8 @@ public class HumanoidSkeletonAnimator extends CompoundAnimationHelper {
 			return entity.getWorld().getGameContext().getContent().getAnimationsLibrary()
 					.getAnimation("./animations/human/ded.bvh");
 
+		World world = entity.getWorld();
+
 		if (Arrays.asList(new String[] { "boneArmLU", "boneArmRU", "boneArmLD", "boneArmRD", "boneItemInHand" })
 				.contains(boneName)) {
 
@@ -60,16 +63,16 @@ public class HumanoidSkeletonAnimator extends CompoundAnimationHelper {
 						MinerTrait trait = entity.traits.get(MinerTrait.class);
 						if (trait != null) {
 							if (trait.getProgress() != null)
-								return entity.world.getGameContext().getContent().getAnimationsLibrary()
+								return world.getGameContext().getContent().getAnimationsLibrary()
 										.getAnimation("./animations/human/mining.bvh");
 						}
 					}
 
 					if (item instanceof ItemCustomHoldingAnimation)
-						return entity.world.getGameContext().getContent().getAnimationsLibrary()
+						return world.getGameContext().getContent().getAnimationsLibrary()
 								.getAnimation(((ItemCustomHoldingAnimation) item).getCustomAnimationName());
 					else
-						return entity.world.getGameContext().getContent().getAnimationsLibrary()
+						return world.getGameContext().getContent().getAnimationsLibrary()
 								.getAnimation("./animations/human/holding-item.bvh");
 				}
 
@@ -88,24 +91,24 @@ public class HumanoidSkeletonAnimator extends CompoundAnimationHelper {
 		if (stance.getStance() == HumanoidStance.STANDING) {
 			if (horizSpd > 0.065) {
 				// System.out.println("running");
-				return entity.world.getGameContext().getContent().getAnimationsLibrary()
+				return world.getGameContext().getContent().getAnimationsLibrary()
 						.getAnimation("./animations/human/running.bvh");
 			}
 			if (horizSpd > 0.0)
-				return entity.world.getGameContext().getContent().getAnimationsLibrary()
+				return world.getGameContext().getContent().getAnimationsLibrary()
 						.getAnimation("./animations/human/walking.bvh");
 
-			return entity.world.getGameContext().getContent().getAnimationsLibrary()
+			return world.getGameContext().getContent().getAnimationsLibrary()
 					.getAnimation("./animations/human/standstill.bvh");
 		} else if (stance.getStance() == HumanoidStance.CROUCHING) {
 			if (horizSpd > 0.0)
-				return entity.world.getGameContext().getContent().getAnimationsLibrary()
+				return world.getGameContext().getContent().getAnimationsLibrary()
 						.getAnimation("./animations/human/crouched-walking.bvh");
 
-			return entity.world.getGameContext().getContent().getAnimationsLibrary()
+			return world.getGameContext().getContent().getAnimationsLibrary()
 					.getAnimation("./animations/human/crouched.bvh");
 		} else {
-			return entity.world.getGameContext().getContent().getAnimationsLibrary()
+			return world.getGameContext().getContent().getAnimationsLibrary()
 					.getAnimation("./animations/human/ded.bvh");
 		}
 
@@ -116,7 +119,7 @@ public class HumanoidSkeletonAnimator extends CompoundAnimationHelper {
 		// Only the torso is modified, the effect is replicated accross the other bones
 		// later
 		if (boneName.endsWith("boneTorso"))
-			characterRotationMatrix.rotate((90 - entityRotation.getHorizontalRotation()) / 180f * 3.14159f,
+			characterRotationMatrix.rotate((-90 + entityRotation.getHorizontalRotation()) / 180f * 3.14159f,
 					new Vector3f(0, 1, 0));
 
 		Vector3d vel = entityVelocity.getVelocity();
@@ -128,7 +131,7 @@ public class HumanoidSkeletonAnimator extends CompoundAnimationHelper {
 		if (boneName.endsWith("boneHead")) {
 			Matrix4f modify = new Matrix4f(getAnimationPlayingForBone(boneName, animationTime).getBone(boneName)
 					.getTransformationMatrix(animationTime));
-			modify.rotate((float) (-entityRotation.getVerticalRotation() / 180 * Math.PI),
+			modify.rotate((float) (entityRotation.getVerticalRotation() / 180 * Math.PI),
 					new Vector3f(0, 0, 1));
 			return modify;
 		}
@@ -147,7 +150,7 @@ public class HumanoidSkeletonAnimator extends CompoundAnimationHelper {
 					.contains(boneName)) {
 				MiningProgress miningProgress = trait.getProgress();
 				if (miningProgress != null) {
-					Animation lol = entity.world.getGameContext().getContent().getAnimationsLibrary()
+					Animation lol = entity.getWorld().getGameContext().getContent().getAnimationsLibrary()
 							.getAnimation("./animations/human/mining.bvh");
 
 					return characterRotationMatrix.mul(lol.getBone(boneName)
@@ -164,7 +167,7 @@ public class HumanoidSkeletonAnimator extends CompoundAnimationHelper {
 
 			if (selectedItem != null) {
 				characterRotationMatrix.translate(new Vector3f(0f, k, 0));
-				characterRotationMatrix.rotate((entityRotation.getVerticalRotation()
+				characterRotationMatrix.rotate(-(entityRotation.getVerticalRotation()
 						+ ((stance.getStance() == HumanoidStance.CROUCHING) ? -50f : 0f)) / 180f * -3.14159f,
 						new Vector3f(0, 0, 1));
 				characterRotationMatrix.translate(new Vector3f(0f, -k, 0));

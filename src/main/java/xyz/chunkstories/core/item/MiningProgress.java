@@ -107,7 +107,7 @@ public class MiningProgress {
 						EntityGroundItem thrownItem = (EntityGroundItem) context.getWorld().getContent().entities()
 								.getEntityDefinition("groundItem").newEntity(itemSpawnLocation.world);
 						thrownItem.traitLocation.set(itemSpawnLocation);
-						thrownItem.entityVelocity.setVelocity(
+						thrownItem.getEntityVelocity().setVelocity(
 								new Vector3d(Math.random() * 0.125 - 0.0625, 0.1, Math.random() * 0.125 - 0.0625));
 						thrownItem.setItemPile(droppedItemPile);
 						context.getWorld().addEntity(thrownItem);

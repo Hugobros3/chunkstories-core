@@ -28,7 +28,7 @@ class TraitWalkingSounds(entity: Entity) : Trait(entity) {
 
     fun handleWalkingEtcSounds() {
         // This is strictly a clientside thing
-        if (entity.getWorld() !is WorldClient)
+        if (entity.world !is WorldClient)
             return
 
         val collisions = entity.traits[TraitCollidable::class.java]
@@ -38,7 +38,7 @@ class TraitWalkingSounds(entity: Entity) : Trait(entity) {
         if (collisions == null || entityVelocity == null || locomotion == null)
             return
 
-        val playerEntity = (entity.getWorld() as WorldClient).client.player.controlledEntity
+        val playerEntity = (entity.world as WorldClient).client.player.controlledEntity
 
         // When the entities are too far from the player, don't play any sounds
         if (playerEntity != null)
@@ -73,22 +73,22 @@ class TraitWalkingSounds(entity: Entity) : Trait(entity) {
         if (justJumped && !inWater) {
             // TODO useless
             justJumped = false
-            entity.getWorld().soundManager.playSoundEffect(material.resolveProperty("jumpingSounds"), Mode.NORMAL, entity.location,
+            entity.world.soundManager.playSoundEffect(material.resolveProperty("jumpingSounds"), Mode.NORMAL, entity.location,
                     (0.9f + Math.sqrt(entityVelocity.velocity.x() * entityVelocity.velocity.x() + entityVelocity.velocity.z() * entityVelocity.velocity.z()) * 0.1f).toFloat(), 1f).attenuationEnd = 10f
         }
         if (justLanded) {
             justLanded = false
-            entity.getWorld().soundManager.playSoundEffect(material.resolveProperty("landingSounds"), Mode.NORMAL, entity.location,
+            entity.world.soundManager.playSoundEffect(material.resolveProperty("landingSounds"), Mode.NORMAL, entity.location,
                     (0.9f + Math.sqrt(entityVelocity.velocity.x() * entityVelocity.velocity.x() + entityVelocity.velocity.z() * entityVelocity.velocity.z()) * 0.1f).toFloat(), 1f).attenuationEnd = 10f
         }
 
         if (metersWalked > 0.2 * Math.PI * 2.0) {
             metersWalked %= 0.2 * Math.PI * 2.0
             if (horizontalSpeed.length() <= 0.06) {
-                entity.getWorld().soundManager.playSoundEffect(material.resolveProperty("walkingSounds"), Mode.NORMAL, entity.location,
+                entity.world.soundManager.playSoundEffect(material.resolveProperty("walkingSounds"), Mode.NORMAL, entity.location,
                         (0.9f + Math.sqrt(entityVelocity.velocity.x() * entityVelocity.velocity.x() + entityVelocity.velocity.z() * entityVelocity.velocity.z()) * 0.1f).toFloat(), 1f).attenuationEnd = 10f
             } else {
-                entity.getWorld().soundManager.playSoundEffect(material.resolveProperty("runningSounds"), Mode.NORMAL, entity.location,
+                entity.world.soundManager.playSoundEffect(material.resolveProperty("runningSounds"), Mode.NORMAL, entity.location,
                         (0.9f + Math.sqrt(entityVelocity.velocity.x() * entityVelocity.velocity.x() + entityVelocity.velocity.z() * entityVelocity.velocity.z()) * 0.1f).toFloat(), 1f).attenuationEnd = 10f
             }
         }

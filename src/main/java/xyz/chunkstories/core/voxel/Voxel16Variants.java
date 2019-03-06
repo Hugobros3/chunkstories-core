@@ -45,9 +45,9 @@ public class Voxel16Variants extends Voxel {
 		List<ItemPile> items = new LinkedList<>();
 		for (int i = 0; i < 16; i++) {
 
-			ItemVoxel itemVoxel = (ItemVoxel) store().parent().items().getItemDefinition("item_voxel").newItem();
-			itemVoxel.voxel = this;
-			itemVoxel.voxelMeta = i;
+			ItemVoxel itemVoxel = store().parent().items().getItemDefinition("item_voxel").newItem();
+			itemVoxel.setVoxel(this);
+			itemVoxel.setVoxelMeta(i);
 
 			items.add(new ItemPile(itemVoxel));
 		}

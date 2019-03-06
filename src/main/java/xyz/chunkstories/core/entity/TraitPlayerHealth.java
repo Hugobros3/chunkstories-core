@@ -15,7 +15,7 @@ class TraitPlayerHealth extends EntityHumanoidHealth {
 	public float damage(DamageCause cause, EntityHitbox hitPart, float damage) {
 		if (!isDead()) {
 			int i = 1 + (int) Math.random() * 3;
-			getEntity().world.getSoundManager().playSoundEffect("sounds/entities/human/hurt" + i + ".ogg", SoundSource.Mode.NORMAL,
+			getEntity().getWorld().getSoundManager().playSoundEffect("sounds/entities/human/hurt" + i + ".ogg", SoundSource.Mode.NORMAL,
 					getEntity().getLocation(), (float) Math.random() * 0.4f + 0.8f, 5.0f);
 		}
 

@@ -23,7 +23,7 @@ class ItemOnGroundContents : TraitSerializable {
     var itemPile: ItemPile? = null
         set(value) {
             field = value
-            if (entity.getWorld() is WorldMaster)
+            if (entity.world is WorldMaster)
                 this.pushComponentEveryone()
         }
 
@@ -38,13 +38,13 @@ class ItemOnGroundContents : TraitSerializable {
         if (itemPile == null)
             dos.writeInt(0)
         else
-            itemPile!!.saveIntoStream(entity.getWorld().contentTranslator, dos)
+            itemPile!!.saveIntoStream(entity.world.contentTranslator, dos)
     }
 
     @Throws(IOException::class)
     override fun pull(from: StreamSource, dis: DataInputStream) {
         try {
-            itemPile = ItemPile.obtainItemPileFromStream(entity.getWorld().contentTranslator, dis)
+            itemPile = ItemPile.obtainItemPileFromStream(entity.world.contentTranslator, dis)
         } catch (e: UndefinedItemTypeException) {
             // Etc
         } catch (e: NullItemException) {
