@@ -14,6 +14,7 @@ import xyz.chunkstories.api.entity.traits.*;
 import xyz.chunkstories.api.entity.traits.serializable.*;
 import xyz.chunkstories.api.events.voxel.WorldModificationCause;
 import xyz.chunkstories.api.graphics.MeshMaterial;
+import xyz.chunkstories.api.gui.GuiDrawer;
 import xyz.chunkstories.api.input.Input;
 import xyz.chunkstories.api.item.inventory.InventoryHolder;
 import xyz.chunkstories.api.item.inventory.ItemPile;
@@ -106,8 +107,7 @@ public class EntityPlayer extends EntityHumanoid implements WorldModificationCau
 			}
 		};
 
-		//new PlayerOverlay(this);
-		//new TraitRenderable(this, EntityPlayerRenderer<EntityPlayer>::new);
+		new PlayerOverlay(this);
 		new TraitDontSave(this);
 
 		new TraitEyeLevel(this) {
@@ -218,200 +218,6 @@ public class EntityPlayer extends EntityHumanoid implements WorldModificationCau
 		super.tick();
 
 	}
-
-	/*class PlayerOverlay extends TraitHasOverlay {
-
-		public PlayerOverlay(Entity entity) {
-			super(entity);
-		}
-
-		@Override
-		public void drawEntityOverlay(RenderingInterface renderer) {
-			if (EntityPlayer.this.equals(((WorldClient) getWorld()).getClient().getPlayer().getControlledEntity())) {
-				float scale = 2.0f;
-
-				renderer.textures().getTexture("./textures/gui/hud/hud_survival.png").setLinearFiltering(false);
-				renderer.getGuiRenderer().drawBoxWindowsSpaceWithSize(
-						renderer.getWindow().getWidth() / 2 - 256 * 0.5f * scale, 64 + 64 + 16 - 32 * 0.5f * scale,
-						256 * scale, 32 * scale, 0, 32f / 256f, 1, 0,
-						renderer.textures().getTexture("./textures/gui/hud/hud_survival.png"), false, true, null);
-
-				// Health bar
-				int horizontalBitsToDraw = (int) (8
-						+ 118 * Math2.clamp(entityHealth.getHealth() / entityHealth.getMaxHealth(), 0.0, 1.0));
-				renderer.getGuiRenderer().drawBoxWindowsSpaceWithSize(renderer.getWindow().getWidth() / 2 - 128 * scale,
-						64 + 64 + 16 - 32 * 0.5f * scale, horizontalBitsToDraw * scale, 32 * scale, 0, 64f / 256f,
-						horizontalBitsToDraw / 256f, 32f / 256f,
-						renderer.textures().getTexture("./textures/gui/hud/hud_survival.png"), false, true,
-						new Vector4f(1.0f, 1.0f, 1.0f, 0.75f));
-
-				// Food bar
-				horizontalBitsToDraw = (int) (0 + 126 * Math2.clamp(foodLevel.getValue() / 100f, 0.0, 1.0));
-				renderer.getGuiRenderer().drawBoxWindowsSpaceWithSize(
-						renderer.getWindow().getWidth() / 2 + 0 * 128 * scale + 0, 64 + 64 + 16 - 32 * 0.5f * scale,
-						horizontalBitsToDraw * scale, 32 * scale, 0.5f, 64f / 256f, 0.5f + horizontalBitsToDraw / 256f,
-						32f / 256f, renderer.textures().getTexture("./textures/gui/hud/hud_survival.png"), false, true,
-						new Vector4f(1.0f, 1.0f, 1.0f, 0.75f));
-
-				// If we're using an item that can render an overlay
-				if (selectedItemComponent.getSelectedItem() != null) {
-					ItemPile pile = selectedItemComponent.getSelectedItem();
-					if (pile.getItem() instanceof ItemOverlay)
-						((ItemOverlay) pile.getItem()).drawItemOverlay(renderer, pile);
-				}
-
-				// We don't want to render our own tag do we ?
-				return;
-			}
-
-			// Renders the nametag above the player heads
-			Vector3d pos = getLocation();
-
-			// don't render tags too far out
-			if (pos.distance(renderer.getCamera().getCameraPosition()) > 32f)
-				return;
-
-			// Don't render a dead player tag
-			if (entityHealth.getHealth() <= 0)
-				return;
-
-			Vector3fc posOnScreen = renderer.getCamera().transform3DCoordinate(
-					new Vector3f((float) (double) pos.x(), (float) (double) pos.y() + 2.0f, (float) (double) pos.z()));
-
-			float scale = posOnScreen.z();
-			String txt = name.getName();
-			float dekal = renderer.getFontRenderer().defaultFont().getWidth(txt) * 16 * scale;
-			if (scale > 0)
-				renderer.getFontRenderer().drawStringWithShadow(renderer.getFontRenderer().defaultFont(),
-						posOnScreen.x() - dekal / 2, posOnScreen.y(), txt, 16 * scale, 16 * scale,
-						new Vector4f(1, 1, 1, 1));
-		}
-	}*/
-
-	/*class EntityPlayerRenderer<H extends EntityPlayer> extends EntityHumanoidRenderer<H> {
-		@Override
-		public void setupRender(RenderingInterface renderingContext) {
-			super.setupRender(renderingContext);
-		}
-
-		@Override
-		public int renderEntities(RenderingInterface renderer, RenderingIterator<H> renderableEntitiesIterator) {
-			renderer.useShader("entities_animated");
-
-			setupRender(renderer);
-			int e = 0;
-
-			Vector3f loc3f = new Vector3f();
-			Vector3f pre3f = new Vector3f();
-
-			for (EntityPlayer entity : renderableEntitiesIterator.getElementsInFrustrumOnly()) {
-				Location location = entity.getPredictedLocation();
-				loc3f.set((float) location.x(), (float) location.y(), (float) location.z());
-				pre3f.set((float) entity.getPredictedLocation().x(), (float) entity.getPredictedLocation().y(),
-						(float) entity.getPredictedLocation().z());
-				TraitAnimated animation = entity.traits.get(TraitAnimated.class);
-				if (animation == null)
-					return 0;
-
-				if (!renderer.getCurrentPass().name.startsWith("shadow")
-						|| location.distance(renderer.getCamera().getCameraPosition()) <= 15f) {
-					((CachedLodSkeletonAnimator) animation.getAnimatedSkeleton()).lodUpdate(renderer);
-
-					Matrix4f matrix = new Matrix4f();
-					matrix.translate(loc3f);
-					renderer.setObjectMatrix(matrix);
-
-					// Obtains the data for the block the player is standing inside of, so he can be
-					// lit appropriately
-					CellData cell = entity.getWorld().peekSafely(entity.getLocation());
-					renderer.currentShader().setUniform2f("worldLightIn", cell.getBlocklight(), cell.getSunlight());
-
-					variant = ColorsTools.getUniqueColorCode(entity.getName()) % 6;
-
-					// Player textures
-					Texture2D playerTexture = renderer.textures()
-							.getTexture("./models/human/variant" + variant + ".png");
-					playerTexture.setLinearFiltering(false);
-
-					renderer.bindAlbedoTexture(playerTexture);
-					renderer.bindNormalTexture(renderer.textures().getTexture("./textures/normalnormal.png"));
-					renderer.bindMaterialTexture(renderer.textures().getTexture("./textures/defaultmaterial.png"));
-
-					renderer.meshes().getRenderableAnimatableMesh("./models/human/human.dae").render(renderer,
-							animation.getAnimatedSkeleton(), System.currentTimeMillis() % 1000000);
-
-					for (ItemPile aip : entity.armor.iterator()) {
-						ItemArmor ia = (ItemArmor) aip.getItem();
-
-						renderer.bindAlbedoTexture(renderer.textures().getTexture(ia.getOverlayTextureName()));
-						renderer.textures().getTexture(ia.getOverlayTextureName()).setLinearFiltering(false);
-
-						SkeletonAnimator armorMask = ia.bodyPartsAffected().size() == 0
-								? animation.getAnimatedSkeleton()
-								: new SkeletonAnimator() {
-
-									@Override
-									public Matrix4fc getBoneHierarchyTransformationMatrix(String nameOfEndBone,
-											double animationTime) {
-										return animation.getAnimatedSkeleton()
-												.getBoneHierarchyTransformationMatrix(nameOfEndBone, animationTime);
-									}
-
-									@Override
-									public Matrix4fc getBoneHierarchyTransformationMatrixWithOffset(
-											String nameOfEndBone, double animationTime) {
-										return animation.getAnimatedSkeleton()
-												.getBoneHierarchyTransformationMatrixWithOffset(nameOfEndBone,
-														animationTime);
-									}
-
-									@Override
-									public boolean shouldHideBone(RenderingInterface renderingContext,
-											String boneName) {
-										return animation.getAnimatedSkeleton().shouldHideBone(renderingContext,
-												boneName) || !ia.bodyPartsAffected().contains(boneName);
-									}
-
-								};
-
-						renderer.meshes().getRenderableAnimatableMesh("./models/human/human_overlay.dae")
-								.render(renderer, armorMask, System.currentTimeMillis() % 1000000);
-					}
-
-					e++;
-				}
-			}
-
-			renderer.useShader("entities");
-			for (EntityPlayer entity : renderableEntitiesIterator.getElementsInFrustrumOnly()) {
-
-				// don't render items in hand when far
-				if (renderer.getCurrentPass().name.startsWith("shadow")
-						&& entity.getLocation().distance(renderer.getCamera().getCameraPosition()) > 15f)
-					continue;
-
-				TraitAnimated animation = entity.traits.get(TraitAnimated.class);
-
-				ItemPile selectedItemPile = entity.traits.tryWith(TraitSelectedItem.class,
-						eci -> eci.getSelectedItem());
-
-				if (selectedItemPile != null) {
-					Matrix4f itemMatrix = new Matrix4f();
-					itemMatrix.translate(pre3f);
-
-					itemMatrix.mul(animation.getAnimatedSkeleton().getBoneHierarchyTransformationMatrix(
-							"boneItemInHand", System.currentTimeMillis() % 1000000));
-
-					CellData cell = entity.getWorld().peekSafely(entity.getLocation());
-					renderer.currentShader().setUniform2f("worldLightIn", cell.getBlocklight(), cell.getSunlight());
-					selectedItemPile.getItem().getDefinition().getRenderer().renderItemInWorld(renderer,
-							selectedItemPile, world, entity.getLocation(), itemMatrix);
-				}
-			}
-
-			return e;
-		}
-	}*/
 
 	@Override
 	public String getName() {
