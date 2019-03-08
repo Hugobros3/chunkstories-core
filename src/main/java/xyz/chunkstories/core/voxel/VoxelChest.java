@@ -45,12 +45,16 @@ public class VoxelChest extends Voxel {
 	public boolean handleInteraction(Entity entity, ChunkCell voxelContext, Input input) {
 		if (input.getName().equals("mouse.right") && voxelContext.getWorld() instanceof WorldMaster) {
 
-			Controller c = entity.traits.tryWith(TraitControllable.class, TraitControllable::getController);
-			if (c != null && c instanceof Player
-					&& ((Player) c).getLocation().distance(voxelContext.getLocation()) <= 5) {
-				Player p = (Player) c;
+			Controller controller = entity.traits.tryWith(TraitControllable.class, TraitControllable::getController);
+			if (controller instanceof Player) {
+				Player player = (Player) controller;
+				Entity playerEntity = player.getControlledEntity();
 
-				p.openInventory(getInventory(voxelContext));
+				if(playerEntity != null) {
+					if (playerEntity.getLocation().distance(voxelContext.getLocation()) <= 5) {
+						player.openInventory(getInventory(voxelContext));
+					}
+				}
 			}
 		}
 		return false;

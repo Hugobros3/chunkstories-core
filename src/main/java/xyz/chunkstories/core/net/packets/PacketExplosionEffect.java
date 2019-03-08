@@ -57,7 +57,7 @@ public class PacketExplosionEffect extends PacketWorld {
 
 		if (processor instanceof ClientPacketsProcessor) {
 			ClientPacketsProcessor cpp = (ClientPacketsProcessor) processor;
-			WorldEffects.createFireballFx(cpp.getWorld(), center, radius, debrisSpeed, f);
+			WorldEffects.INSTANCE.createFireballFx(cpp.getWorld(), center, radius, debrisSpeed, f);
 		}
 	}
 

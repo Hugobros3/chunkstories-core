@@ -161,35 +161,27 @@ public class ItemFirearm extends ItemWeapon implements ItemOverlay, ItemZoom, It
 	 */
 	@Override
 	public void tickInHand(Entity owner, ItemPile itemPile) {
-
 		Controller controller = owner.traits.tryWith(TraitControllable.class, TraitControllable::getController);
 
 		// For now only client-side players can trigger shooting actions
-		if (controller != null && controller instanceof LocalPlayer) {
+		if (controller instanceof LocalPlayer) {
 			if (!((LocalPlayer) controller).hasFocus())
 				return;
 
-			LocalPlayer LocalPlayer = (LocalPlayer) controller;
+			LocalPlayer player = (LocalPlayer) controller;
 
-			if (LocalPlayer.getInputsManager().getInputByName("mouse.left").isPressed()) {
+			if (player.getInputsManager().getInputByName("mouse.left").isPressed()) {
 				// Check for bullet presence (or creative mode)
 				boolean bulletPresence = owner.traits.tryWithBoolean(TraitCreativeMode.class, TraitSerializableBoolean::get)
 						|| checkBullet(itemPile);
 				if (!bulletPresence && !wasTriggerPressedLastTick) {
 					// Play sounds
-					if (LocalPlayer != null)
-						LocalPlayer.getSoundManager().playSoundEffect("sounds/dogez/weapon/default/dry.ogg",
-								Mode.NORMAL, owner.getLocation(), 1.0f, 1.0f, 1f, (float) soundRange);
-					// Dry.ogg
-					// return;
+					owner.getWorld().getSoundManager().playSoundEffect("sounds/dogez/weapon/default/dry.ogg",
+							Mode.NORMAL, owner.getLocation(), 1.0f, 1.0f, 1f, (float) soundRange);
 				} else if ((automatic || !wasTriggerPressedLastTick)
 						&& (System.currentTimeMillis() - lastShot) / 1000.0d > 1.0 / (rpm / 60.0)) {
 					// Fire virtual input
-					// ClientInputPressedEvent event = new
-					// ClientInputPressedEvent(controller.getInputsManager().getInputByName("shootGun"));
-					// Client.getInstance().getPluginManager().fireEvent(event);
-
-					LocalPlayer.getInputsManager()
+					player.getInputsManager()
 							.onInputPressed(controller.getInputsManager().getInputByName("shootGun"));
 
 					lastShot = System.currentTimeMillis();
@@ -197,10 +189,8 @@ public class ItemFirearm extends ItemWeapon implements ItemOverlay, ItemZoom, It
 			}
 
 			isScoped = this.isScopedWeapon() && controller.getInputsManager().getInputByName("mouse.right").isPressed();
-
 			wasTriggerPressedLastTick = controller.getInputsManager().getInputByName("mouse.left").isPressed();
 		}
-
 	}
 
 	@Override
@@ -209,6 +199,8 @@ public class ItemFirearm extends ItemWeapon implements ItemOverlay, ItemZoom, It
 		if (input.getName().startsWith("mouse.")) {
 			return true;
 		}
+
+		World world = entity.getWorld();
 		if (input.getName().equals("shootGun")) {
 			// Serverside checks
 			// if (user.getWorld() instanceof WorldMaster)
@@ -237,7 +229,7 @@ public class ItemFirearm extends ItemWeapon implements ItemOverlay, ItemZoom, It
 
 			// Play sounds
 			if (controller != null) {
-				controller.getSoundManager().playSoundEffect(this.soundName, Mode.NORMAL, entity.getLocation(), 1.0f,
+				world.getSoundManager().playSoundEffect(this.soundName, Mode.NORMAL, entity.getLocation(), 1.0f,
 						1.0f, 1.0f, (float) soundRange);
 			}
 
@@ -341,15 +333,14 @@ public class ItemFirearm extends ItemWeapon implements ItemOverlay, ItemZoom, It
 
 							untouchedReflection.mul(0.25);
 
-							controller.getParticlesManager().spawnParticleAtPositionWithVelocity("voxel_frag",
+							world.getParticlesManager().spawnParticleAtPositionWithVelocity("voxel_frag",
 									particleSpawnPosition, untouchedReflection);
 						}
 
-						controller.getSoundManager().playSoundEffect(
+						world.getSoundManager().playSoundEffect(
 								peek.getVoxel().getVoxelMaterial().resolveProperty("landingSounds"), Mode.NORMAL,
 								particleSpawnPosition, 1, 0.05f);
-						controller.getDecalsManager().add(nearestLocation, normal.negate(), new Vector3d(0.5),
-								"bullethole");
+						world.getDecalsManager().add(nearestLocation, normal.negate(), new Vector3d(0.5), "bullethole");
 					}
 				}
 
@@ -403,7 +394,7 @@ public class ItemFirearm extends ItemWeapon implements ItemOverlay, ItemZoom, It
 
 			}
 
-			controller.getParticlesManager().spawnParticleAtPosition("muzzle", eyeLocation);
+			world.getParticlesManager().spawnParticleAtPosition("muzzle", eyeLocation);
 
 			FirearmShotEvent event = new FirearmShotEvent(this, entity, controller);
 			entity.getWorld().getGameContext().getPluginManager().fireEvent(event);
