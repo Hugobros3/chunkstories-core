@@ -57,8 +57,8 @@ public class ItemsLogicListener implements Listener {
 			 */
 		}
 
-		EntityGroundItem thrownItem = (EntityGroundItem) core.getPluginExecutionContext().getContent().entities()
-				.getEntityDefinition("groundItem").newEntity(throwLocation.world);
+		EntityGroundItem thrownItem = (EntityGroundItem) core.getGameContext().getContent().entities()
+				.getEntityDefinition("groundItem").newEntity(throwLocation.getWorld());
 		thrownItem.traitLocation.set(throwLocation);
 		thrownItem.getEntityVelocity().setVelocity(throwForce);
 		thrownItem.setItemPile(event.getItemPile());

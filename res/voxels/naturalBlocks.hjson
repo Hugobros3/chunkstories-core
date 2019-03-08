@@ -5,6 +5,7 @@
 			textures: {
 				top: ~_top
 				sides: ~_side
+				bottom: dirt
 			}
 		}
 

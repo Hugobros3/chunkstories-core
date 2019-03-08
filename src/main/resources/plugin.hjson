@@ -2,5 +2,5 @@
     name: core-plugin
     authors: XolioWare Interactive
     version: 1.0
-    main: xyz.chunkstories.core.CoreContentPlugin
+    entryPoint: xyz.chunkstories.core.CoreContentPlugin
 }
