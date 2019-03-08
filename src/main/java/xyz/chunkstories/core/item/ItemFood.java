@@ -33,7 +33,7 @@ public class ItemFood extends Item {
 					if (efl.getValue() >= 100)
 						return true;
 
-					System.out.println(entity + " ate " + itemPile);
+					//System.out.println(entity + " ate " + itemPile);
 					efl.setValue(efl.getValue() + calories);
 					itemPile.setAmount(itemPile.getAmount() - 1);
 					return true;
