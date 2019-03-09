@@ -104,7 +104,10 @@ void main()
 		lightColor = vec3(1.0, 0.0, 0.0);
 	}
 
+	vec3 eyeDirection = normalize(worldSpacePosition.xyz - camera.position.xyz);
+
 	colorOut = vec4(foggedSurface, 1.0);
+	//colorOut = vec4(eyeDirection, 1.0);
 	//colorOut = vec4(vec3(lightColor), 1.0);
 	//colorOut = vec4(vec3(pow(ambientLight, 2.1)), 1.0);
 	//colorOut = vec4(coordinatesInShadowmap.xyz, 1.0);

@@ -27,7 +27,7 @@ open class EntityHumanoidRenderer(entity: EntityHumanoid, private val customSkin
         for (i in 0 until representationsGobbler.renderingContexts.size) {
             val isPassShadow = representationsGobbler.renderingContexts[i].name.startsWith("shadow")
 
-            val ithBit = isPassShadow or !isPlayerEntity or true
+            val ithBit = isPassShadow or !isPlayerEntity
             visibility = visibility or (ithBit.toInt() shl i)
         }
 
