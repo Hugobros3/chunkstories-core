@@ -4,6 +4,7 @@
 in vec2 vertexIn;
 
 //Passed variables
+out vec2 vertexPos;
 out vec3 eyeDirection;
 
 //Common camera matrices & uniforms
@@ -19,5 +20,6 @@ void main()
 	//eyeDirection = normalize(camera.normalMatrixInverted * (cameraSpaceCoordinates.xyz));
 	eyeDirection = ((camera.viewMatrixInverted * vec4(cameraSpaceCoordinates.xyz, 0.0)).xyz);
 	
+	vertexPos = vertexIn;
     gl_Position = vec4(vertexIn.xy, 0.0, 1.0);
 }
