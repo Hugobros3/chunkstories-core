@@ -6,6 +6,7 @@
 
 package xyz.chunkstories.core.voxel;
 
+import org.jetbrains.annotations.NotNull;
 import xyz.chunkstories.api.Location;
 import xyz.chunkstories.api.entity.Controller;
 import xyz.chunkstories.api.entity.Entity;
@@ -74,7 +75,7 @@ public class VoxelChest extends Voxel {
 	}
 
 	@Override
-	public VoxelTexture getVoxelTexture(CellData info, VoxelSide side) {
+	public VoxelTexture getVoxelTexture(@NotNull CellData info, @NotNull VoxelSide side) {
 		VoxelSide actualSide = VoxelSide.getSideMcStairsChestFurnace(info.getMetaData());
 
 		if (side.equals(VoxelSide.TOP))
@@ -88,14 +89,14 @@ public class VoxelChest extends Voxel {
 
 	@Override
 	// Chunk stories chests use Minecraft format to ease porting of maps
-	public void onPlace(FutureCell cell, WorldModificationCause cause) throws IllegalBlockModificationException {
+	public void onPlace(@NotNull FutureCell cell, WorldModificationCause cause) throws IllegalBlockModificationException {
 		// Can't access the components of a non-yet placed FutureCell
 		// getInventory(context);
 
 		int stairsSide = 0;
 		// See:
 		// http://minecraft.gamepedia.com/Data_values#Ladders.2C_Furnaces.2C_Chests.2C_Trapped_Chests
-		if (cause != null && cause instanceof Entity) {
+		if (cause instanceof Entity) {
 			Location loc = ((Entity) cause).getLocation();
 			double dx = loc.x() - (cell.getX() + 0.5);
 			double dz = loc.z() - (cell.getZ() + 0.5);

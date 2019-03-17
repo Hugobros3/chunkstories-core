@@ -67,7 +67,7 @@ public class MinerTrait extends Trait {
 					WorldCell cell = world.peekSafely(lookingAt);
 
 					// Cancel mining if looking away or the block changed by itself
-					if (progress != null && (lookingAt.distance(progress.loc) > 0 || !cell.getVoxel().sameKind(progress.voxel))) {
+					if (progress != null && (lookingAt.distance(progress.getLoc()) > 0 || !cell.getVoxel().sameKind(progress.getVoxel()))) {
 						progress = null;
 					}
 

@@ -11,10 +11,7 @@ import xyz.chunkstories.api.entity.traits.Trait
 import xyz.chunkstories.api.entity.traits.TraitCollidable
 import xyz.chunkstories.api.entity.traits.serializable.TraitVelocity
 import xyz.chunkstories.api.sound.SoundSource.Mode
-import xyz.chunkstories.api.voxel.Voxel
-import xyz.chunkstories.api.voxel.materials.VoxelMaterial
 import xyz.chunkstories.api.world.WorldClient
-import xyz.chunkstories.core.voxel.VoxelLiquid
 import org.joml.Vector3d
 
 class TraitWalkingSounds(entity: Entity) : Trait(entity) {
@@ -65,7 +62,7 @@ class TraitWalkingSounds(entity: Entity) : Trait(entity) {
 
         var voxelStandingOn = entity.world.peekSafely(Vector3d(entity.location).add(0.0, -0.01, 0.0)).voxel
 
-        if (voxelStandingOn == null || !voxelStandingOn.solid && voxelStandingOn !is VoxelLiquid)
+        if (voxelStandingOn == null || !voxelStandingOn.solid && voxelStandingOn.liquid)
             voxelStandingOn = entity.world.content.voxels().air()
 
         val material = voxelStandingOn.voxelMaterial

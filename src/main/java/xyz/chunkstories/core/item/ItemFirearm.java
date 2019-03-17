@@ -8,12 +8,10 @@ package xyz.chunkstories.core.item;
 
 import java.util.Iterator;
 
-import xyz.chunkstories.api.client.Client;
 import xyz.chunkstories.api.entity.traits.generic.TraitSerializableBoolean;
 import xyz.chunkstories.api.entity.traits.serializable.TraitControllable;
 import xyz.chunkstories.api.gui.Font;
 import xyz.chunkstories.api.gui.GuiDrawer;
-import xyz.chunkstories.api.item.inventory.InventoryHolder;
 import org.joml.Matrix4f;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
@@ -33,6 +31,7 @@ import xyz.chunkstories.api.item.interfaces.ItemCustomHoldingAnimation;
 import xyz.chunkstories.api.item.interfaces.ItemOverlay;
 import xyz.chunkstories.api.item.interfaces.ItemZoom;
 import xyz.chunkstories.api.item.inventory.Inventory;
+import xyz.chunkstories.api.item.inventory.InventoryOwner;
 import xyz.chunkstories.api.item.inventory.ItemPile;
 import xyz.chunkstories.api.physics.Box;
 import xyz.chunkstories.api.physics.EntityHitbox;
@@ -425,7 +424,7 @@ public class ItemFirearm extends ItemWeapon implements ItemOverlay, ItemZoom, It
 		currentMagazine.setAmount(currentMagazine.getAmount() - 1);
 
 		if (currentMagazine.getAmount() <= 0) {
-			currentMagazine.getInventory().setItemPileAt(currentMagazine.getX(), currentMagazine.getY(), null);
+			currentMagazine.getInventory().setItemAt(currentMagazine.getX(), currentMagazine.getY(), null, 0 , false);
 			currentMagazine = null;
 
 			// Set reload cooldown
@@ -436,7 +435,7 @@ public class ItemFirearm extends ItemWeapon implements ItemOverlay, ItemZoom, It
 
 	private boolean findMagazine(ItemPile weaponInstance) {
 		Inventory inventory = weaponInstance.getInventory();
-		for (ItemPile pile : inventory) {
+		for (ItemPile pile : weaponInstance.getInventory().getContents()) {
 			if (pile != null && pile.getItem() instanceof ItemFirearmMagazine) {
 				ItemFirearmMagazine magazineItem = (ItemFirearmMagazine) pile.getItem();
 				if (magazineItem.isSuitableFor(this) && pile.getAmount() > 0) {
@@ -450,7 +449,7 @@ public class ItemFirearm extends ItemWeapon implements ItemOverlay, ItemZoom, It
 
 	@Override
 	public void drawItemOverlay(GuiDrawer drawer, ItemPile pile) {
-		InventoryHolder holder = getHolder();
+		InventoryOwner holder = pile.getInventory().getOwner();
 		if (holder instanceof Entity) {
 			Controller controller = ((Entity) holder).traits.tryWith(TraitControllable.class, TraitControllable::getController);
 			if(controller instanceof LocalPlayer) {

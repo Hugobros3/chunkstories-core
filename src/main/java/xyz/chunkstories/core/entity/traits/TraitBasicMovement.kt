@@ -12,12 +12,8 @@ import xyz.chunkstories.api.entity.traits.TraitCollidable
 import xyz.chunkstories.api.entity.traits.serializable.TraitHealth
 import xyz.chunkstories.api.entity.traits.serializable.TraitRotation
 import xyz.chunkstories.api.entity.traits.serializable.TraitVelocity
-import xyz.chunkstories.api.world.cell.CellData
-import xyz.chunkstories.core.voxel.VoxelLiquid
 import org.joml.Vector2d
-import org.joml.Vector2f
 import org.joml.Vector3d
-import org.joml.Vector3dc
 
 open class TraitBasicMovement(entity: Entity) : Trait(entity) {
 
@@ -27,7 +23,7 @@ open class TraitBasicMovement(entity: Entity) : Trait(entity) {
     val isInWater: Boolean
         get() {
             for (cell in entity.world.getVoxelsWithin(entity.getTranslatedBoundingBox())) {
-                if (cell is VoxelLiquid)
+                if (cell.voxel?.liquid == true)
                     return true
             }
             return false

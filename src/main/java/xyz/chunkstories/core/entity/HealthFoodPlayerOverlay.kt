@@ -17,7 +17,7 @@ class PlayerOverlay(entity: Entity) : TraitHasOverlay(entity) {
 
     override fun drawEntityOverlay(renderer: GuiDrawer) {
         val health = entity.traits[TraitHealth::class]?.getHealth() ?: 0f
-        val foodLevel = entity.traits[TraitFoodLevel::class]?.value ?: 0f
+        val foodLevel = entity.traits[TraitFoodLevel::class]?.getValue() ?: 0f
 
         if ((entity.world as? WorldClient)?.client?.player?.controlledEntity == entity) {
 

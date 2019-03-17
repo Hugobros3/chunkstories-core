@@ -137,4 +137,8 @@ public class EntityZombie extends EntityHumanoid implements DamageCause {
 	@Override public String getName() {
 		return "Zombie";
 	}
+
+	@Override public long getCooldownInMs() {
+		return 1500;
+	}
 }

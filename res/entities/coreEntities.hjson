@@ -16,7 +16,10 @@
         }
 
         groundItem: {
-            class: xyz.chunkstories.core.entity.EntityGroundItem
+            class: xyz.chunkstories.api.entity.EntityGroundItem
+            collisions: {
+                withOtherEntities: "false"
+            }
         }
     }
 }

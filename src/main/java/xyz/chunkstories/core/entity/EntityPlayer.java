@@ -10,13 +10,14 @@ import xyz.chunkstories.api.Location;
 import xyz.chunkstories.api.entity.Controller;
 import xyz.chunkstories.api.entity.Entity;
 import xyz.chunkstories.api.entity.EntityDefinition;
+import xyz.chunkstories.api.entity.EntityGroundItem;
 import xyz.chunkstories.api.entity.traits.*;
 import xyz.chunkstories.api.entity.traits.serializable.*;
 import xyz.chunkstories.api.events.voxel.WorldModificationCause;
 import xyz.chunkstories.api.graphics.MeshMaterial;
-import xyz.chunkstories.api.gui.GuiDrawer;
 import xyz.chunkstories.api.input.Input;
-import xyz.chunkstories.api.item.inventory.InventoryHolder;
+import xyz.chunkstories.api.item.inventory.Inventory;
+import xyz.chunkstories.api.item.inventory.InventoryOwner;
 import xyz.chunkstories.api.item.inventory.ItemPile;
 import xyz.chunkstories.api.player.Player;
 import xyz.chunkstories.api.sound.SoundSource.Mode;
@@ -36,7 +37,7 @@ import java.util.HashMap;
  * Core/Vanilla player, has all the functionality you'd want from it:
  * creative/survival mode, flying and walking controller...
  */
-public class EntityPlayer extends EntityHumanoid implements WorldModificationCause, InventoryHolder {
+public class EntityPlayer extends EntityHumanoid implements WorldModificationCause, InventoryOwner {
 	private TraitControllable controllerComponent;
 
 	protected TraitInventory inventory;
@@ -99,7 +100,7 @@ public class EntityPlayer extends EntityHumanoid implements WorldModificationCau
 					Controller controller = controllerComponent.getController();//entity.traits.tryWith(TraitControllable.class, TraitControllable::getController);
 					if (controller instanceof Player) {
 						Player p = (Player) controller;
-						p.openInventory(inventory);
+						p.openInventory(inventory.getInventory());
 						return true;
 					}
 				}
@@ -154,17 +155,17 @@ public class EntityPlayer extends EntityHumanoid implements WorldModificationCau
 					if (!eg.canBePickedUpYet())
 						continue;
 
-					world.getSoundManager().playSoundEffect("sounds/item/pickup.ogg", Mode.NORMAL, getLocation(), 1.0f,
-							1.0f);
+					world.getSoundManager().playSoundEffect("sounds/item/pickup.ogg", Mode.NORMAL, getLocation(), 1.0f, 1.0f);
 
-					ItemPile pile = eg.getItemPile();
-					if (pile != null) {
-						ItemPile left = this.inventory.addItemPile(pile);
-						if (left == null)
-							world.removeEntity(eg);
-						else
-							eg.setItemPile(left);
-					}
+					Inventory groundInventoy = eg.traits.get(TraitInventory.class).getInventory();
+
+					ItemPile pileToCollect = groundInventoy.getItemPileAt(0, 0);
+
+					int collected = this.inventory.getInventory().addItem(pileToCollect.getItem(), pileToCollect.getAmount());
+					pileToCollect.setAmount(pileToCollect.getAmount() - collected);
+
+					if(pileToCollect.getAmount() <= 0)
+						world.removeEntity(eg);
 				}
 			}
 		}
@@ -176,7 +177,7 @@ public class EntityPlayer extends EntityHumanoid implements WorldModificationCau
 			// TODO: move to trait
 			if ((world.getTicksElapsed() % 100L) == 0L) {
 				if (foodLevel.getValue() == 0)
-					entityHealth.damage(TraitFoodLevel.HUNGER_DAMAGE_CAUSE, 1);
+					entityHealth.damage(TraitFoodLevel.Companion.getHUNGER_DAMAGE_CAUSE(), 1);
 				else {
 					// 27 minutes to start starving at 0.1 starveFactor
 					// Takes 100hp / ( 0.6rtps * 0.1 hp/hit )

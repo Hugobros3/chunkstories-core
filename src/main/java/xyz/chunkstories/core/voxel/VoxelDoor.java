@@ -338,7 +338,7 @@ public class VoxelDoor extends Voxel// implements VoxelCustomIcon
 	}
 
 	@Override
-	public List<ItemPile> enumerateItemsForBuilding() {
+	public List<ItemVoxel> enumerateItemsForBuilding() {
 		// Top part shouldn't be placed
 		if (top)
 			return new LinkedList<>();
@@ -346,8 +346,8 @@ public class VoxelDoor extends Voxel// implements VoxelCustomIcon
 		ItemVoxel itemVoxel = (ItemVoxel) store().parent().items().getItemDefinition("item_voxel_1x2").newItem();
 		itemVoxel.voxel = this;
 
-		LinkedList<ItemPile> list = new LinkedList<>();
-		list.add(new ItemPile(itemVoxel));
+		LinkedList<ItemVoxel> list = new LinkedList<>();
+		list.add(itemVoxel);
 		return list;
 	}
 }

@@ -24,20 +24,21 @@ import xyz.chunkstories.api.world.WorldMaster;
 import xyz.chunkstories.api.world.cell.CellData;
 import xyz.chunkstories.api.world.cell.FutureCell;
 import xyz.chunkstories.core.CoreOptions;
-import xyz.chunkstories.core.item.inventory.InventoryLocalCreativeMenu;
+import xyz.chunkstories.core.item.MiningProgress;
+import xyz.chunkstories.core.item.inventory.CreativeInventoryHelperKt;
 
 import java.util.Iterator;
 
 class EntityPlayerController extends TraitControllable {
 
 	private final EntityPlayer entityPlayer;
+
 	public EntityPlayerController(EntityPlayer entity) {
 		super(entity);
 		entityPlayer = entity;
 	}
 
-	@Override
-	public boolean onEachFrame() {
+	@Override public boolean onEachFrame() {
 		Controller controller = getController();
 		if (controller instanceof LocalPlayer && ((LocalPlayer) controller).hasFocus()) {
 			moveCamera((LocalPlayer) controller);
@@ -52,7 +53,7 @@ class EntityPlayerController extends TraitControllable {
 	public void moveCamera(LocalPlayer controller) {
 		if (entityPlayer.entityHealth.isDead())
 			return;
-		if(!controller.getInputsManager().getMouse().isGrabbed())
+		if (!controller.getInputsManager().getMouse().isGrabbed())
 			return;
 
 		double cPX = controller.getInputsManager().getMouse().getCursorX();
@@ -77,12 +78,11 @@ class EntityPlayerController extends TraitControllable {
 			modifier = 1.0 / item.getZoomFactor();
 		}
 
-		rotH -= dx * modifier / 3f	* controller.getClient().getConfiguration().getDoubleValue(CoreOptions.INSTANCE.getMouseSensitivity());
-		rotV += dy * modifier / 3f	* controller.getClient().getConfiguration().getDoubleValue(CoreOptions.INSTANCE.getMouseSensitivity());
+		rotH -= dx * modifier / 3f * controller.getClient().getConfiguration().getDoubleValue(CoreOptions.INSTANCE.getMouseSensitivity());
+		rotV += dy * modifier / 3f * controller.getClient().getConfiguration().getDoubleValue(CoreOptions.INSTANCE.getMouseSensitivity());
 		entityPlayer.entityRotation.setRotation(rotH, rotV);
 
-		controller.getInputsManager().getMouse().setMouseCursorLocation(controller.getWindow().getWidth() / 2.0,
-				controller.getWindow().getHeight() / 2.0);
+		controller.getInputsManager().getMouse().setMouseCursorLocation(controller.getWindow().getWidth() / 2.0, controller.getWindow().getHeight() / 2.0);
 	}
 
 	/*@Override
@@ -112,17 +112,18 @@ class EntityPlayerController extends TraitControllable {
 		renderer.getCamera().setFOV(modifier * (float) (videoFov + speedEffect));
 	}*/
 
-	@Override
-	public boolean onControllerInput(Input input) {
+	@Override public boolean onControllerInput(Input input) {
 		Controller controller = getController();
 
 		// We are moving inventory bringup here !
 		if (input.getName().equals("inventory") && entityPlayer.getWorld() instanceof WorldClient) {
 
 			if (entityPlayer.creativeMode.get()) {
-				((WorldClient) entityPlayer.getWorld()).getClient().getGui().openInventories(entityPlayer.inventory, new InventoryLocalCreativeMenu(entityPlayer.getWorld()));
+				((WorldClient) entityPlayer.getWorld()).getClient().getGui().openInventories(entityPlayer.inventory.getInventory(),
+						CreativeInventoryHelperKt.createCreativeInventory(getEntity().getWorld().getContent().voxels()));
 			} else {
-				((WorldClient) entityPlayer.getWorld()).getClient().getGui().openInventories(entityPlayer.inventory, entityPlayer.armor);
+				((WorldClient) entityPlayer.getWorld()).getClient().getGui()
+						.openInventories(entityPlayer.inventory.getInventory(), entityPlayer.armor.getInventory());
 			}
 
 			return true;
@@ -146,8 +147,7 @@ class EntityPlayerController extends TraitControllable {
 		Iterator<Entity> i = entityPlayer.getWorld().getCollisionsManager().rayTraceEntities(initialPosition, direction, maxLen);
 		while (i.hasNext()) {
 			Entity e = i.next();
-			if (e != entityPlayer
-					&& e.traits.with(TraitInteractible.class, ti -> ti.handleInteraction(entityPlayer, input)))
+			if (e != entityPlayer && e.traits.with(TraitInteractible.class, ti -> ti.handleInteraction(entityPlayer, input)))
 				return true;
 		}
 
@@ -172,8 +172,8 @@ class EntityPlayerController extends TraitControllable {
 							future.setSunlight(0);
 							future.setMetaData(0);
 
-							PlayerVoxelModificationEvent event = new PlayerVoxelModificationEvent(cell, future,
-									TraitCreativeMode.Companion.getCREATIVE_MODE(), player);
+							PlayerVoxelModificationEvent event = new PlayerVoxelModificationEvent(cell, future, TraitCreativeMode.Companion.getCREATIVE_MODE(),
+									player);
 
 							// Anyone has objections ?
 							entityPlayer.getWorld().getGameContext().getPluginManager().fireEvent(event);
@@ -181,14 +181,9 @@ class EntityPlayerController extends TraitControllable {
 							if (event.isCancelled())
 								return true;
 
-							Vector3d rnd = new Vector3d();
-							for (int k = 0; k < 40; k++) {
-								rnd.set(blockLocation);
-								rnd.add(Math.random() * 0.98, Math.random() * 0.98, Math.random() * 0.98);
-								entityPlayer.getWorld().getParticlesManager().spawnParticleAtPosition("voxel_frag", rnd);
-							}
-							entityPlayer.getWorld().getSoundManager().playSoundEffect("sounds/gameplay/voxel_remove.ogg", SoundSource.Mode.NORMAL,
-									blockLocation, 1.0f, 1.0f);
+							MiningProgress.Companion.spawnBlockDestructionParticles(blockLocation, entityPlayer.getWorld());
+							entityPlayer.getWorld().getSoundManager()
+									.playSoundEffect("sounds/gameplay/voxel_remove.ogg", SoundSource.Mode.NORMAL, blockLocation, 1.0f, 1.0f);
 
 							try {
 								entityPlayer.getWorld().poke(future, entityPlayer);
@@ -207,13 +202,13 @@ class EntityPlayerController extends TraitControllable {
 
 						if (!ctx.getVoxel().isAir()) {
 							// Spawn new itemPile in his inventory
-							ItemVoxel item = entityPlayer.getWorld().getGameContext().getContent().items()
-									.getItemDefinition("item_voxel").newItem();
+							ItemVoxel item = entityPlayer.getWorld().getGameContext().getContent().items().getItemDefinition("item_voxel").newItem();
 							item.setVoxel(ctx.getVoxel());
 							item.setVoxelMeta(ctx.getMetaData());
 
-							ItemPile itemVoxel = new ItemPile(item);
-							entityPlayer.inventory.setItemPileAt(entityPlayer.selectedItemComponent.getSelectedSlot(), 0, itemVoxel);
+							//ItemPile itemVoxel = new ItemPile(item);
+							//entityPlayer.inventory.setItemPileAt(entityPlayer.selectedItemComponent.getSelectedSlot(), 0, itemVoxel);
+							entityPlayer.inventory.getInventory().setItemAt(entityPlayer.selectedItemComponent.getSelectedSlot(), 0, item);
 							return true;
 						}
 					}

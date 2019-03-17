@@ -154,7 +154,7 @@ public class HumanoidSkeletonAnimator extends CompoundAnimationHelper {
 							.getAnimation("./animations/human/mining.bvh");
 
 					return characterRotationMatrix.mul(lol.getBone(boneName)
-							.getTransformationMatrix((System.currentTimeMillis() - miningProgress.started) * 1.5f));
+							.getTransformationMatrix((System.currentTimeMillis() - miningProgress.getStarted()) * 1.5f));
 				}
 			}
 		}

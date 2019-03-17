@@ -17,7 +17,6 @@ import xyz.chunkstories.api.sound.SoundSource.Mode;
 import xyz.chunkstories.core.entity.EntityHumanoid;
 import xyz.chunkstories.core.entity.EntityLiving;
 import xyz.chunkstories.core.entity.traits.TraitBasicMovement;
-import xyz.chunkstories.core.voxel.VoxelLiquid;
 import org.joml.Vector2f;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
@@ -59,7 +58,7 @@ public class GenericHumanoidAI extends AI<EntityHumanoid> {
 		// System.out.println("lel");
 
 		// Water-jump
-		if (entity.getWorld().peekSafely(entity.getLocation().add(0, 1.15, 0)).getVoxel() instanceof VoxelLiquid) {
+		if (entity.getWorld().peekSafely(entity.getLocation().add(0, 1.15, 0)).getVoxel().isLiquid()) {
 			if (entity.traits.get(TraitVelocity.class).getVelocity().y() < 0.0)
 				entity.traits.get(TraitVelocity.class).addVelocity(0.0, 0.10, 0.0);
 			// System.out.println("vel:");
@@ -235,7 +234,7 @@ public class GenericHumanoidAI extends AI<EntityHumanoid> {
 				if (Math.sqrt(rem.x() * rem.x() + rem.z() * rem.z()) > 0.001) {
 					// System.out.println("cuck");
 					// If they have their feet in water
-					if (entity.getWorld().peekSafely(entity.getLocation().add(0, 0.0, 0)).getVoxel() instanceof VoxelLiquid) {
+					if (entity.getWorld().peekSafely(entity.getLocation().add(0, 0.0, 0)).getVoxel().isLiquid()) {
 						entity.traits.get(TraitVelocity.class).addVelocity(0.0, 0.20, 0.0);
 						// System.out.println("feet in water yo");
 					} else

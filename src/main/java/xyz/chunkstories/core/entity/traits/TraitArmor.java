@@ -6,8 +6,10 @@
 
 package xyz.chunkstories.core.entity.traits;
 
+import org.jetbrains.annotations.NotNull;
 import xyz.chunkstories.api.entity.Entity;
 import xyz.chunkstories.api.entity.traits.serializable.TraitInventory;
+import xyz.chunkstories.api.item.Item;
 import xyz.chunkstories.api.item.inventory.ItemPile;
 import xyz.chunkstories.api.util.Specialized;
 import xyz.chunkstories.core.item.armor.ItemArmor;
@@ -22,12 +24,8 @@ public class TraitArmor extends TraitInventory {
 		super(holder, width, height);
 	}
 
-	@Override
-	public boolean canPlaceItemAt(int x, int y, ItemPile itemPile) {
-		if (itemPile.getItem() instanceof ItemArmor) {
-			return super.canPlaceItemAt(x, y, itemPile);
-		}
-		return false;
+	@Override public boolean isItemAccepted(@NotNull Item item) {
+		return item instanceof ItemArmor;
 	}
 
 	@Override
@@ -39,10 +37,8 @@ public class TraitArmor extends TraitInventory {
 
 		float multiplier = 1.0f;
 
-		Iterator<ItemPile> i = this.iterator();
-		while (i.hasNext()) {
-			ItemPile p = i.next();
-			ItemArmor a = (ItemArmor) p.getItem();
+		for (ItemPile itemPile : getInventory().getContents()) {
+			ItemArmor a = (ItemArmor) itemPile.getItem();
 
 			Collection<String> bpa = a.bodyPartsAffected();
 			if (bodyPartName == null && bpa == null)

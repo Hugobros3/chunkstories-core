@@ -6,18 +6,8 @@
 
 package xyz.chunkstories.core.logic;
 
-import xyz.chunkstories.api.Location;
-import xyz.chunkstories.api.entity.Entity;
-import xyz.chunkstories.api.entity.traits.serializable.TraitInventory;
-import xyz.chunkstories.api.entity.traits.serializable.TraitRotation;
-import xyz.chunkstories.api.entity.traits.serializable.TraitVelocity;
-import xyz.chunkstories.api.events.EventHandler;
 import xyz.chunkstories.api.events.Listener;
-import xyz.chunkstories.api.events.item.EventItemDroppedToWorld;
-import xyz.chunkstories.api.math.Math2;
 import xyz.chunkstories.core.CoreContentPlugin;
-import xyz.chunkstories.core.entity.EntityGroundItem;
-import org.joml.Vector3d;
 
 public class ItemsLogicListener implements Listener {
 	private final CoreContentPlugin core;
@@ -26,7 +16,7 @@ public class ItemsLogicListener implements Listener {
 		this.core = core;
 	}
 
-	@EventHandler
+	/*@EventHandler
 	public void onDroppedItem(EventItemDroppedToWorld event) {
 		// Create an EntityGroundItem and add it to the event
 		Location throwLocation = event.getLocation();
@@ -48,13 +38,6 @@ public class ItemsLogicListener implements Listener {
 					throwForce.add(entity.traits.get(TraitVelocity.class).getVelocity());
 			});
 
-			/*
-			 * TODO remake if(TraitInventory instanceof EntityLiving) { EntityLiving owner =
-			 * (EntityLiving)TraitInventory; throwLocation = new Location(pos.getWorld(),
-			 * pos.x(), pos.y() + ((EntityPlayer)owner).eyePosition, pos.z());
-			 * 
-			 * }
-			 */
 		}
 
 		EntityGroundItem thrownItem = (EntityGroundItem) core.getGameContext().getContent().entities()
@@ -67,5 +50,5 @@ public class ItemsLogicListener implements Listener {
 		// EntityGroundItem(core.getPluginExecutionContext().getContent().entities().getEntityDefinitionByName("groundItem"),
 		// event.getLocation(), event.getItemPile());
 		event.setItemEntity(thrownItem);
-	}
+	}*/
 }
