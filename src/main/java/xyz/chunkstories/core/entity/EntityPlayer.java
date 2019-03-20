@@ -161,8 +161,8 @@ public class EntityPlayer extends EntityHumanoid implements WorldModificationCau
 
 					ItemPile pileToCollect = groundInventoy.getItemPileAt(0, 0);
 
-					int collected = this.inventory.getInventory().addItem(pileToCollect.getItem(), pileToCollect.getAmount());
-					pileToCollect.setAmount(pileToCollect.getAmount() - collected);
+					int overflow = this.inventory.getInventory().addItem(pileToCollect.getItem(), pileToCollect.getAmount());
+					pileToCollect.setAmount(overflow);
 
 					if(pileToCollect.getAmount() <= 0)
 						world.removeEntity(eg);
