@@ -18,7 +18,7 @@ import javax.swing.Spring.scale
 import xyz.chunkstories.core.entity.traits.MinerTrait
 import xyz.chunkstories.api.entity.traits.serializable.TraitInventory
 import xyz.chunkstories.api.graphics.representation.ModelInstance
-
+import xyz.chunkstories.api.voxel.MiningTool
 
 class ItemMiningTool(type: ItemDefinition) : Item(type), MiningTool {
 

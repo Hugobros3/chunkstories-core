@@ -14,6 +14,8 @@ import xyz.chunkstories.api.world.chunk.Chunk;
 import xyz.chunkstories.core.voxel.VoxelDoor;
 import io.xol.enklume.MinecraftRegion;
 
+import static xyz.chunkstories.api.util.compatibility.MinecraftSidesKt.getSideMcDoor;
+
 public class Door extends NonTrivialMapper {
 
 	public Door(Voxel voxel) {
@@ -41,7 +43,7 @@ public class Door extends NonTrivialMapper {
 			int direction = minecraftMetaData & 0x3;
 
 			csWorld.pokeSimple(csX, csY, csZ, voxel, -1, -1,
-					VoxelDoor.computeMeta(open == 1, hingeSide == 1, VoxelSide.getSideMcDoor(direction)));
+					VoxelDoor.computeMeta(open == 1, hingeSide == 1, getSideMcDoor(direction)));
 		} else
 			return;
 

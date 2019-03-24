@@ -17,6 +17,7 @@ import xyz.chunkstories.api.events.voxel.WorldModificationCause
 import xyz.chunkstories.api.exceptions.world.WorldException
 import xyz.chunkstories.api.player.Player
 import xyz.chunkstories.api.sound.SoundSource.Mode
+import xyz.chunkstories.api.voxel.MiningTool
 import xyz.chunkstories.api.voxel.Voxel
 import xyz.chunkstories.api.voxel.materials.VoxelMaterial
 import xyz.chunkstories.api.world.World
@@ -25,7 +26,8 @@ import xyz.chunkstories.api.world.cell.CellData
 import xyz.chunkstories.api.world.cell.FutureCell
 import xyz.chunkstories.core.particles.ParticleTypeVoxelFragment
 
-class MiningProgress(val context: CellData, internal var tool: MiningTool) {
+/** Represents a mining operation in progress, keeps all the state related to that */
+class BlockMiningOperation(val context: CellData, internal var tool: MiningTool) {
     val voxel: Voxel?
     val material: VoxelMaterial
     val loc: Location
@@ -66,7 +68,7 @@ class MiningProgress(val context: CellData, internal var tool: MiningTool) {
         this.started = System.currentTimeMillis()
     }
 
-    fun keepGoing(owner: Entity, controller: Controller): MiningProgress? {
+    fun keepGoing(owner: Entity, controller: Controller): BlockMiningOperation? {
         // Progress using efficiency / ticks per second
         progress += tool.miningEfficiency / 60f / materialHardnessForThisTool
 
@@ -90,7 +92,7 @@ class MiningProgress(val context: CellData, internal var tool: MiningTool) {
                     itemSpawnLocation.add(0.5, 0.0, 0.5)
 
                     // Drop loot !
-                    for (drop in context.voxel!!.getLoot(context, owner as WorldModificationCause)) {
+                    for (drop in context.voxel!!.getLoot(context, tool)) {
                         val thrownItem = context.world.content.entities().getEntityDefinition("groundItem")!!.newEntity<EntityGroundItem>(itemSpawnLocation.world)
                         thrownItem.traitLocation.set(itemSpawnLocation)
                         thrownItem.entityVelocity.setVelocity(Vector3d(Math.random() * 0.125 - 0.0625, 0.1, Math.random() * 0.125 - 0.0625))
@@ -115,7 +117,6 @@ class MiningProgress(val context: CellData, internal var tool: MiningTool) {
     }
 
     companion object {
-
         fun spawnBlockDestructionParticles(loc: Location, world: World) {
             val rnd = Vector3d()
             for (i in 0..39) {

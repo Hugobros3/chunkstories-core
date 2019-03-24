@@ -74,7 +74,7 @@ public class VoxelStairs extends Voxel {
 		// 3FRONT z+
 
 		int stairsSide = 0;
-		if (cause != null && cause instanceof Entity) {
+		if (cause instanceof Entity) {
 			Entity entity = (Entity) cause;
 			Location loc = entity.getLocation();
 			double dx = loc.x() - (cell.getX() + 0.5);

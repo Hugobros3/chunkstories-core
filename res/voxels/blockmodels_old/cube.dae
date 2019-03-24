@@ -5,8 +5,8 @@
       <author>Blender User</author>
       <authoring_tool>Blender 2.79.0 commit date:2018-03-22, commit time:14:10, hash:f4dc9f9d68b</authoring_tool>
     </contributor>
-    <created>2019-03-24T17:46:55</created>
-    <modified>2019-03-24T17:46:55</modified>
+    <created>2019-03-06T16:47:42</created>
+    <modified>2019-03-06T16:47:42</modified>
     <unit name="meter" meter="1"/>
     <up_axis>Z_UP</up_axis>
   </asset>
@@ -32,36 +32,30 @@
     </camera>
   </library_cameras>
   <library_images>
-    <image id="left" name="left">
-      <init_from>left.png</init_from>
+    <image id="grass" name="grass">
+      <init_from>grass.png</init_from>
     </image>
-    <image id="front" name="front">
-      <init_from>front.png</init_from>
+    <image id="grass_side_png" name="grass_side_png">
+      <init_from>grass_side.png</init_from>
     </image>
-    <image id="right" name="right">
-      <init_from>right.png</init_from>
+    <image id="notex_png" name="notex_png">
+      <init_from>notex.png</init_from>
     </image>
-    <image id="back" name="back">
-      <init_from>back.png</init_from>
-    </image>
-    <image id="top" name="top">
-      <init_from>top.png</init_from>
-    </image>
-    <image id="bottom" name="bottom">
-      <init_from>bottom.png</init_from>
+    <image id="dirt_png" name="dirt_png">
+      <init_from>dirt.png</init_from>
     </image>
   </library_images>
   <library_effects>
     <effect id="LeftMaterial-effect">
       <profile_COMMON>
-        <newparam sid="left-surface">
+        <newparam sid="grass-surface">
           <surface type="2D">
-            <init_from>left</init_from>
+            <init_from>grass</init_from>
           </surface>
         </newparam>
-        <newparam sid="left-sampler">
+        <newparam sid="grass-sampler">
           <sampler2D>
-            <source>left-surface</source>
+            <source>grass-surface</source>
           </sampler2D>
         </newparam>
         <technique sid="common">
@@ -73,7 +67,7 @@
               <color sid="ambient">0 0 0 1</color>
             </ambient>
             <diffuse>
-              <texture texture="left-sampler"/>
+              <texture texture="grass-sampler"/>
             </diffuse>
             <specular>
               <color sid="specular">0.5 0.5 0.5 1</color>
@@ -90,14 +84,14 @@
     </effect>
     <effect id="FrontMaterial-effect">
       <profile_COMMON>
-        <newparam sid="front-surface">
+        <newparam sid="grass_side_png-surface">
           <surface type="2D">
-            <init_from>front</init_from>
+            <init_from>grass_side_png</init_from>
           </surface>
         </newparam>
-        <newparam sid="front-sampler">
+        <newparam sid="grass_side_png-sampler">
           <sampler2D>
-            <source>front-surface</source>
+            <source>grass_side_png-surface</source>
           </sampler2D>
         </newparam>
         <technique sid="common">
@@ -109,7 +103,7 @@
               <color sid="ambient">0 0 0 1</color>
             </ambient>
             <diffuse>
-              <texture texture="front-sampler"/>
+              <texture texture="grass_side_png-sampler"/>
             </diffuse>
             <specular>
               <color sid="specular">0.5 0.5 0.5 1</color>
@@ -126,14 +120,14 @@
     </effect>
     <effect id="RightMaterial-effect">
       <profile_COMMON>
-        <newparam sid="right-surface">
+        <newparam sid="grass_side_png-surface">
           <surface type="2D">
-            <init_from>right</init_from>
+            <init_from>grass_side_png</init_from>
           </surface>
         </newparam>
-        <newparam sid="right-sampler">
+        <newparam sid="grass_side_png-sampler">
           <sampler2D>
-            <source>right-surface</source>
+            <source>grass_side_png-surface</source>
           </sampler2D>
         </newparam>
         <technique sid="common">
@@ -145,7 +139,7 @@
               <color sid="ambient">0 0 0 1</color>
             </ambient>
             <diffuse>
-              <texture texture="right-sampler"/>
+              <texture texture="grass_side_png-sampler"/>
             </diffuse>
             <specular>
               <color sid="specular">0.5 0.5 0.5 1</color>
@@ -162,14 +156,14 @@
     </effect>
     <effect id="BackMaterial-effect">
       <profile_COMMON>
-        <newparam sid="back-surface">
+        <newparam sid="notex_png-surface">
           <surface type="2D">
-            <init_from>back</init_from>
+            <init_from>notex_png</init_from>
           </surface>
         </newparam>
-        <newparam sid="back-sampler">
+        <newparam sid="notex_png-sampler">
           <sampler2D>
-            <source>back-surface</source>
+            <source>notex_png-surface</source>
           </sampler2D>
         </newparam>
         <technique sid="common">
@@ -181,7 +175,7 @@
               <color sid="ambient">0 0 0 1</color>
             </ambient>
             <diffuse>
-              <texture texture="back-sampler"/>
+              <texture texture="notex_png-sampler"/>
             </diffuse>
             <specular>
               <color sid="specular">0.5 0.5 0.5 1</color>
@@ -198,14 +192,14 @@
     </effect>
     <effect id="TopMaterial-effect">
       <profile_COMMON>
-        <newparam sid="top-surface">
+        <newparam sid="grass-surface">
           <surface type="2D">
-            <init_from>top</init_from>
+            <init_from>grass</init_from>
           </surface>
         </newparam>
-        <newparam sid="top-sampler">
+        <newparam sid="grass-sampler">
           <sampler2D>
-            <source>top-surface</source>
+            <source>grass-surface</source>
           </sampler2D>
         </newparam>
         <technique sid="common">
@@ -217,7 +211,7 @@
               <color sid="ambient">0 0 0 1</color>
             </ambient>
             <diffuse>
-              <texture texture="top-sampler"/>
+              <texture texture="grass-sampler"/>
             </diffuse>
             <specular>
               <color sid="specular">0.5 0.5 0.5 1</color>
@@ -234,14 +228,14 @@
     </effect>
     <effect id="BottomMaterial-effect">
       <profile_COMMON>
-        <newparam sid="bottom-surface">
+        <newparam sid="dirt_png-surface">
           <surface type="2D">
-            <init_from>bottom</init_from>
+            <init_from>dirt_png</init_from>
           </surface>
         </newparam>
-        <newparam sid="bottom-sampler">
+        <newparam sid="dirt_png-sampler">
           <sampler2D>
-            <source>bottom-surface</source>
+            <source>dirt_png-surface</source>
           </sampler2D>
         </newparam>
         <technique sid="common">
@@ -253,7 +247,7 @@
               <color sid="ambient">0 0 0 1</color>
             </ambient>
             <diffuse>
-              <texture texture="bottom-sampler"/>
+              <texture texture="dirt_png-sampler"/>
             </diffuse>
             <specular>
               <color sid="specular">0.5 0.5 0.5 1</color>

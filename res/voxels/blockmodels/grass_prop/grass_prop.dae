@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<COLLADA xmlns="http://www.collada.org/2005/11/COLLADASchema" version="1.4.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <asset>
+    <contributor>
+      <author>Blender User</author>
+      <authoring_tool>Blender 2.79.0 commit date:2018-03-22, commit time:14:10, hash:f4dc9f9d68b</authoring_tool>
+    </contributor>
+    <created>2019-03-24T18:53:52</created>
+    <modified>2019-03-24T18:53:52</modified>
+    <unit name="meter" meter="1"/>
+    <up_axis>Z_UP</up_axis>
+  </asset>
+  <library_cameras>
+    <camera id="Camera-camera" name="Camera">
+      <optics>
+        <technique_common>
+          <perspective>
+            <xfov sid="xfov">49.13434</xfov>
+            <aspect_ratio>1.777778</aspect_ratio>
+            <znear sid="znear">0.1</znear>
+            <zfar sid="zfar">100</zfar>
+          </perspective>
+        </technique_common>
+      </optics>
+      <extra>
+        <technique profile="blender">
+          <shiftx sid="shiftx" type="float">0</shiftx>
+          <shifty sid="shifty" type="float">0</shifty>
+          <YF_dofdist sid="YF_dofdist" type="float">0</YF_dofdist>
+        </technique>
+      </extra>
+    </camera>
+  </library_cameras>
+  <library_images>
+    <image id="grass_prop_png" name="grass_prop_png">
+      <init_from>grass_prop.png</init_from>
+    </image>
+  </library_images>
+  <library_effects>
+    <effect id="Material-effect">
+      <profile_COMMON>
+        <newparam sid="grass_prop_png-surface">
+          <surface type="2D">
+            <init_from>grass_prop_png</init_from>
+          </surface>
+        </newparam>
+        <newparam sid="grass_prop_png-sampler">
+          <sampler2D>
+            <source>grass_prop_png-surface</source>
+          </sampler2D>
+        </newparam>
+        <technique sid="common">
+          <phong>
+            <emission>
+              <color sid="emission">0 0 0 1</color>
+            </emission>
+            <ambient>
+              <color sid="ambient">0 0 0 1</color>
+            </ambient>
+            <diffuse>
+              <texture texture="grass_prop_png-sampler"/>
+            </diffuse>
+            <specular>
+              <color sid="specular">0.5 0.5 0.5 1</color>
+            </specular>
+            <shininess>
+              <float sid="shininess">50</float>
+            </shininess>
+            <index_of_refraction>
+              <float sid="index_of_refraction">1</float>
+            </index_of_refraction>
+          </phong>
+        </technique>
+      </profile_COMMON>
+    </effect>
+  </library_effects>
+  <library_materials>
+    <material id="Material-material" name="Material">
+      <instance_effect url="#Material-effect"/>
+    </material>
+  </library_materials>
+  <library_geometries>
+    <geometry id="Cube-mesh" name="Cube">
+      <mesh>
+        <source id="Cube-mesh-positions">
+          <float_array id="Cube-mesh-positions-array" count="54">1.184095 0.4444444 0 1.184095 0.4444444 0 0.8305416 0.7979978 0 0.1234346 0.09089094 0 0.8305411 0.7979974 1 0.1234344 0.09089076 1 0.8305416 0.7979978 0 0.123435 0.09089124 0 0.8305419 0.7979982 1 0.1234347 0.09089106 1 0.1234347 0.7979977 0 0.8305415 0.09089094 0 0.1234351 0.7979974 1 0.8305419 0.09089052 1 0.8305414 0.09089112 0 0.1234344 0.7979981 0 0.8305413 0.09089124 1 0.1234347 0.7979978 1</float_array>
+          <technique_common>
+            <accessor source="#Cube-mesh-positions-array" count="18" stride="3">
+              <param name="X" type="float"/>
+              <param name="Y" type="float"/>
+              <param name="Z" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="Cube-mesh-normals">
+          <float_array id="Cube-mesh-normals-array" count="24">0.7071068 -0.7071068 0 -0.7071068 0.7071068 0 0.7071068 0.7071068 0 -0.7071068 -0.7071068 0 0.7071068 -0.7071068 0 -0.7071068 0.7071068 0 0.7071068 0.7071068 0 -0.7071068 -0.7071068 0</float_array>
+          <technique_common>
+            <accessor source="#Cube-mesh-normals-array" count="8" stride="3">
+              <param name="X" type="float"/>
+              <param name="Y" type="float"/>
+              <param name="Z" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="Cube-mesh-map-0">
+          <float_array id="Cube-mesh-map-0-array" count="48">0.9998997 0.9998997 9.998e-5 1.00218e-4 0.9999001 9.998e-5 9.9957e-5 1.00553e-4 0.9999001 0.9998995 9.9957e-5 0.9999001 0.9998997 0.9998996 1.00546e-4 1.0001e-4 0.9999001 9.998e-5 0.9999 9.9957e-5 1.00195e-4 0.9998998 9.9957e-5 9.9957e-5 0.9998997 0.9998997 1.00099e-4 0.9999001 9.998e-5 1.00218e-4 9.9957e-5 1.00553e-4 0.9998992 9.9957e-5 0.9999001 0.9998995 0.9998997 0.9998996 9.998e-5 0.9998996 1.00546e-4 1.0001e-4 0.9999 9.9957e-5 0.9998996 0.9998999 1.00195e-4 0.9998998</float_array>
+          <technique_common>
+            <accessor source="#Cube-mesh-map-0-array" count="24" stride="2">
+              <param name="S" type="float"/>
+              <param name="T" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <vertices id="Cube-mesh-vertices">
+          <input semantic="POSITION" source="#Cube-mesh-positions"/>
+        </vertices>
+        <triangles material="Material-material" count="8">
+          <input semantic="VERTEX" source="#Cube-mesh-vertices" offset="0"/>
+          <input semantic="NORMAL" source="#Cube-mesh-normals" offset="1"/>
+          <input semantic="TEXCOORD" source="#Cube-mesh-map-0" offset="2" set="0"/>
+          <p>4 0 0 3 0 1 2 0 2 6 1 3 9 1 4 8 1 5 12 2 6 11 2 7 10 2 8 14 3 9 17 3 10 15 3 11 4 4 12 5 4 13 3 4 14 6 5 15 7 5 16 9 5 17 12 6 18 13 6 19 11 6 20 14 7 21 16 7 22 17 7 23</p>
+        </triangles>
+      </mesh>
+    </geometry>
+  </library_geometries>
+  <library_controllers/>
+  <library_visual_scenes>
+    <visual_scene id="Scene" name="Scene">
+      <node id="Camera" name="Camera" type="NODE">
+        <matrix sid="transform">0.6859207 -0.3240135 0.6515582 7.481132 0.7276763 0.3054208 -0.6141704 -6.50764 0 0.8953956 0.4452714 5.343665 0 0 0 1</matrix>
+        <instance_camera url="#Camera-camera"/>
+      </node>
+      <node id="Cube" name="Cube" type="NODE">
+        <matrix sid="transform">1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
+        <instance_geometry url="#Cube-mesh" name="Cube">
+          <bind_material>
+            <technique_common>
+              <instance_material symbol="Material-material" target="#Material-material"/>
+            </technique_common>
+          </bind_material>
+        </instance_geometry>
+      </node>
+    </visual_scene>
+  </library_visual_scenes>
+  <scene>
+    <instance_visual_scene url="#Scene"/>
+  </scene>
+</COLLADA>

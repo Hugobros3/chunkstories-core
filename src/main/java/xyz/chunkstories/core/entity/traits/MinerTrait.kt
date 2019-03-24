@@ -12,12 +12,12 @@ import xyz.chunkstories.api.entity.traits.TraitVoxelSelection
 import xyz.chunkstories.api.entity.traits.serializable.TraitControllable
 import xyz.chunkstories.api.events.voxel.WorldModificationCause
 import xyz.chunkstories.api.player.Player
-import xyz.chunkstories.core.item.MiningProgress
-import xyz.chunkstories.core.item.MiningTool
+import xyz.chunkstories.api.voxel.MiningTool
+import xyz.chunkstories.core.item.BlockMiningOperation
 
 class MinerTrait(entity: Entity) : Trait(entity) {
 
-    var progress: MiningProgress? = null
+    var progress: BlockMiningOperation? = null
         private set
 
     private val hands: MiningTool = object : MiningTool {
@@ -62,7 +62,7 @@ class MinerTrait(entity: Entity) : Trait(entity) {
 
                 if (progress == null) {
                     // Try starting mining something
-                    progress = MiningProgress(world.peekSafely(lookingAt), tool)
+                    progress = BlockMiningOperation(world.peekSafely(lookingAt), tool)
                 } else {
                     progress!!.keepGoing(entity, controller)
                 }

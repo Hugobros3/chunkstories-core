@@ -1,6 +1,6 @@
 #version 450
 
-in uvec3 vertexIn;
+in vec3 vertexIn;
 in vec3 colorIn;
 in vec3 normalIn;
 in vec2 texCoordIn;

@@ -7,6 +7,8 @@
 				sides: ~_side
 				bottom: dirt
 			}
+
+			drops: dirt
 		}
 
 		forestgrass: {

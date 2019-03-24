@@ -16,7 +16,7 @@ import xyz.chunkstories.core.entity.traits.TraitHumanoidStance;
 import xyz.chunkstories.core.entity.traits.TraitHumanoidStance.HumanoidStance;
 import xyz.chunkstories.core.entity.traits.MinerTrait;
 import xyz.chunkstories.core.item.ItemMiningTool;
-import xyz.chunkstories.core.item.MiningProgress;
+import xyz.chunkstories.core.item.BlockMiningOperation;
 import org.joml.Matrix4f;
 import org.joml.Vector3d;
 import org.joml.Vector3f;
@@ -148,7 +148,7 @@ public class HumanoidSkeletonAnimator extends CompoundAnimationHelper {
 			MinerTrait trait = entity.traits.get(MinerTrait.class);
 			if (trait != null && Arrays.asList(new String[] { "boneArmLU", "boneArmLD", "boneItemInHand" })
 					.contains(boneName)) {
-				MiningProgress miningProgress = trait.getProgress();
+				BlockMiningOperation miningProgress = trait.getProgress();
 				if (miningProgress != null) {
 					Animation lol = entity.getWorld().getGameContext().getContent().getAnimationsLibrary()
 							.getAnimation("./animations/human/mining.bvh");

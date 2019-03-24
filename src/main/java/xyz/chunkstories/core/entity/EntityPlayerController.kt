@@ -24,11 +24,9 @@ import xyz.chunkstories.api.world.WorldClient
 import xyz.chunkstories.api.world.WorldMaster
 import xyz.chunkstories.api.world.cell.FutureCell
 import xyz.chunkstories.core.CoreOptions
-import xyz.chunkstories.core.item.MiningProgress
+import xyz.chunkstories.core.item.BlockMiningOperation
 import xyz.chunkstories.core.item.inventory.*
 import java.lang.Exception
-import javax.security.auth.login.Configuration.getConfiguration
-
 
 
 internal class EntityPlayerController(private val entityPlayer: EntityPlayer) : TraitControllable(entityPlayer) {
@@ -182,7 +180,7 @@ internal class EntityPlayerController(private val entityPlayer: EntityPlayer) : 
                             if (event.isCancelled)
                                 return true
 
-                            MiningProgress.spawnBlockDestructionParticles(blockLocation, entityPlayer.world)
+                            BlockMiningOperation.spawnBlockDestructionParticles(blockLocation, entityPlayer.world)
                             entityPlayer.world.soundManager
                                     .playSoundEffect("sounds/gameplay/voxel_remove.ogg", SoundSource.Mode.NORMAL, blockLocation, 1.0f, 1.0f)
 

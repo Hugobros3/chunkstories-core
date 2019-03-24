@@ -29,6 +29,8 @@ import xyz.chunkstories.api.world.cell.FutureCell;
 import xyz.chunkstories.api.world.chunk.Chunk.ChunkCell;
 import xyz.chunkstories.api.world.chunk.Chunk.FreshChunkCell;
 
+import static xyz.chunkstories.api.util.compatibility.MinecraftSidesKt.getSideMcStairsChestFurnace;
+
 public class VoxelChest extends Voxel {
 	VoxelTexture frontTexture;
 	VoxelTexture sideTexture;
@@ -76,7 +78,7 @@ public class VoxelChest extends Voxel {
 
 	@Override
 	public VoxelTexture getVoxelTexture(@NotNull CellData info, @NotNull VoxelSide side) {
-		VoxelSide actualSide = VoxelSide.getSideMcStairsChestFurnace(info.getMetaData());
+		VoxelSide actualSide = getSideMcStairsChestFurnace(info.getMetaData());
 
 		if (side.equals(VoxelSide.TOP))
 			return topTexture;
