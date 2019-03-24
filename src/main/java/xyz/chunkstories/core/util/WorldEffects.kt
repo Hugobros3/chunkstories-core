@@ -52,10 +52,12 @@ object WorldEffects {
             lol.mul(radius)
             lol.add(center)
 
-            world.particlesManager.spawnParticleAtPositionWithVelocity("fire", lol, spd)
+            //TODO
+            //world.particlesManager.spawnParticleAtPositionWithVelocity("fire", lol, spd)
             z++
         }
-        world.particlesManager.spawnParticleAtPositionWithVelocity("fire_light", center,
-                Vector3d(1.0, 0.0, 0.0).normalize().mul(debrisSpeed * 1.5f))
+
+        //TODO
+        //world.particlesManager.spawnParticleAtPositionWithVelocity("fire_light", center, Vector3d(1.0, 0.0, 0.0).normalize().mul(debrisSpeed * 1.5f))
     }
 }

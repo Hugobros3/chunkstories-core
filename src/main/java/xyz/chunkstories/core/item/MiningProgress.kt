@@ -23,6 +23,7 @@ import xyz.chunkstories.api.world.World
 import xyz.chunkstories.api.world.WorldMaster
 import xyz.chunkstories.api.world.cell.CellData
 import xyz.chunkstories.api.world.cell.FutureCell
+import xyz.chunkstories.core.particles.ParticleTypeVoxelFragment
 
 class MiningProgress(val context: CellData, internal var tool: MiningTool) {
     val voxel: Voxel?
@@ -120,7 +121,11 @@ class MiningProgress(val context: CellData, internal var tool: MiningTool) {
             for (i in 0..39) {
                 rnd.set(loc)
                 rnd.add(Math.random() * 0.98, Math.random() * 0.98, Math.random() * 0.98)
-                world.particlesManager.spawnParticleAtPosition("voxel_frag", rnd)
+
+                world.particlesManager.spawnParticle<ParticleTypeVoxelFragment.ParticleVoxelFragment>("voxel_frag") {
+                    velocity.set(rnd)
+                }
+                //world.particlesManager.spawnParticleAtPosition("voxel_frag", rnd)
             }
         }
     }

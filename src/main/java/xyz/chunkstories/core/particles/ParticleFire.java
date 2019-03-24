@@ -3,7 +3,7 @@
 // Check out README.md for more information
 // Website: http://chunkstories.xyz
 //
-
+/*
 package xyz.chunkstories.core.particles;
 
 import xyz.chunkstories.api.particles.*;
@@ -137,3 +137,4 @@ public class ParticleFire extends ParticleTypeHandler {
 			b.destroy();
 	}
 }
+*/

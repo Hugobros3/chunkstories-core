@@ -1,0 +1,14 @@
+{
+    particles: {
+        voxel_fragment: {
+            class: xyz.chunkstories.core.particles.ParticleTypeVoxelFragment
+        }
+
+        blood: {
+            class: xyz.chunkstories.core.particles.ParticleTypeSolid
+
+            billboardSize: 0.1
+            albedoTexture: "particles/textures/blood.png"
+        }
+    }
+}
