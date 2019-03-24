@@ -22,12 +22,12 @@ fun Content.Voxels.createCreativeInventory() : Inventory {
         allItems.addAll(voxel.enumerateItemsForBuilding())
     }
 
-    val height = Math.ceil(allItems.size / 10.0).toInt()
-    val width = 10
+    val width = Math.ceil(allItems.size / 10.0).toInt()
+    val height = 10
 
     return Inventory(width, height, null, magic).apply {
         for(item in allItems)
-            addItem(item, 99)
+            addItem(item, item.definition.maxStackSize)
     }
 }
 
