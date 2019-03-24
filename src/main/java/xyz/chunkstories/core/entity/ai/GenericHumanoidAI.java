@@ -47,21 +47,15 @@ public class GenericHumanoidAI extends AI<EntityHumanoid> {
 		if (currentTask != null)
 			currentTask.execute();
 
-		// System.out.println(currentTask);
-
-		// Random grunge
+		// Random bark
 		if (rng.nextFloat() > 0.9990) {
-			entity.getWorld().getSoundManager().playSoundEffect("sounds/entities/zombie/grunt.ogg", Mode.NORMAL,
-					entity.getLocation(), (float) (0.9 + Math.random() * 0.2), 1.0f);// .setPitch();
+			entity.getWorld().getSoundManager().playSoundEffect("sounds/entities/zombie/grunt.ogg", Mode.NORMAL, entity.getLocation(), (float) (0.9 + Math.random() * 0.2), 1.0f);
 		}
 
-		// System.out.println("lel");
-
-		// Water-jump
+		// Jump when in water
 		if (entity.getWorld().peekSafely(entity.getLocation().add(0, 1.15, 0)).getVoxel().isLiquid()) {
 			if (entity.traits.get(TraitVelocity.class).getVelocity().y() < 0.0)
 				entity.traits.get(TraitVelocity.class).addVelocity(0.0, 0.10, 0.0);
-			// System.out.println("vel:");
 		}
 
 	}

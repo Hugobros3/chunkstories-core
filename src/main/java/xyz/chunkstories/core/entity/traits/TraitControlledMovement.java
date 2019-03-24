@@ -64,8 +64,6 @@ public abstract class TraitControlledMovement extends TraitBasicMovement {
 			}
 		}
 
-		// Movement
-		// Run ?
 		if (focus && controller.getInputsManager().getInputByName("forward").isPressed()) {
 			if (controller.getInputsManager().getInputByName("run").isPressed())
 				running = true;
@@ -105,8 +103,7 @@ public abstract class TraitControlledMovement extends TraitBasicMovement {
 		}
 
 		if (onLadder) {
-			entityVelocity.setVelocityY(
-					(float) (Math.sin((-(entityRotation.getVerticalRotation()) / 180f * Math.PI)) * horizontalSpeed));
+			entityVelocity.setVelocityY((float) (Math.sin(((entityRotation.getVerticalRotation()) / 180f * Math.PI)) * horizontalSpeed));
 		}
 
 		getTargetVelocity().x = (Math.sin((entityRotation.getHorizontalRotation() + modif) / 180f * Math.PI)
