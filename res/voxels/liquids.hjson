@@ -15,7 +15,7 @@
 			liquid: true
 			opaque: false
 			selfOpaque: true
-			emittingLightLevel: 15
+			emittedLightLevel: 15
 		}
 	}
 }

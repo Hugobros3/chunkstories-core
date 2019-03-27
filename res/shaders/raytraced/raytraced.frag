@@ -112,8 +112,8 @@ void gi(in vec3 rayPos, in vec3 rayDir, out float ao, out vec4 colour) {
 	//crappy method
 	//hit_pos = lineIntersection(mapPos - vec3(0.001), mapPos + vec3(1.001), rayPos, rayDir);
 	
-	if(colour.a < 1.0)
-		colour.rgb *= vec3(0.2, 1.0, 0.5);
+	//if(colour.a < 1.0)
+	//	colour.rgb *= vec3(0.2, 1.0, 0.5);
 
 	vec3 sunLight_g = sunAbsorb;
 	//vec3 shadowLight_g = getAtmosphericScatteringAmbient() / pi;
@@ -127,7 +127,11 @@ void gi(in vec3 rayPos, in vec3 rayDir, out float ao, out vec4 colour) {
 
 	//what if we sampled the shadowmap there HUMMMM
 	vec3 light = float(!shadow(vec3(hit_pos), normalize(world.sunPosition))) * sunLight_g * clamp(dot(-normalize(world.sunPosition), vec3(mask) * sign(rayDir)), 0.0, 1.0);
+	
+	light += colour.rgb * clamp((colour.a - 0.5) * 2.0, 0.0, 1.0);
+	
 	colour.rgb *= light;
+	colour.a = 1.0;
 	
 	//add light if the hitpoint happens to be an emmissive block
 	//if(texture(currentChunk, vec3(mapPos) / voxel_sizef).a >= 2.0 / 255.0)
@@ -154,6 +158,8 @@ void main() {
 	vec2 texCoord = vec2(vertexPos.x * 0.5 + 0.5, 0.5 + vertexPos.y * 0.5);
 	vec4 albedo = pow(texture(colorBuffer, texCoord), vec4(2.1));
 	vec3 normal = texture(normalBuffer, texCoord).xyz * 2.0 - vec3(1.0);
+
+	float blocklight = texture(normalBuffer, texCoord).w;
 
 	if(albedo.a < 1.0) {
 		discard;
@@ -197,6 +203,9 @@ void main() {
 	vec4 litPixel = vec4(0.0, 0.0, 0.0, 1.0);
 	// Ambient light
 	litPixel.rgb += (1.0 - ao) * getAtmosphericScatteringAmbient() / pi;
+
+	//litPixel.rgb += vec3(pow(blocklight, 2.0));
+	litPixel.rgb += vec3(clamp((blocklight - 14.0 / 15.0) * 150.0, 0.0, 1.0));
 
 	// Direct light
 	litPixel.rgb += float(!shadow(adjusted_worldspace_pos, world.sunPosition)) * clamp(dot(normal, world.sunPosition), 0.0, 1.0) * sunAbsorb;

@@ -38,5 +38,5 @@ void main()
 	}
 
 	colorBuffer = albedo;
-	normalBuffer = vec4(normal * 0.5 + vec3(0.5), color.x);
+	normalBuffer = vec4(normal * 0.5 + vec3(0.5), color.y);
 }
