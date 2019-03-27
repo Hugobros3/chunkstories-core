@@ -52,7 +52,7 @@ public class Sign extends NonTrivialMapper {
 			csWorld.pokeSimple(future);
 
 			try {
-				translateSignText(csWorld.peek(csX, csY, csZ).components().getVoxelComponent("signData"),
+				translateSignText(csWorld.peek(csX, csY, csZ).getComponents().getVoxelComponent("signData"),
 						region.getChunk(minecraftCuurrentChunkXinsideRegion, minecraftCuurrentChunkZinsideRegion), x, y,
 						z);
 			} catch (WorldException e) {
@@ -73,7 +73,7 @@ public class Sign extends NonTrivialMapper {
 		NBTList entitiesList = (NBTList) root.getTag("Level.TileEntities");
 
 		// Check it exists and is of the right kind
-		if (target != null && target instanceof VoxelComponentSignText) {
+		if (target instanceof VoxelComponentSignText) {
 			VoxelComponentSignText signTextComponent = (VoxelComponentSignText) target;
 			signTextComponent.setSignText("<corresponding sign not found :(>");
 

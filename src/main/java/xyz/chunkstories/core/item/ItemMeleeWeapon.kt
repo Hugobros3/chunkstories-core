@@ -121,7 +121,8 @@ class ItemMeleeWeapon(type: ItemDefinition) : ItemWeapon(type) {
                     // TODO: Spawn an event to check if it's okay
 
                     // Destroy it
-                    peek.setVoxel(definition.store().parent().voxels().air())
+                    peek.voxel = definition.store().parent().voxels().air()
+                    //peek.setVoxel(definition.store().parent().voxels().air())
 
                     spawnDebris(entity, direction, shotBlock)
                     entity.world.soundManager.playSoundEffect("sounds/environment/glass.ogg", Mode.NORMAL,
