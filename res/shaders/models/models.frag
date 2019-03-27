@@ -19,6 +19,7 @@ uniform Camera camera;
 uniform WorldConditions world;
 
 #include ../sky/sky.glsl
+#include ../normalcompression.glsl
 
 #material sampler2D albedoTexture;
 #material sampler2D normalTexture;
@@ -37,5 +38,5 @@ void main()
 	}
 
 	colorBuffer = albedo;
-	normalBuffer = vec4(normal * 0.5 + vec3(0.5), 1.0);
+	normalBuffer = vec4(encodeNormal(normal), 1.0, 0.0);
 }

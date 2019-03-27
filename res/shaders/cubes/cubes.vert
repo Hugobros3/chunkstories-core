@@ -29,7 +29,7 @@ void main()
 
 	vertex = vertexPos;
 	color = vec4(colorIn, 1.0);
-	normal = normalIn;
+	normal = camera.normalMatrix * normalIn;
 	texCoord = texCoordIn;
 	textureId = int(textureIdIn);
 

@@ -53,7 +53,7 @@ void main()
 	vec4 projected = camera.projectionMatrix * viewSpace;
 
 	vertex = animatedVertex.xyz;
-	normal = (modelPosition.matrix * animatedNormal).xyz;
+	normal = camera.normalMatrix * (modelPosition.matrix * animatedNormal).xyz;
 	texCoord = texCoordIn;
 
 	#ifdef ENABLE_ANIMATIONS

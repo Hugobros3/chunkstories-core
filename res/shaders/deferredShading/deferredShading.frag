@@ -22,6 +22,7 @@ uniform ShadowMappingInfo shadowInfo;
 uniform WorldConditions world;
 
 #include ../sky/sky.glsl
+#include ../normalcompression.glsl
 
 vec4 convertScreenSpaceToCameraSpace(vec2 screenSpaceCoordinates, sampler2D depthBuffer)
 {
@@ -34,7 +35,9 @@ void main()
 {
 	vec2 texCoord = vec2(vertexPos.x * 0.5 + 0.5, 0.5 + vertexPos.y * 0.5);
 	vec4 albedo = pow(texture(colorBuffer, texCoord), vec4(2.1));
-	vec3 normal = texture(normalBuffer, texCoord).xyz * 2.0 - vec3(1.0);
+	//vec3 normal = camera.normalMatrixInverted * (texture(normalBuffer, texCoord).xyz * 2.0 - vec3(1.0));
+	vec3 decodedNormal = decodeNormal(texture(normalBuffer, texCoord).rg);
+	vec3 normal = camera.normalMatrixInverted * decodedNormal;
 
 	if(albedo.a < 1.0) {
 		discard;
@@ -42,15 +45,16 @@ void main()
 
 	//float torchLight = texture(colorBuffer, texCoord).w;
 	//torchLight = pow(torchLight, 2.1);
-	float torchLight = 0.0;
+	float torchLight = texture(normalBuffer, texCoord).w;
+	torchLight = pow(torchLight, 2.1);
 
-	float ambientLight = texture(normalBuffer, texCoord).w;
+	float ambientLight = texture(normalBuffer, texCoord).z;
 	ambientLight = pow(ambientLight, 2.1);
 
 	vec4 cameraSpacePosition = convertScreenSpaceToCameraSpace(texCoord, depthBuffer);
 	vec4 worldSpacePosition = camera.viewMatrixInverted * cameraSpacePosition;
 
-	vec2 color = vec2(ambientLight, torchLight);
+	//vec2 color = vec2(ambientLight, torchLight);
 
 	float NdL = clamp(dot(world.sunPosition, normal.xyz), 0.0, 1.0);
 	
@@ -81,7 +85,8 @@ void main()
 	vec3 shadowLightColor = getAtmosphericScatteringAmbient() / pi;
 
 	vec3 lightColor = (sunLightColor * NdL * shadowFactor + shadowLightColor * ambientLight);
-	//lightColor += vec3(1.0) * pow(color.y, 2.0);
+
+	lightColor += vec3(1.0) * pow(torchLight, 2.0);
 
 	vec3 litSurface = albedo.rgb * lightColor;
 	//litSurface = camera.lookingAt.rgb;

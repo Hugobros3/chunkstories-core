@@ -20,6 +20,7 @@ uniform Camera camera;
 uniform WorldConditions world;
 
 #include ../sky/sky.glsl
+#include ../normalcompression.glsl
 
 void main()
 {
@@ -38,5 +39,5 @@ void main()
 	}
 
 	colorBuffer = albedo;
-	normalBuffer = vec4(normal * 0.5 + vec3(0.5), color.y);
+	normalBuffer = vec4(encodeNormal(normal), color.xy);
 }
