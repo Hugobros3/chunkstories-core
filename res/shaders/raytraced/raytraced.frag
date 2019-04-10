@@ -216,6 +216,8 @@ void main() {
 	// Light bounce
 	litPixel.rgb += accumulator.rgb * pi;
 
+	litPixel *= pi;
+
 	colorOut = litPixel * albedo;
 	//colorOut = litPixel;
 
