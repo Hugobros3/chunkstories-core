@@ -39,15 +39,20 @@ uniform WorldConditions world;
 
 const float gr = (1.0 + sqrt(5.0)) / 2.0;
 
+const float inverseVoxelDataSize = 1.0 / voxel_data_sizef;
+
 bool getVoxel(ivec3 c) {
 	ivec3 adjusted = c - voxelDataInfo.baseChunkPos * 32;
-	vec3 adjusted_scaled = mod(c, voxel_data_size) / voxel_data_sizef;
+	vec3 adjusted_scaled = mod(c, voxel_data_size) * inverseVoxelDataSize;
 
-	if(adjusted.x < 0 || adjusted.y < 0 || adjusted.z < 0)
+	bvec3 outOfBounds1 = lessThan(adjusted, ivec3(0));
+	bvec3 outOfBounds2 = greaterThanEqual(adjusted, vec3(voxel_data_size));
+	/*if(adjusted.x < 0 || adjusted.y < 0 || adjusted.z < 0)
 		return false;
 	if(adjusted.x >= voxel_data_size || adjusted.y >= voxel_data_size || adjusted.z >= voxel_data_size)
-		return false;
-	return texture(voxelData, c / voxel_data_sizef).a != 0.0;
+		return false;*/
+	bool outOfBounds = any(outOfBounds1) || any(outOfBounds2);
+	return texture(voxelData, c * inverseVoxelDataSize).a != 0.0 && !outOfBounds;
 }
 
 bool shadow(in vec3 rayPos, in vec3 rayDir) {
@@ -60,9 +65,13 @@ bool shadow(in vec3 rayPos, in vec3 rayDir) {
 	bvec3 mask;
 
 	int i;
+
+	//bool result = false;
+	
 	for (i = 0; i < MAX_RAY_STEPS_SHADOW; i++) {
 		if (getVoxel(mapPosz)){
-		    return true;
+		    //result = true;
+			return true;
 		}
 		mask = lessThanEqual(sideDist.xyz, min(sideDist.yzx, sideDist.zxy));	
 
@@ -70,6 +79,7 @@ bool shadow(in vec3 rayPos, in vec3 rayDir) {
 		mapPosz += ivec3(mask) * rayStep;
 	}
 
+	//return result;
 	return false;
 }
 
@@ -219,7 +229,7 @@ void main() {
 	litPixel *= pi;
 
 	colorOut = litPixel * albedo;
-	//colorOut = litPixel;
+	colorOut = litPixel;
 
 	/*if(texCoord.x > 0.5)
 		colorOut = vec4(baseNoise.x);
