@@ -270,7 +270,7 @@ public class GenericHumanoidAI extends AI<EntityHumanoid> {
 				return;
 			}
 
-			makeEntityLookAt(entity, new Vector3d(delta).negate());
+			makeEntityLookAt(entity, new Vector3d(delta));
 
 			delta.y = (0d);
 
@@ -308,8 +308,10 @@ public class GenericHumanoidAI extends AI<EntityHumanoid> {
 		double targetH = Math.acos(deltaHorizontal.y()) * 180.0 / Math.PI;
 		double targetV = Math.asin(deltaVertical.y()) * 180.0 / Math.PI;
 
-		if (deltaHorizontal.x() > 0.0)
+		if (deltaHorizontal.x() < 0.0)
 			targetH *= -1;
+
+		targetH += 180.0;
 
 		if (targetV > 90f)
 			targetV = 90f;

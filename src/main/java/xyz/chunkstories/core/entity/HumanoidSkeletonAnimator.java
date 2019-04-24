@@ -119,8 +119,7 @@ public class HumanoidSkeletonAnimator extends CompoundAnimationHelper {
 		// Only the torso is modified, the effect is replicated accross the other bones
 		// later
 		if (boneName.endsWith("boneTorso"))
-			characterRotationMatrix.rotate((-90 + entityRotation.getHorizontalRotation()) / 180f * 3.14159f,
-					new Vector3f(0, 1, 0));
+			characterRotationMatrix.rotate((entityRotation.getHorizontalRotation()) / 180f * 3.14159f, new Vector3f(0, 1, 0));
 
 		Vector3d vel = entityVelocity.getVelocity();
 
@@ -129,10 +128,8 @@ public class HumanoidSkeletonAnimator extends CompoundAnimationHelper {
 		animationTime *= 0.75;
 
 		if (boneName.endsWith("boneHead")) {
-			Matrix4f modify = new Matrix4f(getAnimationPlayingForBone(boneName, animationTime).getBone(boneName)
-					.getTransformationMatrix(animationTime));
-			modify.rotate((float) (entityRotation.getVerticalRotation() / 180 * Math.PI),
-					new Vector3f(0, 0, 1));
+			Matrix4f modify = new Matrix4f(getAnimationPlayingForBone(boneName, animationTime).getBone(boneName).getTransformationMatrix(animationTime));
+			modify.rotate((float) (entityRotation.getVerticalRotation() / 180 * Math.PI), new Vector3f(1, 0, 0));
 			return modify;
 		}
 
@@ -168,8 +165,8 @@ public class HumanoidSkeletonAnimator extends CompoundAnimationHelper {
 			if (selectedItem != null) {
 				characterRotationMatrix.translate(new Vector3f(0f, k, 0));
 				characterRotationMatrix.rotate(-(entityRotation.getVerticalRotation()
-						+ ((stance.getStance() == HumanoidStance.CROUCHING) ? -50f : 0f)) / 180f * -3.14159f,
-						new Vector3f(0, 0, 1));
+						+ ((stance.getStance() == HumanoidStance.CROUCHING) ? -50f : 0f)) / 180f * 3.14159f,
+						new Vector3f(1, 0, 0));
 				characterRotationMatrix.translate(new Vector3f(0f, -k, 0));
 
 				if (stance.getStance() == HumanoidStance.CROUCHING && entity
