@@ -1,7 +1,5 @@
 #version 450
 
-//layout(set=0, location=0) uniform sampler2D virtualTextures[1024];
-
 in vec3 vertex;
 in vec4 color;
 in vec3 normal;
