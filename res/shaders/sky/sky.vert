@@ -16,7 +16,7 @@ void main()
 	
 	vec4 cameraSpaceCoordinates = (camera.projectionMatrixInverted * screenSpaceCoordinates);
 
-	eyeDirection = normalize(camera.normalMatrixInverted * (cameraSpaceCoordinates.xyz));
+	eyeDirection = ((camera.viewMatrixInverted * vec4(cameraSpaceCoordinates.xyz, 0.0)).xyz);
 	//eyeDirection = normalize(camera.normalMatrixInverted * (screenSpaceCoordinates.xyz));
 	//eyeDirection = vec3(cameraSpaceCoordinates.xy, 0.0);
 	
