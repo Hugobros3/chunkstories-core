@@ -29,9 +29,8 @@
 		grass_prop: {
 			solid: false
 			opaque: false
-			representation: {
-				model: ./voxels/models/grass.obj
-			}
+
+			model: voxels/blockmodels/grass_prop/grass_prop.dae
 		}
 
 		dead_grass: {
