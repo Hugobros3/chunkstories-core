@@ -4,6 +4,7 @@ in vec2 vertexPos;
 out vec4 fragColor;
 
 uniform sampler2D shadedBuffer;
+uniform sampler2D bloomBuffer;
 
 #include ../gamma.glsl
 
@@ -47,6 +48,8 @@ void main()
 {
 	vec2 texCoord = vec2(vertexPos.x * 0.5 + 0.5, 0.5 - vertexPos.y * 0.5);
 	vec3 hdrColor = texture(shadedBuffer, texCoord).rgb;
+
+	hdrColor += texture(bloomBuffer, texCoord).rgb * 0.05;
 
 	vec3 tonemapped = jodieReinhardTonemap(hdrColor.rgb);
 	vec3 gammaCorrected = pow(tonemapped, vec3(gammaInv));
