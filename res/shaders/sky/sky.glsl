@@ -92,7 +92,7 @@ vec3 getAtmosphericScattering(vec3 v, vec3 sunVec, vec3 upVec, float sunspotStre
 //Returns the sky color depending on direction and time
 vec3 getSkyColor(float time, vec3 eyeDirection)
 {
-	return getAtmosphericScattering(eyeDirection, world.sunPosition, vec3(0.0, 1.0, 0.0), 50.0);
+	return getAtmosphericScattering(eyeDirection, world.sunPosition, vec3(0.0, 1.0, 0.0), 5.0);
 }
 
 vec4 getFogColor(float time, vec3 eyePosition)
