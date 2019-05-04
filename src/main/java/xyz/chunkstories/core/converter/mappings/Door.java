@@ -43,7 +43,7 @@ public class Door extends NonTrivialMapper {
 			int direction = minecraftMetaData & 0x3;
 
 			csWorld.pokeSimple(csX, csY, csZ, voxel, -1, -1,
-					VoxelDoor.computeMeta(open == 1, hingeSide == 1, getSideMcDoor(direction)));
+					VoxelDoor.Companion.computeMeta(open == 1, hingeSide == 1, getSideMcDoor(direction)));
 		} else
 			return;
 

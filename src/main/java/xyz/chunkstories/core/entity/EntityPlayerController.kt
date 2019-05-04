@@ -7,10 +7,7 @@ import org.joml.Vector3f
 import xyz.chunkstories.api.client.IngameClient
 import xyz.chunkstories.api.client.LocalPlayer
 import xyz.chunkstories.api.entity.traits.TraitInteractible
-import xyz.chunkstories.api.entity.traits.serializable.TraitControllable
-import xyz.chunkstories.api.entity.traits.serializable.TraitCreativeMode
-import xyz.chunkstories.api.entity.traits.serializable.TraitRotation
-import xyz.chunkstories.api.entity.traits.serializable.TraitSelectedItem
+import xyz.chunkstories.api.entity.traits.serializable.*
 import xyz.chunkstories.api.events.player.voxel.PlayerVoxelModificationEvent
 import xyz.chunkstories.api.exceptions.world.WorldException
 import xyz.chunkstories.api.graphics.structs.Camera
@@ -100,7 +97,7 @@ internal class EntityPlayerController(private val entityPlayer: EntityPlayer) : 
             val viewMatrix = Matrix4f()
             viewMatrix.lookAt(cameraPosition, entityLookAt, up)
 
-            val fovModifier = entityPlayer.selectedItemComponent.selectedItem?.let { (it.item as? ItemZoom)?.let { it.zoomFactor } } ?: 1f
+            val fovModifier = entityPlayer.traitSelectedItem.selectedItem?.let { (it.item as? ItemZoom)?.let { it.zoomFactor } } ?: 1f
 
             var speedEffect = (entityPlayer.traitVelocity.velocity.x() * entityPlayer.traitVelocity.velocity.x() + entityPlayer.traitVelocity.velocity.z() * entityPlayer.traitVelocity.velocity.z()).toFloat()
 
@@ -117,18 +114,18 @@ internal class EntityPlayerController(private val entityPlayer: EntityPlayer) : 
         // We are moving inventory bringup here !
         if (input.name == "inventory" && entityPlayer.world is WorldClient) {
 
-            if (entityPlayer.creativeMode.get()) {
-                entityPlayer.world.client.gui.openInventories(entityPlayer.inventory.inventory,
+            if (entityPlayer.traitCreativeMode.get()) {
+                entityPlayer.world.client.gui.openInventories(entityPlayer.traits[TraitInventory::class]?.inventory!!,
                         entity.world.content.voxels().createCreativeInventory())
             } else {
                 entityPlayer.world.client.gui
-                        .openInventories(entityPlayer.inventory.inventory, entityPlayer.armor.inventory)
+                        .openInventories(entityPlayer.traits[TraitInventory::class]?.inventory!!, entityPlayer.traitArmor.inventory)
             }
 
             return true
         }
 
-        val blockLocation = entityPlayer.raytracer.getBlockLookingAt(true, false)
+        val blockLocation = entityPlayer.traitVoxelSelection.getBlockLookingAt(true, false)
 
         var maxLen = 1024.0
 
@@ -150,7 +147,7 @@ internal class EntityPlayerController(private val entityPlayer: EntityPlayer) : 
                 return true
         }
 
-        val itemSelected = entityPlayer.selectedItemComponent.selectedItem
+        val itemSelected = entityPlayer.traitSelectedItem.selectedItem
         if (itemSelected != null) {
             // See if the item handles the interaction
             if (itemSelected.item.onControllerInput(entityPlayer, itemSelected, input, controller!!))
@@ -158,7 +155,7 @@ internal class EntityPlayerController(private val entityPlayer: EntityPlayer) : 
         }
         if (entityPlayer.world is WorldMaster) {
             // Creative mode features building and picking.
-            if (entityPlayer.creativeMode.get()) {
+            if (entityPlayer.traitCreativeMode.get()) {
                 if (input.name == "mouse.left") {
                     if (blockLocation != null) {
                         // Player events mod
@@ -200,13 +197,13 @@ internal class EntityPlayerController(private val entityPlayer: EntityPlayer) : 
                         val peekedCell = entityPlayer.world.peekSafely(blockLocation)
                         val voxel = peekedCell.voxel
 
-                        if (voxel != null && !voxel.isAir()) {
+                        if (!voxel.isAir()) {
                             // Spawn new itemPile in his inventory
                             val item = entityPlayer.world.gameContext.content.items().getItemDefinition("item_voxel")!!.newItem<ItemVoxel>()
                             item.voxel = voxel
                             item.voxelMeta = peekedCell.metaData
 
-                            entityPlayer.inventory.inventory.setItemAt(entityPlayer.selectedItemComponent.getSelectedSlot(), 0, item)
+                            entityPlayer.traits[TraitInventory::class]?.inventory!!.setItemAt(entityPlayer.traitSelectedItem.getSelectedSlot(), 0, item)
                             return true
                         }
                     }

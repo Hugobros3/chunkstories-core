@@ -122,6 +122,7 @@
 			class: xyz.chunkstories.core.voxel.VoxelDoor
 			opaque: false
 			material: bluntwood
+			model: "voxels/blockmodels/wood_door/wood_door.dae"
 		}
 
 		wood_door_top: {

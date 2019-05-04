@@ -37,22 +37,21 @@ import java.util.HashMap
 class EntityPlayer(t: EntityDefinition, world: World) : EntityHumanoid(t, world), WorldModificationCause, InventoryOwner {
     private val controllerComponent: TraitControllable
 
-    protected var inventory: TraitInventory
-    internal var selectedItemComponent: TraitSelectedItem
+    protected var traitInventory: TraitInventory
+    internal var traitSelectedItem: TraitSelectedItem
 
     private val traitName: TraitName
-    internal var creativeMode: TraitCreativeMode
+    internal var traitCreativeMode: TraitCreativeMode
     internal var traitFlyingMode: TraitFlyingMode
 
-    internal var armor: TraitArmor
-    private val foodLevel: TraitFoodLevel
+    internal var traitArmor: TraitArmor
+    private val traitFoodLevel: TraitFoodLevel
 
-    internal var raytracer: TraitVoxelSelection
+    internal var traitVoxelSelection: TraitVoxelSelection
 
     private val onLadder = false
 
     internal var lastCameraLocation: Location? = null
-
     internal var variant: Int = 0
 
     override val name: String
@@ -61,15 +60,15 @@ class EntityPlayer(t: EntityDefinition, world: World) : EntityHumanoid(t, world)
     init {
 
         //controllerComponent = new TraitController(this);
-        inventory = TraitInventory(this, 10, 4)
-        selectedItemComponent = TraitSelectedItem(this, inventory)
+        traitInventory = TraitInventory(this, 10, 4)
+        traitSelectedItem = TraitSelectedItem(this, traitInventory)
         traitName = TraitName(this)
-        creativeMode = TraitCreativeMode(this)
+        traitCreativeMode = TraitCreativeMode(this)
         traitFlyingMode = TraitFlyingMode(this)
-        foodLevel = TraitFoodLevel(this, 100f)
-        armor = TraitArmor(this, 4, 1)
+        traitFoodLevel = TraitFoodLevel(this, 100f)
+        traitArmor = TraitArmor(this, 4, 1)
 
-        raytracer = object : TraitVoxelSelection(this) {
+        traitVoxelSelection = object : TraitVoxelSelection(this) {
 
             override fun getBlockLookingAt(inside: Boolean, can_overwrite: Boolean): Location? {
                 val eyePosition = traitStance.stance.eyeLevel
@@ -109,7 +108,7 @@ class EntityPlayer(t: EntityDefinition, world: World) : EntityHumanoid(t, world)
                     val controller = controllerComponent.controller//entity.traits.tryWith(TraitControllable.class, TraitControllable::getController);
                     if (controller is Player) {
                         val p = controller as Player?
-                        p!!.openInventory(inventory.inventory)
+                        p!!.openInventory(traitInventory.inventory)
                         return true
                     }
                 }
@@ -155,7 +154,7 @@ class EntityPlayer(t: EntityDefinition, world: World) : EntityHumanoid(t, world)
 
                     val pileToCollect = groundInventoy.getItemPileAt(0, 0)
 
-                    val overflow = this.inventory.inventory.addItem(pileToCollect!!.item, pileToCollect.amount)
+                    val overflow = this.traitInventory.inventory.addItem(pileToCollect!!.item, pileToCollect.amount)
                     pileToCollect.amount = overflow
 
                     if (pileToCollect.amount <= 0)
@@ -170,7 +169,7 @@ class EntityPlayer(t: EntityDefinition, world: World) : EntityHumanoid(t, world)
             // Take damage when starving
             // TODO: move to trait
             if (world.ticksElapsed % 100L == 0L) {
-                if (foodLevel.getValue() == 0f)
+                if (traitFoodLevel.getValue() == 0f)
                     traitHealth.damage(TraitFoodLevel.HUNGER_DAMAGE_CAUSE, 1f)
                 else {
                     // 27 minutes to start starving at 0.1 starveFactor
@@ -187,19 +186,19 @@ class EntityPlayer(t: EntityDefinition, world: World) : EntityHumanoid(t, world)
                             starve = 0.15f
                     }
 
-                    val newfoodLevel = foodLevel.getValue() - starve
-                    foodLevel.setValue(newfoodLevel)
+                    val newfoodLevel = traitFoodLevel.getValue() - starve
+                    traitFoodLevel.setValue(newfoodLevel)
                 }
             }
 
             // It restores hp
             // TODO move to trait
-            if (foodLevel.getValue() > 20 && !traitHealth.isDead) {
+            if (traitFoodLevel.getValue() > 20 && !traitHealth.isDead) {
                 if (traitHealth.getHealth() < traitHealth.maxHealth) {
                     traitHealth.setHealth(traitHealth.getHealth() + 0.01f)
 
-                    val newfoodLevel = foodLevel.getValue() - 0.01f
-                    foodLevel.setValue(newfoodLevel)
+                    val newfoodLevel = traitFoodLevel.getValue() - 0.01f
+                    traitFoodLevel.setValue(newfoodLevel)
                 }
             }
 
