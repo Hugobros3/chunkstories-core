@@ -207,7 +207,7 @@ public class GenericHumanoidAI extends AI<EntityHumanoid> {
 
 			Vector3d delta = entityFollowed.getLocation().sub(entity.getLocation());
 
-			makeEntityLookAt(entity, new Vector3d(delta).negate());
+			makeEntityLookAt(entity, new Vector3d(delta));
 
 			delta.y = (0d);
 
@@ -310,8 +310,6 @@ public class GenericHumanoidAI extends AI<EntityHumanoid> {
 
 		if (deltaHorizontal.x() < 0.0)
 			targetH *= -1;
-
-		targetH += 180.0;
 
 		if (targetV > 90f)
 			targetV = 90f;

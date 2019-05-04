@@ -41,9 +41,6 @@ class VoxelHalfTile(definition: VoxelDefinition) : Voxel(definition) {
         val mappedOverrides = overrides.toMap()
 
         customRenderingRoutine = { cell ->
-
-            println(mappedOverrides)
-
             if (bottomOrTop(cell.metaData))
                 addModel(bottom, materialsOverrides = mappedOverrides)
             else
@@ -54,14 +51,6 @@ class VoxelHalfTile(definition: VoxelDefinition) : Voxel(definition) {
     private fun bottomOrTop(meta: Int): Boolean {
         return meta % 2 == 0
     }
-
-    /*@Override
-	public VoxelRenderer getVoxelRenderer(CellData info) {
-		int meta = info.getMetaData();
-		if (bottomOrTop(meta))
-			return bot;
-		return top;
-	}*/
 
     override fun getCollisionBoxes(info: CellData): Array<Box>? {
         // System.out.println("kek");

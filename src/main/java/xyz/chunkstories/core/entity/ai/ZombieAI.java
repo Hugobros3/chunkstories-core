@@ -46,13 +46,13 @@ public class ZombieAI extends GenericHumanoidAI {
 			attackEntityCooldown--;
 
 		// Find entities to attack
-		if (!(this.currentTask instanceof AiTaskAttackEntity) && entity.stage().aggroRadius > 0.0
+		if (!(this.currentTask instanceof AiTaskAttackEntity) && entity.stage().getAggroRadius() > 0.0
 				&& attackEntityCooldown == 0) {
 			// Only look for them once in 2s
 			attackEntityCooldown = (int) (Math.random() * 60 * 2);
 
 			for (Entity entityToLook : entity.getWorld().getEntitiesInBox(entity.getLocation(),
-					new Vector3d(entity.stage().aggroRadius * 2f))) {
+					new Vector3d(entity.stage().getAggroRadius() * 2f))) {
 				float visibilityModifier = 1f;
 				if (entityToLook instanceof EntityPlayer) {
 
@@ -70,7 +70,7 @@ public class ZombieAI extends GenericHumanoidAI {
 
 				if (!entityToLook.equals(entity)
 						&& entityToLook.getLocation().distance(entity.getLocation())
-								* visibilityModifier <= entity.stage().aggroRadius
+								* visibilityModifier <= entity.stage().getAggroRadius()
 						&& entityToLook instanceof EntityHumanoid
 						&& !((EntityHumanoid) entityToLook).traits.get(TraitHealth.class).isDead()) {
 					// Check target is in set
@@ -82,8 +82,8 @@ public class ZombieAI extends GenericHumanoidAI {
 								Mode.NORMAL, entity.getLocation(), (float) (1.5 + Math.random() * 0.2), 1.5f);// .setPitch();
 
 						// Set new task
-						setAiTask(new AiTaskAttackEntity((EntityHumanoid) entityToLook, 10f, 15f, currentTask,
-								entity.stage().attackCooldown, entity.stage().attackDamage));
+						setAiTask(new AiTaskAttackEntity((EntityHumanoid) entityToLook, 10f, 15f, currentTask, entity.stage().getAttackCooldown(),
+								entity.stage().getAttackDamage()));
 						return;
 					}
 				}
@@ -108,7 +108,7 @@ public class ZombieAI extends GenericHumanoidAI {
 			this.attackCooldownMS = attackCooldownMS;
 			this.damage = damage;
 
-			this.entitySpeed = ZombieAI.this.entity.stage().speed;
+			this.entitySpeed = ZombieAI.this.entity.stage().getSpeed();
 		}
 
 		@Override

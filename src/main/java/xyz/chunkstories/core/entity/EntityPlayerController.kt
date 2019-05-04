@@ -44,7 +44,7 @@ internal class EntityPlayerController(private val entityPlayer: EntityPlayer) : 
     }
 
     fun moveCamera(controller: LocalPlayer) {
-        if (entityPlayer.entityHealth.isDead)
+        if (entityPlayer.traitHealth.isDead)
             return
         if (!controller.inputsManager.mouse.isGrabbed)
             return
@@ -61,8 +61,8 @@ internal class EntityPlayerController(private val entityPlayer: EntityPlayer) : 
         lastPX = cPX
         lastPY = cPY
 
-        var rotH = entityPlayer.entityRotation.horizontalRotation.toDouble()
-        var rotV = entityPlayer.entityRotation.verticalRotation.toDouble()
+        var rotH = entityPlayer.traitRotation.horizontalRotation.toDouble()
+        var rotV = entityPlayer.traitRotation.verticalRotation.toDouble()
 
         var modifier = 1.0
         val selectedItem = entityPlayer.traits[TraitSelectedItem::class]?.selectedItem
@@ -74,7 +74,7 @@ internal class EntityPlayerController(private val entityPlayer: EntityPlayer) : 
 
         rotH -= dx * modifier / 3f * controller.client.configuration.getDoubleValue(CoreOptions.mouseSensitivity)
         rotV += dy * modifier / 3f * controller.client.configuration.getDoubleValue(CoreOptions.mouseSensitivity)
-        entityPlayer.entityRotation.setRotation(rotH, rotV)
+        entityPlayer.traitRotation.setRotation(rotH, rotV)
 
         controller.inputsManager.mouse.setMouseCursorLocation(controller.window.width / 2.0, controller.window.height / 2.0)
     }
@@ -90,7 +90,7 @@ internal class EntityPlayerController(private val entityPlayer: EntityPlayer) : 
             val location = entity.location
             val cameraPosition = location.toVec3f()
 
-            cameraPosition.y += entityPlayer.stance.stance.eyeLevel.toFloat()
+            cameraPosition.y += entityPlayer.traitStance.stance.eyeLevel.toFloat()
 
             val entityDirection = (entity.traits[TraitRotation::class]?.directionLookingAt ?: Vector3d(0.0, 0.0, 1.0)).toVec3f()
             val entityLookAt = Vector3f(cameraPosition).add(entityDirection)
@@ -102,7 +102,7 @@ internal class EntityPlayerController(private val entityPlayer: EntityPlayer) : 
 
             val fovModifier = entityPlayer.selectedItemComponent.selectedItem?.let { (it.item as? ItemZoom)?.let { it.zoomFactor } } ?: 1f
 
-            var speedEffect = (entityPlayer.entityVelocity.velocity.x() * entityPlayer.entityVelocity.velocity.x() + entityPlayer.entityVelocity.velocity.z() * entityPlayer.entityVelocity.velocity.z()).toFloat()
+            var speedEffect = (entityPlayer.traitVelocity.velocity.x() * entityPlayer.traitVelocity.velocity.x() + entityPlayer.traitVelocity.velocity.z() * entityPlayer.traitVelocity.velocity.z()).toFloat()
 
             speedEffect -= 0.07f * 0.07f
             speedEffect = Math.max(0.0f, speedEffect)
@@ -139,9 +139,9 @@ internal class EntityPlayerController(private val entityPlayer: EntityPlayer) : 
         }
 
         val initialPosition = Vector3d(entityPlayer.location)
-        initialPosition.add(Vector3d(0.0, entityPlayer.stance.stance.eyeLevel, 0.0))
+        initialPosition.add(Vector3d(0.0, entityPlayer.traitStance.stance.eyeLevel, 0.0))
 
-        val direction = entityPlayer.entityRotation.directionLookingAt
+        val direction = entityPlayer.traitRotation.directionLookingAt
 
         val i = entityPlayer.world.collisionsManager.rayTraceEntities(initialPosition, direction, maxLen)
         while (i.hasNext()) {
