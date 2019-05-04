@@ -47,6 +47,7 @@
 		}
 
 		wood_fence: {
+			class: xyz.chunkstories.core.voxel.VoxelFence
 			opaque: false
 			selfOpaque: true
 			texture: planks
@@ -79,13 +80,6 @@
 			opaque: false
 			material: bluntwood
 			texture: darkplanks
-		}
-
-		wood_fence: {
-			opaque: false
-			selfOpaque: true
-			texture: planks
-			material: bluntwood
 		}
 
 		/** MISC */
