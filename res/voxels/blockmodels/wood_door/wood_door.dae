@@ -5,27 +5,27 @@
       <author>Blender User</author>
       <authoring_tool>Blender 2.79.0 commit date:2018-03-22, commit time:14:10, hash:f4dc9f9d68b</authoring_tool>
     </contributor>
-    <created>2019-05-04T15:27:50</created>
-    <modified>2019-05-04T15:27:50</modified>
+    <created>2019-05-04T15:35:43</created>
+    <modified>2019-05-04T15:35:43</modified>
     <unit name="meter" meter="1"/>
     <up_axis>Z_UP</up_axis>
   </asset>
   <library_images>
-    <image id="left" name="left">
-      <init_from>left.png</init_from>
+    <image id="wood_door" name="wood_door">
+      <init_from>wood_door.png</init_from>
     </image>
   </library_images>
   <library_effects>
     <effect id="DoorMaterial-effect">
       <profile_COMMON>
-        <newparam sid="left-surface">
+        <newparam sid="wood_door-surface">
           <surface type="2D">
-            <init_from>left</init_from>
+            <init_from>wood_door</init_from>
           </surface>
         </newparam>
-        <newparam sid="left-sampler">
+        <newparam sid="wood_door-sampler">
           <sampler2D>
-            <source>left-surface</source>
+            <source>wood_door-surface</source>
           </sampler2D>
         </newparam>
         <technique sid="common">
@@ -37,7 +37,7 @@
               <color sid="ambient">0 0 0 1</color>
             </ambient>
             <diffuse>
-              <texture texture="left-sampler"/>
+              <texture texture="wood_door-sampler"/>
             </diffuse>
             <specular>
               <color sid="specular">0.5 0.5 0.5 1</color>
