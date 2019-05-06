@@ -453,18 +453,16 @@ class ItemFirearm(type: ItemDefinition) : ItemWeapon(type), ItemOverlay, ItemZoo
         drawer.drawBox(x, 0, x, drawer.gui.viewportHeight, Vector4f(0.0f, 0.0f, 0.0f, 1.0f))
     }
 
-    override fun getZoomFactor(): Float {
-        return if (isScoped) scopeZoom else 1f
-    }
+    override val zoomFactor: Float
+        get() = if (isScoped) scopeZoom else 1f
 
     fun playAnimation() {
         this.animationStart = System.currentTimeMillis()
         this.animationCooldownEnd = this.animationStart + this.shootingAnimationDuration
     }
 
-    override fun getCustomAnimationName(): String {
-        return if (this.animationCooldownEnd > System.currentTimeMillis()) this.shootingAnimationName else holdingAnimationName
-    }
+    override val customAnimationName: String
+        get() = if (this.animationCooldownEnd > System.currentTimeMillis()) this.shootingAnimationName else holdingAnimationName
 
     override fun transformAnimationTime(originalTime: Double): Double {
         return if (this.animationCooldownEnd > System.currentTimeMillis()) {
