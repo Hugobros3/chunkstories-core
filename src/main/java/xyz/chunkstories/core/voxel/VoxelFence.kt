@@ -87,7 +87,7 @@ class VoxelFence(type: VoxelDefinition) : Voxel(type) {
         val mappedOverrides = overrides.toMap()*/
         val mappedOverrides = mapOf(0 to MeshMaterial("fence_material", mapOf("albedoTexture" to "voxels/textures/${this.voxelTextures[VoxelSide.FRONT.ordinal].name}.png")))
 
-        customRenderingRoutine = { info ->
+        customRenderingRoutine = { cell ->
             /*if (bottomOrTop(cell.metaData))
                 addModel(bottom, materialsOverrides = mappedOverrides)
             else
@@ -95,13 +95,13 @@ class VoxelFence(type: VoxelDefinition) : Voxel(type) {
             addModel(post, materialsOverrides = mappedOverrides)
 
             var vox: Voxel?
-            vox = info.getNeightborVoxel(0)
+            vox = cell.getNeightborVoxel(0)
             val connectLeft = vox != null && ((vox.solid && vox.opaque) || vox == this@VoxelFence)
-            vox = info.getNeightborVoxel(1)
+            vox = cell.getNeightborVoxel(1)
             val connectFront = vox != null && ((vox.solid && vox.opaque) || vox == this@VoxelFence)
-            vox = info.getNeightborVoxel(2)
+            vox = cell.getNeightborVoxel(2)
             val connectRight = vox != null && ((vox.solid && vox.opaque) || vox == this@VoxelFence)
-            vox = info.getNeightborVoxel(3)
+            vox = cell.getNeightborVoxel(3)
             val connectBack = vox != null && ((vox.solid && vox.opaque) || vox == this@VoxelFence)
 
             if(connectLeft)
