@@ -1,0 +1,91 @@
+{
+    # Default packets from the core game engine/content.
+    # Modify/overload these at your own discretion; some reference stuff that only exists
+    # in the actual implementation (xyz.chunkstories.foo, instead of xyz.chunkstories.api or xyz.chunkstories.core)
+
+    # commonClass defines a class used for both client & server
+    # It is overridable for both client & servers with clientClass & serverClass
+    # If both are overidden, commonClass is effectively useless
+    # Such instances serve an educational/semantic purpose
+
+    # Internal packets used for communicating what the clients wants streamed to it
+    # and what the server will actually comply & send
+
+    # General-purpose entity update packet (slow!)
+    packets: {
+        entity_tracking: {
+            allowedFrom: all
+            type: world
+            commonClass: xyz.chunkstories.api.net.packets.PacketEntity
+        }
+
+        move_item: {
+            allowedFrom: client
+            type: world
+            commonClass: xyz.chunkstories.api.net.packets.PacketInventoryMoveItemPile
+        }
+
+        partial_inv_update: {
+            allowedFrom: server
+            type: world
+            commonClass: xyz.chunkstories.api.net.packets.PacketInventoryPartialUpdate
+        }
+
+        time: {
+            allowedFrom: server
+            type: world
+            commonClass: xyz.chunkstories.api.net.packets.PacketTime
+        }
+
+        voxel_update: {
+            allowedFrom: server
+            type: world
+            commonClass: xyz.chunkstories.api.net.packets.PacketVoxelUpdate
+        }
+
+        sound: {
+            allowedFrom: server
+            type: world
+            commonClass: xyz.chunkstories.net.packets.PacketSoundSource
+        }
+
+        input: {
+            allowedFrom: client
+            type: world
+            commonClass: xyz.chunkstories.net.packets.PacketInput
+        }
+
+        # Spawns a particle from the server
+        particle: {
+            allowedFrom: server
+            type: world
+            commonClass: xyz.chunkstories.api.net.packets.PacketParticle
+        }
+
+        # Spawns a decal from the server
+        decal: {
+            allowedFrom: server
+            type: world
+            commonClass: xyz.chunkstories.api.net.packets.PacketDecal
+        }
+
+        # Applies a velocity delta to the player
+        velocity_delta: {
+            allowedFrom: server
+            type: world
+            commonClass: xyz.chunkstories.api.net.packets.PacketVelocityDelta
+        }
+
+        open_inventory: {
+            allowedFrom: server
+            type: world
+            commonClass: xyz.chunkstories.api.net.packets.PacketOpenInventory
+        }
+
+        fx_explosion: {
+            allowedFrom: server
+            type: world
+            commonClass: xyz.chunkstories.core.net.packets.PacketExplosionEffect
+        }
+    }
+}
