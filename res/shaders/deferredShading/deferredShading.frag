@@ -15,7 +15,7 @@ uniform sampler2DShadow shadowBuffers[4];
 #include struct xyz.chunkstories.api.graphics.structs.Camera
 uniform Camera camera;
 
-#include struct xyz.chunkstories.graphics.vulkan.util.ShadowMappingInfo
+#include struct xyz.chunkstories.graphics.common.structs.ShadowMappingInfo
 uniform ShadowMappingInfo shadowInfo;
 
 #include struct xyz.chunkstories.api.graphics.structs.WorldConditions
