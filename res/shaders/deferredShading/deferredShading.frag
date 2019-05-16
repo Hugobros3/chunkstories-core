@@ -31,6 +31,22 @@ vec4 convertScreenSpaceToCameraSpace(vec2 screenSpaceCoordinates, sampler2D dept
     return cameraSpacePosition;
 }
 
+void sampleShadowMap(vec4 worldSpacePosition, mat4 cameraMatrix, sampler2DShadow shadowMap, int cascade, float NdL, in out float shadowFactor, in out float outOfBounds)  {
+	vec4 coordinatesInShadowmap = cameraMatrix * worldSpacePosition;
+	coordinatesInShadowmap.xy *= 0.5;
+	coordinatesInShadowmap.xy += vec2(0.5);
+	
+	if(coordinatesInShadowmap.x > 1.0 || coordinatesInShadowmap.y > 1.0 || coordinatesInShadowmap.x < 0.0 || coordinatesInShadowmap.y < 0.0 || coordinatesInShadowmap.z < 0.0 || coordinatesInShadowmap.z > 1.0) {
+		//outOfBounds = 1.0;
+		//shadowFactor = 1.0;
+		return;
+	} else {
+		float bias = pow(2.0, 4 - cascade) * 0.0004 * (1.0 - NdL);
+		shadowFactor = clamp((texture(shadowMap, vec3(coordinatesInShadowmap.xyz + vec3(0.0, 0.0, -bias)), 0.0)), 0.0, 1.0);
+		outOfBounds = 0.0;
+	}
+}
+
 void main()
 {
 	vec2 texCoord = vec2(vertexPos.x * 0.5 + 0.5, 0.5 + vertexPos.y * 0.5);
@@ -63,7 +79,23 @@ void main()
 
 	float shadowFactor = 1.0;
 	float outOfBounds = 1.0;
-	for(int cascade = 0; cascade < shadowInfo.cascadesCount; cascade++) {
+
+	// Unrolled for GLSL 330 compatibility
+	#define sampleLvl(i) sampleShadowMap(worldSpacePosition, shadowInfo.cameras[i].viewMatrix, shadowBuffers[i], i, NdL, shadowFactor, outOfBounds);
+
+	if(shadowInfo.cascadesCount >= 1) {
+		sampleLvl(0)
+	}
+	if(shadowInfo.cascadesCount >= 2) {
+		sampleLvl(1)
+	}
+	if(shadowInfo.cascadesCount >= 3) {
+		sampleLvl(2)
+	}
+	if(shadowInfo.cascadesCount >= 4) {
+		sampleLvl(3)
+	}
+	/*for(int cascade = 0; cascade < shadowInfo.cascadesCount; cascade++) {
 		vec4 coordinatesInShadowmap = shadowInfo.cameras[cascade].viewMatrix * worldSpacePosition;
 		coordinatesInShadowmap.xy *= 0.5;
 		coordinatesInShadowmap.xy += vec2(0.5);
@@ -77,7 +109,7 @@ void main()
 			shadowFactor = clamp((texture(shadowBuffers[cascade], vec3(coordinatesInShadowmap.xyz + vec3(0.0, 0.0, -bias)), 0.0)), 0.0, 1.0);
 			outOfBounds = 0.0;
 		}
-	}
+	}*/
 
 	shadowFactor = mix(shadowFactor, 1.0, outOfBounds);
 
