@@ -24,8 +24,8 @@ uniform Camera camera;
 instanced ModelPosition modelPosition;
 
 #ifdef ENABLE_ANIMATIONS 
-#include struct xyz.chunkstories.graphics.vulkan.systems.models.ExperimentalBonesData
-uniform ExperimentalBonesData animationData;
+#include struct xyz.chunkstories.graphics.common.structs.SkeletalAnimationData
+uniform SkeletalAnimationData animationData;
 #endif
 
 void main()
