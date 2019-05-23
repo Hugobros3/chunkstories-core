@@ -210,7 +210,7 @@ void main() {
 	//Flip the random vector if it's facing in the wrong direction so we get an hemisphere
 	direction *= sign(dot(direction, normal));
 
-	vec3 adjusted_worldspace_pos = worldSpacePosition.xyz + normal * 0.001;
+	vec3 adjusted_worldspace_pos = worldSpacePosition.xyz + normal * 0.01;
 	gi(adjusted_worldspace_pos, direction, ao, accumulator);
 	
 	vec4 litPixel = vec4(0.0, 0.0, 0.0, 1.0);
@@ -229,7 +229,7 @@ void main() {
 	litPixel *= pi;
 
 	colorOut = litPixel * albedo;
-	colorOut = litPixel;
+	//colorOut = litPixel;
 
 	/*if(texCoord.x > 0.5)
 		colorOut = vec4(baseNoise.x);
@@ -237,8 +237,9 @@ void main() {
 		colorOut = vec4(noise.x);*/
 	//colorOut = clamp((vec4(noise.x) - vec4(0.5)) * 500.0, 0.0, 1.0);
 
+	//colorOut = vec4(fract(adjusted_worldspace_pos.xyz / 10.0), 1.0);
 	//colorOut = accumulator;
-	//colorOut = vec4(1.0 / 2.1 - ao);
+	//colorOut = vec4(1.0 - ao);
 	//colorOut = vec4(accumulator.xyz, 1.0);
 	//colorOut = vec4(eyeDirection, 1.0);
 }

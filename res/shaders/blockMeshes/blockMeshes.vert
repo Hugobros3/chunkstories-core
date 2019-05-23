@@ -24,11 +24,12 @@ void main()
 	vec3 vertexPos = vertexIn.xyz;
 	vertexPos += vec3(chunkInfo.chunkX, chunkInfo.chunkY, chunkInfo.chunkZ) * 32.0;
 
-	vec4 viewSpace = camera.viewMatrix * vec4(vertexPos, 1.0);
-	vec4 projected = camera.projectionMatrix * viewSpace;
+	//vec4 viewSpace = camera.viewMatrix * vec4(vertexPos, 1.0);
+	//vec4 projected = camera.projectionMatrix * viewSpace;
+	vec4 projected = camera.combinedViewProjectionMatrix * vec4(vertexPos, 1.0);
 
 	vertex = vertexPos;
-	color = vec4(colorIn, 1.0);
+	color = vec4(colorIn.x, colorIn.y, colorIn.z, 1.0);
 	normal = camera.normalMatrix * normalIn;
 	texCoord = texCoordIn;
 	textureId = int(textureIdIn);

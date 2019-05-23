@@ -36,6 +36,14 @@ void main()
 		albedo.a = 1.0;
 	}
 
+	float ao = 0.95 + 0.05 * color.z;
+
+	ao = ao * ao;
+	ao = ao * ao;
+	ao = ao * ao;
+	ao = ao * ao;
+	//ao = 0.5 + 0.5 * ao;
+
 	colorBuffer = albedo;
-	normalBuffer = vec4(encodeNormal(normal), color.xy);
+	normalBuffer = vec4(encodeNormal(normal), vec2(color.x * ao, color.y));
 }
