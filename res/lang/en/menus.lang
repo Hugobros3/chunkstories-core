@@ -23,3 +23,5 @@ login.register Register at http://chunkstories.xyz
 
 login.auto1 Autologin in 
 login.auto2  seconds... (ESC to cancel)
+
+connection.cancel Cancel

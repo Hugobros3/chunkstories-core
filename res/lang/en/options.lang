@@ -2,12 +2,12 @@ options.title Options Menu
 
 Rendering Rendering
 
-client.graphics.viewDistance View distance
-client.graphics.syncMode Display Synchronization
-client.graphics.shadowMapSize Shadow Maps Quality
-client.graphics.shadowCascades Shadows Cascades Count
+client.graphics.viewDistance Blocks View distance
+client.graphics.syncMode Display sync
+client.graphics.shadowMapSize Shadowmaps resolution
+client.graphics.shadowCascades Cascades Count
 
-client.graphics.raytracedGI Experimental raytraced GI
+client.graphics.raytracedGI Ray-tracing!
 
 quality.low Low
 quality.high High
@@ -47,9 +47,8 @@ Sound Sound
 Debug Debug
 
 client.debug.enable Debug mode
-client.debug.frametimeGraph Performance graph
-client.debug.showDebugInfo Show debug info
-client.debug.showFrametimeGraph Show performance graph
+client.debug.showDebugInfo Debug overlay (F3)
+client.debug.showFrametimeGraph Performance graph
 client.debug.debugGBuffers Debug render buffers
 client.debug.physicsVisualization Physics debug
 client.debug.debugWireframe Wireframe outlines
