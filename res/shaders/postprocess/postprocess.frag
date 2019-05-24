@@ -5,6 +5,7 @@ out vec4 fragColor;
 
 uniform sampler2D shadedBuffer;
 uniform sampler2D bloomBuffer;
+uniform sampler2D bloomBuffer2;
 
 #include ../gamma.glsl
 
@@ -50,6 +51,7 @@ void main()
 	vec3 hdrColor = texture(shadedBuffer, texCoord).rgb;
 
 	hdrColor += texture(bloomBuffer, texCoord).rgb * 0.05;
+	hdrColor += texture(bloomBuffer2, texCoord).rgb * 0.01;
 
 	vec3 tonemapped = jodieReinhardTonemap(hdrColor.rgb);
 	vec3 gammaCorrected = pow(tonemapped, vec3(gammaInv));
