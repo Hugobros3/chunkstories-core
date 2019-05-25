@@ -30,15 +30,15 @@
 			solid: false
 			opaque: false
 
-			model: voxels/blockmodels/grass_prop/grass_prop.dae
+			class: xyz.chunkstories.core.voxel.VoxelSmallPlant
+			//model: voxels/blockmodels/grass_prop/grass_prop.dae
 		}
 
 		dead_grass: {
 			solid: false
 			opaque: false
-			representation: {
-				model: ./voxels/models/grass.obj
-			}
+
+			class: xyz.chunkstories.core.voxel.VoxelSmallPlant
 		}
 
 		/** Trunk woods */
@@ -126,74 +126,67 @@
 		flower_red: {
 			solid: false
 			opaque: false
-			representation: {
-				model: ./voxels/models/grass.obj
-			}
+
+			class: xyz.chunkstories.core.voxel.VoxelSmallPlant
 		}
 
 		flower_yellow: {
 			solid: false
 			opaque: false
-			representation: {
-				model: ./voxels/models/grass.obj
-			}
+			
+			class: xyz.chunkstories.core.voxel.VoxelSmallPlant
 		}
 
 		flower_orange: {
 			solid: false
 			opaque: false
-			representation: {
-				model: ./voxels/models/grass.obj
-			}
+			
+			class: xyz.chunkstories.core.voxel.VoxelSmallPlant
 		}
 
 		flower_blue: {
 			solid: false
 			opaque: false
-			representation: {
-				model: ./voxels/models/grass.obj
-			}
+			
+			class: xyz.chunkstories.core.voxel.VoxelSmallPlant
 		}
 
 		flower_purple: {
 			solid: false
 			opaque: false
-			representation: {
-				model: ./voxels/models/grass.obj
-			}
+			
+			class: xyz.chunkstories.core.voxel.VoxelSmallPlant
 		}
 
 		flower_white: {
 			solid: false
 			opaque: false
-			representation: {
-				model: ./voxels/models/grass.obj
-			}
+			
+			class: xyz.chunkstories.core.voxel.VoxelSmallPlant
 		}
 
 		mushroom_red: {
 			solid: false
 			opaque: false
-			representation: {
-				model: ./voxels/models/grass.obj
-			}
+			
+			class: xyz.chunkstories.core.voxel.VoxelSmallPlant
 		}
 
 		mushroom_brown: {
 			solid: false
 			opaque: false
-			representation: {
-				model: ./voxels/models/grass.obj
-			}
+			
+			class: xyz.chunkstories.core.voxel.VoxelSmallPlant
 		}
 
 		bamboo: {
 			texture: sugar_cane
 			solid: false
 			opaque: false
-			representation: {
+			/*representation: {
 				model: ./voxels/models/grass.obj
-			}
+			}*/
+			model: voxels/blockmodels/grass_prop/grass_prop.dae
 		}
 	}
 }

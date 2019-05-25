@@ -36,11 +36,3 @@ class VoxelRail(definition: VoxelDefinition) : Voxel(definition) {
         }
     }
 }
-
-/*@Override
-	public VoxelModel getVoxelRenderer(CellData info) {
-		if (info.getNeightborVoxel(VoxelSide.FRONT.ordinal()).sameKind(this))
-			return store.models().getVoxelModel("rails.alt");
-
-		return store.models().getVoxelModel("rails.default");
-	}*/
