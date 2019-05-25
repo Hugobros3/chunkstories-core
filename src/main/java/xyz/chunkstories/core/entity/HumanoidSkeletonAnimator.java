@@ -129,7 +129,7 @@ public class HumanoidSkeletonAnimator extends CompoundAnimationHelper {
 
 		if (boneName.endsWith("boneHead")) {
 			Matrix4f modify = new Matrix4f(getAnimationPlayingForBone(boneName, animationTime).getBone(boneName).getTransformationMatrix(animationTime));
-			modify.rotate((float) (entityRotation.getVerticalRotation() / 180 * Math.PI), new Vector3f(1, 0, 0));
+			modify.rotate((float) -(entityRotation.getVerticalRotation() / 180 * Math.PI), new Vector3f(1, 0, 0));
 			return modify;
 		}
 
