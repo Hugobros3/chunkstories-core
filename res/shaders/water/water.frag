@@ -64,7 +64,10 @@ void main()
 	//waterColor += vec4(1.0) * sunSpot;
 	waterColor.rgb += vec3(0.2, 0.2, 0.5) * getSkyColor(world.time, reflect(eyeDirection, normal2.xyz));
 
-	shadedBuffer = waterColor;
+	vec4 fogColor = getFogColor(world.time, camera.position - vertex);
+
+	//shadedBuffer = waterColor;
+	shadedBuffer = vec4(mix(waterColor.rgb, fogColor.rgb, fogColor.a), waterColor.a);
 	//shadedBuffer = vec4(reflect(eye, normal.xyz), 1.0);
 	//shadedBuffer = vec4(eye, 1.0);
 }
