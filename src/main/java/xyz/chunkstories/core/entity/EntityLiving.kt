@@ -52,5 +52,7 @@ abstract class EntityLiving(t: EntityDefinition, world: World) : Entity(t, world
 
         if (should_tick_movement)
             this.traits[TraitBasicMovement::class]?.tick()
+
+        traits[TraitTakesFallDamage::class]?.tick()
     }
 }

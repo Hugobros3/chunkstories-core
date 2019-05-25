@@ -78,12 +78,14 @@ class EntityPlayer(t: EntityDefinition, world: World) : EntityHumanoid(t, world)
 
                 val direction = Vector3d(traitRotation.directionLookingAt)
 
+                val maxRange = if(traits[TraitCreativeMode::class]?.get() == true) 64.0 else 5.0
+
                 return if (inside)
                     this@EntityPlayer.world.collisionsManager.raytraceSelectable(Location(this@EntityPlayer.world, initialPosition), direction,
-                            256.0)
+                            maxRange)
                 else
                     this@EntityPlayer.world.collisionsManager.raytraceSolidOuter(Location(this@EntityPlayer.world, initialPosition), direction,
-                            256.0)
+                            maxRange)
             }
 
         }

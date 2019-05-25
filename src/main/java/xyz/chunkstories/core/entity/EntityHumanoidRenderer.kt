@@ -1,16 +1,22 @@
 package xyz.chunkstories.core.entity
 
 import org.joml.Matrix4f
+import org.joml.Vector3d
+import org.joml.Vector4d
+import org.joml.Vector4f
 import xyz.chunkstories.api.client.Client
 import xyz.chunkstories.api.entity.traits.TraitAnimated
 import xyz.chunkstories.api.entity.traits.TraitRenderable
+import xyz.chunkstories.api.entity.traits.TraitVoxelSelection
 import xyz.chunkstories.api.entity.traits.serializable.TraitInventory
 import xyz.chunkstories.api.entity.traits.serializable.TraitSelectedItem
 import xyz.chunkstories.api.graphics.MeshMaterial
 import xyz.chunkstories.api.graphics.representation.ModelInstance
 import xyz.chunkstories.api.graphics.representation.ModelPosition
+import xyz.chunkstories.api.graphics.representation.drawCube
 import xyz.chunkstories.api.graphics.systems.dispatching.RepresentationsGobbler
 import xyz.chunkstories.api.util.kotlin.toVec3f
+import xyz.chunkstories.core.entity.traits.MinerTrait
 
 open class EntityHumanoidRenderer(entity: EntityHumanoid, private val customSkin: MeshMaterial? = null) : TraitRenderable<EntityHumanoid>(entity) {
 
@@ -52,6 +58,30 @@ open class EntityHumanoidRenderer(entity: EntityHumanoid, private val customSkin
             itemMatrix.mul(animator.getBoneHierarchyTransformationMatrix("boneItemInHand", animationTime))
 
             itemInHand.item.buildRepresentation(itemInHand, itemMatrix, representationsGobbler)
+        }
+
+        if(isPlayerEntity) {
+            var selectionColor = Vector4f(1f)
+            val selectedBlock = entity.traits[TraitVoxelSelection::class]?.getBlockLookingAt(true, true)
+
+            val miningProgress = entity.traits[MinerTrait::class]?.progress
+            if(miningProgress != null) {
+                selectionColor.set(1.0f, 0.0f, 0.0f, 1.0f)
+                selectionColor.y = 1f - miningProgress.progress
+            }
+
+            if(selectedBlock != null) {
+                val cell = entity.world.peekSafely(selectedBlock)
+                val boxes = cell.voxel.getTranslatedCollisionBoxes(cell)
+                if(boxes != null) {
+                    for(box in boxes) {
+                        representationsGobbler.drawCube(Vector3d(box.xPosition, box.yPosition, box.zPosition),
+                                Vector3d(box.xPosition + box.xWidth, box.yPosition + box.yHeight, box.zPosition + box.zWidth), selectionColor)
+                    }
+                } else {
+                    representationsGobbler.drawCube(Vector3d(selectedBlock), Vector3d(selectedBlock).also { it.add(1.0, 1.0, 1.0) }, selectionColor)
+                }
+            }
         }
     }
 
