@@ -113,18 +113,19 @@ internal class PlayerMovementController(val entityPlayer: EntityPlayer) : TraitC
         // Strafing
         val strafeAngle = figureOutStrafeAngle(controller)
 
+        flySpeed = 0.01
         targetVelocity.x = Math.sin((entityRotation.horizontalRotation + strafeAngle) / 180f * Math.PI) * horizontalSpeed
         targetVelocity.z = Math.cos((entityRotation.horizontalRotation + strafeAngle) / 180f * Math.PI) * horizontalSpeed
         targetVelocity.y = when {
-            controller.inputsManager.getInputByName("jump")!!.isPressed -> 0.10
-            controller.inputsManager.getInputByName("crouch")!!.isPressed -> -0.10
+            controller.inputsManager.getInputByName("jump")!!.isPressed -> flySpeed
+            controller.inputsManager.getInputByName("crouch")!!.isPressed -> -flySpeed
             else -> 0.0
         }
 
         val velocity = entityVelocity.velocity
         acceleration = Vector3d(targetVelocity.x() - velocity.x(), targetVelocity.y() - velocity.y(), targetVelocity.z() - velocity.z())
 
-        val maxAcceleration = 0.01
+        val maxAcceleration = 0.005
         if (acceleration.length() > maxAcceleration) {
             acceleration.normalize()
             acceleration.mul(maxAcceleration)
@@ -138,7 +139,7 @@ internal class PlayerMovementController(val entityPlayer: EntityPlayer) : TraitC
             isCurrentlyFlying = false
     }
 
-    var flySpeed = 0.125
+    var flySpeed = 0.0625
     var isNoclip = true
 
     fun flyOldStyle(controller: LocalPlayer) {

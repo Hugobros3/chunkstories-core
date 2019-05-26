@@ -21,6 +21,7 @@ import xyz.chunkstories.api.world.WorldClient
 import xyz.chunkstories.api.world.WorldMaster
 import xyz.chunkstories.api.world.cell.FutureCell
 import xyz.chunkstories.core.CoreOptions
+import xyz.chunkstories.core.gui.CreativeBlockSelector
 import xyz.chunkstories.core.item.BlockMiningOperation
 import xyz.chunkstories.core.item.inventory.*
 import java.lang.Exception
@@ -115,8 +116,10 @@ internal class EntityPlayerController(private val entityPlayer: EntityPlayer) : 
         if (input.name == "inventory" && entityPlayer.world is WorldClient) {
 
             if (entityPlayer.traitCreativeMode.get()) {
-                entityPlayer.world.client.gui.openInventories(entityPlayer.traits[TraitInventory::class]?.inventory!!,
-                        entity.world.content.voxels().createCreativeInventory())
+                entityPlayer.world.client.gui.let {
+                    it.topLayer = CreativeBlockSelector(it, it.topLayer)
+                }
+                //entityPlayer.world.client.gui.openInventories(entityPlayer.traits[TraitInventory::class]?.inventory!!, entity.world.content.voxels().createCreativeInventory())
             } else {
                 entityPlayer.world.client.gui
                         .openInventories(entityPlayer.traits[TraitInventory::class]?.inventory!!, entityPlayer.traitArmor.inventory)
