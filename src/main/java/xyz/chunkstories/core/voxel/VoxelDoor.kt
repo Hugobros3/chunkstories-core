@@ -97,7 +97,7 @@ class VoxelDoor(definition: VoxelDefinition) : Voxel(definition) {
         matrix.rotate(Math.PI.toFloat() * 0.5f * if(isOpen) -1 else 0, 0f, 1f, 0f)
         matrix.translate(-ith, 0f, -ith)
 
-        println("rendering ${cell.metaData} rslt="+facingPassed)
+        //println("rendering ${cell.metaData} rslt="+facingPassed)
 
         mesher.addModel(if(hingeSide) model else flipModel(model), matrix, mappedOverrides)
     }
@@ -244,7 +244,7 @@ class VoxelDoor(definition: VoxelDefinition) : Voxel(definition) {
 
             cell.metaData = computeMeta(isOpen, hingeSide, doorSideFacing)
 
-            println("placing door: dx=$dx dz=$dz rslt=$doorSideFacing meta=${cell.metaData}")
+            //println("placing door: dx=$dx dz=$dz rslt=$doorSideFacing meta=${cell.metaData}")
         }
 
         // Place the upper part and we're good to go

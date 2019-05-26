@@ -14,8 +14,6 @@ import xyz.chunkstories.api.entity.traits.serializable.TraitControllable
 import xyz.chunkstories.api.entity.traits.serializable.TraitHealth
 import xyz.chunkstories.api.entity.traits.serializable.TraitRotation
 import xyz.chunkstories.api.entity.traits.serializable.TraitVelocity
-import xyz.chunkstories.api.physics.Box
-import xyz.chunkstories.api.world.cell.CellData
 import xyz.chunkstories.core.voxel.VoxelClimbable
 
 abstract class TraitControlledMovement(entity: Entity) : TraitBasicMovement(entity) {
@@ -27,14 +25,13 @@ abstract class TraitControlledMovement(entity: Entity) : TraitBasicMovement(enti
     abstract val forwardSpeed: Double
 
     open fun tick(controller: LocalPlayer) {
-        val collisions = entity.traits[TraitCollidable::class.java]
+        val collisions = entity.traits[TraitCollidable::class.java] ?: return
 
-        val entityHealth = entity.traits[TraitHealth::class.java]
-        val entityVelocity = entity.traits[TraitVelocity::class.java]
-        val entityRotation = entity.traits[TraitRotation::class.java]
+        val entityHealth = entity.traits[TraitHealth::class.java] ?: return
+        val entityVelocity = entity.traits[TraitVelocity::class.java] ?: return
+        val entityRotation = entity.traits[TraitRotation::class.java] ?: return
 
-        if (collisions == null || entityVelocity == null || entityRotation == null || entityHealth == null
-                || entityHealth.isDead)
+        if (entityHealth.isDead)
             return
 
         val focus = controller.hasFocus()
@@ -72,7 +69,6 @@ abstract class TraitControlledMovement(entity: Entity) : TraitBasicMovement(enti
 
         var horizontalSpeed = 0.0
 
-        var modif = 0.0
         if (focus) {
             if (controller.inputsManager.getInputByName("forward")!!.isPressed
                     || controller.inputsManager.getInputByName("left")!!.isPressed
@@ -83,34 +79,40 @@ abstract class TraitControlledMovement(entity: Entity) : TraitBasicMovement(enti
                 horizontalSpeed = -backwardsSpeed
         }
 
-        // Water slows you down
         // Strafing
-        if (controller.inputsManager.getInputByName("forward")!!.isPressed) {
-            if (controller.inputsManager.getInputByName("left")!!.isPressed)
-                modif += 45.0
-            if (controller.inputsManager.getInputByName("right")!!.isPressed)
-                modif -= 45.0
-        } else if (controller.inputsManager.getInputByName("back")!!.isPressed) {
-            if (controller.inputsManager.getInputByName("left")!!.isPressed)
-                modif += (180 - 45).toDouble()
-            if (controller.inputsManager.getInputByName("right")!!.isPressed)
-                modif -= (180 - 45).toDouble()
-        } else {
-            if (controller.inputsManager.getInputByName("left")!!.isPressed)
-                modif += 90.0
-            if (controller.inputsManager.getInputByName("right")!!.isPressed)
-                modif -= 90.0
-        }
+        val strafeAngle = figureOutStrafeAngle(controller)
 
         if (onLadder) {
             entityVelocity.setVelocityY((Math.sin(entityRotation.verticalRotation / 180f * Math.PI) * horizontalSpeed).toFloat().toDouble())
         }
 
-        targetVelocity.x = Math.sin((entityRotation.horizontalRotation + modif) / 180f * Math.PI) * horizontalSpeed
-        targetVelocity.z = Math.cos((entityRotation.horizontalRotation + modif) / 180f * Math.PI) * horizontalSpeed
+        targetVelocity.x = Math.sin((entityRotation.horizontalRotation + strafeAngle) / 180f * Math.PI) * horizontalSpeed
+        targetVelocity.z = Math.cos((entityRotation.horizontalRotation + strafeAngle) / 180f * Math.PI) * horizontalSpeed
 
         super.tick()
 
+    }
+
+    fun figureOutStrafeAngle(controller: Controller) : Double {
+        var strafeAngle = 0.0
+        if (controller.inputsManager.getInputByName("forward")!!.isPressed) {
+            if (controller.inputsManager.getInputByName("left")!!.isPressed)
+                strafeAngle += 45.0
+            if (controller.inputsManager.getInputByName("right")!!.isPressed)
+                strafeAngle -= 45.0
+        } else if (controller.inputsManager.getInputByName("back")!!.isPressed) {
+            if (controller.inputsManager.getInputByName("left")!!.isPressed)
+                strafeAngle += (180 - 45).toDouble()
+            if (controller.inputsManager.getInputByName("right")!!.isPressed)
+                strafeAngle -= (180 - 45).toDouble()
+        } else {
+            if (controller.inputsManager.getInputByName("left")!!.isPressed)
+                strafeAngle += 90.0
+            if (controller.inputsManager.getInputByName("right")!!.isPressed)
+                strafeAngle -= 90.0
+        }
+
+        return strafeAngle
     }
 
     override fun tick() {

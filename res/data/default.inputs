@@ -28,7 +28,7 @@ keyBind flyReallyFast LEFT_ALT hidden
 keyBind hideGui F1 hidden
 keyBind screenshot F2 hidden
 keyBind toggleDebugInfo F3 hidden
-#keyBind hideFarTerrain F4 hidden
+keyBind toggleFlyControls F4 hidden
 keyBind refreshServers F5 hidden
 keyBind repingServers F6 hidden
 #keyBind hideFarTerrain F7 hidden
