@@ -45,5 +45,5 @@ void main()
 	//ao = 0.5 + 0.5 * ao;
 
 	colorBuffer = albedo;
-	normalBuffer = vec4(encodeNormal(normal), vec2(color.x * ao, color.y));
+	normalBuffer = vec4(encodeNormal(normalize(normal)), vec2(color.x * ao, color.y));
 }

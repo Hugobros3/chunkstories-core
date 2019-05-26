@@ -169,8 +169,8 @@ void main() {
 	vec2 texCoord = vec2(vertexPos.x * 0.5 + 0.5, 0.5 + vertexPos.y * 0.5);
 	vec4 albedo = pow(texture(colorBuffer, texCoord), vec4(2.1));
 	//vec3 normal = camera.normalMatrixInverted * texture(normalBuffer, texCoord).xyz * 2.0 - vec3(1.0);
-	vec3 decodedNormal = decodeNormal(texture(normalBuffer, texCoord).rg);
-	vec3 normal = camera.normalMatrixInverted * decodedNormal;
+	vec3 decodedNormal = normalize(decodeNormal(texture(normalBuffer, texCoord).rg));
+	vec3 normal = normalize(camera.normalMatrixInverted * decodedNormal);
 
 	float blocklight = texture(normalBuffer, texCoord).w;
 
@@ -240,6 +240,7 @@ void main() {
 	//colorOut = vec4(fract(adjusted_worldspace_pos.xyz / 10.0), 1.0);
 	//colorOut = accumulator;
 	//colorOut = vec4(1.0 - ao);
+	//colorOut = vec4(decodedNormal, 1.0);
 	//colorOut = vec4(accumulator.xyz, 1.0);
 	//colorOut = vec4(eyeDirection, 1.0);
 }
