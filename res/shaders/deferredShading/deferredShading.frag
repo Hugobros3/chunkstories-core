@@ -189,8 +189,8 @@ void main()
 	vec3 foggedSurface = mix(litSurface, fogColor.xyz, fogColor.a);
 
 	// apply light haze
-	vec3 eyeDirection = normalize((worldSpacePosition.xyz - camera.position.xyz).xyz);
-	foggedSurface += vec3(1.0, 0.6, 0.1) * computeVolumetricLight(worldSpacePosition.xyz, world.sunPosition, eyeDirection.xyz);
+	//vec3 eyeDirection = normalize((worldSpacePosition.xyz - camera.position.xyz).xyz);
+	//foggedSurface += vec3(1.0, 0.6, 0.1) * computeVolumetricLight(worldSpacePosition.xyz, world.sunPosition, eyeDirection.xyz);
 
 	// output
 	colorOut = vec4(foggedSurface, 1.0);
