@@ -10,11 +10,13 @@ import xyz.chunkstories.api.content.Content
 import xyz.chunkstories.api.entity.Entity
 import xyz.chunkstories.api.item.ItemDefinition
 import xyz.chunkstories.api.item.ItemVoxel
+import xyz.chunkstories.api.item.inventory.ItemPile
 import xyz.chunkstories.api.voxel.Voxel
 import xyz.chunkstories.api.voxel.VoxelDefinition
 import xyz.chunkstories.api.voxel.VoxelSide
 import xyz.chunkstories.api.voxel.textures.VoxelTexture
 import xyz.chunkstories.api.world.cell.CellData
+import xyz.chunkstories.api.world.cell.DummyCell
 import xyz.chunkstories.api.world.cell.FutureCell
 
 class Voxel16Variants(definition: VoxelDefinition) : Voxel(definition) {
@@ -48,7 +50,8 @@ class Voxel16Variants(definition: VoxelDefinition) : Voxel(definition) {
             ItemDefinition(itemStore, "$name.$variant", mapOf(
                     "voxel" to name,
                     "class" to ItemVoxelVariant::class.java.canonicalName,
-                    "metaData" to "$i"
+                    "metaData" to "$i",
+                    "variant" to variant
             ))
         }
     }
@@ -60,6 +63,11 @@ class Voxel16Variants(definition: VoxelDefinition) : Voxel(definition) {
 
 class ItemVoxelVariant(definition: ItemDefinition) : ItemVoxel(definition) {
     val metadata = definition["metaData"]!!.toInt()
+    val variant = definition["variant"]!!
+
+    override fun getTextureName(pile: ItemPile): String {
+        return "voxels/textures/" + voxel.name + "/" + variant + ".png"
+    }
 
     override fun changeBlockData(cell: FutureCell, placingEntity: Entity): Boolean {
         super.changeBlockData(cell, placingEntity)
