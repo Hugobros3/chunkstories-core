@@ -12,8 +12,8 @@ import xyz.chunkstories.api.voxel.VoxelDefinition;
 import xyz.chunkstories.api.world.cell.CellData;
 
 public class VoxelPane extends Voxel {
-	public VoxelPane(VoxelDefinition type) {
-		super(type);
+	public VoxelPane(VoxelDefinition definition) {
+		super(definition);
 	}
 
 	/*@Override

@@ -15,8 +15,8 @@ import xyz.chunkstories.api.world.cell.CellData;
 public class Voxel8Steps extends Voxel {
 	//VoxelModel[] steps = new VoxelModel[8];
 
-	public Voxel8Steps(VoxelDefinition type) {
-		super(type);
+	public Voxel8Steps(VoxelDefinition definition) {
+		super(definition);
 		//for (int i = 0; i < 8; i++)
 		//	steps[i] = store().models().getVoxelModel("steps.m" + i);
 	}

@@ -16,8 +16,8 @@ public class VoxelLeavesLod extends Voxel {
 
 	//LodedLeavesBlocksRenderer renderer;
 
-	public VoxelLeavesLod(VoxelDefinition type) {
-		super(type);
+	public VoxelLeavesLod(VoxelDefinition definition) {
+		super(definition);
 		this.baseTexture = store().textures().get(getName());
 		this.opaqueTexture = store().textures().get(getName() + "Opaque");
 		//this.renderer = new LodedLeavesBlocksRenderer(type.store());

@@ -19,8 +19,8 @@ import xyz.chunkstories.api.world.cell.FutureCell;
 public class VoxelStairs extends Voxel {
 	//VoxelModel[] models = new VoxelModel[8];
 
-	public VoxelStairs(VoxelDefinition type) {
-		super(type);
+	public VoxelStairs(VoxelDefinition definition) {
+		super(definition);
 		//for (int i = 0; i < 8; i++)
 		//	models[i] = store.models().getVoxelModel("stairs.m" + i);
 	}

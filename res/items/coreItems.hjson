@@ -1,17 +1,5 @@
 {
     items: {
-        item_voxel: {
-            class: xyz.chunkstories.api.item.ItemVoxel
-            maxStackSize: 100
-        }
-
-        item_voxel_1x2: {
-            class: xyz.chunkstories.api.item.ItemVoxel
-            maxStackSize: 100
-            width: 1
-            height: 2
-        }
-
         iron_pickaxe: {
             class: xyz.chunkstories.core.item.ItemMiningTool
             toolType: pickaxe

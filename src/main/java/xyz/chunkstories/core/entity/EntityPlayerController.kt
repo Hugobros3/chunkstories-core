@@ -199,11 +199,12 @@ internal class EntityPlayerController(private val entityPlayer: EntityPlayer) : 
 
                         if (!voxel.isAir()) {
                             // Spawn new itemPile in his inventory
-                            val item = entityPlayer.world.gameContext.content.items().getItemDefinition("item_voxel")!!.newItem<ItemVoxel>()
-                            item.voxel = voxel
-                            item.voxelMeta = peekedCell.metaData
+                            //val item = entityPlayer.world.gameContext.content.items().getItemDefinition("item_voxel")!!.newItem<ItemVoxel>()
+                            //item.voxel = voxel
+                            //item.voxelMeta = peekedCell.metaData
+                            val item = voxel.getVariant(peekedCell).newItem<ItemVoxel>()
 
-                            entityPlayer.traits[TraitInventory::class]?.inventory!!.setItemAt(entityPlayer.traitSelectedItem.getSelectedSlot(), 0, item)
+                            entityPlayer.traits[TraitInventory::class]?.inventory!!.setItemAt(entityPlayer.traitSelectedItem.getSelectedSlot(), 0, item, 1, force = true)
                             return true
                         }
                     }

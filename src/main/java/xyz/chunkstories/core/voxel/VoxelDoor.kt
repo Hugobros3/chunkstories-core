@@ -7,6 +7,7 @@
 package xyz.chunkstories.core.voxel
 
 import org.joml.Matrix4f
+import xyz.chunkstories.api.content.Content
 import xyz.chunkstories.api.entity.Entity
 import xyz.chunkstories.api.events.voxel.WorldModificationCause
 import xyz.chunkstories.api.exceptions.world.voxel.IllegalBlockModificationException
@@ -14,6 +15,7 @@ import xyz.chunkstories.api.graphics.MeshMaterial
 import xyz.chunkstories.api.graphics.representation.Model
 import xyz.chunkstories.api.graphics.reverseWindingOrder
 import xyz.chunkstories.api.input.Input
+import xyz.chunkstories.api.item.ItemDefinition
 import xyz.chunkstories.api.item.ItemVoxel
 import xyz.chunkstories.api.physics.Box
 import xyz.chunkstories.api.sound.SoundSource.Mode
@@ -277,7 +279,17 @@ class VoxelDoor(definition: VoxelDefinition) : Voxel(definition) {
 
     }
 
-    override fun enumerateItemsForBuilding(): List<ItemVoxel> {
+    override fun enumerateVariants(itemStore: Content.ItemsDefinitions): List<ItemDefinition> {
+        val definition = ItemDefinition(itemStore, name, mapOf(
+                "voxel" to name,
+                "class" to ItemVoxel::class.java.canonicalName,
+                "height" to "2"
+        ))
+
+        return listOf(definition)
+    }
+
+    /*override fun enumerateItemsForBuilding(): List<ItemVoxel> {
         // Top part shouldn't be placed
         if (top)
             return LinkedList()
@@ -288,7 +300,7 @@ class VoxelDoor(definition: VoxelDefinition) : Voxel(definition) {
         val list = LinkedList<ItemVoxel>()
         list.add(itemVoxel)
         return list
-    }
+    }*/
 
     companion object {
 

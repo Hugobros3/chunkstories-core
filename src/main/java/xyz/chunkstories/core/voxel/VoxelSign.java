@@ -29,8 +29,8 @@ public class VoxelSign extends Voxel// implements VoxelCustomIcon
 {
     //final SignRenderer signRenderer;
 
-    public VoxelSign(VoxelDefinition type) {
-        super(type);
+    public VoxelSign(VoxelDefinition definition) {
+        super(definition);
 
         //signRenderer = new SignRenderer(voxelRenderer);
     }

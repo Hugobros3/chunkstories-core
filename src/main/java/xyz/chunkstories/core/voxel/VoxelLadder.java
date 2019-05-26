@@ -14,8 +14,8 @@ import xyz.chunkstories.api.world.cell.CellData;
 public class VoxelLadder extends Voxel implements VoxelClimbable {
 	//VoxelModel[] models = new VoxelModel[4];
 
-	public VoxelLadder(VoxelDefinition type) {
-		super(type);
+	public VoxelLadder(VoxelDefinition definition) {
+		super(definition);
 		//for (int i = 0; i < 4; i++)
 		//	models[i] = store.models().getVoxelModel("dekal.m" + i);
 	}

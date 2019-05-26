@@ -12,8 +12,8 @@ import xyz.chunkstories.api.voxel.VoxelDefinition;
 import xyz.chunkstories.api.world.cell.CellData;
 
 public class VoxelStoneWall extends Voxel {
-	public VoxelStoneWall(VoxelDefinition type) {
-		super(type);
+	public VoxelStoneWall(VoxelDefinition definition) {
+		super(definition);
 	}
 
 	/*@Override
