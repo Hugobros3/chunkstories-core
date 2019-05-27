@@ -210,7 +210,7 @@ void main() {
 	//Flip the random vector if it's facing in the wrong direction so we get an hemisphere
 	direction *= sign(dot(direction, normal));
 
-	vec3 adjusted_worldspace_pos = worldSpacePosition.xyz + normal * 0.01;
+	vec3 adjusted_worldspace_pos = worldSpacePosition.xyz + normal * 0.1;
 	gi(adjusted_worldspace_pos, direction, ao, accumulator);
 	
 	vec4 litPixel = vec4(0.0, 0.0, 0.0, 1.0);
