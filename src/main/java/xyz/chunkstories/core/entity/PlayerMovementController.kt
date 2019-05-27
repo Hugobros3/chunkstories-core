@@ -34,9 +34,6 @@ internal class PlayerMovementController(val entityPlayer: EntityPlayer) : TraitC
             } else {
                 fly(controller)
             }
-
-            // Flying also means we're standing
-            entityPlayer.traitStance.set(TraitHumanoidStance.HumanoidStance.STANDING)
         } else {
             move(controller)
         }
@@ -113,7 +110,7 @@ internal class PlayerMovementController(val entityPlayer: EntityPlayer) : TraitC
         // Strafing
         val strafeAngle = figureOutStrafeAngle(controller)
 
-        flySpeed = 0.01
+        flySpeed = 0.1
         targetVelocity.x = Math.sin((entityRotation.horizontalRotation + strafeAngle) / 180f * Math.PI) * horizontalSpeed
         targetVelocity.z = Math.cos((entityRotation.horizontalRotation + strafeAngle) / 180f * Math.PI) * horizontalSpeed
         targetVelocity.y = when {
@@ -134,6 +131,9 @@ internal class PlayerMovementController(val entityPlayer: EntityPlayer) : TraitC
         velocity.add(acceleration)
         entityVelocity.setVelocity(velocity)
         collisions.moveWithCollisionRestrain(velocity)
+
+        // Flying also means we're standing
+        entityPlayer.traitStance.set(TraitHumanoidStance.HumanoidStance.STANDING)
 
         if(collisions.isOnGround)
             isCurrentlyFlying = false
@@ -195,5 +195,8 @@ internal class PlayerMovementController(val entityPlayer: EntityPlayer) : TraitC
             else
                 entityCollisions!!.moveWithCollisionRestrain(-Math.sin(horizRot.toDouble()) * cameraSpeed, 0.0, -Math.cos(horizRot.toDouble()) * cameraSpeed)
         }
+
+        // Flying also means we're standing
+        entityPlayer.traitStance.set(TraitHumanoidStance.HumanoidStance.STANDING)
     }
 }

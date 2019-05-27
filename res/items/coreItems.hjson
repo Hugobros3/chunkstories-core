@@ -89,8 +89,8 @@
         // Standalone demo of the weapons component
         weapon_ak47: {
             class: xyz.chunkstories.core.item.ItemFirearm
-            width: 3
-            height: 3
+            slotsWidth: 3
+            slotsHeight: 3
             maxStackSize: 1
             roundsPerMinute: 600.0
             fireMode: fullauto
@@ -108,8 +108,8 @@
 
         mag_ak47: {
             class: xyz.chunkstories.core.item.ItemFirearmMagazine
-            width: 2
-            height: 2
+            slotsWidth: 2
+            slotsHeight: 2
             maxStackSize: 30
             forWeapon: weapon_ak47
         }

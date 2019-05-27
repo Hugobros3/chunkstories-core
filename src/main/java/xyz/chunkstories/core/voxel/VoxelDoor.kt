@@ -283,7 +283,7 @@ class VoxelDoor(definition: VoxelDefinition) : Voxel(definition) {
         val definition = ItemDefinition(itemStore, name, mapOf(
                 "voxel" to name,
                 "class" to ItemVoxel::class.java.canonicalName,
-                "height" to "2"
+                "slotsHeight" to "2"
         ))
 
         return listOf(definition)

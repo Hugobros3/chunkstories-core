@@ -50,7 +50,7 @@ class CreativeBlockSelector(gui: Gui, parentLayer: Layer?) : Layer(gui, parentLa
         }*/
 
         val titleFont = gui.fonts.getFont("LiberationSans-Regular", 18f)
-        val titleText = "Select an item..."
+        val titleText = "Select a block..."
         val titleTextLength = titleFont.getWidth(titleText)
         drawer.drawStringWithShadow(titleFont,width / 2 - titleTextLength / 2, height - 32, titleText)
 
@@ -91,7 +91,8 @@ class CreativeBlockSelector(gui: Gui, parentLayer: Layer?) : Layer(gui, parentLa
             scroller.handleScroll(input)
         }
 
-        return super.handleInput(input)
+        super.handleInput(input)
+        return true // don't allow ingame stuff to happen
     }
 
     inner class ItemsLine(layer: Layer, width: Int, height: Int, val items: List<SelectBlockButton>) : GuiElement(layer, width, height), ClickableGuiElement {
