@@ -20,13 +20,10 @@ import xyz.chunkstories.api.item.ItemVoxel
 import xyz.chunkstories.api.physics.Box
 import xyz.chunkstories.api.sound.SoundSource.Mode
 import xyz.chunkstories.api.voxel.*
-import xyz.chunkstories.api.voxel.textures.VoxelTexture
 import xyz.chunkstories.api.world.WorldMaster
 import xyz.chunkstories.api.world.cell.CellData
 import xyz.chunkstories.api.world.cell.FutureCell
 import xyz.chunkstories.api.world.chunk.ChunkCell
-import java.util.*
-import java.awt.SystemColor.info
 
 /**
  * 2-blocks tall door Requires two consecutive voxel ids, x being lower, x+1
@@ -99,7 +96,7 @@ class VoxelDoor(definition: VoxelDefinition) : Voxel(definition) {
 
         //println("rendering ${cell.metaData} rslt="+facingPassed)
 
-        mesher.addModel(if(hingeSide) model else flipModel(model), matrix, mappedOverrides)
+        mesher.addModel(if(hingeSide) model else modelFlipped, matrix, mappedOverrides)
     }
 
     // Meta

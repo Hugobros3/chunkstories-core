@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<COLLADA xmlns="http://www.collada.org/2005/11/COLLADASchema" version="1.4.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <asset>
+    <contributor>
+      <author>Blender User</author>
+      <authoring_tool>Blender 2.79.0 commit date:2018-03-22, commit time:14:10, hash:f4dc9f9d68b</authoring_tool>
+    </contributor>
+    <created>2019-06-01T10:00:17</created>
+    <modified>2019-06-01T10:00:17</modified>
+    <unit name="meter" meter="1"/>
+    <up_axis>Z_UP</up_axis>
+  </asset>
+  <library_images>
+    <image id="left" name="left">
+      <init_from>left.png</init_from>
+    </image>
+    <image id="glass_side_png" name="glass_side_png">
+      <init_from>glass_side.png</init_from>
+    </image>
+  </library_images>
+  <library_effects>
+    <effect id="GlassMaterial-effect">
+      <profile_COMMON>
+        <newparam sid="left-surface">
+          <surface type="2D">
+            <init_from>left</init_from>
+          </surface>
+        </newparam>
+        <newparam sid="left-sampler">
+          <sampler2D>
+            <source>left-surface</source>
+          </sampler2D>
+        </newparam>
+        <technique sid="common">
+          <phong>
+            <emission>
+              <color sid="emission">0 0 0 1</color>
+            </emission>
+            <ambient>
+              <color sid="ambient">0 0 0 1</color>
+            </ambient>
+            <diffuse>
+              <texture texture="left-sampler"/>
+            </diffuse>
+            <specular>
+              <color sid="specular">0.5 0.5 0.5 1</color>
+            </specular>
+            <shininess>
+              <float sid="shininess">50</float>
+            </shininess>
+            <index_of_refraction>
+              <float sid="index_of_refraction">1</float>
+            </index_of_refraction>
+          </phong>
+        </technique>
+      </profile_COMMON>
+    </effect>
+    <effect id="GlassSideMaterial-effect">
+      <profile_COMMON>
+        <newparam sid="glass_side_png-surface">
+          <surface type="2D">
+            <init_from>glass_side_png</init_from>
+          </surface>
+        </newparam>
+        <newparam sid="glass_side_png-sampler">
+          <sampler2D>
+            <source>glass_side_png-surface</source>
+          </sampler2D>
+        </newparam>
+        <technique sid="common">
+          <phong>
+            <emission>
+              <color sid="emission">0 0 0 1</color>
+            </emission>
+            <ambient>
+              <color sid="ambient">0 0 0 1</color>
+            </ambient>
+            <diffuse>
+              <texture texture="glass_side_png-sampler"/>
+            </diffuse>
+            <specular>
+              <color sid="specular">0.5 0.5 0.5 1</color>
+            </specular>
+            <shininess>
+              <float sid="shininess">50</float>
+            </shininess>
+            <index_of_refraction>
+              <float sid="index_of_refraction">1</float>
+            </index_of_refraction>
+          </phong>
+        </technique>
+      </profile_COMMON>
+    </effect>
+  </library_effects>
+  <library_materials>
+    <material id="GlassMaterial-material" name="GlassMaterial">
+      <instance_effect url="#GlassMaterial-effect"/>
+    </material>
+    <material id="GlassSideMaterial-material" name="GlassSideMaterial">
+      <instance_effect url="#GlassSideMaterial-effect"/>
+    </material>
+  </library_materials>
+  <library_geometries>
+    <geometry id="Cube-mesh" name="Cube">
+      <mesh>
+        <source id="Cube-mesh-positions">
+          <float_array id="Cube-mesh-positions-array" count="24">0 0.55 0 0.9999999 0.55 0 0.9999998 0.4499999 0 -4.17232e-7 0.4500002 0 4.76837e-7 0.5500003 1 1 0.5499997 1 0.9999997 0.4499998 1 0 0.4500001 1</float_array>
+          <technique_common>
+            <accessor source="#Cube-mesh-positions-array" count="8" stride="3">
+              <param name="X" type="float"/>
+              <param name="Y" type="float"/>
+              <param name="Z" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="Cube-mesh-normals">
+          <float_array id="Cube-mesh-normals-array" count="30">0 0 -1 0 0 1 0 1 -1.19209e-7 1 -2.38418e-6 -5.96046e-7 -2.08616e-7 -1 -2.20537e-7 -1 4.76836e-6 4.76836e-7 5.36442e-7 1 2.98023e-7 1 -8.34466e-6 0 -2.08616e-7 -1 0 -1 4.17233e-6 4.17233e-7</float_array>
+          <technique_common>
+            <accessor source="#Cube-mesh-normals-array" count="10" stride="3">
+              <param name="X" type="float"/>
+              <param name="Y" type="float"/>
+              <param name="Z" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="Cube-mesh-map-0">
+          <float_array id="Cube-mesh-map-0-array" count="72">0.125 0 0 1 0 0 0.125 1 9.998e-5 1.00784e-4 0.125 0 0.9998997 0.9998996 1.00546e-4 1.0001e-4 0.9999001 9.998e-5 0.125 1 9.998e-5 1.00218e-4 0.125 0 0.9999 9.9957e-5 1.00195e-4 0.9998998 9.9957e-5 9.9957e-5 9.9957e-5 1.00553e-4 0.125 1 9.9957e-5 0.9999001 0.125 0 0.125 1 0 1 0.125 1 1.00427e-4 0.9998997 9.998e-5 1.00784e-4 0.9998997 0.9998996 9.998e-5 0.9998996 1.00546e-4 1.0001e-4 0.125 1 1.00099e-4 0.9999001 9.998e-5 1.00218e-4 0.9999 9.9957e-5 0.9998996 0.9998999 1.00195e-4 0.9998998 9.9957e-5 1.00553e-4 0.125 0 0.125 1</float_array>
+          <technique_common>
+            <accessor source="#Cube-mesh-map-0-array" count="36" stride="2">
+              <param name="S" type="float"/>
+              <param name="T" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <vertices id="Cube-mesh-vertices">
+          <input semantic="POSITION" source="#Cube-mesh-positions"/>
+        </vertices>
+        <triangles material="GlassMaterial-material" count="4">
+          <input semantic="VERTEX" source="#Cube-mesh-vertices" offset="0"/>
+          <input semantic="NORMAL" source="#Cube-mesh-normals" offset="1"/>
+          <input semantic="TEXCOORD" source="#Cube-mesh-map-0" offset="2" set="0"/>
+          <p>4 2 6 1 2 7 0 2 8 2 4 12 7 4 13 3 4 14 4 6 24 5 6 25 1 6 26 2 8 30 6 8 31 7 8 32</p>
+        </triangles>
+        <triangles material="GlassSideMaterial-material" count="8">
+          <input semantic="VERTEX" source="#Cube-mesh-vertices" offset="0"/>
+          <input semantic="NORMAL" source="#Cube-mesh-normals" offset="1"/>
+          <input semantic="TEXCOORD" source="#Cube-mesh-map-0" offset="2" set="0"/>
+          <p>0 0 0 2 0 1 3 0 2 4 1 3 6 1 4 5 1 5 5 3 9 2 3 10 1 3 11 0 5 15 7 5 16 4 5 17 0 0 18 1 0 19 2 0 20 4 1 21 7 1 22 6 1 23 5 7 27 6 7 28 2 7 29 0 9 33 3 9 34 7 9 35</p>
+        </triangles>
+      </mesh>
+    </geometry>
+  </library_geometries>
+  <library_controllers/>
+  <library_visual_scenes>
+    <visual_scene id="Scene" name="Scene">
+      <node id="pane" name="pane" type="NODE">
+        <matrix sid="transform">1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
+        <instance_geometry url="#Cube-mesh" name="pane">
+          <bind_material>
+            <technique_common>
+              <instance_material symbol="GlassMaterial-material" target="#GlassMaterial-material"/>
+              <instance_material symbol="GlassSideMaterial-material" target="#GlassSideMaterial-material"/>
+            </technique_common>
+          </bind_material>
+        </instance_geometry>
+      </node>
+    </visual_scene>
+  </library_visual_scenes>
+  <scene>
+    <instance_visual_scene url="#Scene"/>
+  </scene>
+</COLLADA>
