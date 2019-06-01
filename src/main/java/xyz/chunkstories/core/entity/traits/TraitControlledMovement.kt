@@ -14,7 +14,8 @@ import xyz.chunkstories.api.entity.traits.serializable.TraitControllable
 import xyz.chunkstories.api.entity.traits.serializable.TraitHealth
 import xyz.chunkstories.api.entity.traits.serializable.TraitRotation
 import xyz.chunkstories.api.entity.traits.serializable.TraitVelocity
-import xyz.chunkstories.core.voxel.VoxelClimbable
+import xyz.chunkstories.core.voxel.isInLiquid
+import xyz.chunkstories.core.voxel.isOnLadder
 
 abstract class TraitControlledMovement(entity: Entity) : TraitBasicMovement(entity) {
 
@@ -36,12 +37,15 @@ abstract class TraitControlledMovement(entity: Entity) : TraitBasicMovement(enti
 
         val focus = controller.hasFocus()
 
-        val inWater = isInWater
-        var onLadder = false
+        //val inWater = isInWater
+        //var onLadder = false
+        val climbing = entity.isOnLadder()
+        val inLiquid = entity.isInLiquid()
 
-        all@ for (vctx in entity.world.getVoxelsWithin(entity.getTranslatedBoundingBox())) {
+        /*all@ for (vctx in entity.world.getVoxelsWithin(entity.getTranslatedBoundingBox())) {
             if (vctx.voxel is VoxelClimbable) {
-                for (box in vctx.translatedCollisionBoxes!!) {
+                for(box in vctx.voxel.getTranslatedCollisionBoxes(vctx) ?: continue) {
+                //for (box in vctx.translatedCollisionBoxes!!) {
                     // TODO use actual collision model of the entity here
                     if (box.collidesWith(entity.getTranslatedBoundingBox())) {
                         onLadder = true
@@ -49,14 +53,14 @@ abstract class TraitControlledMovement(entity: Entity) : TraitBasicMovement(enti
                     }
                 }
             }
-        }
+        }*/
 
         if (focus) {
             if (entityVelocity.velocity.y <= 0.02) {
-                if (!inWater && controller.inputsManager.getInputByName("jump")!!.isPressed
+                if (!inLiquid && controller.inputsManager.getInputByName("jump")!!.isPressed
                         && collisions.isOnGround) {
                     jump(0.15)
-                } else if (inWater && controller.inputsManager.getInputByName("jump")!!.isPressed)
+                } else if (inLiquid && controller.inputsManager.getInputByName("jump")!!.isPressed)
                     jump(0.05)
             }
         }
@@ -82,7 +86,7 @@ abstract class TraitControlledMovement(entity: Entity) : TraitBasicMovement(enti
         // Strafing
         val strafeAngle = figureOutStrafeAngle(controller)
 
-        if (onLadder) {
+        if (climbing) {
             entityVelocity.setVelocityY((Math.sin(entityRotation.verticalRotation / 180f * Math.PI) * horizontalSpeed).toFloat().toDouble())
         }
 

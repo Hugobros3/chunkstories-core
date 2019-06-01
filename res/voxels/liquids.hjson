@@ -1,7 +1,7 @@
 {
 	blocks: {
 		water: {
-			class: xyz.chunkstories.core.voxel.VoxelLiquid
+			class: xyz.chunkstories.core.voxel.VoxelWater
 			solid: false
 			liquid: true
 			opaque: false
@@ -10,7 +10,7 @@
 		}
 
 		lava: {
-			class: xyz.chunkstories.core.voxel.VoxelLiquid
+			class: xyz.chunkstories.core.voxel.VoxelLava
 			solid: false
 			liquid: true
 			opaque: false

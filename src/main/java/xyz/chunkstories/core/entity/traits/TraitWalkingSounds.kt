@@ -13,6 +13,9 @@ import xyz.chunkstories.api.entity.traits.serializable.TraitVelocity
 import xyz.chunkstories.api.sound.SoundSource.Mode
 import xyz.chunkstories.api.world.WorldClient
 import org.joml.Vector3d
+import xyz.chunkstories.core.entity.blocksWithin
+import xyz.chunkstories.core.voxel.VoxelWater
+import xyz.chunkstories.core.voxel.isInLiquid
 
 class TraitWalkingSounds(entity: Entity) : Trait(entity) {
 
@@ -58,7 +61,7 @@ class TraitWalkingSounds(entity: Entity) : Trait(entity) {
         if (collisions.isOnGround)
             metersWalked += Math.abs(horizontalSpeed.length())
 
-        val inWater = locomotion.isInWater
+        val inWater = entity.blocksWithin().any { it.voxel is VoxelWater }
 
         var voxelStandingOn = entity.world.peekSafely(Vector3d(entity.location).add(0.0, -0.01, 0.0)).voxel
 

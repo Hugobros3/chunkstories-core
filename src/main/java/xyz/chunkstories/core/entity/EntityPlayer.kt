@@ -27,6 +27,7 @@ import xyz.chunkstories.core.entity.traits.MinerTrait
 import xyz.chunkstories.core.entity.traits.TraitEyeLevel
 import xyz.chunkstories.core.entity.traits.TraitTakesFallDamage
 import org.joml.*
+import xyz.chunkstories.core.voxel.isOnLadder
 
 import java.util.HashMap
 
@@ -49,7 +50,7 @@ class EntityPlayer(t: EntityDefinition, world: World) : EntityHumanoid(t, world)
 
     internal var traitVoxelSelection: TraitVoxelSelection
 
-    private val onLadder = false
+    //private val onLadder = false
 
     internal var lastCameraLocation: Location? = null
     internal var variant: Int = 0
@@ -205,7 +206,7 @@ class EntityPlayer(t: EntityDefinition, world: World) : EntityHumanoid(t, world)
             }
 
             // Being on a ladder resets your jump height
-            if (onLadder)
+            if (this.isOnLadder())
                 traits[TraitTakesFallDamage::class]?.resetFallDamage()
 
             // So does flying

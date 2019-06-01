@@ -14,20 +14,21 @@ import xyz.chunkstories.api.entity.traits.serializable.TraitRotation
 import xyz.chunkstories.api.entity.traits.serializable.TraitVelocity
 import org.joml.Vector2d
 import org.joml.Vector3d
+import xyz.chunkstories.core.voxel.isInLiquid
 
 open class TraitBasicMovement(entity: Entity) : Trait(entity) {
 
     var acceleration = Vector3d()
     var targetVelocity = Vector3d(0.0)
 
-    val isInWater: Boolean
+    /*val isInWater: Boolean
         get() {
             for (cell in entity.world.getVoxelsWithin(entity.getTranslatedBoundingBox())) {
                 if (cell.voxel?.liquid == true)
                     return true
             }
             return false
-        }
+        }*/
 
     open fun tick() {
         val collisions = entity.traits[TraitCollidable::class.java]
@@ -54,7 +55,8 @@ open class TraitBasicMovement(entity: Entity) : Trait(entity) {
         val headRotationVelocity = entityRotation.tickInpulse()
         entityRotation.addRotation(headRotationVelocity.x().toDouble(), headRotationVelocity.y().toDouble())
 
-        val inWater = isInWater
+        //val inWater = isInWater
+        val inLiquid = entity.isInLiquid()
 
         if(entity.traits[TraitHealth::class]?.let { it.isDead } == true)
             targetVelocity = Vector3d(0.0)
@@ -64,7 +66,7 @@ open class TraitBasicMovement(entity: Entity) : Trait(entity) {
         // Limit maximal acceleration depending if we're on the groud or not, we
         // accelerate 2x faster on ground
         var maxAcceleration = if (collisions.isOnGround) 0.010 else 0.005
-        if (inWater)
+        if (inLiquid)
             maxAcceleration = 0.005
         if (acceleration.length() > maxAcceleration) {
             acceleration.normalize()
@@ -72,7 +74,7 @@ open class TraitBasicMovement(entity: Entity) : Trait(entity) {
         }
 
         // Gravity
-        val terminalVelocity = if (inWater) -0.05 else -0.5
+        val terminalVelocity = if (inLiquid) -0.05 else -0.5
         if (velocity.y() > terminalVelocity)
             velocity.y = velocity.y() - 0.008
         if (velocity.y() < terminalVelocity)
@@ -81,7 +83,7 @@ open class TraitBasicMovement(entity: Entity) : Trait(entity) {
         // Water limits your overall movement
         // TODO cleanup & generalize
         val targetSpeedInWater = 0.02
-        if (inWater) {
+        if (inLiquid) {
             if (velocity.length() > targetSpeedInWater) {
                 var decelerationThen = Math.pow(velocity.length() - targetSpeedInWater, 1.0)
 
