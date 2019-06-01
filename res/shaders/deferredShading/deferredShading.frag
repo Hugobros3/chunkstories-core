@@ -42,7 +42,7 @@ void sampleShadowMap(vec4 worldSpacePosition, mat4 cameraMatrix, sampler2DShadow
 		return;
 	} else {
 		float bias = pow(2.0, 4 - cascade) * 0.0004 * (1.0 - NdL);
-		shadowFactor = clamp((texture(shadowMap, vec3(coordinatesInShadowmap.xyz + vec3(0.0, 0.0, -bias)), 0.0)), 0.0, 1.0);
+		shadowFactor = clamp((texture(shadowMap, vec3(coordinatesInShadowmap.xyz + vec3(0.0, 0.0, bias)), 0.0)), 0.0, 1.0);
 		outOfBounds = 0.0;
 	}
 }
