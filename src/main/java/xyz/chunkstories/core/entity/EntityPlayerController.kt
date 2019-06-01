@@ -1,9 +1,7 @@
 package xyz.chunkstories.core.entity
 
 import org.joml.Math
-import org.joml.Matrix4f
 import org.joml.Vector3d
-import org.joml.Vector3f
 import xyz.chunkstories.api.client.IngameClient
 import xyz.chunkstories.api.client.LocalPlayer
 import xyz.chunkstories.api.entity.traits.TraitInteractible
@@ -24,7 +22,6 @@ import xyz.chunkstories.api.world.cell.FutureCell
 import xyz.chunkstories.core.CoreOptions
 import xyz.chunkstories.core.gui.CreativeBlockSelector
 import xyz.chunkstories.core.item.BlockMiningOperation
-import xyz.chunkstories.core.item.inventory.*
 import java.lang.Exception
 
 
@@ -82,33 +79,20 @@ internal class EntityPlayerController(private val entityPlayer: EntityPlayer) : 
         get() {
             val client = entity.world.gameContext as? IngameClient ?: throw Exception("calling getCamera() on a non-client context is undefined behavior")
 
-            /*val fov = (90.0 / 360.0 * (Math.PI * 2)).toFloat()
-            val aspect = client.gameWindow.width.toFloat() / client.gameWindow.height.toFloat()
-            val projectionMatrix = Matrix4f().perspective(fov, aspect, 0.1f, 2000f, true)*/
-
             val location = entity.location
-            val cameraPosition = location
-
+            val cameraPosition = Vector3d(location)
             cameraPosition.y += entityPlayer.traitStance.stance.eyeLevel
 
-            val entityDirection = (entity.traits[TraitRotation::class]?.directionLookingAt ?: Vector3d(0.0, 0.0, 1.0)).toVec3f()
-            //val entityLookAt = cameraPosition.toVec3f().add(entityDirection)
-
+            val direction = (entity.traits[TraitRotation::class]?.directionLookingAt ?: Vector3d(0.0, 0.0, 1.0)).toVec3f()
             val up = (entity.traits[TraitRotation::class]?.upDirection ?: Vector3d(0.0, 0.0, 1.0)).toVec3f()
 
-            //val viewMatrix = Matrix4f()
-            //viewMatrix.lookAt(cameraPosition.toVec3f(), entityLookAt, up)
-
-            val fovModifier = entityPlayer.traitSelectedItem.selectedItem?.let { (it.item as? ItemZoom)?.let { it.zoomFactor } } ?: 1f
-
+            val fovModifier = entityPlayer.traitSelectedItem.selectedItem?.let { (it.item as? ItemZoom)?.zoomFactor } ?: 1f
             var speedEffect = (entityPlayer.traitVelocity.velocity.x() * entityPlayer.traitVelocity.velocity.x() + entityPlayer.traitVelocity.velocity.z() * entityPlayer.traitVelocity.velocity.z()).toFloat()
-
             speedEffect -= 0.07f * 0.07f
             speedEffect = Math.max(0.0f, speedEffect)
-            speedEffect *= 500.0f
+            speedEffect *= 50.0f
 
-            //return Camera(cameraPosition, entityDirection, up, fovModifier * (fov + speedEffect), viewMatrix, projectionMatrix)
-            return client.makeCamera(cameraPosition, entityDirection, up, fovModifier * (90f + speedEffect))
+            return client.makeCamera(cameraPosition, direction, up, fovModifier * (90f + speedEffect))
         }
 
     override fun onControllerInput(input: Input): Boolean {

@@ -9,6 +9,8 @@ import xyz.chunkstories.api.input.Mouse
 import xyz.chunkstories.api.item.ItemVoxel
 import xyz.chunkstories.api.item.inventory.Inventory
 import xyz.chunkstories.api.item.inventory.ItemPile
+import xyz.chunkstories.api.net.packets.PacketInventoryMoveItemPile
+import xyz.chunkstories.api.world.WorldClientNetworkedRemote
 
 class CreativeBlockSelector(gui: Gui, parentLayer: Layer?) : Layer(gui, parentLayer) {
     val allBlockItems: List<ItemVoxel>
@@ -141,7 +143,17 @@ class CreativeBlockSelector(gui: Gui, parentLayer: Layer?) : Layer(gui, parentLa
                 val controlledEntity = this.player.controlledEntity
                 controlledEntity?.apply {
                     val selectedItemSlot = traits[TraitSelectedItem::class]?.getSelectedSlot() ?: return@apply
-                    traits[TraitInventory::class]?.inventory?.setItemAt(selectedItemSlot, 0, item, 1, true)
+                    val targetInventory = traits[TraitInventory::class]?.inventory ?: return@apply
+
+                    val world = world
+                    if(world is WorldClientNetworkedRemote) {
+                        val fakeInventory = Inventory(1,1,null,null)
+                        val pile = ItemPile(fakeInventory, 0,0, item, 1)
+                        val packetMove = PacketInventoryMoveItemPile(world, pile, fakeInventory, targetInventory, 0, 0, selectedItemSlot, 0, 1)
+                        world.remoteServer.pushPacket(packetMove)
+                    } else {
+                        targetInventory.setItemAt(selectedItemSlot, 0, item, 1, true)
+                    }
                     gui.popTopLayer()
                 }
             }
