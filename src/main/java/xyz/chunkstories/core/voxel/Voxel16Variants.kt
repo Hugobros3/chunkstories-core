@@ -65,7 +65,7 @@ class ItemVoxelVariant(definition: ItemDefinition) : ItemVoxel(definition) {
     val metadata = definition["metaData"]!!.toInt()
     val variant = definition["variant"]!!
 
-    override fun getTextureName(pile: ItemPile): String {
+    override fun getTextureName(): String {
         return "voxels/textures/" + voxel.name + "/" + variant + ".png"
     }
 

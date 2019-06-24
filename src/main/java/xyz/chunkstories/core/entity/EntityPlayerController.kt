@@ -107,8 +107,7 @@ internal class EntityPlayerController(private val entityPlayer: EntityPlayer) : 
                 }
                 //entityPlayer.world.client.gui.openInventories(entityPlayer.traits[TraitInventory::class]?.inventory!!, entity.world.content.voxels().createCreativeInventory())
             } else {
-                entityPlayer.world.client.gui
-                        .openInventories(entityPlayer.traits[TraitInventory::class]?.inventory!!, entityPlayer.traitArmor.inventory)
+                entityPlayer.world.client.gui.openInventories(entityPlayer.traits[TraitInventory::class]?.inventory!!)
             }
 
             return true

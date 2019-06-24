@@ -27,6 +27,10 @@ import xyz.chunkstories.core.entity.traits.MinerTrait
 import xyz.chunkstories.core.entity.traits.TraitEyeLevel
 import xyz.chunkstories.core.entity.traits.TraitTakesFallDamage
 import org.joml.*
+import xyz.chunkstories.api.gui.Layer
+import xyz.chunkstories.api.gui.inventory.InventorySlot
+import xyz.chunkstories.api.gui.inventory.InventoryUI
+import xyz.chunkstories.api.item.inventory.Inventory
 import xyz.chunkstories.core.voxel.isOnLadder
 
 import java.util.HashMap
@@ -59,9 +63,35 @@ class EntityPlayer(t: EntityDefinition, world: World) : EntityHumanoid(t, world)
         get() = traitName.name
 
     init {
+        traitInventory = object : TraitInventory(this, 10, 4) {
+            override fun createMainInventoryPanel(inventory: Inventory, layer: Layer): InventoryUI? {
+                val craftingAreaSideSize = 3
+                return inventory.run {
+                    val ui = InventoryUI(layer, width * 20 + 16, height * 20 + 16 + 8 + 20 * craftingAreaSideSize + 8)
+                    for (x in 0 until width) {
+                        for (y in 0 until height) {
+                            val slot = InventorySlot.RealSlot(this, x, y)
+                            val uiSlot = ui.InventorySlotUI(slot, x * 20 + 8, y * 20 + 8)
+                            ui.slots.add(uiSlot)
+                        }
+                    }
 
-        //controllerComponent = new TraitController(this);
-        traitInventory = TraitInventory(this, 10, 4)
+                    val craftSizeReal = 20 * craftingAreaSideSize
+                    val offsetx = ui.width / 2 - craftSizeReal / 2
+
+                    val craftingSlots = Array(craftingAreaSideSize) { x ->
+                        Array(craftingAreaSideSize) { y ->
+                            val slot = InventorySlot.FakeSlot()
+                            val uiSlot = ui.InventorySlotUI(slot, offsetx + x * 20, 8 + height * 20 + 8 + y * 20)
+                            ui.slots.add(uiSlot)
+                            uiSlot
+                        }
+                    }
+
+                    ui
+                }
+            }
+        }
         traitSelectedItem = TraitSelectedItem(this, traitInventory)
         traitName = TraitName(this)
         traitCreativeMode = TraitCreativeMode(this)
@@ -110,8 +140,7 @@ class EntityPlayer(t: EntityDefinition, world: World) : EntityHumanoid(t, world)
 
                     val controller = controllerComponent.controller//entity.traits.tryWith(TraitControllable.class, TraitControllable::getController);
                     if (controller is Player) {
-                        val p = controller as Player?
-                        p!!.openInventory(traitInventory.inventory)
+                        controller.openInventory(traitInventory.inventory)
                         return true
                     }
                 }

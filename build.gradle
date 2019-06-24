@@ -81,6 +81,7 @@ task buildContentPack(type: Zip) {
 		exclude("**/*.ps")
 		exclude("**/*.xcf")
 		exclude("**/*.aup")
+		exclude("**/*.blend")
 	}
 	
 	//We want the final archive to bear our mod name

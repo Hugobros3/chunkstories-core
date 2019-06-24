@@ -127,10 +127,7 @@ class CreativeBlockSelector(gui: Gui, parentLayer: Layer?) : Layer(gui, parentLa
 
             drawer.drawBoxWithCorners(positionX, positionY, width, height, 8, buttonTexture)
 
-            val bsInventory = Inventory(1,1,null,null)
-            val bsPile = ItemPile(bsInventory, 0, 0, item, 1)
-
-            drawer.drawBox(positionX + 4, positionY + 4, 16, 16, item.getTextureName(bsPile))
+            drawer.drawBox(positionX + 4, positionY + 4, 16, 16, item.getTextureName())
 
             if(isMouseOver)
                 hoverItem = item

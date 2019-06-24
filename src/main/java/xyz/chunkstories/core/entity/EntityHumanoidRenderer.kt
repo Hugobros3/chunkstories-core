@@ -57,7 +57,7 @@ open class EntityHumanoidRenderer(entity: EntityHumanoid, private val customSkin
 
             itemMatrix.mul(animator.getBoneHierarchyTransformationMatrix("boneItemInHand", animationTime))
 
-            itemInHand.item.buildRepresentation(itemInHand, itemMatrix, representationsGobbler)
+            itemInHand.item.buildRepresentation(itemMatrix, representationsGobbler)
         }
 
         if(isPlayerEntity) {
