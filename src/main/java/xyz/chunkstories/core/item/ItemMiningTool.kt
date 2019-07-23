@@ -35,7 +35,7 @@ class ItemMiningTool(type: ItemDefinition) : Item(type), MiningTool {
         val modelName = definition.resolveProperty("model")
 
         if(modelName != null) {
-            val model = definition.store.parent().models[modelName]
+            val model = definition.store.parent.models[modelName]
 
             val handTransformation = Matrix4f(worldPosition)
 

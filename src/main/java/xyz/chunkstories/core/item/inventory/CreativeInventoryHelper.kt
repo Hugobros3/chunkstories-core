@@ -13,7 +13,7 @@ fun Content.Voxels.createCreativeInventory() : Inventory {
 
     val voxels = this
 
-    for(voxel in voxels.all()) {
+    for(voxel in voxels.all) {
 
         // Ignore air
         if (voxel.definition.name == "air")

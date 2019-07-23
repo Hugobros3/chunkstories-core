@@ -25,9 +25,9 @@ class VoxelPane(definition: VoxelDefinition) : Voxel(definition) {
             1 to MeshMaterial("door_material", mapOf("albedoTexture" to "voxels/textures/${this.voxelTextures[VoxelSide.FRONT.ordinal].name}.png")))
 
     init {
-        baseModel = definition.store.parent().models[definition.resolveProperty("model", "voxels/blockmodels/glass_pane/glass_pane.dae")]
-        backPartMode = definition.store.parent().models[definition.resolveProperty("model", "voxels/blockmodels/glass_pane/glass_pane_back_half.dae")]
-        frontPartModel = definition.store.parent().models[definition.resolveProperty("model", "voxels/blockmodels/glass_pane/glass_pane_front_half.dae")]
+        baseModel = definition.store.parent.models[definition.resolveProperty("model", "voxels/blockmodels/glass_pane/glass_pane.dae")]
+        backPartMode = definition.store.parent.models[definition.resolveProperty("model", "voxels/blockmodels/glass_pane/glass_pane_back_half.dae")]
+        frontPartModel = definition.store.parent.models[definition.resolveProperty("model", "voxels/blockmodels/glass_pane/glass_pane_front_half.dae")]
 
         customRenderingRoutine = { cell ->
             render(cell, this)

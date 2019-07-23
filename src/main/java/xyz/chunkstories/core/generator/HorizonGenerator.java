@@ -67,17 +67,17 @@ public class HorizonGenerator extends WorldGenerator {
 		this.BASE_HEIGHT_SCALE = pint(type.resolveProperty("baseHeightScale"), 64);
 		this.PLATEAU_HEIGHT_SCALE = pint(type.resolveProperty("plateauHeightScale"), 64);
 
-		this.AIR_VOXEL = world.getGameContext().getContent().voxels().air();
-		this.STONE_VOXEL = world.getGameContext().getContent().voxels().getVoxel("stone");
-		this.WATER_VOXEL = world.getGameContext().getContent().voxels().getVoxel("water");
-		this.GROUND_VOXEL = world.getGameContext().getContent().voxels().getVoxel("grass");
-		this.FOREST_GROUND_VOXEL = world.getGameContext().getContent().voxels().getVoxel("forestgrass");
-		this.DRY_GROUND_VOXEL = world.getGameContext().getContent().voxels().getVoxel("drygrass");
-		this.UNDERGROUND_VOXEL = world.getGameContext().getContent().voxels().getVoxel("dirt");
-		this.TALLGRASS = world.getGameContext().getContent().voxels().getVoxel("grass_prop");
+		this.AIR_VOXEL = world.getGameContext().getContent().getVoxels().getAir();
+		this.STONE_VOXEL = world.getGameContext().getContent().getVoxels().getVoxel("stone");
+		this.WATER_VOXEL = world.getGameContext().getContent().getVoxels().getVoxel("water");
+		this.GROUND_VOXEL = world.getGameContext().getContent().getVoxels().getVoxel("grass");
+		this.FOREST_GROUND_VOXEL = world.getGameContext().getContent().getVoxels().getVoxel("forestgrass");
+		this.DRY_GROUND_VOXEL = world.getGameContext().getContent().getVoxels().getVoxel("drygrass");
+		this.UNDERGROUND_VOXEL = world.getGameContext().getContent().getVoxels().getVoxel("dirt");
+		this.TALLGRASS = world.getGameContext().getContent().getVoxels().getVoxel("grass_prop");
 
-		this.SAND = world.getGameContext().getContent().voxels().getVoxel("sand");
-		this.GRAVEL = world.getGameContext().getContent().voxels().getVoxel("gravel");
+		this.SAND = world.getGameContext().getContent().getVoxels().getVoxel("sand");
+		this.GRAVEL = world.getGameContext().getContent().getVoxels().getVoxel("gravel");
 
 		try {
 			MinecraftBlocksTranslator translator = new MinecraftBlocksTranslator(world.getGameContext(),
@@ -99,7 +99,7 @@ public class HorizonGenerator extends WorldGenerator {
 					"flower_purple", "flower_white", "mushroom_red", "mushroom_brown" };
 			SURFACE_DECORATIONS = new Voxel[decorations.length];
 			for (int i = 1; i <= REDWOOD_TREE_VARIANTS; i++)
-				SURFACE_DECORATIONS[i] = world.getGameContext().getContent().voxels().getVoxel(decorations[i]);
+				SURFACE_DECORATIONS[i] = world.getGameContext().getContent().getVoxels().getVoxel(decorations[i]);
 
 		} catch (IOException e) {
 			e.printStackTrace();

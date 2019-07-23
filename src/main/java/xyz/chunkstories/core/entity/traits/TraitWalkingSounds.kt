@@ -66,7 +66,7 @@ class TraitWalkingSounds(entity: Entity) : Trait(entity) {
         var voxelStandingOn = entity.world.peekSafely(Vector3d(entity.location).add(0.0, -0.01, 0.0)).voxel
 
         if (voxelStandingOn == null || !voxelStandingOn.solid && voxelStandingOn.liquid)
-            voxelStandingOn = entity.world.content.voxels().air()
+            voxelStandingOn = entity.world.content.voxels.air
 
         val material = voxelStandingOn.voxelMaterial
 

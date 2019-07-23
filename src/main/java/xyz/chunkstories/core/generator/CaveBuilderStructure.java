@@ -59,7 +59,7 @@ public class CaveBuilderStructure extends Structure {
 
 	private void sphereOfDoom(Chunk chunk, Vector3i position, double radius) {
 		int size = (int) Math.ceil(radius);
-		Voxel air = chunk.getWorld().getContent().voxels().air();
+		Voxel air = chunk.getWorld().getContent().getVoxels().getAir();
 		for (int x = position.x - size; x <= position.x + size; x++)
 			for (int y = position.y - size; y <= position.y + size; y++)
 				for (int z = position.z - size; z <= position.z + size; z++) {
@@ -71,9 +71,9 @@ public class CaveBuilderStructure extends Structure {
 						if (rx * rx + ry * ry + rz * rz <= size * size) {
 							Voxel voxel = air;
 							if (y == 0)
-								voxel = chunk.getWorld().getContent().voxels().getVoxel("stone");
+								voxel = chunk.getWorld().getContent().getVoxels().getVoxel("stone");
 							else if (y < 10)
-								voxel = chunk.getWorld().getContent().voxels().getVoxel("lava");
+								voxel = chunk.getWorld().getContent().getVoxels().getVoxel("lava");
 
 							chunk.pokeSimpleSilently(x, y, z, voxel, 0, 0, 0);
 						}

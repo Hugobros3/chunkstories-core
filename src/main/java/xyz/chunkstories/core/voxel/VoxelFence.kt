@@ -67,8 +67,8 @@ class VoxelFence(type: VoxelDefinition) : Voxel(type) {
     val beams: Array<Model>
 
     init {
-        post = definition.store.parent().models["voxels/blockmodels/fence/fence_post.dae"]
-        beams = VoxelSide.values().copyOfRange(0, 4).map { definition.store.parent().models["voxels/blockmodels/fence/fence_${it.name.toLowerCase()}.dae"] }.toTypedArray()
+        post = definition.store.parent.models["voxels/blockmodels/fence/fence_post.dae"]
+        beams = VoxelSide.values().copyOfRange(0, 4).map { definition.store.parent.models["voxels/blockmodels/fence/fence_${it.name.toLowerCase()}.dae"] }.toTypedArray()
 
         /*val overrides = top.meshes.mapIndexedNotNull { i, mesh ->
             val texName = when (mesh.material.name) {

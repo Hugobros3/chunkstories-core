@@ -19,7 +19,7 @@ class VoxelRail(definition: VoxelDefinition) : Voxel(definition) {
     val model: Model
 
     init {
-        model = definition.store.parent().models["voxels/blockmodels/rails/rails.dae"]
+        model = definition.store.parent.models["voxels/blockmodels/rails/rails.dae"]
 
         //val mappedOverrides = mapOf(0 to MeshMaterial("material", mapOf("albedoTexture" to "voxels/textures/${this.voxelTextures[VoxelSide.FRONT.ordinal].name}.png")))
 

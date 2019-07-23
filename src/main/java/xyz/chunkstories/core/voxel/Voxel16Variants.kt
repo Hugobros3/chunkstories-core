@@ -36,7 +36,7 @@ class Voxel16Variants(definition: VoxelDefinition) : Voxel(definition) {
 
         textures = (0..15).map { i ->
             val variant = split[i].replace(" ".toRegex(), "").trim()
-            store().textures().get(definition.resolveProperty("texture", definition.name) + "/" + variant)
+            store.textures.get(definition.resolveProperty("texture", definition.name) + "/" + variant)
         }.toTypedArray()
     }
 

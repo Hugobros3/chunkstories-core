@@ -22,7 +22,7 @@ class VoxelVine(definition: VoxelDefinition) : Voxel(definition), VoxelClimbable
     private val mappedOverrides = mapOf(0 to MeshMaterial("door_material", mapOf("albedoTexture" to "voxels/textures/${this.voxelTextures[VoxelSide.FRONT.ordinal].name}.png")))
 
     init {
-        model = definition.store.parent().models[definition.resolveProperty("model", "voxels/blockmodels/vine/vine.dae")]
+        model = definition.store.parent.models[definition.resolveProperty("model", "voxels/blockmodels/vine/vine.dae")]
 
         customRenderingRoutine = { cell ->
             render(cell, this)
@@ -49,20 +49,6 @@ class VoxelVine(definition: VoxelDefinition) : Voxel(definition), VoxelClimbable
             mesher.addModel(model, matrix, mappedOverrides)
         }
     }
-
-    /*@Override
-	public VoxelRenderer getVoxelRenderer(CellData info) {
-		int meta = info.getMetaData();
-		if (meta == 1)
-			return models[2];
-		else if (meta == 2)
-			return models[1];
-		else if (meta == 4)
-			return models[3];
-		else if (meta == 8)
-			return models[0];
-		return models[0];
-	}*/
 
     override fun getCollisionBoxes(info: CellData): Array<Box>? {
 

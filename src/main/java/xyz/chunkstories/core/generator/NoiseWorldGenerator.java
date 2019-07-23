@@ -29,8 +29,8 @@ public class NoiseWorldGenerator extends WorldGenerator {
         ssng = new SeededSimplexNoiseGenerator(w.getWorldInfo().getSeed());
         ws = world.getSizeInChunks() * 32;
 
-        this.STONE_VOXEL = world.getGameContext().getContent().voxels().getVoxel("stone");
-        this.WATER_VOXEL = world.getGameContext().getContent().voxels().getVoxel("water");
+        this.STONE_VOXEL = world.getGameContext().getContent().getVoxels().getVoxel("stone");
+        this.WATER_VOXEL = world.getGameContext().getContent().getVoxels().getVoxel("water");
     }
 
     @Override

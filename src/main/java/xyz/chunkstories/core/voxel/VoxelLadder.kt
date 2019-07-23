@@ -22,7 +22,7 @@ class VoxelLadder(definition: VoxelDefinition) : Voxel(definition), VoxelClimbab
     private val mappedOverrides = mapOf(0 to MeshMaterial("door_material", mapOf("albedoTexture" to "voxels/textures/${this.voxelTextures[VoxelSide.FRONT.ordinal].name}.png")))
 
     init {
-        model = definition.store.parent().models[definition.resolveProperty("model", "voxels/blockmodels/vine/vine.dae")]
+        model = definition.store.parent.models[definition.resolveProperty("model", "voxels/blockmodels/vine/vine.dae")]
 
         customRenderingRoutine = { cell ->
             render(cell, this)

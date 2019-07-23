@@ -21,9 +21,9 @@ public class FlatGenerator extends WorldGenerator {
 		super(type, world);
 		worldsize = world.getSizeInChunks() * 32;
 
-		this.GROUND_VOXEL = world.getGameContext().getContent().voxels().getVoxel("grass");
-		this.WALL_VOXEL = world.getGameContext().getContent().voxels().getVoxel("cobble");
-		this.WALL_TOP_VOXEL = world.getGameContext().getContent().voxels().getVoxel("ironGrill");
+		this.GROUND_VOXEL = world.getGameContext().getContent().getVoxels().getVoxel("grass");
+		this.WALL_VOXEL = world.getGameContext().getContent().getVoxels().getVoxel("cobble");
+		this.WALL_TOP_VOXEL = world.getGameContext().getContent().getVoxels().getVoxel("ironGrill");
 	}
 
 	int worldsize;

@@ -24,7 +24,7 @@ class CreativeBlockSelector(gui: Gui, parentLayer: Layer?) : Layer(gui, parentLa
         gui.client.inputsManager.mouse.isGrabbed = false
 
         elements.add(scroller)
-        allBlockItems = gui.client.content.voxels().all().flatMap { it.variants }.map { it.newItem<ItemVoxel>() }.filter { !it.voxel.isAir() }
+        allBlockItems = gui.client.content.voxels.all.flatMap { it.variants }.map { it.newItem<ItemVoxel>() }.filter { !it.voxel.isAir() }
     }
 
     var hoverItem: ItemVoxel? = null

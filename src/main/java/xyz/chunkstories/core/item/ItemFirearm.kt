@@ -240,7 +240,7 @@ class ItemFirearm(type: ItemDefinition) : ItemWeapon(type), ItemOverlay, ItemZoo
                         // TODO Spawn an event to check if it's okay
 
                         // Destroy it
-                        peek.voxel = voxel.store().air()
+                        peek.voxel = voxel.store.air
                         //peek.setVoxel(voxel.store().air())
 
                         brokeLastBlock = true

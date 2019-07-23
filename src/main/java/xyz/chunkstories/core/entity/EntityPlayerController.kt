@@ -147,11 +147,11 @@ internal class EntityPlayerController(private val entityPlayer: EntityPlayer) : 
                 if (input.name == "mouse.left") {
                     if (blockLocation != null) {
                         // Player events mod
-                        if (controller is Player) {
+                        /*if (controller is Player) {
                             val player = controller as Player?
                             val cell = entityPlayer.world.peekSafely(blockLocation)
                             val future = FutureCell(cell)
-                            future.voxel = entityPlayer.definition.store().parent().voxels().air()
+                            future.voxel = entityPlayer.definition.store.parent.voxels.air
                             future.blocklight = 0
                             future.sunlight = 0
                             future.metaData = 0
@@ -178,7 +178,10 @@ internal class EntityPlayerController(private val entityPlayer: EntityPlayer) : 
                             }
 
                             return true
-                        }
+                        }*/
+
+                        val cell = entityPlayer.world.peekSafely(blockLocation)
+                        cell.voxel.breakBlock(cell, TraitCreativeMode.CREATIVE_MODE_MINING_TOOL, entity)
                     }
                 } else if (input.name == "mouse.middle") {
                     if (blockLocation != null) {

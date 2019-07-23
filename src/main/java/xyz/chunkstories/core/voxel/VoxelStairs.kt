@@ -28,7 +28,7 @@ class VoxelStairs(definition: VoxelDefinition) : Voxel(definition) {
     private val mappedOverrides: Map<Int, MeshMaterial>
 
     init {
-        model = definition.store.parent().models[definition.resolveProperty("model", "voxels/blockmodels/stairs/stairs.dae")]
+        model = definition.store.parent.models[definition.resolveProperty("model", "voxels/blockmodels/stairs/stairs.dae")]
         modelFlipped = flipModel(model)
 
         val overrides = model.meshes.mapIndexedNotNull { i, mesh ->

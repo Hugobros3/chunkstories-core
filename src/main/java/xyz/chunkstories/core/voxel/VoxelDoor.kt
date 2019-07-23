@@ -41,11 +41,11 @@ class VoxelDoor(definition: VoxelDefinition) : Voxel(definition) {
         get() = if (top)
             this
         else
-            store().getVoxel(name + "_top")!!
+            store.getVoxel(name + "_top")!!
 
     val lowerPart: Voxel
         get() = if (top)
-            store().getVoxel(name.substring(0, name.length - 4))!!
+            store.getVoxel(name.substring(0, name.length - 4))!!
         else
             this
 
@@ -54,7 +54,7 @@ class VoxelDoor(definition: VoxelDefinition) : Voxel(definition) {
     }
 
     init {
-        model = definition.store.parent().models[definition.resolveProperty("model", "voxels/blockmodels/wood_door/wood_door.dae")]
+        model = definition.store.parent.models[definition.resolveProperty("model", "voxels/blockmodels/wood_door/wood_door.dae")]
 
         modelFlipped = flipModel(model)
 
@@ -136,7 +136,7 @@ class VoxelDoor(definition: VoxelDefinition) : Voxel(definition) {
             // otherPartLocation.setVoxelDataAtLocation(VoxelFormat.changeMeta(otherPartLocation.getVoxelDataAtLocation(),
             // newData));
         } else {
-            store().parent().logger().error("Incomplete door @ $otherPartLocation")
+            store.parent.logger.error("Incomplete door @ $otherPartLocation")
         }
 
         return true
@@ -272,7 +272,7 @@ class VoxelDoor(definition: VoxelDefinition) : Voxel(definition) {
         val restOfTheDoorVoxel = world.peekSimple(x, otherPartOfTheDoorY, z)
         // Remove the other part as well, if it still exists
         if (restOfTheDoorVoxel is VoxelDoor)
-            world.pokeSimple(x, otherPartOfTheDoorY, z, store().air(), -1, -1, 0)
+            world.pokeSimple(x, otherPartOfTheDoorY, z, store.air, -1, -1, 0)
 
     }
 

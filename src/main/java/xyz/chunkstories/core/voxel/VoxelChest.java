@@ -39,9 +39,9 @@ public class VoxelChest extends Voxel {
     public VoxelChest(VoxelDefinition type) {
         super(type);
 
-        frontTexture = store().textures().get(getName() + "_front");
-        sideTexture = store().textures().get(getName() + "_side");
-        topTexture = store().textures().get(getName() + "_top");
+        frontTexture = getStore().getTextures().get(getName() + "_front");
+        sideTexture = getStore().getTextures().get(getName() + "_side");
+        topTexture = getStore().getTextures().get(getName() + "_top");
     }
 
     @Override

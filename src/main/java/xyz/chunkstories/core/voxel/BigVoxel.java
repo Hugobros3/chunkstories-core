@@ -121,7 +121,7 @@ public class BigVoxel extends Voxel {
             for (int b = startY; b < startY + yWidth; b++) {
                 for (int c = startZ; c < startZ + zWidth; c++) {
                     // poke zero where the big voxel used to be
-                    context.getWorld().pokeSimple(a, b, c, store().air(), -1, -1, 0);
+                    context.getWorld().pokeSimple(a, b, c, getStore().getAir(), -1, -1, 0);
                 }
             }
         }

@@ -6,9 +6,10 @@ import xyz.chunkstories.api.graphics.representation.Model
 import xyz.chunkstories.api.voxel.Voxel
 import xyz.chunkstories.api.voxel.VoxelDefinition
 import xyz.chunkstories.api.voxel.VoxelSide
+import xyz.chunkstories.api.world.cell.EditableCell
 
 class VoxelSmallPlant(definition: VoxelDefinition) : Voxel(definition) {
-    val model: Model = definition.store.parent().models["voxels/blockmodels/grass_prop/grass_prop.dae"]
+    val model: Model = definition.store.parent.models["voxels/blockmodels/grass_prop/grass_prop.dae"]
 
     init {
 
@@ -25,5 +26,12 @@ class VoxelSmallPlant(definition: VoxelDefinition) : Voxel(definition) {
 
             addModel(model, matrix, mappedOverrides)
         }
+    }
+
+    override fun tick(cell: EditableCell) {
+        if(cell.y == 0)
+            return
+        val below = cell.world.peekSafely(cell.x, cell.y - 1, cell.z)
+
     }
 }

@@ -21,8 +21,8 @@ class VoxelHalfTile(definition: VoxelDefinition) : Voxel(definition) {
     val bottom: Model
 
     init {
-        top = definition.store.parent().models["voxels/blockmodels/half_step/upper_half.dae"]
-        bottom = definition.store.parent().models["voxels/blockmodels/half_step/lower_half.dae"]
+        top = definition.store.parent.models["voxels/blockmodels/half_step/upper_half.dae"]
+        bottom = definition.store.parent.models["voxels/blockmodels/half_step/lower_half.dae"]
 
         val overrides = top.meshes.mapIndexedNotNull { i, mesh ->
             val texName = when (mesh.material.name) {

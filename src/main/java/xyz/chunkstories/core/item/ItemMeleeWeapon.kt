@@ -121,7 +121,7 @@ class ItemMeleeWeapon(type: ItemDefinition) : ItemWeapon(type) {
                     // TODO: Spawn an event to check if it's okay
 
                     // Destroy it
-                    peek.voxel = definition.store().parent().voxels().air()
+                    peek.voxel = definition.store.parent.voxels.air
                     //peek.setVoxel(definition.store().parent().voxels().air())
 
                     spawnDebris(entity, direction, shotBlock)

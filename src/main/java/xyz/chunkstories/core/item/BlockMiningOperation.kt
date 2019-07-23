@@ -6,29 +6,18 @@
 
 package xyz.chunkstories.core.item
 
-import org.joml.Vector3d
 import xyz.chunkstories.api.Location
 import xyz.chunkstories.api.entity.Controller
 import xyz.chunkstories.api.entity.Entity
-import xyz.chunkstories.api.entity.EntityGroundItem
-import xyz.chunkstories.api.entity.traits.serializable.TraitInventory
-import xyz.chunkstories.api.events.player.voxel.PlayerVoxelModificationEvent
-import xyz.chunkstories.api.events.voxel.WorldModificationCause
-import xyz.chunkstories.api.exceptions.world.WorldException
-import xyz.chunkstories.api.player.Player
-import xyz.chunkstories.api.sound.SoundSource.Mode
 import xyz.chunkstories.api.voxel.MiningTool
 import xyz.chunkstories.api.voxel.Voxel
 import xyz.chunkstories.api.voxel.materials.VoxelMaterial
-import xyz.chunkstories.api.world.World
 import xyz.chunkstories.api.world.WorldMaster
 import xyz.chunkstories.api.world.cell.CellData
-import xyz.chunkstories.api.world.cell.FutureCell
-import xyz.chunkstories.core.particles.ParticleTypeVoxelFragment
 
 /** Represents a mining operation in progress, keeps all the state related to that */
-class BlockMiningOperation(val context: CellData, internal var tool: MiningTool) {
-    val voxel: Voxel?
+class BlockMiningOperation(val cell: CellData, internal var tool: MiningTool) {
+    val voxel: Voxel
     val material: VoxelMaterial
     val loc: Location
 
@@ -39,11 +28,10 @@ class BlockMiningOperation(val context: CellData, internal var tool: MiningTool)
     internal var timesSoundPlayed = 0
 
     init {
-        this.loc = context.location
-        // toolType = tool != null ? tool.toolType : "hand";
+        this.loc = cell.location
 
-        voxel = context.voxel
-        material = voxel!!.voxelMaterial
+        voxel = cell.voxel
+        material = voxel.voxelMaterial
         var hardnessString: String? = null
 
         // First order, check the voxel itself if it states a certain hardness for this
@@ -74,61 +62,13 @@ class BlockMiningOperation(val context: CellData, internal var tool: MiningTool)
 
         if (progress >= 1.0f) {
             if (owner.world is WorldMaster) {
-
-                val future = FutureCell(context)
-                future.voxel = owner.world.content.voxels().air()
-
-                // Check no one minds
-                val event = PlayerVoxelModificationEvent(context, future, owner as WorldModificationCause, controller as Player)
-                owner.world.gameContext.pluginManager.fireEvent(event)
-
-                // Break the block
-                if (!event.isCancelled) {
-                    spawnBlockDestructionParticles(loc, context.world)
-
-                    context.world.soundManager.playSoundEffect("sounds/gameplay/voxel_remove.ogg", Mode.NORMAL, loc, 1.0f, 1.0f)
-
-                    val itemSpawnLocation = Location(context.world, loc)
-                    itemSpawnLocation.add(0.5, 0.0, 0.5)
-
-                    // Drop loot !
-                    for (drop in context.voxel!!.getLoot(context, tool)) {
-                        val thrownItem = context.world.content.entities().getEntityDefinition("groundItem")!!.newEntity<EntityGroundItem>(itemSpawnLocation.world)
-                        thrownItem.traitLocation.set(itemSpawnLocation)
-                        thrownItem.entityVelocity.setVelocity(Vector3d(Math.random() * 0.125 - 0.0625, 0.1, Math.random() * 0.125 - 0.0625))
-                        thrownItem.traits[TraitInventory::class]!!.inventory.addItem(drop.first, drop.second)
-                        context.world.addEntity(thrownItem)
-                    }
-
-                    try {
-                        context.world.poke(future, owner as WorldModificationCause)
-                    } catch (e: WorldException) {
-                        // Didn't work
-                        // TODO make some ingame effect so as to clue in the player why it failed
-                    }
-
-                }
+                voxel.breakBlock(cell, tool, owner)
             }
 
             return null
         }
 
         return this
-    }
-
-    companion object {
-        fun spawnBlockDestructionParticles(loc: Location, world: World) {
-            val rnd = Vector3d()
-            for (i in 0..39) {
-                rnd.set(loc)
-                rnd.add(Math.random() * 0.98, Math.random() * 0.98, Math.random() * 0.98)
-
-                world.particlesManager.spawnParticle<ParticleTypeVoxelFragment.ParticleVoxelFragment>("voxel_frag") {
-                    velocity.set(rnd)
-                }
-                //world.particlesManager.spawnParticleAtPosition("voxel_frag", rnd)
-            }
-        }
     }
 
 }
