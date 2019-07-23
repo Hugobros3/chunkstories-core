@@ -3,6 +3,7 @@ package xyz.chunkstories.core.voxel
 import org.joml.Matrix4f
 import xyz.chunkstories.api.graphics.MeshMaterial
 import xyz.chunkstories.api.graphics.representation.Model
+import xyz.chunkstories.api.voxel.MiningTool
 import xyz.chunkstories.api.voxel.Voxel
 import xyz.chunkstories.api.voxel.VoxelDefinition
 import xyz.chunkstories.api.voxel.VoxelSide
@@ -32,6 +33,13 @@ class VoxelSmallPlant(definition: VoxelDefinition) : Voxel(definition) {
         if(cell.y == 0)
             return
         val below = cell.world.peekSafely(cell.x, cell.y - 1, cell.z)
+        if(!below.voxel.solid || !below.voxel.opaque) {
+            cell.voxel.breakBlock(cell, SmallPlantsAutoDestroy, null)
+        }
+    }
 
+    object SmallPlantsAutoDestroy : MiningTool {
+        override val miningEfficiency = Float.POSITIVE_INFINITY
+        override val toolTypeName = "world"
     }
 }
