@@ -25,7 +25,7 @@ instanced ModelPosition modelPosition;
 
 #ifdef ENABLE_ANIMATIONS 
 #include struct xyz.chunkstories.graphics.common.structs.SkeletalAnimationData
-uniform SkeletalAnimationData animationData;
+instanced SkeletalAnimationData animationData;
 #endif
 
 void main()
