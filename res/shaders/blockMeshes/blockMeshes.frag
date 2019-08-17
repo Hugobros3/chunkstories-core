@@ -32,7 +32,7 @@ void main()
 	}
 
 	if(albedo.a < 1.0) {
-		albedo.rgb *= vec3(0.2, 1.0, 0.5);
+		albedo.rgb *= vec3(0.4, 0.8, 0.4);
 		albedo.a = 1.0;
 	}
 

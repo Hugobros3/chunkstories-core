@@ -1,4 +1,4 @@
-package xyz.chunkstories.core.entity
+package xyz.chunkstories.core.entity.zombie
 
 import xyz.chunkstories.api.entity.Entity
 import xyz.chunkstories.api.entity.traits.serializable.TraitSerializable
@@ -10,7 +10,6 @@ import java.io.DataOutputStream
 import java.io.IOException
 
 internal class TraitZombieInfectionStage(entity: Entity, initialStage: ZombieInfectionStage) : TraitSerializable(entity) {
-
     var stage: ZombieInfectionStage = initialStage
         set(value) {
             field = value

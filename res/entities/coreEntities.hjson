@@ -9,7 +9,7 @@
         }
 
         zombie: {
-            class: xyz.chunkstories.core.entity.EntityZombie
+            class: xyz.chunkstories.core.entity.zombie.EntityZombie
             collidesWithEntities: true
             startHealth: 50
             maxHealth: 100
@@ -20,6 +20,13 @@
             collisions: {
                 withOtherEntities: "false"
             }
+        }
+
+        pig: {
+            class: xyz.chunkstories.core.entity.pig.EntityPig
+            collidesWithEntities: true
+            startHealth: 20
+            maxHealth: 20
         }
     }
 }

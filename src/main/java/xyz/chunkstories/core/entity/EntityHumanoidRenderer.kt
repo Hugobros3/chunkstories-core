@@ -87,9 +87,3 @@ open class EntityHumanoidRenderer(entity: EntityHumanoid, private val customSkin
 }
 
 private inline fun Boolean.toInt() = if (this) 1 else 0
-
-class ZombieRenderer(entity: EntityZombie) : EntityHumanoidRenderer(entity, Unit.let {
-    MeshMaterial("zombie", mapOf(
-            "albedoTexture" to "./models/human/zombie_s" + (entity.stage().ordinal + 1) + ".png"
-    ))
-} )
