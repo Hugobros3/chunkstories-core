@@ -14,7 +14,7 @@ import xyz.chunkstories.api.voxel.ChunkMeshRenderingInterface
 import xyz.chunkstories.api.voxel.Voxel
 import xyz.chunkstories.api.voxel.VoxelDefinition
 import xyz.chunkstories.api.voxel.VoxelSide
-import xyz.chunkstories.api.world.cell.CellData
+import xyz.chunkstories.api.world.cell.Cell
 
 class VoxelLadder(definition: VoxelDefinition) : Voxel(definition), VoxelClimbable {
 
@@ -29,7 +29,7 @@ class VoxelLadder(definition: VoxelDefinition) : Voxel(definition), VoxelClimbab
         }
     }
 
-    fun render(cell: CellData, mesher: ChunkMeshRenderingInterface) {
+    fun render(cell: Cell, mesher: ChunkMeshRenderingInterface) {
         val meta = cell.metaData
         val rotation = when (meta % 4) {
             0 -> 2
@@ -62,9 +62,9 @@ class VoxelLadder(definition: VoxelDefinition) : Voxel(definition), VoxelClimbab
 		return models[0];
 	}*/
 
-    override fun getCollisionBoxes(info: CellData): Array<Box>? {
+    override fun getCollisionBoxes(cell: Cell): Array<Box>? {
 
-        val meta = info.metaData
+        val meta = cell.metaData
 
         if (meta == 2)
             return arrayOf(Box.fromExtents(1.0, 1.0, 0.1).translate(0.0, 0.0, 0.9))
@@ -72,7 +72,7 @@ class VoxelLadder(definition: VoxelDefinition) : Voxel(definition), VoxelClimbab
             return arrayOf(Box.fromExtents(1.0, 1.0, 0.1))
         if (meta == 4)
             return arrayOf(Box.fromExtents(0.1, 1.0, 1.0).translate(0.9, 0.0, 0.0))
-        return if (meta == 5) arrayOf(Box.fromExtents(0.1, 1.0, 1.0)) else super.getCollisionBoxes(info)
+        return if (meta == 5) arrayOf(Box.fromExtents(0.1, 1.0, 1.0)) else super.getCollisionBoxes(cell)
 
     }
 

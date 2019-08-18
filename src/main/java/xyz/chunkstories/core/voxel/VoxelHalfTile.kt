@@ -9,11 +9,10 @@ package xyz.chunkstories.core.voxel
 import xyz.chunkstories.api.graphics.MeshMaterial
 import xyz.chunkstories.api.graphics.representation.Model
 import xyz.chunkstories.api.physics.Box
-//import xyz.chunkstories.api.rendering.voxel.VoxelRenderer;
 import xyz.chunkstories.api.voxel.Voxel
 import xyz.chunkstories.api.voxel.VoxelDefinition
 import xyz.chunkstories.api.voxel.VoxelSide
-import xyz.chunkstories.api.world.cell.CellData
+import xyz.chunkstories.api.world.cell.Cell
 
 class VoxelHalfTile(definition: VoxelDefinition) : Voxel(definition) {
 
@@ -52,7 +51,7 @@ class VoxelHalfTile(definition: VoxelDefinition) : Voxel(definition) {
         return meta % 2 == 0
     }
 
-    override fun getCollisionBoxes(info: CellData): Array<Box>? {
+    override fun getCollisionBoxes(info: Cell): Array<Box>? {
         // System.out.println("kek");
         val box2 = Box.fromExtents(1.0, 0.5, 1.0)
         if (bottomOrTop(info.metaData))
@@ -62,7 +61,7 @@ class VoxelHalfTile(definition: VoxelDefinition) : Voxel(definition) {
         return arrayOf(box2)
     }
 
-    override fun getLightLevelModifier(dataFrom: CellData, dataTo: CellData, side2: VoxelSide): Int {
+    override fun getLightLevelModifier(dataFrom: Cell, dataTo: Cell, side2: VoxelSide): Int {
         val side = side2.ordinal
 
         // Special cases when half-tiles meet

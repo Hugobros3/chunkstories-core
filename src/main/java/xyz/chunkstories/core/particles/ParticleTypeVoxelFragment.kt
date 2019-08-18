@@ -13,7 +13,7 @@ class ParticleTypeVoxelFragment(definition: ParticleTypeDefinition) : ParticleTy
     override fun new(location: Location): ParticleVoxelFragment = ParticleVoxelFragment().apply {
         position.set(location)
 
-        val cell = location.world.peekSafely(location)
+        val cell = location.world.peek(location)
         val voxel = cell.voxel ?: return@apply
 
         val voxelColor = voxel.getVoxelTexture(cell, VoxelSide.values()[Random().nextInt(6)]).color

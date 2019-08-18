@@ -24,7 +24,7 @@ import xyz.chunkstories.api.voxel.components.VoxelComponent;
 import xyz.chunkstories.api.voxel.components.VoxelInventoryComponent;
 import xyz.chunkstories.api.voxel.textures.VoxelTexture;
 import xyz.chunkstories.api.world.WorldMaster;
-import xyz.chunkstories.api.world.cell.CellData;
+import xyz.chunkstories.api.world.cell.Cell;
 import xyz.chunkstories.api.world.cell.FutureCell;
 import xyz.chunkstories.api.world.chunk.ChunkCell;
 import xyz.chunkstories.api.world.chunk.FreshChunkCell;
@@ -77,7 +77,7 @@ public class VoxelChest extends Voxel {
     }
 
     @Override
-    public VoxelTexture getVoxelTexture(@NotNull CellData info, @NotNull VoxelSide side) {
+    public VoxelTexture getVoxelTexture(@NotNull Cell info, @NotNull VoxelSide side) {
         VoxelSide actualSide = getSideMcStairsChestFurnace(info.getMetaData());
 
         if (side.equals(VoxelSide.TOP))

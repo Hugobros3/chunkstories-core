@@ -21,7 +21,7 @@ import xyz.chunkstories.api.physics.Box
 import xyz.chunkstories.api.sound.SoundSource.Mode
 import xyz.chunkstories.api.voxel.*
 import xyz.chunkstories.api.world.WorldMaster
-import xyz.chunkstories.api.world.cell.CellData
+import xyz.chunkstories.api.world.cell.Cell
 import xyz.chunkstories.api.world.cell.FutureCell
 import xyz.chunkstories.api.world.chunk.ChunkCell
 
@@ -72,7 +72,7 @@ class VoxelDoor(definition: VoxelDefinition) : Voxel(definition) {
         //	models[i] = store().models().getVoxelModel("door.m" + i);
     }
 
-    fun renderDoor(cell: CellData, mesher: ChunkMeshRenderingInterface) {
+    fun renderDoor(cell: Cell, mesher: ChunkMeshRenderingInterface) {
         var facingPassed = (cell.metaData shr 2) and 0x3
         val isOpen = (cell.metaData shr 0) and 0x1 == 1
         val hingeSide = (cell.metaData shr 1) and 0x1 == 1
@@ -124,7 +124,7 @@ class VoxelDoor(definition: VoxelDefinition) : Voxel(definition) {
         else
             otherPartLocation.add(0.0, 1.0, 0.0)
 
-        val otherLocationPeek = voxelContext.world.peekSafely(otherPartLocation)
+        val otherLocationPeek = voxelContext.world.peek(otherPartLocation)
         if (otherLocationPeek.voxel is VoxelDoor) {
             println("new door status : $newState")
             voxelContext.world.soundManager.playSoundEffect("sounds/voxels/door.ogg", Mode.NORMAL,
@@ -142,7 +142,7 @@ class VoxelDoor(definition: VoxelDefinition) : Voxel(definition) {
         return true
     }
 
-    override fun getCollisionBoxes(info: CellData): Array<Box>? {
+    override fun getCollisionBoxes(info: Cell): Array<Box>? {
         //val boxes = arrayOfNulls<Box>(1)
 
         val facingPassed = (info.metaData shr 2) and 0x3

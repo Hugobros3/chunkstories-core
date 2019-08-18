@@ -12,7 +12,7 @@ import xyz.chunkstories.api.physics.Box
 import xyz.chunkstories.api.voxel.Voxel
 import xyz.chunkstories.api.voxel.VoxelDefinition
 import xyz.chunkstories.api.voxel.VoxelSide
-import xyz.chunkstories.api.world.cell.CellData
+import xyz.chunkstories.api.world.cell.Cell
 
 class VoxelFence(type: VoxelDefinition) : Voxel(type) {
 
@@ -115,7 +115,7 @@ class VoxelFence(type: VoxelDefinition) : Voxel(type) {
         }
     }
 
-    override fun getCollisionBoxes(info: CellData): Array<Box>? {
+    override fun getCollisionBoxes(info: Cell): Array<Box>? {
 
         var vox: Voxel?
         vox = info.getNeightborVoxel(0)

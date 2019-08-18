@@ -2,7 +2,6 @@ package xyz.chunkstories.core.entity
 
 import org.joml.Math
 import org.joml.Vector3d
-import xyz.chunkstories.api.Location
 import xyz.chunkstories.api.client.IngameClient
 import xyz.chunkstories.api.client.LocalPlayer
 import xyz.chunkstories.api.entity.traits.TraitInteractible
@@ -12,11 +11,11 @@ import xyz.chunkstories.api.graphics.structs.makeCamera
 import xyz.chunkstories.api.input.Input
 import xyz.chunkstories.api.item.ItemVoxel
 import xyz.chunkstories.api.item.interfaces.ItemZoom
-import xyz.chunkstories.api.physics.RayQuery
-import xyz.chunkstories.api.physics.trace
+import xyz.chunkstories.api.physics.RayResult
 import xyz.chunkstories.api.util.kotlin.toVec3f
 import xyz.chunkstories.api.world.WorldClient
 import xyz.chunkstories.api.world.WorldMaster
+import xyz.chunkstories.api.world.chunk.ChunkCell
 import xyz.chunkstories.core.CoreOptions
 import xyz.chunkstories.core.gui.CreativeBlockSelector
 import java.lang.Exception
@@ -109,104 +108,84 @@ internal class EntityPlayerController(private val entityPlayer: EntityPlayer) : 
             return true
         }
 
-        val blockLocation = entityPlayer.traitVoxelSelection.getBlockLookingAt(true, false)
 
-        var maxLen = 1024.0
+        //var maxLen = 1024.0
+        //val diff = Vector3d(lookingAt).sub(entityPlayer.location)
+        //maxLen = diff.length()
 
-        if (blockLocation != null) {
-            val diff = Vector3d(blockLocation).sub(entityPlayer.location)
-            // Vector3d dir = diff.clone().normalize();
-            maxLen = diff.length()
-        }
-
-        val initialPosition = Vector3d(entityPlayer.location)
+        /*val initialPosition = Vector3d(entityPlayer.location)
         initialPosition.add(Vector3d(0.0, entityPlayer.traitStance.stance.eyeLevel, 0.0))
 
-        val direction = entityPlayer.traitRotation.directionLookingAt
+        val direction = entityPlayer.traitRotation.directionLookingAt*/
 
-        val ray = RayQuery(Location(entityPlayer.world, initialPosition), direction, 0.0, 256.0)
+        /*val ray = RayQuery(Location(entityPlayer.world, initialPosition), direction, 0.0, 256.0)
         val pointingAt = ray.trace()
-        println(pointingAt)
+        println(pointingAt)*/
 
-        val i = entityPlayer.world.collisionsManager.rayTraceEntities(initialPosition, direction, maxLen)
+        /*val i = entityPlayer.world.collisionsManager.rayTraceEntities(initialPosition, direction, maxLen)
         while (i.hasNext()) {
             val e = i.next()
             if (e !== entityPlayer && e.traits[TraitInteractible::class]?.handleInteraction(entityPlayer, input) == true)
                 return true
-        }
-
-        val itemSelected = entityPlayer.traitSelectedItem.selectedItem
-        if (itemSelected != null) {
-            // See if the item handles the interaction
-            if (itemSelected.item.onControllerInput(entityPlayer, itemSelected, input, controller!!))
-                return true
-        }
-        if (entityPlayer.world is WorldMaster) {
-            // Creative mode features building and picking.
-            if (entityPlayer.traitCreativeMode.get()) {
-                if (input.name == "mouse.left") {
-                    if (blockLocation != null) {
-                        // Player events mod
-                        /*if (controller is Player) {
-                            val player = controller as Player?
-                            val cell = entityPlayer.world.peekSafely(blockLocation)
-                            val future = FutureCell(cell)
-                            future.voxel = entityPlayer.definition.store.parent.voxels.air
-                            future.blocklight = 0
-                            future.sunlight = 0
-                            future.metaData = 0
-
-                            val event = PlayerVoxelModificationEvent(cell, future, TraitCreativeMode.CREATIVE_MODE,
-                                    player!!)
-
-                            // Anyone has objections ?
-                            entityPlayer.world.gameContext.pluginManager.fireEvent(event)
-
-                            if (event.isCancelled)
-                                return true
-
-                            BlockMiningOperation.spawnBlockDestructionParticles(blockLocation, entityPlayer.world)
-                            entityPlayer.world.soundManager
-                                    .playSoundEffect("sounds/gameplay/voxel_remove.ogg", SoundSource.Mode.NORMAL, blockLocation, 1.0f, 1.0f)
-
-                            try {
-                                entityPlayer.world.poke(future, entityPlayer)
-                                // world.poke((int)blockLocation.x, (int)blockLocation.y, (int)blockLocation.z,
-                                // null, 0, 0, 0, this);
-                            } catch (e: WorldException) {
-                                // Discard but maybe play some effect ?
-                            }
-
-                            return true
-                        }*/
-
-                        val cell = entityPlayer.world.peekSafely(blockLocation)
-                        cell.voxel.breakBlock(cell, TraitCreativeMode.CREATIVE_MODE_MINING_TOOL, entity)
-                    }
-                } else if (input.name == "mouse.middle") {
-                    if (blockLocation != null) {
-                        val peekedCell = entityPlayer.world.peekSafely(blockLocation)
-                        val voxel = peekedCell.voxel
-
-                        if (!voxel.isAir()) {
-                            // Spawn new itemPile in his inventory
-                            //val item = entityPlayer.world.gameContext.content.items().getItemDefinition("item_voxel")!!.newItem<ItemVoxel>()
-                            //item.voxel = voxel
-                            //item.voxelMeta = peekedCell.metaData
-                            val item = voxel.getVariant(peekedCell).newItem<ItemVoxel>()
-
-                            entityPlayer.traits[TraitInventory::class]?.inventory!!.setItemAt(entityPlayer.traitSelectedItem.getSelectedSlot(), 0, item, 1, force = true)
-                            return true
-                        }
-                    }
-                }
-            }
-        }
+        }*/// Spawn new itemPile in his inventory
+        //val item = entityPlayer.world.gameContext.content.items().getItemDefinition("item_voxel")!!.newItem<ItemVoxel>()
+        //item.voxel = voxel
+        //item.voxelMeta = peekedCell.metaData
         // Here goes generic entity response to interaction
 
         // n/a
 
         // Then we check if the world minds being interacted with
-        return entityPlayer.world.handleInteraction(entityPlayer, blockLocation, input)
+        // Creative mode features building and picking.
+
+        val lookingAt = entityPlayer.traitSight.getLookingAt(5.0)
+        when (lookingAt) {
+            is RayResult.Hit.EntityHit -> {
+                val observedEntity = lookingAt.entity
+                if(observedEntity != entity && observedEntity.traits[TraitInteractible::class]?.handleInteraction(entity, input) == true) {
+                    return true
+                }
+            }
+            is RayResult.Hit.VoxelHit -> {
+                val cell = lookingAt.cell
+                // Should always be true !
+                if(cell is ChunkCell) {
+                    if(cell.voxel.handleInteraction(entity, cell, input)) {
+                        return true
+                    }
+                }
+            }
+        }
+
+        val itemInHand = entityPlayer.traitSelectedItem.selectedItem
+        if (itemInHand != null) {
+            // See if the item handles the interaction
+            if (itemInHand.item.onControllerInput(entityPlayer, itemInHand, input, controller!!))
+                return true
+        } else {
+
+        }
+
+        if (entityPlayer.world is WorldMaster && lookingAt is RayResult.Hit.VoxelHit) {
+            // Creative mode features building and picking.
+            if (entityPlayer.traitCreativeMode.get()) {
+                if (input.name == "mouse.left") {
+                    val cell = lookingAt.cell
+                    cell.voxel.breakBlock(cell, TraitCreativeMode.CREATIVE_MODE_MINING_TOOL, entity)
+                } else if (input.name == "mouse.middle") {
+                    val peekedCell = lookingAt.cell
+                    val voxel = peekedCell.voxel
+
+                    if (!voxel.isAir()) {
+                        // Spawn new itemPile in his inventory
+                        val item = voxel.getVariant(peekedCell).newItem<ItemVoxel>()
+                        entityPlayer.traits[TraitInventory::class]?.inventory!!.setItemAt(entityPlayer.traitSelectedItem.getSelectedSlot(), 0, item, 1, force = true)
+                        return true
+                    }
+                }
+            }
+        }
+
+        return false
     }
 }

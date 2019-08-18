@@ -8,7 +8,7 @@ package xyz.chunkstories.core.entity.traits
 
 import xyz.chunkstories.api.entity.Entity
 import xyz.chunkstories.api.entity.traits.Trait
-import xyz.chunkstories.api.entity.traits.TraitVoxelSelection
+import xyz.chunkstories.api.entity.traits.TraitSight
 import xyz.chunkstories.api.entity.traits.serializable.TraitControllable
 import xyz.chunkstories.api.events.voxel.WorldModificationCause
 import xyz.chunkstories.api.player.Player
@@ -46,14 +46,14 @@ class MinerTrait(entity: Entity) : Trait(entity) {
         if (controller is Player) {
             val inputs = controller.inputsManager
 
-            var lookingAt = entity.traits[TraitVoxelSelection::class]?.getBlockLookingAt(inside = true, overwriteInstaDestructibleBlocks = false)
+            var lookingAt = entity.traits[TraitSight::class]?.getSelectableBlockLookingAt(5.0)?.location
 
             if (lookingAt != null && lookingAt.distance(entity.location) > 7f)
                 lookingAt = null
 
             if (lookingAt != null && inputs.getInputByName("mouse.left")!!.isPressed) {
 
-                val cell = world.peekSafely(lookingAt)
+                val cell = world.peek(lookingAt)
 
                 // Cancel mining if looking away or the block changed by itself
                 if (progress != null && (lookingAt.distance(progress!!.loc) > 0 || !cell.voxel!!.sameKind(progress!!.voxel!!))) {
@@ -62,7 +62,7 @@ class MinerTrait(entity: Entity) : Trait(entity) {
 
                 if (progress == null) {
                     // Try starting mining something
-                    progress = BlockMiningOperation(world.peekSafely(lookingAt), tool)
+                    progress = BlockMiningOperation(world.peek(lookingAt), tool)
                 } else {
                     progress!!.keepGoing(entity, controller)
                 }

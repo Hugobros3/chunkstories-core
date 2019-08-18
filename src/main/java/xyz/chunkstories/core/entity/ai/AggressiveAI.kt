@@ -11,6 +11,7 @@ import xyz.chunkstories.api.entity.DamageCause
 import xyz.chunkstories.api.entity.Entity
 import xyz.chunkstories.api.entity.traits.serializable.TraitHealth
 import xyz.chunkstories.api.entity.traits.serializable.TraitVelocity
+import xyz.chunkstories.api.physics.Box
 import xyz.chunkstories.core.entity.EntityHumanoid
 import xyz.chunkstories.core.entity.EntityPlayer
 import xyz.chunkstories.core.entity.traits.TraitHumanoidStance
@@ -26,8 +27,7 @@ abstract class AggressiveAI<E>(entity: E, private val targetsTypes: Collection<C
     abstract fun aggroBark()
 
     open fun pickTarget(): Entity? {
-        for (entityToLook in entity.world.getEntitiesInBox(entity.location,
-                Vector3d(aggroRadius * 2f))) {
+        for (entityToLook in entity.world.getEntitiesInBox(Box.Companion.fromExtentsCentered(Vector3d(aggroRadius * 2f)).translate(entity.location))) {
             var visibilityModifier = 1f
             if (entityToLook is EntityPlayer) {
 

@@ -10,7 +10,7 @@ import xyz.chunkstories.api.physics.Box
 import xyz.chunkstories.api.voxel.Voxel
 import xyz.chunkstories.api.voxel.VoxelDefinition
 import xyz.chunkstories.api.voxel.VoxelSide
-import xyz.chunkstories.api.world.cell.CellData
+import xyz.chunkstories.api.world.cell.Cell
 
 class Voxel8Steps
 //VoxelModel[] steps = new VoxelModel[8];
@@ -32,7 +32,7 @@ class Voxel8Steps
 
     }
 
-    override fun getCollisionBoxes(info: CellData): Array<Box>? {
+    override fun getCollisionBoxes(info: Cell): Array<Box>? {
         val box2 = Box.fromExtents(1.0, (info.metaData % 8 + 1) / 8.0, 1.0)
         return arrayOf(box2)
     }

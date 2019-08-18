@@ -230,7 +230,7 @@ class ItemFirearm(type: ItemDefinition) : ItemWeapon(type), ItemOverlay, ItemZoo
                 // Loops to try and break blocks
                 var brokeLastBlock = false
                 while (entity.world is WorldMaster && shotBlock != null) {
-                    val peek = entity.world.peekSafely(shotBlock)
+                    val peek = entity.world.peek(shotBlock)
                     // int data = peek.getData();
                     val voxel = peek.voxel
 
@@ -271,7 +271,7 @@ class ItemFirearm(type: ItemDefinition) : ItemWeapon(type), ItemOverlay, ItemZoo
 
                         // shotBlock.setX(shotBlock.getX() + 1);
 
-                        val peek = entity.world.peekSafely(shotBlock)
+                        val peek = entity.world.peek(shotBlock)
 
                         // int data = user.getWorld().getVoxelData(shotBlock);
                         // Voxel voxel = VoxelsStore.get().getVoxelById(data);

@@ -107,7 +107,7 @@ class ItemMeleeWeapon(definition: ItemDefinition) : ItemWeapon(definition) {
 
             // Loops to try and break blocks
             while (entity.world is WorldMaster && shotBlock != null) {
-                val peek = entity.world.peekSafely(shotBlock)
+                val peek = entity.world.peek(shotBlock)
 
                 if (!peek.voxel.isAir() && peek.voxel.voxelMaterial.resolveProperty("bulletBreakable") != null && peek.voxel.voxelMaterial.resolveProperty("bulletBreakable") == "true") {
                     // TODO: Spawn an event to check if it's okay
@@ -138,7 +138,7 @@ class ItemMeleeWeapon(definition: ItemDefinition) : ItemWeapon(definition) {
                     val reflected = Vector3d(direction)
                     reflected.sub(NxNbyI2x)
 
-                    val peek = entity.world.peekSafely(shotBlock)
+                    val peek = entity.world.peek(shotBlock)
 
                     // This seems fine
                     for (box in peek.translatedCollisionBoxes!!) {
@@ -170,7 +170,7 @@ class ItemMeleeWeapon(definition: ItemDefinition) : ItemWeapon(definition) {
 
                         val ppos = Vector3d(nearestLocation)
                         //TODO entity.getWorld().getParticlesManager().spawnParticleAtPositionWithVelocity("voxel_frag", ppos, untouchedReflection);
-                        entity.world.soundManager.playSoundEffect(entity.world.peekSafely(shotBlock)
+                        entity.world.soundManager.playSoundEffect(entity.world.peek(shotBlock)
                                 .voxel!!.voxelMaterial.resolveProperty("landingSounds"), Mode.NORMAL, ppos, 1f,
                                 0.25f)
                     }

@@ -57,7 +57,7 @@ abstract class GenericAI<E: Entity>(entity: E) : AI<E>(entity) {
         }
 
         // Jump when in water
-        if (entity.world.peekSafely(entity.location.add(0.0, 1.15, 0.0)).voxel.liquid) {
+        if (entity.world.peek(entity.location.add(0.0, 1.15, 0.0)).voxel.liquid) {
             if (velocityTrait.velocity.y() < 0.0)
                 velocityTrait.addVelocity(0.0, 0.10, 0.0)
         }

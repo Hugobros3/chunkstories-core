@@ -18,7 +18,7 @@ import xyz.chunkstories.api.voxel.ChunkMeshRenderingInterface
 import xyz.chunkstories.api.voxel.Voxel
 import xyz.chunkstories.api.voxel.VoxelDefinition
 import xyz.chunkstories.api.voxel.VoxelSide
-import xyz.chunkstories.api.world.cell.CellData
+import xyz.chunkstories.api.world.cell.Cell
 import xyz.chunkstories.api.world.cell.FutureCell
 
 class VoxelStairs(definition: VoxelDefinition) : Voxel(definition) {
@@ -56,7 +56,7 @@ class VoxelStairs(definition: VoxelDefinition) : Voxel(definition) {
         return Model(model.meshes.map { it.reverseWindingOrder() })
     }
 
-    fun render(cell: CellData, mesher: ChunkMeshRenderingInterface) {
+    fun render(cell: Cell, mesher: ChunkMeshRenderingInterface) {
         val meta = cell.metaData
         val rotation = when (meta % 4) {
             0 -> 3
@@ -81,7 +81,7 @@ class VoxelStairs(definition: VoxelDefinition) : Voxel(definition) {
             mesher.addModel(model, matrix, mappedOverrides)
     }
 
-    override fun getCollisionBoxes(info: CellData): Array<Box>? {
+    override fun getCollisionBoxes(info: Cell): Array<Box>? {
         val meta = info.metaData
         val boxes = arrayOf(
                 Box.fromExtents(1.0, 0.5, 1.0),

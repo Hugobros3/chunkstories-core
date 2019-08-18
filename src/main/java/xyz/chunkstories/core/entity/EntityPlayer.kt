@@ -31,6 +31,7 @@ import xyz.chunkstories.api.gui.Layer
 import xyz.chunkstories.api.gui.inventory.InventorySlot
 import xyz.chunkstories.api.gui.inventory.InventoryUI
 import xyz.chunkstories.api.item.inventory.Inventory
+import xyz.chunkstories.api.physics.Box
 import xyz.chunkstories.core.voxel.isOnLadder
 
 import java.util.HashMap
@@ -52,7 +53,7 @@ class EntityPlayer(t: EntityDefinition, world: World) : EntityHumanoid(t, world)
     internal var traitArmor: TraitArmor
     private val traitFoodLevel: TraitFoodLevel
 
-    internal var traitVoxelSelection: TraitVoxelSelection
+    internal var traitSight: TraitSight
 
     //private val onLadder = false
 
@@ -99,26 +100,11 @@ class EntityPlayer(t: EntityDefinition, world: World) : EntityHumanoid(t, world)
         traitFoodLevel = TraitFoodLevel(this, 100f)
         traitArmor = TraitArmor(this, 4, 1)
 
-        traitVoxelSelection = object : TraitVoxelSelection(this) {
-
-            override fun getBlockLookingAt(inside: Boolean, can_overwrite: Boolean): Location? {
-                //TODO trait eye position
-                val eyePosition = traitStance.stance.eyeLevel
-
-                val initialPosition = Vector3d(location)
-                initialPosition.add(Vector3d(0.0, eyePosition, 0.0))
-
-                val direction = Vector3d(traitRotation.directionLookingAt)
-
-                val maxRange = if(traits[TraitCreativeMode::class]?.get() == true) 10.0 else 5.0
-
-                return if (inside)
-                    this@EntityPlayer.world.collisionsManager.raytraceSelectable(Location(this@EntityPlayer.world, initialPosition), direction,
-                            maxRange)
-                else
-                    this@EntityPlayer.world.collisionsManager.raytraceSolidOuter(Location(this@EntityPlayer.world, initialPosition), direction,
-                            maxRange)
-            }
+        traitSight = object : TraitSight(this) {
+            override val headLocation: Location
+                get() = Location(world, Vector3d(location).add(0.0, traitStance.stance.eyeLevel, 0.0))
+            override val lookingAt: Vector3dc
+                get() = traitRotation.directionLookingAt
 
         }
 
@@ -176,7 +162,7 @@ class EntityPlayer(t: EntityDefinition, world: World) : EntityHumanoid(t, world)
         // Auto-pickups items on the ground
         if (world is WorldMaster && world.ticksElapsed % 60L == 0L) {
 
-            for (e in world.getEntitiesInBox(location, Vector3d(3.0))) {
+            for (e in world.getEntitiesInBox(Box.fromExtentsCentered(Vector3d(3.0)).translate(location) )) {
                 if (e is EntityGroundItem && e.location.distance(this.location) < 3.0f) {
                     if (!e.canBePickedUpYet())
                         continue

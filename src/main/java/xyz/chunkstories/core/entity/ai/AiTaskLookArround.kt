@@ -7,6 +7,7 @@ import xyz.chunkstories.api.entity.ai.AI
 import xyz.chunkstories.api.entity.ai.AiTask
 import xyz.chunkstories.api.entity.traits.serializable.TraitHealth
 import xyz.chunkstories.api.entity.traits.serializable.TraitRotation
+import xyz.chunkstories.api.physics.Box
 import xyz.chunkstories.core.entity.EntityHumanoid
 import xyz.chunkstories.core.entity.traits.TraitBasicMovement
 
@@ -41,8 +42,7 @@ class AiTaskLookArround<E : Entity>(ai: AI<E>, var lookAtNearbyEntities: Double)
             lookAtEntityCoolDown--
 
         if (lookAtNearbyEntities > 0.0 && lookAtEntityCoolDown == 0) {
-            for (entityToLook in entity.world.getEntitiesInBox(entity.location,
-                    Vector3d(lookAtNearbyEntities))) {
+            for (entityToLook in entity.world.getEntitiesInBox(Box.Companion.fromExtentsCentered(Vector3d(lookAtNearbyEntities)).translate(entity.location))) {
                 if (entityToLook != entity
                         && entityToLook.location
                                 .distance(entity.location) <= lookAtNearbyEntities

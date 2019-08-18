@@ -27,7 +27,7 @@ public class Door extends NonTrivialMapper {
 			MinecraftRegion region, int minecraftCuurrentChunkXinsideRegion, int minecraftCuurrentChunkZinsideRegion,
 			int x, int y, int z) {
 
-		Chunk chunk = csWorld.getChunkWorldCoordinates(csX, csY, csZ);
+		Chunk chunk = csWorld.getChunksManager().getChunkWorldCoordinates(csX, csY, csZ);
 		assert chunk != null;
 
 		int upper = (minecraftMetaData & 0x8) >> 3;

@@ -11,7 +11,7 @@ import xyz.chunkstories.api.events.voxel.WorldModificationCause;
 import xyz.chunkstories.api.exceptions.world.voxel.IllegalBlockModificationException;
 import xyz.chunkstories.api.voxel.Voxel;
 import xyz.chunkstories.api.voxel.VoxelDefinition;
-import xyz.chunkstories.api.world.cell.CellData;
+import xyz.chunkstories.api.world.cell.Cell;
 import xyz.chunkstories.api.world.cell.FutureCell;
 import xyz.chunkstories.api.world.chunk.Chunk;
 import xyz.chunkstories.api.world.chunk.ChunkCell;
@@ -64,13 +64,13 @@ public class BigVoxel extends Voxel {
         for (int a = x; a < x + xWidth; a++) {
             for (int b = y; b < y + yWidth; b++) {
                 for (int c = z; c < z + zWidth; c++) {
-                    Chunk chunk = context.getWorld().getChunkWorldCoordinates(a, b, c);
+                    Chunk chunk = context.getWorld().getChunksManager().getChunkWorldCoordinates(a, b, c);
 
                     if (chunk == null)
                         throw new IllegalBlockModificationException(context,
                                 "All chunks upon wich this block places itself must be fully loaded !");
 
-                    CellData stuff = context.getWorld().peekSafely(a, b, c);
+                    Cell stuff = context.getWorld().peek(a, b, c);
                     if (stuff.getVoxel() == null || stuff.getVoxel().isAir()
                             || !stuff.getVoxel().isSolid()) {
                         // These blocks are replaceable

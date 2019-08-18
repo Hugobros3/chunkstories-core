@@ -31,7 +31,7 @@ public class Sign extends NonTrivialMapper {
 			MinecraftRegion region, int minecraftCuurrentChunkXinsideRegion, int minecraftCuurrentChunkZinsideRegion,
 			int x, int y, int z) {
 
-		Chunk chunk = csWorld.getChunkWorldCoordinates(csX, csY, csZ);
+		Chunk chunk = csWorld.getChunksManager().getChunkWorldCoordinates(csX, csY, csZ);
 		assert chunk != null;
 
 		if (voxel instanceof VoxelSign) {
@@ -52,7 +52,7 @@ public class Sign extends NonTrivialMapper {
 			csWorld.pokeSimple(future);
 
 			try {
-				translateSignText(csWorld.peek(csX, csY, csZ).getComponents().getVoxelComponent("signData"),
+				translateSignText(csWorld.tryPeek(csX, csY, csZ).getComponents().getVoxelComponent("signData"),
 						region.getChunk(minecraftCuurrentChunkXinsideRegion, minecraftCuurrentChunkZinsideRegion), x, y,
 						z);
 			} catch (WorldException e) {

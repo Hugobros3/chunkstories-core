@@ -13,10 +13,10 @@ import xyz.chunkstories.api.voxel.MiningTool
 import xyz.chunkstories.api.voxel.Voxel
 import xyz.chunkstories.api.voxel.materials.VoxelMaterial
 import xyz.chunkstories.api.world.WorldMaster
-import xyz.chunkstories.api.world.cell.CellData
+import xyz.chunkstories.api.world.cell.Cell
 
 /** Represents a mining operation in progress, keeps all the state related to that */
-class BlockMiningOperation(val cell: CellData, internal var tool: MiningTool) {
+class BlockMiningOperation(val cell: Cell, internal var tool: MiningTool) {
     val voxel: Voxel
     val material: VoxelMaterial
     val loc: Location

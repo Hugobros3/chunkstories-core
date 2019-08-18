@@ -14,7 +14,7 @@ import xyz.chunkstories.api.voxel.ChunkMeshRenderingInterface
 import xyz.chunkstories.api.voxel.Voxel
 import xyz.chunkstories.api.voxel.VoxelDefinition
 import xyz.chunkstories.api.voxel.VoxelSide
-import xyz.chunkstories.api.world.cell.CellData
+import xyz.chunkstories.api.world.cell.Cell
 
 class VoxelPane(definition: VoxelDefinition) : Voxel(definition) {
 
@@ -34,7 +34,7 @@ class VoxelPane(definition: VoxelDefinition) : Voxel(definition) {
         }
     }
 
-    fun render(cell: CellData, mesher: ChunkMeshRenderingInterface) {
+    fun render(cell: Cell, mesher: ChunkMeshRenderingInterface) {
         var vox: Voxel?
         vox = cell.getNeightborVoxel(0)
         val connectLeft = vox!!.solid && vox.opaque || vox == this
@@ -104,7 +104,7 @@ class VoxelPane(definition: VoxelDefinition) : Voxel(definition) {
         }
     }
 
-    override fun getCollisionBoxes(info: CellData): Array<Box>? {
+    override fun getCollisionBoxes(info: Cell): Array<Box>? {
 
         var vox: Voxel?
         vox = info.getNeightborVoxel(0)

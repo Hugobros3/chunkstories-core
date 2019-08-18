@@ -20,9 +20,7 @@ import xyz.chunkstories.core.voxel.isOnLadder
 abstract class TraitControlledMovement(entity: Entity) : TraitBasicMovement(entity) {
 
     protected var running: Boolean = false
-
     abstract val backwardsSpeed: Double
-
     abstract val forwardSpeed: Double
 
     open fun tick(controller: LocalPlayer) {

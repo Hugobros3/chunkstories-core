@@ -14,8 +14,7 @@ import xyz.chunkstories.api.voxel.ChunkMeshRenderingInterface
 import xyz.chunkstories.api.voxel.Voxel
 import xyz.chunkstories.api.voxel.VoxelDefinition
 import xyz.chunkstories.api.voxel.VoxelSide
-import xyz.chunkstories.api.world.cell.CellData
-
+import xyz.chunkstories.api.world.cell.Cell
 class VoxelVine(definition: VoxelDefinition) : Voxel(definition), VoxelClimbable {
 
     private val model: Model
@@ -29,7 +28,7 @@ class VoxelVine(definition: VoxelDefinition) : Voxel(definition), VoxelClimbable
         }
     }
 
-    fun render(cell: CellData, mesher: ChunkMeshRenderingInterface) {
+    fun render(cell: Cell, mesher: ChunkMeshRenderingInterface) {
         val meta = cell.metaData
         /*val rotation = when (meta % 4) {
             0 -> 2
@@ -50,7 +49,7 @@ class VoxelVine(definition: VoxelDefinition) : Voxel(definition), VoxelClimbable
         }
     }
 
-    override fun getCollisionBoxes(info: CellData): Array<Box>? {
+    override fun getCollisionBoxes(info: Cell): Array<Box>? {
 
         val meta = info.metaData
         if (meta == 1)

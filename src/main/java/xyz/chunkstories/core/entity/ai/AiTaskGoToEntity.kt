@@ -36,7 +36,7 @@ open class AiTaskGoAtEntity<E: Entity>(ai: AI<E>, val targetEntity: Entity, var 
 
             if (sqrt(rem.x() * rem.x() + rem.z() * rem.z()) > 0.001) {
                 // If they have their feet in water
-                if (entity.world.peekSafely(entity.location.add(0.0, 0.0, 0.0)).voxel.liquid) {
+                if (entity.world.peek(entity.location.add(0.0, 0.0, 0.0)).voxel.liquid) {
                     entity.traits[TraitVelocity::class.java]!!.addVelocity(0.0, 0.20, 0.0)
                 } else
                     entity.traits[TraitVelocity::class.java]!!.addVelocity(0.0, 0.15, 0.0)

@@ -40,7 +40,7 @@ open class TraitBasicMovement(entity: Entity) : Trait(entity) {
             return
 
         // Unloaded chunk ? nothing moves!
-        if (entity.world.getChunkWorldCoordinates(entity.location) == null) {
+        if (entity.world.chunksManager.getChunkWorldCoordinates(entity.location) == null) {
             entityVelocity.setVelocity(Vector3d(0.0))
             acceleration.set(0.0)
             return

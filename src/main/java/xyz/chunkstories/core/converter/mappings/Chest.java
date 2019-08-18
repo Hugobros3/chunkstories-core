@@ -24,7 +24,7 @@ public class Chest extends NonTrivialMapper {
 			MinecraftRegion region, int minecraftCuurrentChunkXinsideRegion, int minecraftCuurrentChunkZinsideRegion,
 			int x, int y, int z) {
 
-		Chunk chunk = csWorld.getChunkWorldCoordinates(csX, csY, csZ);
+		Chunk chunk = csWorld.getChunksManager().getChunkWorldCoordinates(csX, csY, csZ);
 		assert chunk != null;
 
 		csWorld.pokeSimpleSilently(new FutureCell(csWorld, csX, csY, csZ, voxel));

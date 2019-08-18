@@ -32,7 +32,7 @@ class VoxelSmallPlant(definition: VoxelDefinition) : Voxel(definition) {
     override fun tick(cell: EditableCell) {
         if(cell.y == 0)
             return
-        val below = cell.world.peekSafely(cell.x, cell.y - 1, cell.z)
+        val below = cell.world.peek(cell.x, cell.y - 1, cell.z)
         if(!below.voxel.solid || !below.voxel.opaque) {
             cell.voxel.breakBlock(cell, SmallPlantsAutoDestroy, null)
         }

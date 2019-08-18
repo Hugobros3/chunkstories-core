@@ -7,7 +7,7 @@ import org.joml.Vector4f
 import xyz.chunkstories.api.client.Client
 import xyz.chunkstories.api.entity.traits.TraitAnimated
 import xyz.chunkstories.api.entity.traits.TraitRenderable
-import xyz.chunkstories.api.entity.traits.TraitVoxelSelection
+import xyz.chunkstories.api.entity.traits.TraitSight
 import xyz.chunkstories.api.entity.traits.serializable.TraitInventory
 import xyz.chunkstories.api.entity.traits.serializable.TraitSelectedItem
 import xyz.chunkstories.api.graphics.MeshMaterial
@@ -62,7 +62,7 @@ open class EntityHumanoidRenderer(entity: EntityHumanoid, private val customSkin
 
         if(isPlayerEntity) {
             var selectionColor = Vector4f(1f)
-            val selectedBlock = entity.traits[TraitVoxelSelection::class]?.getBlockLookingAt(true, true)
+            val selectedBlock = entity.traits[TraitSight::class]?.getSelectableBlockLookingAt(5.0)?.location
 
             val miningProgress = entity.traits[MinerTrait::class]?.progress
             if(miningProgress != null) {
@@ -71,7 +71,7 @@ open class EntityHumanoidRenderer(entity: EntityHumanoid, private val customSkin
             }
 
             if(selectedBlock != null) {
-                val cell = entity.world.peekSafely(selectedBlock)
+                val cell = entity.world.peek(selectedBlock)
                 val boxes = cell.voxel.getTranslatedCollisionBoxes(cell)
                 if(boxes != null) {
                     for(box in boxes) {
