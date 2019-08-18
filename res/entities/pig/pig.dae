@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="utf-8"?>
+<COLLADA xmlns="http://www.collada.org/2005/11/COLLADASchema" version="1.4.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <asset>
+    <contributor>
+      <author>Blender User</author>
+      <authoring_tool>Blender 2.80.75 commit date:2019-07-29, commit time:14:47, hash:f6cb5f54494e</authoring_tool>
+    </contributor>
+    <created>2019-08-17T17:48:40</created>
+    <modified>2019-08-17T17:48:40</modified>
+    <unit name="meter" meter="1"/>
+    <up_axis>Z_UP</up_axis>
+  </asset>
+  <library_effects>
+    <effect id="Material-effect">
+      <profile_COMMON>
+        <newparam sid="Material_Diffuse_Color-surface">
+          <surface type="2D">
+            <init_from>Material_Diffuse_Color</init_from>
+          </surface>
+        </newparam>
+        <newparam sid="Material_Diffuse_Color-sampler">
+          <sampler2D>
+            <source>Material_Diffuse_Color-surface</source>
+          </sampler2D>
+        </newparam>
+        <technique sid="common">
+          <lambert>
+            <emission>
+              <color sid="emission">0 0 0 1</color>
+            </emission>
+            <diffuse>
+              <texture texture="Material_Diffuse_Color-sampler" texcoord="UVMap"/>
+            </diffuse>
+            <index_of_refraction>
+              <float sid="ior">1.45</float>
+            </index_of_refraction>
+          </lambert>
+        </technique>
+      </profile_COMMON>
+    </effect>
+  </library_effects>
+  <library_images>
+    <image id="Material_Diffuse_Color" name="Material_Diffuse_Color">
+      <init_from>Material%20Diffuse%20Color.png</init_from>
+    </image>
+  </library_images>
+  <library_materials>
+    <material id="Material-material" name="Material">
+      <instance_effect url="#Material-effect"/>
+    </material>
+  </library_materials>
+  <library_geometries>
+    <geometry id="Cube-mesh" name="Cube">
+      <mesh>
+        <source id="Cube-mesh-positions">
+          <float_array id="Cube-mesh-positions-array" count="144">0.75 1 -0.6 0.75 -1 -0.6 -0.7500001 -0.9999998 -0.6 -0.7499997 1 -0.6 0.7500005 0.9999995 0.3 0.7499994 -1.000001 0.3 -0.7500004 -0.9999997 0.3 -0.75 1 0.3 -0.625 0.7 -0.4 -0.625 0.7 0.6 -0.625 1.7 -0.4 -0.625 1.7 0.6 0.625 0.7 -0.4 0.625 0.7 0.6 0.625 1.7 -0.4 0.625 1.7 0.6 -0.709375 -0.9875 -1 -0.709375 -0.9875 -0.4 -0.709375 -0.6125 -1 -0.709375 -0.6125 -0.4 -0.240625 -0.9875 -1 -0.240625 -0.9875 -0.4 -0.240625 -0.6125 -1 -0.240625 -0.6125 -0.4 0.240625 -0.9875 -1 0.240625 -0.9875 -0.4 0.240625 -0.6125 -1 0.240625 -0.6125 -0.4 0.709375 -0.9875 -1 0.709375 -0.9875 -0.4 0.709375 -0.6125 -1 0.709375 -0.6125 -0.4 -0.709375 0.6125 -1 -0.709375 0.6125 -0.4 -0.709375 0.9875 -1 -0.709375 0.9875 -0.4 -0.240625 0.6125 -1 -0.240625 0.6125 -0.4 -0.240625 0.9875 -1 -0.240625 0.9875 -0.4 0.240625 0.6125 -1 0.240625 0.6125 -0.4 0.240625 0.9875 -1 0.240625 0.9875 -0.4 0.709375 0.6125 -1 0.709375 0.6125 -0.4 0.709375 0.9875 -1 0.709375 0.9875 -0.4</float_array>
+          <technique_common>
+            <accessor source="#Cube-mesh-positions-array" count="48" stride="3">
+              <param name="X" type="float"/>
+              <param name="Y" type="float"/>
+              <param name="Z" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="Cube-mesh-normals">
+          <float_array id="Cube-mesh-normals-array" count="48">0 0 -1 0 0 1 1 0 -5.29819e-7 -1.19209e-7 -1 -1.05964e-6 -1 1.98682e-7 -3.31137e-7 3.57628e-7 1 5.29819e-7 -1 0 0 0 1 0 1 0 0 0 -1 0 0 0 1 0 0 -1 1 -5.96046e-7 7.28501e-7 -6.35783e-7 -1 3.53213e-7 -1 2.6491e-7 -2.6491e-7 2.78155e-7 1 0</float_array>
+          <technique_common>
+            <accessor source="#Cube-mesh-normals-array" count="16" stride="3">
+              <param name="X" type="float"/>
+              <param name="Y" type="float"/>
+              <param name="Z" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="Cube-mesh-map-0">
+          <float_array id="Cube-mesh-map-0-array" count="432">0.2487288 0.01420122 0.01407897 0.329783 0.01407897 0.01420116 0.2768869 0.01420116 0.5115368 0.3297829 0.2768869 0.3297829 0.01407903 0.6737672 0.1548689 0.3581854 0.154869 0.6737672 0.492765 0.3581855 0.351975 0.5948718 0.351975 0.3581854 0.323817 0.6737672 0.183027 0.3581854 0.323817 0.3581854 0.6617129 0.3581855 0.520923 0.5948718 0.520923 0.3581854 0.8775909 0.6232742 0.7211576 0.7810651 0.7211576 0.6232742 0.351975 0.8205128 0.5084083 0.6232742 0.5084083 0.8205128 0.1705123 0.7021695 0.01407897 0.8599604 0.01407897 0.7021695 0.5396949 0.2114398 0.6961282 0.01420116 0.6961283 0.2114398 0.8463042 0.555424 0.6898709 0.3581854 0.8463042 0.3581854 0.5365663 0.6232742 0.6929996 0.8205128 0.5365663 0.8205128 0.8744621 0.4812623 0.9331247 0.5759368 0.8744621 0.5759368 0.7242862 0.01420116 0.7976143 0.1088757 0.7242863 0.1088757 0.9331247 0.4528599 0.8744622 0.3581854 0.9331247 0.3581854 0.1986703 0.7021695 0.2719984 0.7968441 0.1986703 0.7968441 0.9241299 0.8094674 0.9827924 0.8834319 0.9241299 0.8834319 0.9241299 0.9118343 0.9827924 0.9857988 0.9241299 0.9857988 0.5256159 0.8489152 0.5842784 0.9435896 0.5256159 0.9435897 0.7211576 0.8094674 0.7944858 0.904142 0.7211576 0.904142 0.905749 0.6232742 0.9644114 0.7179487 0.9057489 0.7179487 0.8257724 0.1372781 0.8991005 0.2319526 0.8257724 0.2319526 0.9272585 0.1372781 0.985921 0.2112426 0.9272585 0.2112426 0.6851779 0.3138067 0.6265154 0.2398422 0.6851779 0.2398422 0.351975 0.8489152 0.4106374 0.9435897 0.351975 0.9435897 0.2719984 0.919921 0.1986703 0.8252465 0.2719984 0.8252465 0.6710988 0.9435897 0.6124363 0.8489151 0.6710988 0.8489151 0.8257724 0.01420116 0.8991004 0.1088757 0.8257724 0.1088757 0.985921 0.3136094 0.9272585 0.239645 0.985921 0.239645 0.1595619 0.9623274 0.1008995 0.8883628 0.1595619 0.8883629 0.4387955 0.8489152 0.4974579 0.9435897 0.4387955 0.9435897 0.8226438 0.8094674 0.8959718 0.904142 0.8226438 0.904142 0.07274144 0.9830374 0.01407897 0.8883628 0.07274144 0.8883628 0.7976143 0.2319526 0.7242862 0.1372781 0.7976143 0.1372781 0.5396949 0.2398422 0.5983574 0.3138067 0.5396949 0.3138067 0.9859209 0.08816564 0.9272584 0.01420116 0.9859209 0.01420116 0.2487288 0.01420122 0.2487289 0.329783 0.01407897 0.329783 0.2768869 0.01420116 0.5115369 0.01420116 0.5115368 0.3297829 0.01407903 0.6737672 0.01407897 0.3581854 0.1548689 0.3581854 0.492765 0.3581855 0.492765 0.5948718 0.351975 0.5948718 0.323817 0.6737672 0.183027 0.6737672 0.183027 0.3581854 0.6617129 0.3581855 0.6617129 0.5948718 0.520923 0.5948718 0.8775909 0.6232742 0.8775909 0.7810651 0.7211576 0.7810651 0.351975 0.8205128 0.351975 0.6232742 0.5084083 0.6232742 0.1705123 0.7021695 0.1705123 0.8599604 0.01407897 0.8599604 0.5396949 0.2114398 0.5396949 0.01420116 0.6961282 0.01420116 0.8463042 0.555424 0.689871 0.555424 0.6898709 0.3581854 0.5365663 0.6232742 0.6929996 0.6232742 0.6929996 0.8205128 0.8744621 0.4812623 0.9331247 0.4812623 0.9331247 0.5759368 0.7242862 0.01420116 0.7976143 0.01420116 0.7976143 0.1088757 0.9331247 0.4528599 0.8744621 0.4528599 0.8744622 0.3581854 0.1986703 0.7021695 0.2719984 0.7021695 0.2719984 0.7968441 0.9241299 0.8094674 0.9827924 0.8094674 0.9827924 0.8834319 0.9241299 0.9118343 0.9827924 0.9118343 0.9827924 0.9857988 0.5256159 0.8489152 0.5842784 0.8489151 0.5842784 0.9435896 0.7211576 0.8094674 0.7944858 0.8094674 0.7944858 0.904142 0.905749 0.6232742 0.9644114 0.6232742 0.9644114 0.7179487 0.8257724 0.1372781 0.8991004 0.1372781 0.8991005 0.2319526 0.9272585 0.1372781 0.985921 0.1372781 0.985921 0.2112426 0.6851779 0.3138067 0.6265154 0.3138067 0.6265154 0.2398422 0.351975 0.8489152 0.4106374 0.8489151 0.4106374 0.9435897 0.2719984 0.919921 0.1986703 0.9199211 0.1986703 0.8252465 0.6710988 0.9435897 0.6124363 0.9435897 0.6124363 0.8489151 0.8257724 0.01420116 0.8991004 0.01420116 0.8991004 0.1088757 0.985921 0.3136094 0.9272585 0.3136094 0.9272585 0.239645 0.1595619 0.9623274 0.1008994 0.9623274 0.1008995 0.8883628 0.4387955 0.8489152 0.4974579 0.8489151 0.4974579 0.9435897 0.8226438 0.8094674 0.8959719 0.8094674 0.8959718 0.904142 0.07274144 0.9830374 0.01407897 0.9830374 0.01407897 0.8883628 0.7976143 0.2319526 0.7242862 0.2319526 0.7242862 0.1372781 0.5396949 0.2398422 0.5983574 0.2398422 0.5983574 0.3138067 0.9859209 0.08816564 0.9272584 0.08816564 0.9272584 0.01420116</float_array>
+          <technique_common>
+            <accessor source="#Cube-mesh-map-0-array" count="216" stride="2">
+              <param name="S" type="float"/>
+              <param name="T" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <vertices id="Cube-mesh-vertices">
+          <input semantic="POSITION" source="#Cube-mesh-positions"/>
+        </vertices>
+        <triangles material="Material-material" count="72">
+          <input semantic="VERTEX" source="#Cube-mesh-vertices" offset="0"/>
+          <input semantic="NORMAL" source="#Cube-mesh-normals" offset="1"/>
+          <input semantic="TEXCOORD" source="#Cube-mesh-map-0" offset="2" set="0"/>
+          <p>0 0 0 2 0 1 3 0 2 4 1 3 6 1 4 5 1 5 4 2 6 1 2 7 0 2 8 5 3 9 2 3 10 1 3 11 2 4 12 7 4 13 3 4 14 0 5 15 7 5 16 4 5 17 9 6 18 10 6 19 8 6 20 11 7 21 14 7 22 10 7 23 15 8 24 12 8 25 14 8 26 13 9 27 8 9 28 12 9 29 14 0 30 8 0 31 10 0 32 11 10 33 13 10 34 15 10 35 17 6 36 18 6 37 16 6 38 19 7 39 22 7 40 18 7 41 23 8 42 20 8 43 22 8 44 21 9 45 16 9 46 20 9 47 22 0 48 16 0 49 18 0 50 19 10 51 21 10 52 23 10 53 25 6 54 26 6 55 24 6 56 27 7 57 30 7 58 26 7 59 31 8 60 28 8 61 30 8 62 29 9 63 24 9 64 28 9 65 30 0 66 24 0 67 26 0 68 27 10 69 29 10 70 31 10 71 33 6 72 34 6 73 32 6 74 35 7 75 38 7 76 34 7 77 39 8 78 36 8 79 38 8 80 37 9 81 32 9 82 36 9 83 38 0 84 32 0 85 34 0 86 35 10 87 37 10 88 39 10 89 41 6 90 42 6 91 40 6 92 43 7 93 46 7 94 42 7 95 47 8 96 44 8 97 46 8 98 45 9 99 40 9 100 44 9 101 46 0 102 40 0 103 42 0 104 43 10 105 45 10 106 47 10 107 0 11 108 1 11 109 2 11 110 4 10 111 7 10 112 6 10 113 4 12 114 5 12 115 1 12 116 5 13 117 6 13 118 2 13 119 2 14 120 6 14 121 7 14 122 0 15 123 3 15 124 7 15 125 9 6 126 11 6 127 10 6 128 11 7 129 15 7 130 14 7 131 15 8 132 13 8 133 12 8 134 13 9 135 9 9 136 8 9 137 14 0 138 12 0 139 8 0 140 11 10 141 9 10 142 13 10 143 17 6 144 19 6 145 18 6 146 19 7 147 23 7 148 22 7 149 23 8 150 21 8 151 20 8 152 21 9 153 17 9 154 16 9 155 22 0 156 20 0 157 16 0 158 19 10 159 17 10 160 21 10 161 25 6 162 27 6 163 26 6 164 27 7 165 31 7 166 30 7 167 31 8 168 29 8 169 28 8 170 29 9 171 25 9 172 24 9 173 30 0 174 28 0 175 24 0 176 27 10 177 25 10 178 29 10 179 33 6 180 35 6 181 34 6 182 35 7 183 39 7 184 38 7 185 39 8 186 37 8 187 36 8 188 37 9 189 33 9 190 32 9 191 38 0 192 36 0 193 32 0 194 35 10 195 33 10 196 37 10 197 41 6 198 43 6 199 42 6 200 43 7 201 47 7 202 46 7 203 47 8 204 45 8 205 44 8 206 45 9 207 41 9 208 40 9 209 46 0 210 44 0 211 40 0 212 43 10 213 41 10 214 45 10 215</p>
+        </triangles>
+      </mesh>
+    </geometry>
+  </library_geometries>
+  <library_controllers>
+    <controller id="Armature_Cube-skin" name="Armature">
+      <skin source="#Cube-mesh">
+        <bind_shape_matrix>0.8 0 0 0 0 1 0 0 0 0 1 1 0 0 0 1</bind_shape_matrix>
+        <source id="Armature_Cube-skin-joints">
+          <Name_array id="Armature_Cube-skin-joints-array" count="10">Bone Bone_001 bll Bone_002 brl Bone_005 fll Bone_007 frl head</Name_array>
+          <technique_common>
+            <accessor source="#Armature_Cube-skin-joints-array" count="10" stride="1">
+              <param name="JOINT" type="name"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="Armature_Cube-skin-bind_poses">
+          <float_array id="Armature_Cube-skin-bind_poses-array" count="160">1 0 -2.3696e-7 1.89568e-7 0 0.9938839 0.1104314 -0.08834511 2.38419e-7 -0.1104314 0.9938838 -0.7951071 0 0 0 1 -0.9056628 0.3970028 0.1488763 -0.1191011 -0.4239994 -0.8479984 -0.3179992 0.2543994 -2.08616e-7 -0.3511235 0.9363293 -0.7490634 0 0 0 1 1 -1.23311e-7 0 0.4 4.97821e-7 0 -1 0.5000003 3.69222e-7 1 0 0.8000001 0 0 0 1 -0.905663 -0.3970032 -0.1488754 0.1191003 0.4239994 -0.8479984 -0.3179993 0.2543994 1.19209e-6 -0.351123 0.9363296 -0.7490637 0 0 0 1 1 0 0 -0.4000002 -4.81805e-7 0 -1 0.5000001 -2.14205e-7 1 0 0.8000001 0 0 0 1 0.9056627 0.3970028 -0.1488761 0.1191009 -0.4239992 0.8479984 -0.3179994 0.2543995 0 0.3511235 0.9363293 -0.7490634 0 0 0 1 1 0 0 0.4 0 0 -1 0.5 0 1 0 -0.8 0 0 0 1 0.6783988 -0.529999 -0.5087988 0.4070391 0.4239992 0.8479984 -0.3179994 0.2543995 0.5999999 1.19209e-7 0.8000002 -0.6400001 0 0 0 1 1 0 0 -0.4000001 0 0 -1 0.5 0 1 0 -0.8 0 0 0 1 1 0 0 0 0 0.8320503 0.5547001 -1.248075 0 -0.5547001 0.8320503 -0.2496151 0 0 0 1</float_array>
+          <technique_common>
+            <accessor source="#Armature_Cube-skin-bind_poses-array" count="10" stride="16">
+              <param name="TRANSFORM" type="float4x4"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="Armature_Cube-skin-weights">
+          <float_array id="Armature_Cube-skin-weights-array" count="68">1 1 1 1 1 1 1 1 0.005302727 0.9946972 0.5271276 0.4728724 0.03252178 0.9674782 0.911372 0.08862799 0.006191909 0.9938081 0.5304867 0.4695133 0.03486257 0.9651374 0.9665345 0.03346544 0.002593934 0.9974061 0.5247612 0.4752388 0.02695679 0.9730433 0.9461922 0.05380773 1 0.4675482 0.5324518 1 0.1987307 0.8012692 1 0.1987307 0.8012692 1 0.4675482 0.5324518 0.02695679 0.9730433 0.9461922 0.05380773 0.002593934 0.9974061 0.5247612 0.4752388 0.03486257 0.9651374 0.9665345 0.03346544 0.006191909 0.9938081 0.5304867 0.4695133 0.03252178 0.9674782 0.911372 0.08862799 0.005302727 0.9946972 0.5271276 0.4728724</float_array>
+          <technique_common>
+            <accessor source="#Armature_Cube-skin-weights-array" count="68" stride="1">
+              <param name="WEIGHT" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <joints>
+          <input semantic="JOINT" source="#Armature_Cube-skin-joints"/>
+          <input semantic="INV_BIND_MATRIX" source="#Armature_Cube-skin-bind_poses"/>
+        </joints>
+        <vertex_weights count="48">
+          <input semantic="JOINT" source="#Armature_Cube-skin-joints" offset="0"/>
+          <input semantic="WEIGHT" source="#Armature_Cube-skin-weights" offset="1"/>
+          <vcount>0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2 2 2 2 2 1 2 1 2 1 2 1 2 2 2 2 2 2 2 2 2 2 2 2 2 </vcount>
+          <v>9 0 9 1 9 2 9 3 9 4 9 5 9 6 9 7 1 8 2 9 1 10 2 11 1 12 2 13 1 14 2 15 1 16 2 17 1 18 2 19 1 20 2 21 1 22 2 23 3 24 4 25 3 26 4 27 3 28 4 29 3 30 4 31 4 32 3 33 4 34 4 35 3 36 4 37 6 38 5 39 6 40 6 41 5 42 6 43 5 44 6 45 5 46 6 47 5 48 6 49 5 50 6 51 7 52 8 53 7 54 8 55 7 56 8 57 7 58 8 59 7 60 8 61 7 62 8 63 7 64 8 65 7 66 8 67</v>
+        </vertex_weights>
+      </skin>
+    </controller>
+  </library_controllers>
+  <library_visual_scenes>
+    <visual_scene id="Scene" name="Scene">
+      <node id="Armature" name="Armature" type="NODE">
+        <matrix sid="transform">1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
+        <node id="Armature_Bone" name="Bone" sid="Bone" type="JOINT">
+          <matrix sid="transform">1 0 2.38419e-7 0 2.63289e-8 0.9938837 -0.1104314 0 -2.3696e-7 0.1104314 0.9938837 0.8 0 0 0 1</matrix>
+          <node id="Armature_head" name="head" sid="head" type="JOINT">
+            <matrix sid="transform">1 -1.09535e-7 -2.11768e-7 7.10543e-15 -7.269e-15 0.8882177 -0.459423 0.9055386 2.38419e-7 0.459423 0.8882177 -3.72529e-8 0 0 0 1</matrix>
+            <extra>
+              <technique profile="blender">
+                <connect sid="connect" type="bool">1</connect>
+                <layer sid="layer" type="string">0</layer>
+                <tip_x sid="tip_x" type="float">0</tip_x>
+                <tip_y sid="tip_y" type="float">0.3</tip_y>
+                <tip_z sid="tip_z" type="float">0.1999999</tip_z>
+              </technique>
+            </extra>
+          </node>
+          <extra>
+            <technique profile="blender">
+              <layer sid="layer" type="string">0</layer>
+              <roll sid="roll" type="float">2.38419e-7</roll>
+            </technique>
+          </extra>
+        </node>
+        <node id="Armature_Bone_001" name="Bone.001" sid="Bone_001" type="JOINT">
+          <matrix sid="transform">-0.9056622 -0.4239991 3.27826e-7 0 0.3970029 -0.8479982 -0.3511234 0 0.1488759 -0.3179994 0.9363291 0.8 0 0 0 1</matrix>
+          <node id="Armature_bll" name="bll" sid="bll" type="JOINT">
+            <matrix sid="transform">-0.9056626 -0.1488764 0.3970026 -2.23517e-8 -0.4239991 0.3179992 -0.8479984 0.9433982 3.87151e-7 -0.9363292 -0.3511234 0 0 0 0 1</matrix>
+            <extra>
+              <technique profile="blender">
+                <connect sid="connect" type="bool">1</connect>
+                <layer sid="layer" type="string">0</layer>
+                <tip_x sid="tip_x" type="float">0</tip_x>
+                <tip_y sid="tip_y" type="float">0</tip_y>
+                <tip_z sid="tip_z" type="float">-0.4</tip_z>
+              </technique>
+            </extra>
+          </node>
+          <extra>
+            <technique profile="blender">
+              <layer sid="layer" type="string">0</layer>
+              <roll sid="roll" type="float">4.915534</roll>
+            </technique>
+          </extra>
+        </node>
+        <node id="Armature_Bone_002" name="Bone.002" sid="Bone_002" type="JOINT">
+          <matrix sid="transform">-0.9056622 0.4239991 6.55651e-7 0 -0.3970033 -0.8479982 -0.3511229 0 -0.1488748 -0.3179994 0.9363291 0.8 0 0 0 1</matrix>
+          <node id="Armature_brl" name="brl" sid="brl" type="JOINT">
+            <matrix sid="transform">-0.9056626 0.1488754 -0.3970031 -2.23517e-8 0.4239992 0.3179993 -0.8479984 0.9433982 6.65753e-7 -0.9363297 -0.3511231 -2.98023e-8 0 0 0 1</matrix>
+            <extra>
+              <technique profile="blender">
+                <connect sid="connect" type="bool">1</connect>
+                <layer sid="layer" type="string">0</layer>
+                <tip_x sid="tip_x" type="float">0</tip_x>
+                <tip_y sid="tip_y" type="float">0</tip_y>
+                <tip_z sid="tip_z" type="float">-0.4</tip_z>
+              </technique>
+            </extra>
+          </node>
+          <extra>
+            <technique profile="blender">
+              <layer sid="layer" type="string">0</layer>
+              <roll sid="roll" type="float">1.36765</roll>
+            </technique>
+          </extra>
+        </node>
+        <node id="Armature_Bone_005" name="Bone.005" sid="Bone_005" type="JOINT">
+          <matrix sid="transform">0.9056625 -0.4239991 7.45058e-8 0 0.3970027 0.8479982 0.3511235 0 -0.1488761 -0.3179994 0.9363291 0.8 0 0 0 1</matrix>
+          <node id="Armature_fll" name="fll" sid="fll" type="JOINT">
+            <matrix sid="transform">0.9056626 0.1488761 0.3970027 -1.49012e-8 -0.4239992 0.3179994 0.8479983 0.9433982 5.08705e-8 -0.9363292 0.3511235 2.98023e-8 0 0 0 1</matrix>
+            <extra>
+              <technique profile="blender">
+                <connect sid="connect" type="bool">1</connect>
+                <layer sid="layer" type="string">0</layer>
+                <tip_x sid="tip_x" type="float">0</tip_x>
+                <tip_y sid="tip_y" type="float">0</tip_y>
+                <tip_z sid="tip_z" type="float">-0.4</tip_z>
+              </technique>
+            </extra>
+          </node>
+          <extra>
+            <technique profile="blender">
+              <layer sid="layer" type="string">0</layer>
+              <roll sid="roll" type="float">0.08064818</roll>
+            </technique>
+          </extra>
+        </node>
+        <node id="Armature_Bone_007" name="Bone.007" sid="Bone_007" type="JOINT">
+          <matrix sid="transform">0.6783988 0.4239991 0.5999998 0 -0.529999 0.8479983 1.19209e-7 0 -0.5087988 -0.3179994 0.8000001 0.8 0 0 0 1</matrix>
+          <node id="Armature_frl" name="frl" sid="frl" type="JOINT">
+            <matrix sid="transform">0.6783987 0.5087988 -0.529999 2.98023e-8 0.4239991 0.3179995 0.8479984 0.9433982 0.5999998 -0.8000002 1.19209e-7 4.47035e-8 0 0 0 1</matrix>
+            <extra>
+              <technique profile="blender">
+                <connect sid="connect" type="bool">1</connect>
+                <layer sid="layer" type="string">0</layer>
+                <tip_x sid="tip_x" type="float">0</tip_x>
+                <tip_y sid="tip_y" type="float">0</tip_y>
+                <tip_z sid="tip_z" type="float">-0.4</tip_z>
+              </technique>
+            </extra>
+          </node>
+          <extra>
+            <technique profile="blender">
+              <layer sid="layer" type="string">0</layer>
+              <roll sid="roll" type="float">0.6435011</roll>
+            </technique>
+          </extra>
+        </node>
+        <node id="Cube" name="Cube" type="NODE">
+          <matrix sid="transform">1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
+          <instance_controller url="#Armature_Cube-skin">
+            <skeleton>#Armature_Bone</skeleton>
+            <skeleton>#Armature_Bone_001</skeleton>
+            <skeleton>#Armature_Bone_002</skeleton>
+            <skeleton>#Armature_Bone_005</skeleton>
+            <skeleton>#Armature_Bone_007</skeleton>
+            <bind_material>
+              <technique_common>
+                <instance_material symbol="Material-material" target="#Material-material">
+                  <bind_vertex_input semantic="UVMap" input_semantic="TEXCOORD" input_set="0"/>
+                </instance_material>
+              </technique_common>
+            </bind_material>
+          </instance_controller>
+        </node>
+      </node>
+    </visual_scene>
+  </library_visual_scenes>
+  <scene>
+    <instance_visual_scene url="#Scene"/>
+  </scene>
+</COLLADA>
