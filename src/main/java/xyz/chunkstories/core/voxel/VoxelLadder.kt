@@ -67,12 +67,12 @@ class VoxelLadder(definition: VoxelDefinition) : Voxel(definition), VoxelClimbab
         val meta = info.metaData
 
         if (meta == 2)
-            return arrayOf(Box(1.0, 1.0, 0.1).translate(0.0, 0.0, 0.9))
+            return arrayOf(Box.fromExtents(1.0, 1.0, 0.1).translate(0.0, 0.0, 0.9))
         if (meta == 3)
-            return arrayOf(Box(1.0, 1.0, 0.1))
+            return arrayOf(Box.fromExtents(1.0, 1.0, 0.1))
         if (meta == 4)
-            return arrayOf(Box(0.1, 1.0, 1.0).translate(0.9, 0.0, 0.0))
-        return if (meta == 5) arrayOf(Box(0.1, 1.0, 1.0)) else super.getCollisionBoxes(info)
+            return arrayOf(Box.fromExtents(0.1, 1.0, 1.0).translate(0.9, 0.0, 0.0))
+        return if (meta == 5) arrayOf(Box.fromExtents(0.1, 1.0, 1.0)) else super.getCollisionBoxes(info)
 
     }
 

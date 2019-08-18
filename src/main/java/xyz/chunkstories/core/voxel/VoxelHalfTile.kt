@@ -54,7 +54,7 @@ class VoxelHalfTile(definition: VoxelDefinition) : Voxel(definition) {
 
     override fun getCollisionBoxes(info: CellData): Array<Box>? {
         // System.out.println("kek");
-        val box2 = Box(1.0, 0.5, 1.0)
+        val box2 = Box.fromExtents(1.0, 0.5, 1.0)
         if (bottomOrTop(info.metaData))
             box2.translate(0.0, -0.0, 0.0)
         else

@@ -38,7 +38,7 @@ class EntityPig(definition: EntityDefinition, world: World) : EntityLiving(defin
 
             override val collisionBoxes: Array<Box>
                 get() {
-                    return arrayOf(Box(1.0, 0.8, 1.0).translate(-0.5, 0.0, -0.5))
+                    return arrayOf(Box.fromExtentsCenteredHorizontal(1.0, 0.8, 1.0))
                 }
 
         }

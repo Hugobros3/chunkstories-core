@@ -84,13 +84,13 @@ class VoxelStairs(definition: VoxelDefinition) : Voxel(definition) {
     override fun getCollisionBoxes(info: CellData): Array<Box>? {
         val meta = info.metaData
         val boxes = arrayOf(
-                Box(1.0, 0.5, 1.0),
+                Box.fromExtents(1.0, 0.5, 1.0),
                 when (meta % 4) {
-                    0 -> Box(0.5, 0.5, 1.0).translate(0.5, -0.0, 0.0)
-                    1 -> Box(0.5, 0.5, 1.0).translate(0.0, -0.0, 0.0)
-                    2 -> Box(1.0, 0.5, 0.5).translate(0.0, -0.0, 0.5)
-                    3 -> Box(1.0, 0.5, 0.5).translate(0.0, -0.0, 0.0)
-                    else -> Box(0.5, 0.5, 1.0).translate(0.5, -0.0, 0.25)
+                    0 -> Box.fromExtents(0.5, 0.5, 1.0).translate(0.5, -0.0, 0.0)
+                    1 -> Box.fromExtents(0.5, 0.5, 1.0).translate(0.0, -0.0, 0.0)
+                    2 -> Box.fromExtents(1.0, 0.5, 0.5).translate(0.0, -0.0, 0.5)
+                    3 -> Box.fromExtents(1.0, 0.5, 0.5).translate(0.0, -0.0, 0.0)
+                    else -> Box.fromExtents(0.5, 0.5, 1.0).translate(0.5, -0.0, 0.25)
                 }
         )
 

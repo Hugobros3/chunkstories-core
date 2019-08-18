@@ -75,7 +75,7 @@ open class EntityHumanoidRenderer(entity: EntityHumanoid, private val customSkin
                 val boxes = cell.voxel.getTranslatedCollisionBoxes(cell)
                 if(boxes != null) {
                     for(box in boxes) {
-                        representationsGobbler.drawCube(Vector3d(box.xPosition, box.yPosition, box.zPosition), Vector3d(box.xPosition + box.xWidth, box.yPosition + box.yHeight, box.zPosition + box.zWidth), selectionColor)
+                        representationsGobbler.drawCube(box.min, box.max, selectionColor)
                     }
                 } else {
                     representationsGobbler.drawCube(Vector3d(selectedBlock), Vector3d(selectedBlock).also { it.add(1.0, 1.0, 1.0) }, selectionColor)

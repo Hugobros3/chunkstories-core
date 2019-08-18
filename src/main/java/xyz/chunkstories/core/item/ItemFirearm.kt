@@ -256,8 +256,7 @@ class ItemFirearm(type: ItemDefinition) : ItemWeapon(type), ItemOverlay, ItemZoo
 
                 // Spawn decal and particles on block the bullet embedded itself in
                 if (shotBlock != null && !brokeLastBlock) {
-                    val shotBlockOuter = entity.world.collisionsManager.raytraceSolidOuter(eyeLocation,
-                            direction, range)
+                    val shotBlockOuter = entity.world.collisionsManager.raytraceSolidOuter(eyeLocation, direction, range)
 
                     if (shotBlockOuter != null) {
                         val normal = shotBlockOuter.sub(shotBlock)

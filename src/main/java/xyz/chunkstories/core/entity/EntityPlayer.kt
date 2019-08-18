@@ -102,6 +102,7 @@ class EntityPlayer(t: EntityDefinition, world: World) : EntityHumanoid(t, world)
         traitVoxelSelection = object : TraitVoxelSelection(this) {
 
             override fun getBlockLookingAt(inside: Boolean, can_overwrite: Boolean): Location? {
+                //TODO trait eye position
                 val eyePosition = traitStance.stance.eyeLevel
 
                 val initialPosition = Vector3d(location)

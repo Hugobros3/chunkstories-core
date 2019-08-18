@@ -17,20 +17,13 @@ import xyz.chunkstories.api.entity.traits.serializable.TraitRotation
 import xyz.chunkstories.api.input.Input
 import xyz.chunkstories.api.item.ItemDefinition
 import xyz.chunkstories.api.item.inventory.ItemPile
-import xyz.chunkstories.api.physics.Box
-import xyz.chunkstories.api.physics.EntityHitbox
 import xyz.chunkstories.api.sound.SoundSource.Mode
-import xyz.chunkstories.api.world.World
 import xyz.chunkstories.api.world.WorldMaster
-import xyz.chunkstories.api.world.cell.CellData
-import xyz.chunkstories.api.world.cell.EditableCell
 import xyz.chunkstories.core.entity.traits.TraitEyeLevel
-import org.joml.Matrix4f
 import org.joml.Vector3d
 import org.joml.Vector3dc
-import org.joml.Vector3f
 
-class ItemMeleeWeapon(type: ItemDefinition) : ItemWeapon(type) {
+class ItemMeleeWeapon(definition: ItemDefinition) : ItemWeapon(definition) {
     internal val swingDuration: Long
     internal val hitTime: Long
     internal val range: Double
@@ -45,13 +38,13 @@ class ItemMeleeWeapon(type: ItemDefinition) : ItemWeapon(type) {
 
     init {
 
-        swingDuration = Integer.parseInt(type.resolveProperty("swingDuration", "100")).toLong()
-        hitTime = Integer.parseInt(type.resolveProperty("hitTime", "100")).toLong()
+        swingDuration = Integer.parseInt(definition.resolveProperty("swingDuration", "100")).toLong()
+        hitTime = Integer.parseInt(definition.resolveProperty("hitTime", "100")).toLong()
 
-        range = java.lang.Double.parseDouble(type.resolveProperty("range", "3"))
-        damage = java.lang.Float.parseFloat(type.resolveProperty("damage", "100"))
+        range = java.lang.Double.parseDouble(definition.resolveProperty("range", "3"))
+        damage = java.lang.Float.parseFloat(definition.resolveProperty("damage", "100"))
 
-        itemRenderScale = java.lang.Float.parseFloat(type.resolveProperty("itemRenderScale", "2"))
+        itemRenderScale = java.lang.Float.parseFloat(definition.resolveProperty("itemRenderScale", "2"))
     }
 
     /*public ItemRenderer getCustomItemRenderer(ItemRenderer fallbackRenderer) {
@@ -101,7 +94,7 @@ class ItemMeleeWeapon(type: ItemDefinition) : ItemWeapon(type) {
             }
 
             return true
-        } else if (input.name == "shootGun" && entity.world is WorldMaster) {
+        } else if (input.name == "punch" && entity.world is WorldMaster) {
             // Actually hits
             val direction = entity.traits[TraitRotation::class]?.directionLookingAt ?: return false
 
@@ -109,20 +102,18 @@ class ItemMeleeWeapon(type: ItemDefinition) : ItemWeapon(type) {
             eyeLocation.y += entity.traits[TraitEyeLevel::class]?.eyeLevel ?: 0.0
 
             // Find wall collision
-            var shotBlock = entity.world.collisionsManager.raytraceSolid(eyeLocation, direction!!, range)
+            var shotBlock = entity.world.collisionsManager.raytraceSolid(eyeLocation, direction, range)
             val nearestLocation = Vector3d()
 
             // Loops to try and break blocks
             while (entity.world is WorldMaster && shotBlock != null) {
                 val peek = entity.world.peekSafely(shotBlock)
 
-                if (!peek.voxel!!.isAir() && peek.voxel!!.voxelMaterial.resolveProperty("bulletBreakable") != null
-                        && peek.voxel!!.voxelMaterial.resolveProperty("bulletBreakable") == "true") {
+                if (!peek.voxel.isAir() && peek.voxel.voxelMaterial.resolveProperty("bulletBreakable") != null && peek.voxel.voxelMaterial.resolveProperty("bulletBreakable") == "true") {
                     // TODO: Spawn an event to check if it's okay
 
                     // Destroy it
                     peek.voxel = definition.store.parent.voxels.air
-                    //peek.setVoxel(definition.store().parent().voxels().air())
 
                     spawnDebris(entity, direction, shotBlock)
                     entity.world.soundManager.playSoundEffect("sounds/environment/glass.ogg", Mode.NORMAL,
@@ -206,7 +197,6 @@ class ItemMeleeWeapon(type: ItemDefinition) : ItemWeapon(type) {
                             for (hitBox in hitboxes.hitBoxes) {
                                 val hitPoint = hitBox.lineIntersection(eyeLocation, direction) ?: continue
 
-// Deal damage
                                 health.damage(pileAsDamageCause(pile), hitBox, damage)
 
                                 // Spawn blood particles

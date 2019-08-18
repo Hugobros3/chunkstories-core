@@ -2,28 +2,24 @@ package xyz.chunkstories.core.entity
 
 import org.joml.Math
 import org.joml.Vector3d
+import xyz.chunkstories.api.Location
 import xyz.chunkstories.api.client.IngameClient
 import xyz.chunkstories.api.client.LocalPlayer
 import xyz.chunkstories.api.entity.traits.TraitInteractible
 import xyz.chunkstories.api.entity.traits.serializable.*
-import xyz.chunkstories.api.events.player.voxel.PlayerVoxelModificationEvent
-import xyz.chunkstories.api.exceptions.world.WorldException
 import xyz.chunkstories.api.graphics.structs.Camera
 import xyz.chunkstories.api.graphics.structs.makeCamera
 import xyz.chunkstories.api.input.Input
 import xyz.chunkstories.api.item.ItemVoxel
 import xyz.chunkstories.api.item.interfaces.ItemZoom
-import xyz.chunkstories.api.player.Player
-import xyz.chunkstories.api.sound.SoundSource
+import xyz.chunkstories.api.physics.RayQuery
+import xyz.chunkstories.api.physics.trace
 import xyz.chunkstories.api.util.kotlin.toVec3f
 import xyz.chunkstories.api.world.WorldClient
 import xyz.chunkstories.api.world.WorldMaster
-import xyz.chunkstories.api.world.cell.FutureCell
 import xyz.chunkstories.core.CoreOptions
 import xyz.chunkstories.core.gui.CreativeBlockSelector
-import xyz.chunkstories.core.item.BlockMiningOperation
 import java.lang.Exception
-
 
 internal class EntityPlayerController(private val entityPlayer: EntityPlayer) : TraitControllable(entityPlayer) {
 
@@ -33,13 +29,13 @@ internal class EntityPlayerController(private val entityPlayer: EntityPlayer) : 
     override fun onEachFrame(): Boolean {
         val controller = controller
         if (controller is LocalPlayer && controller.hasFocus()) {
-            moveCamera(controller)
+            rotateCameraAccordingToMouse(controller)
             return true
         }
         return false
     }
 
-    fun moveCamera(controller: LocalPlayer) {
+    fun rotateCameraAccordingToMouse(controller: LocalPlayer) {
         if (entityPlayer.traitHealth.isDead)
             return
         if (!controller.inputsManager.mouse.isGrabbed)
@@ -127,6 +123,10 @@ internal class EntityPlayerController(private val entityPlayer: EntityPlayer) : 
         initialPosition.add(Vector3d(0.0, entityPlayer.traitStance.stance.eyeLevel, 0.0))
 
         val direction = entityPlayer.traitRotation.directionLookingAt
+
+        val ray = RayQuery(Location(entityPlayer.world, initialPosition), direction, 0.0, 256.0)
+        val pointingAt = ray.trace()
+        println(pointingAt)
 
         val i = entityPlayer.world.collisionsManager.rayTraceEntities(initialPosition, direction, maxLen)
         while (i.hasNext()) {

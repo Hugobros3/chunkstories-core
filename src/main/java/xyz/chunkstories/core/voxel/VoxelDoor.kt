@@ -149,29 +149,29 @@ class VoxelDoor(definition: VoxelDefinition) : Voxel(definition) {
         val isOpen = (info.metaData shr 0) and 0x1 == 1
         val hingeSide = (info.metaData shr 1) and 0x1 == 1
 
-        val boxes = arrayOf(Box(0.125, 1.0, 1.0).translate(0.125 / 2, 0.0, 0.5))
+        val boxes = arrayOf(Box.fromExtents(0.125, 1.0, 1.0).translate(0.125 / 2, 0.0, 0.5))
 
         if (isOpen) {
             when (facingPassed + (if (hingeSide) 4 else 0)) {
-                0 -> boxes[0] = Box(1.0, 1.0, 0.125).translate(0.5, 0.0, 0.125 / 2)
-                1 -> boxes[0] = Box(0.125, 1.0, 1.0).translate(0.125 / 2, 0.0, 0.5)
-                2 -> boxes[0] = Box(1.0, 1.0, 0.125).translate(0.5, 0.0, 1.0 - 0.125 / 2)
-                3 -> boxes[0] = Box(0.125, 1.0, 1.0).translate(1.0 - 0.125 / 2, 0.0, 0.5)
-                4 -> boxes[0] = Box(1.0, 1.0, 0.125).translate(0.5, 0.0, 1.0 - 0.125 / 2)
-                5 -> boxes[0] = Box(0.125, 1.0, 1.0).translate(1.0 - 0.125 / 2, 0.0, 0.5)
-                6 -> boxes[0] = Box(1.0, 1.0, 0.125).translate(0.5, 0.0, 0.125 / 2)
-                7 -> boxes[0] = Box(0.125, 1.0, 1.0).translate(0.125 / 2, 0.0, 0.5)
+                0 -> boxes[0] = Box.fromExtents(1.0, 1.0, 0.125).translate(0.5, 0.0, 0.125 / 2)
+                1 -> boxes[0] = Box.fromExtents(0.125, 1.0, 1.0).translate(0.125 / 2, 0.0, 0.5)
+                2 -> boxes[0] = Box.fromExtents(1.0, 1.0, 0.125).translate(0.5, 0.0, 1.0 - 0.125 / 2)
+                3 -> boxes[0] = Box.fromExtents(0.125, 1.0, 1.0).translate(1.0 - 0.125 / 2, 0.0, 0.5)
+                4 -> boxes[0] = Box.fromExtents(1.0, 1.0, 0.125).translate(0.5, 0.0, 1.0 - 0.125 / 2)
+                5 -> boxes[0] = Box.fromExtents(0.125, 1.0, 1.0).translate(1.0 - 0.125 / 2, 0.0, 0.5)
+                6 -> boxes[0] = Box.fromExtents(1.0, 1.0, 0.125).translate(0.5, 0.0, 0.125 / 2)
+                7 -> boxes[0] = Box.fromExtents(0.125, 1.0, 1.0).translate(0.125 / 2, 0.0, 0.5)
             }
         } else {
             when (facingPassed) {
-                0 -> boxes[0] = Box(0.125, 1.0, 1.0).translate(0.125 / 2, 0.0, 0.5)
-                1 -> boxes[0] = Box(1.0, 1.0, 0.125).translate(0.5, 0.0, 1.0 - 0.125 / 2)
-                2 -> boxes[0] = Box(0.125, 1.0, 1.0).translate(1.0 - 0.125 / 2, 0.0, 0.5)
-                3 -> boxes[0] = Box(1.0, 1.0, 0.125).translate(0.5, 0.0, 0.125 / 2)
+                0 -> boxes[0] = Box.fromExtents(0.125, 1.0, 1.0).translate(0.125 / 2, 0.0, 0.5)
+                1 -> boxes[0] = Box.fromExtents(1.0, 1.0, 0.125).translate(0.5, 0.0, 1.0 - 0.125 / 2)
+                2 -> boxes[0] = Box.fromExtents(0.125, 1.0, 1.0).translate(1.0 - 0.125 / 2, 0.0, 0.5)
+                3 -> boxes[0] = Box.fromExtents(1.0, 1.0, 0.125).translate(0.5, 0.0, 0.125 / 2)
             }
         }
 
-        boxes[0].translate(-boxes[0].xWidth / 2, 0.0, -boxes[0].zWidth / 2)
+        boxes[0].translate(-boxes[0].extents.x() / 2, 0.0, -boxes[0].extents.z() / 2)
 
         return boxes
     }

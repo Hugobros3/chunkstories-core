@@ -1,2 +1,3 @@
 #We use a virtual input to signal to the WorldMaster that we want to shoot
 virtual shootGun
+virtual punch

@@ -38,8 +38,8 @@ class VoxelVine(definition: VoxelDefinition) : Voxel(definition), VoxelClimbable
             3 -> 3
             else -> -1
         }*/
-        for(rotation in 0..3) {
-            if((meta shr rotation) and 0x1 == 0)
+        for (rotation in 0..3) {
+            if ((meta shr rotation) and 0x1 == 0)
                 continue
 
             val matrix = Matrix4f()
@@ -54,12 +54,12 @@ class VoxelVine(definition: VoxelDefinition) : Voxel(definition), VoxelClimbable
 
         val meta = info.metaData
         if (meta == 1)
-            return arrayOf(Box(1.0, 1.0, 0.1).translate(0.0, 0.0, 0.9))
+            return arrayOf(Box.fromExtents(1.0, 1.0, 0.1).translate(0.0, 0.0, 0.9))
         if (meta == 2)
-            return arrayOf(Box(0.1, 1.0, 1.0).translate(0.0, 0.0, 0.0))
+            return arrayOf(Box.fromExtents(0.1, 1.0, 1.0).translate(0.0, 0.0, 0.0))
         if (meta == 4)
-            return arrayOf(Box(1.0, 1.0, 0.1).translate(0.0, 0.0, 0.0))
-        return if (meta == 8) arrayOf(Box(0.1, 1.0, 1.0).translate(0.9, 0.0, 0.0)) else super.getCollisionBoxes(info)
+            return arrayOf(Box.fromExtents(1.0, 1.0, 0.1).translate(0.0, 0.0, 0.0))
+        return if (meta == 8) arrayOf(Box.fromExtents(0.1, 1.0, 1.0).translate(0.9, 0.0, 0.0)) else super.getCollisionBoxes(info)
 
     }
 }
