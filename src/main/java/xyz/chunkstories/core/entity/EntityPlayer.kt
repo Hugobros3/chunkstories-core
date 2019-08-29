@@ -27,6 +27,7 @@ import xyz.chunkstories.core.entity.traits.MinerTrait
 import xyz.chunkstories.core.entity.traits.TraitEyeLevel
 import xyz.chunkstories.core.entity.traits.TraitTakesFallDamage
 import org.joml.*
+import xyz.chunkstories.api.entity.DamageCause
 import xyz.chunkstories.api.gui.Layer
 import xyz.chunkstories.api.gui.inventory.InventorySlot
 import xyz.chunkstories.api.gui.inventory.InventoryUI
@@ -40,7 +41,7 @@ import java.util.HashMap
  * Core/Vanilla player, has all the functionality you'd want from it:
  * creative/survival mode, flying and walking controller...
  */
-class EntityPlayer(t: EntityDefinition, world: World) : EntityHumanoid(t, world), WorldModificationCause, InventoryOwner {
+class EntityPlayer(t: EntityDefinition, world: World) : EntityHumanoid(t, world), WorldModificationCause, InventoryOwner, DamageCause {
     private val controllerComponent: TraitControllable
 
     protected var traitInventory: TraitInventory
@@ -108,7 +109,8 @@ class EntityPlayer(t: EntityDefinition, world: World) : EntityHumanoid(t, world)
 
         }
 
-        PlayerOverlay(this)
+        TraitHandsCombat(this, 15f, 375)
+        TraitHealthFoodOverlay(this)
         TraitDontSave(this)
 
         object : TraitEyeLevel(this) {
@@ -118,8 +120,8 @@ class EntityPlayer(t: EntityDefinition, world: World) : EntityHumanoid(t, world)
 
         }
 
-        PlayerMovementController(this)
-        controllerComponent = EntityPlayerController(this)
+        TraitMaybeFlyControlledMovement(this)
+        controllerComponent = PlayerController(this)
 
         object : TraitInteractible(this) {
             override fun handleInteraction(entity: Entity, input: Input): Boolean {

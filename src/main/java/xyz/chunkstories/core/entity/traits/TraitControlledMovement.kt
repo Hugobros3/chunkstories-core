@@ -55,11 +55,13 @@ abstract class TraitControlledMovement(entity: Entity) : TraitBasicMovement(enti
 
         if (focus) {
             if (entityVelocity.velocity.y <= 0.02) {
-                if (!inLiquid && controller.inputsManager.getInputByName("jump")!!.isPressed
-                        && collisions.isOnGround) {
-                    jump(0.15)
-                } else if (inLiquid && controller.inputsManager.getInputByName("jump")!!.isPressed)
-                    jump(0.05)
+                if (controller.inputsManager.getInputByName("jump")!!.isPressed) {
+                    println("jumped ${collisions.isOnGround} and ${!inLiquid} ${collisions.isStuckInEntity}")
+                    if (collisions.isOnGround && !inLiquid)
+                        jump(0.15)
+                    else if (inLiquid && controller.inputsManager.getInputByName("jump")!!.isPressed)
+                        jump(0.05)
+                }
             }
         }
 
@@ -95,7 +97,7 @@ abstract class TraitControlledMovement(entity: Entity) : TraitBasicMovement(enti
 
     }
 
-    fun figureOutStrafeAngle(controller: Controller) : Double {
+    fun figureOutStrafeAngle(controller: Controller): Double {
         var strafeAngle = 0.0
         if (controller.inputsManager.getInputByName("forward")!!.isPressed) {
             if (controller.inputsManager.getInputByName("left")!!.isPressed)

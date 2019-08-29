@@ -53,6 +53,18 @@ abstract class EntityLiving(t: EntityDefinition, world: World) : Entity(t, world
         if (should_tick_movement)
             this.traits[TraitBasicMovement::class]?.tick()
 
+        traitLocation?.let {
+            if(it.get().x.isNaN() || it.get().y.isNaN() || it.get().z.isNaN()) {
+                it.set(world.defaultSpawnLocation)
+            }
+        }
+
+        traitVelocity?.let {
+            if(it.velocity.x.isNaN() || it.velocity.y.isNaN() || it.velocity.z.isNaN()) {
+                it.velocity.set(0.0, 0.0, 0.0)
+            }
+        }
+
         traits[TraitTakesFallDamage::class]?.tick()
     }
 }

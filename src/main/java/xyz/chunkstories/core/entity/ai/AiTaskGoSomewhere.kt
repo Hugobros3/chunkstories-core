@@ -34,8 +34,6 @@ class AiTaskGoSomewhere<E : Entity>(ai: AI<E>, internal var location: Location, 
 
         val entitySpeed = 0.02
 
-        // System.out.println("CUCK +"+delta);
-
         delta.normalize().mul(entitySpeed)
 
         entity.traits[TraitBasicMovement::class.java]!!.targetVelocity.x = delta.x()
@@ -48,7 +46,6 @@ class AiTaskGoSomewhere<E : Entity>(ai: AI<E>, internal var location: Location, 
             val rem = entity.traits[TraitCollidable::class.java]!!
                     .canMoveWithCollisionRestrain(entity.traits[TraitBasicMovement::class.java]!!.targetVelocity)
             // rem.setY(0.0D);
-
             if (Math.sqrt(rem.x() * rem.x() + rem.z() * rem.z()) > 0.001)
             // if(rem.length() > 0.001)
                 entity.traits[TraitVelocity::class.java]!!.addVelocity(0.0, 0.15, 0.0)

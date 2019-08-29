@@ -5,7 +5,7 @@ import xyz.chunkstories.api.entity.traits.TraitCollidable
 import xyz.chunkstories.api.world.cell.Cell
 
 fun Entity.blocksWithin(): Collection<Cell> {
-    val entityBox = traits[TraitCollidable::class]?.translatedBoundingBox ?: return emptyList()
+    val entityBox = this.getTranslatedBoundingBox() ?: return emptyList()
 
     return world.getVoxelsWithin(entityBox).mapNotNull {
         if (it == null)

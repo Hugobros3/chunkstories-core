@@ -10,7 +10,8 @@ import xyz.chunkstories.api.entity.traits.serializable.TraitVelocity
 import xyz.chunkstories.core.entity.traits.TraitControlledMovement
 import xyz.chunkstories.core.entity.traits.TraitHumanoidStance
 
-internal class PlayerMovementController(val entityPlayer: EntityPlayer) : TraitControlledMovement(entityPlayer) {
+/** A trait that extend normal controlled movement to enable flying too ! */
+internal class TraitMaybeFlyControlledMovement(val entityPlayer: EntityPlayer) : TraitControlledMovement(entityPlayer) {
 
     override val forwardSpeed: Double
         get() = if (!running || entityPlayer.traitStance.stance === TraitHumanoidStance.HumanoidStance.CROUCHING) 0.06 else 0.09

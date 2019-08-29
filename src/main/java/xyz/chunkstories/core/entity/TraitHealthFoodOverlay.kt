@@ -11,7 +11,7 @@ import xyz.chunkstories.api.item.interfaces.ItemOverlay
 import xyz.chunkstories.api.world.WorldClient
 import xyz.chunkstories.core.entity.traits.TraitFoodLevel
 
-class PlayerOverlay(entity: Entity) : TraitHasOverlay(entity) {
+class TraitHealthFoodOverlay(entity: Entity) : TraitHasOverlay(entity) {
 
     private fun clamp(f: Float, min: Float, max: Float) = if (f < min) min else if (f > max) max else f
 

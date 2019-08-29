@@ -5,6 +5,7 @@ import xyz.chunkstories.api.client.Client
 import xyz.chunkstories.api.entity.EntityDefinition
 import xyz.chunkstories.api.entity.traits.TraitCollidable
 import xyz.chunkstories.api.entity.traits.TraitRenderable
+import xyz.chunkstories.api.entity.traits.serializable.TraitHealth
 import xyz.chunkstories.api.entity.traits.serializable.TraitRotation
 import xyz.chunkstories.api.graphics.MeshMaterial
 import xyz.chunkstories.api.graphics.representation.ModelInstance
@@ -45,7 +46,7 @@ class EntityPig(definition: EntityDefinition, world: World) : EntityLiving(defin
     }
 
     override fun getBoundingBox(): Box {
-        return super.getBoundingBox()
+        return Box.fromExtentsCentered(2.0, 2.0, 2.0)
     }
 }
 
@@ -60,6 +61,9 @@ class PigRenderer(pig: EntityPig) : TraitRenderable<EntityPig>(pig) {
         val rotH = -90f + (entity.traits[TraitRotation::class]?.horizontalRotation ?: Math.random().toFloat())
         matrix.rotate(rotH / 180 * Math.PI.toFloat(), 0f, 1f, 0f)
         val position = ModelPosition(matrix)
+
+        if(entity.traits[TraitHealth::class]?.isDead == true)
+            matrix.scale(1f, -1f, 1f)
 
         val isPlayerEntity = (entity.world.gameContext as? Client)?.ingame?.player?.controlledEntity == this.entity
 

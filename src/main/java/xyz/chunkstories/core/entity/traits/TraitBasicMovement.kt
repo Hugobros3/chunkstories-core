@@ -21,15 +21,6 @@ open class TraitBasicMovement(entity: Entity) : Trait(entity) {
     var acceleration = Vector3d()
     var targetVelocity = Vector3d(0.0)
 
-    /*val isInWater: Boolean
-        get() {
-            for (cell in entity.world.getVoxelsWithin(entity.getTranslatedBoundingBox())) {
-                if (cell.voxel?.liquid == true)
-                    return true
-            }
-            return false
-        }*/
-
     open fun tick() {
         val collisions = entity.traits[TraitCollidable::class.java]
 
@@ -99,8 +90,7 @@ open class TraitBasicMovement(entity: Entity) : Trait(entity) {
         velocity.add(acceleration)
 
         // Eventually moves
-        val remainingToMove = entity.world.collisionsManager.tryMovingEntityWithCollisions(entity,
-                entity.location, velocity)
+        val remainingToMove = entity.world.collisionsManager.tryMovingEntityWithCollisions(entity, entity.location, velocity)
         var remaining2d = Vector2d(remainingToMove.x(), remainingToMove.z())
 
         // Auto-step logic
@@ -121,15 +111,13 @@ open class TraitBasicMovement(entity: Entity) : Trait(entity) {
             while (d < 0.5) {
                 // I don't want any of this to reflect on the object, because it causes ugly
                 // jumps in the animation
-                val canMoveUp = entity.world.collisionsManager.runEntityAgainstWorldVoxelsAndEntities(entity,
-                        entity.location, Vector3d(0.0, d, 0.0))
+                val canMoveUp = entity.world.collisionsManager.runEntityAgainstWorldVoxelsAndEntities(entity, entity.location, Vector3d(0.0, d, 0.0))
                 // It can go up that bit
                 if (canMoveUp.length() == 0.0) {
                     // Would it help with being stuck ?
                     val tryFromHigher = Vector3d(entity.location)
                     tryFromHigher.add(Vector3d(0.0, d, 0.0))
-                    val blockedMomentumRemaining = entity.world.collisionsManager
-                            .runEntityAgainstWorldVoxelsAndEntities(entity, tryFromHigher, blockedMomentum)
+                    val blockedMomentumRemaining = entity.world.collisionsManager.runEntityAgainstWorldVoxelsAndEntities(entity, tryFromHigher, blockedMomentum)
                     // If length of remaining momentum < of what we requested it to do, that means
                     // it *did* go a bit further away
                     if (blockedMomentumRemaining.length() < blockedMomentum.length()) {
@@ -139,8 +127,7 @@ open class TraitBasicMovement(entity: Entity) : Trait(entity) {
                         afterJump.sub(blockedMomentumRemaining)
 
                         // land distance = whatever is left of our -0.55 delta when it hits the ground
-                        val landDistance = entity.world.collisionsManager
-                                .runEntityAgainstWorldVoxelsAndEntities(entity, afterJump, Vector3d(0.0, -d, 0.0))
+                        val landDistance = entity.world.collisionsManager.runEntityAgainstWorldVoxelsAndEntities(entity, afterJump, Vector3d(0.0, -d, 0.0))
                         afterJump.add(Vector3d(0.0, -d, 0.0))
                         afterJump.sub(landDistance)
 

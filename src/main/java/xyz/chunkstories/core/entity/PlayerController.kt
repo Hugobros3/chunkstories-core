@@ -18,9 +18,8 @@ import xyz.chunkstories.api.world.WorldMaster
 import xyz.chunkstories.api.world.chunk.ChunkCell
 import xyz.chunkstories.core.CoreOptions
 import xyz.chunkstories.core.gui.CreativeBlockSelector
-import java.lang.Exception
 
-internal class EntityPlayerController(private val entityPlayer: EntityPlayer) : TraitControllable(entityPlayer) {
+internal class PlayerController(private val entityPlayer: EntityPlayer) : TraitControllable(entityPlayer) {
 
     var lastPX = -1.0
     var lastPY = -1.0
@@ -142,15 +141,15 @@ internal class EntityPlayerController(private val entityPlayer: EntityPlayer) : 
         when (lookingAt) {
             is RayResult.Hit.EntityHit -> {
                 val observedEntity = lookingAt.entity
-                if(observedEntity != entity && observedEntity.traits[TraitInteractible::class]?.handleInteraction(entity, input) == true) {
+                if (observedEntity != entity && observedEntity.traits[TraitInteractible::class]?.handleInteraction(entity, input) == true) {
                     return true
                 }
             }
             is RayResult.Hit.VoxelHit -> {
                 val cell = lookingAt.cell
                 // Should always be true !
-                if(cell is ChunkCell) {
-                    if(cell.voxel.handleInteraction(entity, cell, input)) {
+                if (cell is ChunkCell) {
+                    if (cell.voxel.handleInteraction(entity, cell, input)) {
                         return true
                     }
                 }
@@ -162,8 +161,15 @@ internal class EntityPlayerController(private val entityPlayer: EntityPlayer) : 
             // See if the item handles the interaction
             if (itemInHand.item.onControllerInput(entityPlayer, itemInHand, input, controller!!))
                 return true
-        } else {
+        }
 
+        if (input.name == "mouse.left") {
+            when (lookingAt) {
+                is RayResult.Hit.EntityHit -> {
+                    val targetEntity = lookingAt.entity
+                    entity.traits[TraitHandsCombat::class]?.tryAttack(targetEntity, lookingAt.part)
+                }
+            }
         }
 
         if (entityPlayer.world is WorldMaster && lookingAt is RayResult.Hit.VoxelHit) {
