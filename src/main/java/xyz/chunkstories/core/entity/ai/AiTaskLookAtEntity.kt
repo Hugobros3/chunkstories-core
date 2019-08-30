@@ -29,7 +29,7 @@ class AiTaskLookAtEntity<E: Entity>(ai: AI<E>, val targetEntity: EntityHumanoid,
             return
         }
 
-        val delta = entity.location.sub(targetEntity.location)
+        val delta = targetEntity.location.sub(entity.location)
         entity.lookAt(delta)
         //makeEntityLookAt(entity, delta)
 

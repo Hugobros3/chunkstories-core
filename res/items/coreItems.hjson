@@ -20,6 +20,15 @@
             miningEfficiency: 1.0
         }
 
+        iron_sword: {
+            class: xyz.chunkstories.core.item.ItemMeleeWeapon
+            warmup: 150
+            cooldownMillis: 350
+            reach: 6.0
+            damage: 30
+            attackSound: "sounds/item/sword_swing.ogg"
+        }
+
         bread: {
             class: xyz.chunkstories.core.item.ItemFood
             calories: 20

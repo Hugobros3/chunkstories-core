@@ -33,7 +33,9 @@ import xyz.chunkstories.api.gui.inventory.InventorySlot
 import xyz.chunkstories.api.gui.inventory.InventoryUI
 import xyz.chunkstories.api.item.inventory.Inventory
 import xyz.chunkstories.api.physics.Box
+import xyz.chunkstories.api.sound.SoundSource
 import xyz.chunkstories.core.voxel.isOnLadder
+import java.lang.Math
 
 import java.util.HashMap
 
@@ -145,7 +147,14 @@ class EntityPlayer(t: EntityDefinition, world: World) : EntityHumanoid(t, world)
 
         MinerTrait(this)
 
-        traitHealth = TraitPlayerHealth(this)
+        traitHealth = object : EntityHumanoidHealth(this) {
+            override fun playDamageSound() {
+                if (!isDead) {
+                    val i = 1 + Math.random().toInt() * 3
+                    entity.world.soundManager.playSoundEffect("sounds/entities/human/hurt$i.ogg", SoundSource.Mode.NORMAL, entity.location, Math.random().toFloat() * 0.4f + 0.8f, 5.0f)
+                }
+            }
+        }
 
         val variant = ColorsTools.getUniqueColorCode(name) % 6
         val aaTchoum = HashMap<String, String>()

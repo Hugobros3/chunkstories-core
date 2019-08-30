@@ -12,13 +12,17 @@ import kotlin.math.sqrt
 open class AiTaskGoAtEntity<E: Entity>(ai: AI<E>, val targetEntity: Entity, var maxDistance: Float, var previousTask: AiTask<E>, var entitySpeed: Double = 0.02) : AiTask<E>(ai) {
     override fun execute() {
 
+        val delta = targetEntity.location.sub(entity.location)
+
         // When entity is too far (or dead), give up
         if (targetEntity.traits[TraitHealth::class.java]?.isDead == true || targetEntity.location.distance(entity.location) > maxDistance) {
             ai.currentTask = previousTask
             return
         }
 
-        val delta = targetEntity.location.sub(entity.location)
+        if(delta.length() == 0.0) {
+            return
+        }
 
         //makeEntityLookAt(entity, Vector3d(delta))
         entity.lookAt(delta)

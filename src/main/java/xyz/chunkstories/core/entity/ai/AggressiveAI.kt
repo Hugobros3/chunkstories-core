@@ -48,7 +48,7 @@ abstract class AggressiveAI<E>(entity: E, private val targetsTypes: Collection<C
                 if (targetsTypes.contains(entityToLook.javaClass)) {
                     aggroBark()
 
-                    return entity
+                    return entityToLook
                 }
             }
         }

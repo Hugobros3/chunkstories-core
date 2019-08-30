@@ -19,7 +19,7 @@ open class TraitMeleeCombat<E>(entity: E, val naturalWeapon: MeleeWeapon?) : Tra
 
     override fun handleInput(input: Input): Boolean {
         if (input.name == "mouse.left") {
-            val weapon = entity.traits[TraitSelectedItem::class]?.selectedItem as? MeleeWeapon ?: naturalWeapon
+            val weapon = entity.traits[TraitSelectedItem::class]?.selectedItem?.item as? MeleeWeapon ?: naturalWeapon
             if (weapon != null && ongoingAttack == null) {
                 val lookingAt = entity.traits[TraitSight::class]?.getLookingAt(5.0) ?: throw Exception("TraitMeleeCombat: Entity lacks a TraitSight !")
                 when (lookingAt) {

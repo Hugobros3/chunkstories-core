@@ -34,9 +34,16 @@ class EntityPig(definition: EntityDefinition, world: World) : EntityLiving(defin
     init {
         TraitBasicMovement(this)
         PigRenderer(this)
+        object : TraitHealth(this) {
+            override fun playDamageSound() {
+                if (!isDead) {
+                    val i = 1 + Math.random().toInt() * 3
+                    entity.world.soundManager.playSoundEffect("sounds/entities/pig/hurt$i.ogg", SoundSource.Mode.NORMAL, entity.location, Math.random().toFloat() * 0.4f + 0.8f, 5.0f)
+                }
+            }
+        }
 
         object : TraitCollidable(this@EntityPig) {
-
             override val collisionBoxes: Array<Box>
                 get() {
                     return arrayOf(Box.fromExtentsCenteredHorizontal(1.0, 0.8, 1.0))
@@ -87,7 +94,7 @@ class PigRenderer(pig: EntityPig) : TraitRenderable<EntityPig>(pig) {
 
 class PigAi(pig: EntityPig) : GenericAI<EntityPig>(pig) {
     override fun bark() {
-        entity.world.soundManager.playSoundEffect("entities/pig/groink.ogg",
+        entity.world.soundManager.playSoundEffect("sounds/entities/pig/groink.ogg",
                 SoundSource.Mode.NORMAL, entity.location, (0.9 + Math.random() * 0.2).toFloat(), 1.0f)
     }
 

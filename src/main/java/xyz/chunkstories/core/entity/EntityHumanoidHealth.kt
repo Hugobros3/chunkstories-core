@@ -27,9 +27,6 @@ internal open class EntityHumanoidHealth(entity: Entity) : TraitHealth(entity) {
 
         damage *= 0.5f
 
-        entity.world.soundManager
-                .playSoundEffect("sounds/entities/flesh.ogg", SoundSource.Mode.NORMAL, entity.location, Math.random().toFloat() * 0.4f + 0.4f, 1f)
-
         return super.damage(cause, null, damage)
     }
 }
