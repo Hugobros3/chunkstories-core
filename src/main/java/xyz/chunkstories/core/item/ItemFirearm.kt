@@ -244,7 +244,7 @@ class ItemFirearm(type: ItemDefinition) : ItemWeapon(type), ItemOverlay, ItemZoo
                         //peek.setVoxel(voxel.store().air())
 
                         brokeLastBlock = true
-                        ItemMeleeWeapon.spawnDebris(entity, direction, shotBlock)
+                        //ItemMeleeWeapon.spawnDebris(entity, direction, shotBlock)
                         entity.world.soundManager.playSoundEffect("sounds/environment/glass.ogg", Mode.NORMAL,
                                 shotBlock, Math.random().toFloat() * 0.2f + 0.9f, 1.0f)
 
@@ -335,7 +335,7 @@ class ItemFirearm(type: ItemDefinition) : ItemWeapon(type), ItemOverlay, ItemZoo
                                 for (hitBox in hitboxes.hitBoxes) {
                                     val hitPoint = hitBox.lineIntersection(eyeLocation, direction) ?: continue
 
-// System.out.println("shot" + hitBox.getName());
+                                    // System.out.println("shot" + hitBox.getName());
 
                                     // Deal damage
                                     health.damage(pileAsDamageCause(pile), hitBox, damage.toFloat())

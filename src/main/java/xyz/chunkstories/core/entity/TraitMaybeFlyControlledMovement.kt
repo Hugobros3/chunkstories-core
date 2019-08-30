@@ -2,7 +2,6 @@ package xyz.chunkstories.core.entity
 
 import org.joml.Vector3d
 import xyz.chunkstories.api.client.LocalPlayer
-import xyz.chunkstories.api.entity.Controller
 import xyz.chunkstories.api.entity.traits.TraitCollidable
 import xyz.chunkstories.api.entity.traits.serializable.TraitHealth
 import xyz.chunkstories.api.entity.traits.serializable.TraitRotation
@@ -22,7 +21,7 @@ internal class TraitMaybeFlyControlledMovement(val entityPlayer: EntityPlayer) :
     var oldStyleFlyControls = false
     var toggleFlyControlsPressed = false
 
-    override fun tick(controller: LocalPlayer) {
+    override fun tickMovementWithController(controller: LocalPlayer) {
         val toggleFlyControlsPressed = controller.inputsManager.getInputByName("toggleFlyControls")!!.isPressed
         if(toggleFlyControlsPressed && !this.toggleFlyControlsPressed)
             oldStyleFlyControls = !oldStyleFlyControls
@@ -56,7 +55,7 @@ internal class TraitMaybeFlyControlledMovement(val entityPlayer: EntityPlayer) :
                 entityPlayer.traitStance.set(TraitHumanoidStance.HumanoidStance.STANDING)
         }
 
-        super.tick(controller)
+        super.tickMovementWithController(controller)
     }
 
     var lastJumpTap = 0L
@@ -87,11 +86,11 @@ internal class TraitMaybeFlyControlledMovement(val entityPlayer: EntityPlayer) :
         }
         holdingJump = controller.inputsManager.getInputByName("jump")!!.isPressed
 
+        //TODO reorganise this nonsense
         if(!isCurrentlyFlying) {
             move(controller)
             return
         }
-
 
         var horizontalSpeed = 0.0
 

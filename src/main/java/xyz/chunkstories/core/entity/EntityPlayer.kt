@@ -109,12 +109,18 @@ class EntityPlayer(t: EntityDefinition, world: World) : EntityHumanoid(t, world)
 
         }
 
-        TraitHandsCombat(this, 15f, 375)
+        val fists = object : MeleeWeapon {
+            override val damage = 15f
+            override val warmupMillis = 20
+            override val cooldownMillis = 180
+            override val reach = 5.0
+            override val attackSound = "sounds/entities/human/punch_attack.ogg"
+        }
+        TraitMeleeCombat(this, fists)
         TraitHealthFoodOverlay(this)
         TraitDontSave(this)
 
         object : TraitEyeLevel(this) {
-
             override val eyeLevel: Double
                 get() = traitStance.stance.eyeLevel
 
@@ -150,16 +156,7 @@ class EntityPlayer(t: EntityDefinition, world: World) : EntityHumanoid(t, world)
 
     // Server-side updating
     override fun tick() {
-
         val world = world
-
-        // if(world instanceof WorldMaster)
-        traits[MinerTrait::class]?.tickTrait()
-
-        // Tick item in hand if one such exists
-        val pileSelected = this.traits[TraitSelectedItem::class]?.selectedItem
-        if (pileSelected != null)
-            pileSelected.item.tickInHand(this, pileSelected)
 
         // Auto-pickups items on the ground
         if (world is WorldMaster && world.ticksElapsed % 60L == 0L) {
@@ -182,54 +179,6 @@ class EntityPlayer(t: EntityDefinition, world: World) : EntityHumanoid(t, world)
                         world.removeEntity(e)
                 }
             }
-        }
-
-        if (world is WorldMaster) {
-            // Food/health subsystem handled here decrease over time
-
-            // Take damage when starving
-            // TODO: move to trait
-            if (world.ticksElapsed % 100L == 0L) {
-                if (traitFoodLevel.getValue() == 0f)
-                    traitHealth.damage(TraitFoodLevel.HUNGER_DAMAGE_CAUSE, 1f)
-                else {
-                    // 27 minutes to start starving at 0.1 starveFactor
-                    // Takes 100hp / ( 0.6rtps * 0.1 hp/hit )
-
-                    // Starve slowly if inactive
-                    var starve = 0.03f
-
-                    // Walking drains you
-                    if (this.traitVelocity.velocity.length() > 0.3) {
-                        starve = 0.06f
-                        // Running is even worse
-                        if (this.traitVelocity.velocity.length() > 0.7)
-                            starve = 0.15f
-                    }
-
-                    val newfoodLevel = traitFoodLevel.getValue() - starve
-                    traitFoodLevel.setValue(newfoodLevel)
-                }
-            }
-
-            // It restores hp
-            // TODO move to trait
-            if (traitFoodLevel.getValue() > 20 && !traitHealth.isDead) {
-                if (traitHealth.getHealth() < traitHealth.maxHealth) {
-                    traitHealth.setHealth(traitHealth.getHealth() + 0.01f)
-
-                    val newfoodLevel = traitFoodLevel.getValue() - 0.01f
-                    traitFoodLevel.setValue(newfoodLevel)
-                }
-            }
-
-            // Being on a ladder resets your jump height
-            if (this.isOnLadder())
-                traits[TraitTakesFallDamage::class]?.resetFallDamage()
-
-            // So does flying
-            if (traitFlyingMode.get())
-                traits[TraitTakesFallDamage::class]?.resetFallDamage()
         }
 
         super.tick()

@@ -21,7 +21,6 @@ import xyz.chunkstories.api.graphics.representation.ModelInstance
 import xyz.chunkstories.api.voxel.MiningTool
 
 class ItemMiningTool(type: ItemDefinition) : Item(type), MiningTool {
-
     override val toolTypeName: String = type.resolveProperty("toolType", "pickaxe")
     override val miningEfficiency: Float = java.lang.Float.parseFloat(type.resolveProperty("miningEfficiency", "0.5"))
 

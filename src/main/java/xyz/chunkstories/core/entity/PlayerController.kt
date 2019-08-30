@@ -90,6 +90,13 @@ internal class PlayerController(private val entityPlayer: EntityPlayer) : TraitC
         }
 
     override fun onControllerInput(input: Input): Boolean {
+        // Traits can handle inputs
+        for (i in (0 until entity.traits.byId.size).reversed()) {
+            val trait = entity.traits.byId[i]
+            if(trait.handleInput(input))
+                return true
+        }
+
         val controller = controller
 
         // We are moving inventory bringup here !
@@ -106,33 +113,6 @@ internal class PlayerController(private val entityPlayer: EntityPlayer) : TraitC
 
             return true
         }
-
-
-        //var maxLen = 1024.0
-        //val diff = Vector3d(lookingAt).sub(entityPlayer.location)
-        //maxLen = diff.length()
-
-        /*val initialPosition = Vector3d(entityPlayer.location)
-        initialPosition.add(Vector3d(0.0, entityPlayer.traitStance.stance.eyeLevel, 0.0))
-
-        val direction = entityPlayer.traitRotation.directionLookingAt*/
-
-        /*val ray = RayQuery(Location(entityPlayer.world, initialPosition), direction, 0.0, 256.0)
-        val pointingAt = ray.trace()
-        println(pointingAt)*/
-
-        /*val i = entityPlayer.world.collisionsManager.rayTraceEntities(initialPosition, direction, maxLen)
-        while (i.hasNext()) {
-            val e = i.next()
-            if (e !== entityPlayer && e.traits[TraitInteractible::class]?.handleInteraction(entityPlayer, input) == true)
-                return true
-        }*/// Spawn new itemPile in his inventory
-        //val item = entityPlayer.world.gameContext.content.items().getItemDefinition("item_voxel")!!.newItem<ItemVoxel>()
-        //item.voxel = voxel
-        //item.voxelMeta = peekedCell.metaData
-        // Here goes generic entity response to interaction
-
-        // n/a
 
         // Then we check if the world minds being interacted with
         // Creative mode features building and picking.
@@ -163,14 +143,14 @@ internal class PlayerController(private val entityPlayer: EntityPlayer) : TraitC
                 return true
         }
 
-        if (input.name == "mouse.left") {
+        /*if (input.name == "mouse.left") {
             when (lookingAt) {
                 is RayResult.Hit.EntityHit -> {
                     val targetEntity = lookingAt.entity
-                    entity.traits[TraitHandsCombat::class]?.tryAttack(targetEntity, lookingAt.part)
+                    entity.traits[TraitMeleeCombat::class]?.tryAttack(targetEntity, lookingAt.part)
                 }
             }
-        }
+        }*/
 
         if (entityPlayer.world is WorldMaster && lookingAt is RayResult.Hit.VoxelHit) {
             // Creative mode features building and picking.

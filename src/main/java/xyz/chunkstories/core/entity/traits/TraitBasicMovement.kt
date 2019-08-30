@@ -6,14 +6,17 @@
 
 package xyz.chunkstories.core.entity.traits
 
+import org.joml.Vector2d
+import org.joml.Vector3d
 import xyz.chunkstories.api.entity.Entity
 import xyz.chunkstories.api.entity.traits.Trait
 import xyz.chunkstories.api.entity.traits.TraitCollidable
+import xyz.chunkstories.api.entity.traits.serializable.TraitControllable
 import xyz.chunkstories.api.entity.traits.serializable.TraitHealth
 import xyz.chunkstories.api.entity.traits.serializable.TraitRotation
 import xyz.chunkstories.api.entity.traits.serializable.TraitVelocity
-import org.joml.Vector2d
-import org.joml.Vector3d
+import xyz.chunkstories.api.world.WorldClient
+import xyz.chunkstories.api.world.WorldMaster
 import xyz.chunkstories.core.voxel.isInLiquid
 
 open class TraitBasicMovement(entity: Entity) : Trait(entity) {
@@ -21,7 +24,27 @@ open class TraitBasicMovement(entity: Entity) : Trait(entity) {
     var acceleration = Vector3d()
     var targetVelocity = Vector3d(0.0)
 
-    open fun tick() {
+    override final fun tick() {
+        val world = entity.world
+
+        // Are we the global authority ?
+        val has_global_authority = world is WorldMaster
+
+        // Does this entity has a controller ?
+        val controller = entity.traits[TraitControllable::class]?.controller
+
+        // Are we a client, that controller ?
+        val owns_entity = world is WorldClient && controller === world.client.player
+
+        // Servers get to tick all the entities that aren't controlled; the entities
+        // that are are updated by their respective clients
+        val should_tick_movement = owns_entity || has_global_authority && controller == null
+
+        if(should_tick_movement)
+            tickMovement()
+    }
+
+    open fun tickMovement() {
         val collisions = entity.traits[TraitCollidable::class.java]
 
         val entityVelocity = entity.traits[TraitVelocity::class.java]
@@ -49,7 +72,7 @@ open class TraitBasicMovement(entity: Entity) : Trait(entity) {
         //val inWater = isInWater
         val inLiquid = entity.isInLiquid()
 
-        if(entity.traits[TraitHealth::class]?.let { it.isDead } == true)
+        if (entity.traits[TraitHealth::class]?.let { it.isDead } == true)
             targetVelocity = Vector3d(0.0)
 
         acceleration = Vector3d(targetVelocity.x() - velocity.x(), 0.0, targetVelocity.z() - velocity.z())
@@ -155,7 +178,7 @@ open class TraitBasicMovement(entity: Entity) : Trait(entity) {
     }
 
     fun jump(force: Double) {
-        entity.traits[TraitVelocity::class]?.let {ev ->
+        entity.traits[TraitVelocity::class]?.let { ev ->
             val velocity = ev.velocity
             velocity.y += force
         }

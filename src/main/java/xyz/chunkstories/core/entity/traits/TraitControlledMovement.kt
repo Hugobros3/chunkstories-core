@@ -23,7 +23,7 @@ abstract class TraitControlledMovement(entity: Entity) : TraitBasicMovement(enti
     abstract val backwardsSpeed: Double
     abstract val forwardSpeed: Double
 
-    open fun tick(controller: LocalPlayer) {
+    open fun tickMovementWithController(controller: LocalPlayer) {
         val collisions = entity.traits[TraitCollidable::class.java] ?: return
 
         val entityHealth = entity.traits[TraitHealth::class.java] ?: return
@@ -35,23 +35,8 @@ abstract class TraitControlledMovement(entity: Entity) : TraitBasicMovement(enti
 
         val focus = controller.hasFocus()
 
-        //val inWater = isInWater
-        //var onLadder = false
         val climbing = entity.isOnLadder()
         val inLiquid = entity.isInLiquid()
-
-        /*all@ for (vctx in entity.world.getVoxelsWithin(entity.getTranslatedBoundingBox())) {
-            if (vctx.voxel is VoxelClimbable) {
-                for(box in vctx.voxel.getTranslatedCollisionBoxes(vctx) ?: continue) {
-                //for (box in vctx.translatedCollisionBoxes!!) {
-                    // TODO use actual collision model of the entity here
-                    if (box.collidesWith(entity.getTranslatedBoundingBox())) {
-                        onLadder = true
-                        break@all
-                    }
-                }
-            }
-        }*/
 
         if (focus) {
             if (entityVelocity.velocity.y <= 0.02) {
@@ -93,8 +78,7 @@ abstract class TraitControlledMovement(entity: Entity) : TraitBasicMovement(enti
         targetVelocity.x = Math.sin((entityRotation.horizontalRotation + strafeAngle) / 180f * Math.PI) * horizontalSpeed
         targetVelocity.z = Math.cos((entityRotation.horizontalRotation + strafeAngle) / 180f * Math.PI) * horizontalSpeed
 
-        super.tick()
-
+        super.tickMovement()
     }
 
     fun figureOutStrafeAngle(controller: Controller): Double {
@@ -119,14 +103,14 @@ abstract class TraitControlledMovement(entity: Entity) : TraitBasicMovement(enti
         return strafeAngle
     }
 
-    override fun tick() {
+    override fun tickMovement() {
         val controller = entity.traits[TraitControllable::class]?.controller
 
         // Consider player inputs...
         if (controller != null && controller is LocalPlayer) {
-            tick(controller)
+            tickMovementWithController(controller)
         } else { // no player ? just let it sit
-            super.tick()
+            super.tickMovement()
         }
     }
 }

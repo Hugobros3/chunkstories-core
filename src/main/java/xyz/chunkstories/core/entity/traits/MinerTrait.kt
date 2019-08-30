@@ -36,7 +36,7 @@ class MinerTrait(entity: Entity) : Trait(entity) {
             throw RuntimeException("Sorry but only entities implementing WorldModificationCause may be miners.")
     }
 
-    fun tickTrait() {
+    override fun tick() {
         val tool = hands
 
         val world = entity.world

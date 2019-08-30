@@ -82,13 +82,6 @@ abstract class EntityHumanoid(t: EntityDefinition, world: World) : EntityLiving(
         TraitWalkingSounds(this)
     }
 
-    override fun tick() {
-        // Tick : will move the entity, solve velocity/acceleration and so on
-        super.tick()
-
-        this.traits[TraitWalkingSounds::class]?.handleWalkingEtcSounds()
-    }
-
     override fun getBoundingBox(): Box {
         return if (traitHealth.isDead) Box.fromExtentsCenteredHorizontal(1.6, 1.0, 1.6) else Box.fromExtentsCenteredHorizontal(1.0, if (traitStance.stance === HumanoidStance.CROUCHING) 1.5 else 2.0, 1.0)
     }

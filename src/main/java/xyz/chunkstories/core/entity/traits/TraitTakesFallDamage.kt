@@ -10,7 +10,11 @@ import xyz.chunkstories.api.entity.DamageCause
 import xyz.chunkstories.api.entity.Entity
 import xyz.chunkstories.api.entity.traits.Trait
 import xyz.chunkstories.api.entity.traits.TraitCollidable
+import xyz.chunkstories.api.entity.traits.serializable.TraitFlyingMode
 import xyz.chunkstories.api.entity.traits.serializable.TraitHealth
+import xyz.chunkstories.api.world.WorldMaster
+import xyz.chunkstories.core.voxel.isInLiquid
+import xyz.chunkstories.core.voxel.isOnLadder
 
 class TraitTakesFallDamage(entity: Entity) : Trait(entity) {
 
@@ -21,25 +25,25 @@ class TraitTakesFallDamage(entity: Entity) : Trait(entity) {
         lastStandingHeight = java.lang.Double.NaN
     }
 
-    fun tick() {
-        val collisions = entity.traits[TraitCollidable::class.java] ?: return
+    override fun tick() {
+        if (entity.world is WorldMaster) {
+            // Ladders, water and flying allows to bypass fall damage
+            if (entity.isOnLadder() || entity.isInLiquid() || entity.traits[TraitFlyingMode::class]?.get() == true)
+                resetFallDamage()
 
-        // TODO water & vines cancel that
+            val collisions = entity.traits[TraitCollidable::class.java] ?: return
+            if (collisions.isOnGround) {
+                if (!wasStandingLastTick && !java.lang.Double.isNaN(lastStandingHeight)) {
+                    val fallDistance = lastStandingHeight - entity.location.y()
+                        if (fallDistance > 5) {
+                            val fallDamage = (fallDistance * fallDistance / 2).toFloat()
+                            entity.traits[TraitHealth::class]?.damage(DamageCause.DAMAGE_CAUSE_FALL, fallDamage)
+                        }
 
-        // Fall damage
-        if (collisions.isOnGround) {
-            if (!wasStandingLastTick && !java.lang.Double.isNaN(lastStandingHeight)) {
-                val fallDistance = lastStandingHeight - entity.location.y()
-                if (fallDistance > 0) {
-                    if (fallDistance > 5) {
-                        val fallDamage = (fallDistance * fallDistance / 2).toFloat()
-                        //println(this.toString() + "Took " + fallDamage + " hp of fall damage")
-                        entity.traits[TraitHealth::class]?.damage(DamageCause.DAMAGE_CAUSE_FALL, fallDamage)
-                    }
                 }
+                lastStandingHeight = entity.location.y()
             }
-            lastStandingHeight = entity.location.y()
+            this.wasStandingLastTick = collisions.isOnGround
         }
-        this.wasStandingLastTick = collisions.isOnGround
     }
 }

@@ -24,47 +24,11 @@ abstract class EntityLiving(t: EntityDefinition, world: World) : Entity(t, world
     var traitHealth: TraitHealth
 
     init {
-
         traitVelocity = TraitVelocity(this)
         traitRotation = TraitRotation(this)
         traitHealth = TraitHealth(this)
 
         // Adds the trait that makes it so these entities take fall damage
         TraitTakesFallDamage(this)
-    }
-
-    override fun tick() {
-        if (world is WorldMaster)
-            this.traitHealth.removeCorpseAfterDelay()
-
-        // Are we the global authority ?
-        val has_global_authority = world is WorldMaster
-
-        // Does this entity has a controller ?
-        val controller = this.traits[TraitControllable::class]?.controller
-
-        // Are we a client, that controller ?
-        val owns_entity = world is WorldClient && controller === world.client.player
-
-        // Servers get to tick all the entities that aren't controlled; the entities
-        // that are are updated by their respective clients
-        val should_tick_movement = owns_entity || has_global_authority && controller == null
-
-        if (should_tick_movement)
-            this.traits[TraitBasicMovement::class]?.tick()
-
-        traitLocation?.let {
-            if(it.get().x.isNaN() || it.get().y.isNaN() || it.get().z.isNaN()) {
-                it.set(world.defaultSpawnLocation)
-            }
-        }
-
-        traitVelocity?.let {
-            if(it.velocity.x.isNaN() || it.velocity.y.isNaN() || it.velocity.z.isNaN()) {
-                it.velocity.set(0.0, 0.0, 0.0)
-            }
-        }
-
-        traits[TraitTakesFallDamage::class]?.tick()
     }
 }
