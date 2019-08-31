@@ -23,31 +23,31 @@ import xyz.chunkstories.core.entity.traits.TraitWalkingSounds
  * to match the skeleton bones where this is the case
  */
 private fun Box.rootOnTop(): Box {
-    this.translate(0.0, -this.min.y, 0.0)
+    this.translate(0.0, -(this.max.y - this.min.y), 0.0)
     return this
 }
 
 abstract class EntityHumanoid(t: EntityDefinition, world: World) : EntityLiving(t, world) {
-    var traitHitboxes: TraitHitboxes
-    var traitAnimation: TraitAnimated
+    val traitHitboxes: TraitHitboxes
+    val traitAnimation: TraitAnimated
     val traitStance: TraitHumanoidStance
 
     init {
 
         /** A bunch of boxes that follow the bones of the model during animations */
         val hitboxes = arrayOf(
-                EntityHitbox(this, Box.fromExtentsCenteredHorizontal(0.30, 0.675, 0.5), "boneTorso"),
+                EntityHitbox(this, Box.fromExtentsCenteredHorizontal(0.5, 0.675, 0.3), "boneTorso"),
                 EntityHitbox(this, Box.fromExtentsCenteredHorizontal(0.5, 0.5, 0.5), "boneHead"),
                 EntityHitbox(this, Box.fromExtentsCenteredHorizontal(0.2, 0.375, 0.2).rootOnTop(), "boneArmRU"),
                 EntityHitbox(this, Box.fromExtentsCenteredHorizontal(0.2, 0.375, 0.2).rootOnTop(), "boneArmLU"),
                 EntityHitbox(this, Box.fromExtentsCenteredHorizontal(0.2, 0.3, 0.2).rootOnTop(), "boneArmRD"),
                 EntityHitbox(this, Box.fromExtentsCenteredHorizontal(0.2, 0.3, 0.2).rootOnTop(), "boneArmLD"),
-                EntityHitbox(this, Box.fromExtentsCenteredHorizontal(0.3, 0.375, 0.25).rootOnTop(), "boneLegRU"),
-                EntityHitbox(this, Box.fromExtentsCenteredHorizontal(0.3, 0.375, 0.25).rootOnTop(), "boneLegLU"),
-                EntityHitbox(this, Box.fromExtentsCenteredHorizontal(0.3, 0.375, 0.25).rootOnTop(), "boneLegRD"),
-                EntityHitbox(this, Box.fromExtentsCenteredHorizontal(0.3, 0.375, 0.25).rootOnTop(), "boneLegLD"),
-                EntityHitbox(this, Box.fromExtentsCenteredHorizontal(0.35, 0.075, 0.25).rootOnTop(), "boneFootL"),
-                EntityHitbox(this, Box.fromExtentsCenteredHorizontal(0.35, 0.075, 0.25).rootOnTop(), "boneFootR"))
+                EntityHitbox(this, Box.fromExtentsCenteredHorizontal(0.25, 0.375, 0.3).rootOnTop(), "boneLegRU"),
+                EntityHitbox(this, Box.fromExtentsCenteredHorizontal(0.25, 0.375, 0.3).rootOnTop(), "boneLegLU"),
+                EntityHitbox(this, Box.fromExtentsCenteredHorizontal(0.25, 0.375, 0.3).rootOnTop(), "boneLegRD"),
+                EntityHitbox(this, Box.fromExtentsCenteredHorizontal(0.25, 0.375, 0.3).rootOnTop(), "boneLegLD"),
+                EntityHitbox(this, Box.fromExtentsCenteredHorizontal(0.25, 0.075, 0.35).rootOnTop(), "boneFootL"),
+                EntityHitbox(this, Box.fromExtentsCenteredHorizontal(0.25, 0.075, 0.35).rootOnTop(), "boneFootR"))
 
         /** Humanoids can have different stances */
         this.traitStance = TraitHumanoidStance(this)

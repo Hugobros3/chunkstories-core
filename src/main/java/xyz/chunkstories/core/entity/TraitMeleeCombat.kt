@@ -1,5 +1,6 @@
 package xyz.chunkstories.core.entity
 
+import xyz.chunkstories.api.client.IngameClient
 import xyz.chunkstories.api.entity.DamageCause
 import xyz.chunkstories.api.entity.Entity
 import xyz.chunkstories.api.entity.traits.Trait
@@ -22,6 +23,7 @@ open class TraitMeleeCombat<E>(entity: E, val naturalWeapon: MeleeWeapon?) : Tra
             val weapon = entity.traits[TraitSelectedItem::class]?.selectedItem?.item as? MeleeWeapon ?: naturalWeapon
             if (weapon != null && ongoingAttack == null) {
                 val lookingAt = entity.traits[TraitSight::class]?.getLookingAt(5.0) ?: throw Exception("TraitMeleeCombat: Entity lacks a TraitSight !")
+                //(entity.world.gameContext as? IngameClient)?.print("lookingAt: $lookingAt")
                 when (lookingAt) {
                     is RayResult.Hit.EntityHit -> {
                         attack(weapon, lookingAt.entity, lookingAt.part)
@@ -57,7 +59,7 @@ open class TraitMeleeCombat<E>(entity: E, val naturalWeapon: MeleeWeapon?) : Tra
             attackKnockback.mul(knockback * 0.2)
             attackKnockback.y = knockback * 0.2
 
-            println("attackKnockback: $attackKnockback")
+            //println("attackKnockback: $attackKnockback")
 
             ev.addVelocity(attackKnockback)
         }
