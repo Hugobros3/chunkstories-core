@@ -17,10 +17,6 @@ class AiTaskLookArround<E : Entity>(ai: AI<E>, var lookAtNearbyEntities: Double)
     var lookAtEntityCoolDown = 60 * 5
 
     override fun execute() {
-        // if(entity.traits.get(TraitRotation.class).getHorizontalRotation() ==
-        // Float.NaN)
-        // entity.traits.get(TraitRotation.class).setRotation(0.0, 0.0);
-
         if (Math.random() > 0.990) {
             targetH = entity.traits[TraitRotation::class.java]!!.horizontalRotation + (Math.random() * 2.0 - 1.0) * 30f
 

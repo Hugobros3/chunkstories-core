@@ -17,8 +17,6 @@ class ItemMeleeWeapon(definition: ItemDefinition) : Item(definition), MeleeWeapo
     override val reach: Double
     override val attackSound: String?
 
-    //internal val itemRenderScale: Float
-
     init {
         cooldownMillis = definition.resolveProperty("cooldownMillis", "100").toDouble().toInt()
         warmupMillis = definition.resolveProperty("warmupMillis", "0").toDouble().toInt()

@@ -3,6 +3,7 @@ package xyz.chunkstories.core.entity.pig
 import org.joml.Matrix4f
 import xyz.chunkstories.api.client.Client
 import xyz.chunkstories.api.entity.EntityDefinition
+import xyz.chunkstories.api.entity.ai.TraitAi
 import xyz.chunkstories.api.entity.traits.TraitCollidable
 import xyz.chunkstories.api.entity.traits.TraitRenderable
 import xyz.chunkstories.api.entity.traits.serializable.TraitHealth
@@ -23,13 +24,7 @@ import xyz.chunkstories.core.entity.traits.TraitHumanoidStance
 
 class EntityPig(definition: EntityDefinition, world: World) : EntityLiving(definition, world) {
     private val ai: PigAi = PigAi(this)
-
-    override fun tick() {
-        if (world is WorldMaster)
-            ai.tick()
-
-        super.tick()
-    }
+    internal val traitAi = TraitAi(this, ai)
 
     init {
         TraitBasicMovement(this)

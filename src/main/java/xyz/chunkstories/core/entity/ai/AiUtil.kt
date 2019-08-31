@@ -9,6 +9,9 @@ import xyz.chunkstories.api.entity.traits.serializable.TraitRotation
 fun Entity.lookAt(delta: Vector3d) {
     val deltaHorizontal = Vector2f(delta.x().toFloat(), delta.z().toFloat())
     val deltaVertical = Vector2f(deltaHorizontal.length(), delta.y().toFloat())
+    if(deltaHorizontal.length() == 0.0f)
+        return
+
     deltaHorizontal.normalize()
     deltaVertical.normalize()
 
