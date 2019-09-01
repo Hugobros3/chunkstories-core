@@ -18,12 +18,12 @@
 			}
 		}
 
-		drygrass: {
+		/*drygrass: {
 			textures: {
 				top: ~_top
 				sides: ~_side
 			}
-		}
+		}*/
 
 		/** Grass blades */
 		grass_prop: {

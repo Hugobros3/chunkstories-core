@@ -71,22 +71,35 @@ vec3 getAtmosphericScattering(vec3 v, vec3 sunVec, vec3 upVec, float sunspotStre
 	float uDotV = dot(upVec, -v); //float lDotV = dot(l, v);
 	
 	float opticalDepth    = gDepth(uDotV);	//Get depth from viewpoint
+	float opticalDepth2    = gDepth(uDotV);	//Get depth from viewpoint
+
+    // slightly fuzz this to avoid nasty artifact
+    // i have no idea how this sky actually works
+    // may the shader gods accept my repentence
+    if(opticalDepth == opticalSunDepth) {
+        opticalDepth += 0.1;
+    }
 	
 	float phaseRayleigh = rPhase(lDotV);		//Rayleigh Phase
-	float phaseMie = mPhase(lDotV, opticalDepth);	//Mie Phase
+	float phaseMie = mPhase(lDotV, opticalDepth2);	//Mie Phase
 	
 	vec3 viewAbsorb   = aAbs(rCoeff, mCoeff, opticalDepth);
 	vec3 sunCoeff     = aRef(rCoeff, mCoeff, opticalSunDepth);
 	vec3 viewCoeff    = aRef(rCoeff, mCoeff, opticalDepth);
-	vec3 viewScatter  = aRef(rCoeff * phaseRayleigh, mCoeff * phaseMie, opticalDepth);
+	vec3 viewScatter  = aRef(rCoeff * phaseRayleigh, mCoeff * phaseMie, opticalDepth2);
 	
-	vec3 finalScatter = aScatter(sunAbsorb, viewAbsorb, sunCoeff, viewCoeff, viewScatter); //Scatters all sunlight
+	vec3 finalScatter = (abs(sunAbsorb - viewAbsorb) + 0.000001) / (abs( sunCoeff - viewCoeff) + 0.000001) * viewScatter; //Scatters all sunlight
+    if(sunCoeff == viewCoeff)
+        finalScatter = viewScatter;
+
 	vec3 sunSpot = (calcSunSpot(lDotV) * viewAbsorb) * sunBrightness; //Sunspot
-	sunSpot *= sunspotStrength;
+	sunSpot *= sunspotStrength * (1.0 - foggyness);
 	//vec3 sunSpot = vec3(0);
 	
 	vec3 result = (finalScatter + sunSpot) * PI * (2.0 * scatterBrightness);
-	return result;
+	
+    return result;
+    //return result;
 }
 
 //Returns the sky color depending on direction and time
