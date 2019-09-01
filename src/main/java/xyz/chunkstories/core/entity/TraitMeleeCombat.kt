@@ -1,6 +1,5 @@
 package xyz.chunkstories.core.entity
 
-import xyz.chunkstories.api.client.IngameClient
 import xyz.chunkstories.api.entity.DamageCause
 import xyz.chunkstories.api.entity.Entity
 import xyz.chunkstories.api.entity.traits.Trait
@@ -43,7 +42,6 @@ open class TraitMeleeCombat<E>(entity: E, val naturalWeapon: MeleeWeapon?) : Tra
         if(attackSound != null)
             entity.world.soundManager.playSoundEffect(attackSound, SoundSource.Mode.NORMAL, entity.location, 0.90f + Math.random().toFloat() * 0.20f, 1.0f)
         ongoingAttack = attack
-
     }
 
     private fun landAttack(ongoingAttack: Attack) {

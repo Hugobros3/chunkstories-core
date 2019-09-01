@@ -41,7 +41,7 @@ abstract class TraitControlledMovement(entity: Entity) : TraitBasicMovement(enti
         if (focus) {
             if (entityVelocity.velocity.y <= 0.02) {
                 if (controller.inputsManager.getInputByName("jump")!!.isPressed) {
-                    println("jumped ${collisions.isOnGround} and ${!inLiquid} ${collisions.isStuckInEntity}")
+                    //println("jumped ${collisions.isOnGround} and ${!inLiquid} ${collisions.isStuckInEntity}")
                     if (collisions.isOnGround && !inLiquid)
                         jump(0.15)
                     else if (inLiquid && controller.inputsManager.getInputByName("jump")!!.isPressed)

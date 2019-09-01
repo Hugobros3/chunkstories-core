@@ -6,38 +6,31 @@
 
 package xyz.chunkstories.core.entity
 
+import org.joml.Vector3d
+import org.joml.Vector3dc
 import xyz.chunkstories.api.Location
+import xyz.chunkstories.api.entity.DamageCause
 import xyz.chunkstories.api.entity.Entity
 import xyz.chunkstories.api.entity.EntityDefinition
-import xyz.chunkstories.api.entity.EntityGroundItem
-import xyz.chunkstories.api.entity.traits.*
+import xyz.chunkstories.api.entity.traits.TraitDontSave
+import xyz.chunkstories.api.entity.traits.TraitInteractible
+import xyz.chunkstories.api.entity.traits.TraitSight
 import xyz.chunkstories.api.entity.traits.serializable.*
 import xyz.chunkstories.api.events.voxel.WorldModificationCause
 import xyz.chunkstories.api.graphics.MeshMaterial
-import xyz.chunkstories.api.input.Input
-import xyz.chunkstories.api.item.inventory.InventoryOwner
-import xyz.chunkstories.api.player.Player
-import xyz.chunkstories.api.sound.SoundSource.Mode
-import xyz.chunkstories.api.util.ColorsTools
-import xyz.chunkstories.api.world.World
-import xyz.chunkstories.api.world.WorldMaster
-import xyz.chunkstories.core.entity.traits.TraitArmor
-import xyz.chunkstories.core.entity.traits.TraitFoodLevel
-import xyz.chunkstories.core.entity.traits.MinerTrait
-import xyz.chunkstories.core.entity.traits.TraitEyeLevel
-import xyz.chunkstories.core.entity.traits.TraitTakesFallDamage
-import org.joml.*
-import xyz.chunkstories.api.entity.DamageCause
 import xyz.chunkstories.api.gui.Layer
 import xyz.chunkstories.api.gui.inventory.InventorySlot
 import xyz.chunkstories.api.gui.inventory.InventoryUI
+import xyz.chunkstories.api.input.Input
+import xyz.chunkstories.api.item.Item
 import xyz.chunkstories.api.item.inventory.Inventory
-import xyz.chunkstories.api.physics.Box
+import xyz.chunkstories.api.item.inventory.InventoryOwner
+import xyz.chunkstories.api.player.Player
 import xyz.chunkstories.api.sound.SoundSource
-import xyz.chunkstories.core.voxel.isOnLadder
-import java.lang.Math
-
-import java.util.HashMap
+import xyz.chunkstories.api.util.ColorsTools
+import xyz.chunkstories.api.world.World
+import xyz.chunkstories.core.entity.traits.*
+import java.util.*
 
 /**
  * Core/Vanilla player, has all the functionality you'd want from it:
@@ -71,6 +64,8 @@ class EntityPlayer(t: EntityDefinition, world: World) : EntityHumanoid(t, world)
             override fun createMainInventoryPanel(inventory: Inventory, layer: Layer): InventoryUI? {
                 val craftingAreaSideSize = 3
                 return inventory.run {
+                    //val crafts = loadRecipes(recipesTest, entity.world.content)
+
                     val ui = InventoryUI(layer, width * 20 + 16, height * 20 + 16 + 8 + 20 * craftingAreaSideSize + 8)
                     for (x in 0 until width) {
                         for (y in 0 until height) {
@@ -83,14 +78,41 @@ class EntityPlayer(t: EntityDefinition, world: World) : EntityHumanoid(t, world)
                     val craftSizeReal = 20 * craftingAreaSideSize
                     val offsetx = ui.width / 2 - craftSizeReal / 2
 
-                    val craftingSlots = Array(craftingAreaSideSize) { x ->
-                        Array(craftingAreaSideSize) { y ->
-                            val slot = InventorySlot.FakeSlot()
-                            val uiSlot = ui.InventorySlotUI(slot, offsetx + x * 20, 8 + height * 20 + 8 + y * 20)
-                            ui.slots.add(uiSlot)
+                    val craftingSlots = Array(craftingAreaSideSize) { y ->
+                        Array(craftingAreaSideSize) { x ->
+                            InventorySlot.FakeSlot()
+                        }
+                    }
+                    val craftingUiSlots = Array(craftingAreaSideSize) { y ->
+                        Array(craftingAreaSideSize) { x ->
+                            val slot = craftingSlots[y][x]
+                            val uiSlot = ui.InventorySlotUI(slot, offsetx + x * 20, 8 + height * 20 + 8 + (craftingAreaSideSize - y - 1) * 20)
                             uiSlot
                         }
                     }
+
+                    craftingUiSlots.forEach { it.forEach { ui.slots.add(it) } }
+
+                    val outputSlot = object : InventorySlot.SummoningSlot() {
+
+                        override val visibleContents: Pair<Item, Int>?
+                            get() {
+                                val recipe = entity.world.content.recipes.getRecipeForInventorySlots(craftingSlots)
+                                if (recipe != null)
+                                    return Pair(recipe.result.newItem(), 1)
+                                return null
+                            }
+
+                        //TODO use packet to talk the server into this
+                        override fun commitTransfer(destinationInventory: Inventory, destX: Int, destY: Int, amount: Int) {
+                            val recipe = entity.world.content.recipes.getRecipeForInventorySlots(craftingSlots) ?: return
+                            repeat(amount) {
+                                recipe.craftUsing(craftingSlots, destinationInventory, destX, destY)
+                            }
+                        }
+                    }
+
+                    ui.slots.add(ui.InventorySlotUI(outputSlot, 8, 8 + height * 20 + 8 + 1 * 20))
 
                     ui
                 }
@@ -103,13 +125,14 @@ class EntityPlayer(t: EntityDefinition, world: World) : EntityHumanoid(t, world)
         traitFoodLevel = TraitFoodLevel(this, 100f)
         traitArmor = TraitArmor(this, 4, 1)
 
-        traitSight = object : TraitSight(this) {
-            override val headLocation: Location
-                get() = Location(world, Vector3d(location).add(0.0, traitStance.stance.eyeLevel, 0.0))
-            override val lookingAt: Vector3dc
-                get() = traitRotation.directionLookingAt
+        traitSight =
+                object : TraitSight(this) {
+                    override val headLocation: Location
+                        get() = Location(world, Vector3d(location).add(0.0, traitStance.stance.eyeLevel, 0.0))
+                    override val lookingAt: Vector3dc
+                        get() = traitRotation.directionLookingAt
 
-        }
+                }
 
         val fists = object : MeleeWeapon {
             override val damage = 15f
@@ -147,50 +170,22 @@ class EntityPlayer(t: EntityDefinition, world: World) : EntityHumanoid(t, world)
 
         MinerTrait(this)
 
-        traitHealth = object : EntityHumanoidHealth(this) {
-            override fun playDamageSound() {
-                if (!isDead) {
-                    val i = 1 + Math.random().toInt() * 3
-                    entity.world.soundManager.playSoundEffect("sounds/entities/human/hurt$i.ogg", SoundSource.Mode.NORMAL, entity.location, Math.random().toFloat() * 0.4f + 0.8f, 5.0f)
+        traitHealth =
+                object : EntityHumanoidHealth(this) {
+                    override fun playDamageSound() {
+                        if (!isDead) {
+                            val i = 1 + Math.random().toInt() * 3
+                            entity.world.soundManager.playSoundEffect("sounds/entities/human/hurt$i.ogg", SoundSource.Mode.NORMAL, entity.location, Math.random().toFloat() * 0.4f + 0.8f, 5.0f)
+                        }
+                    }
                 }
-            }
-        }
+
+        TraitCanPickupItems(this)
 
         val variant = ColorsTools.getUniqueColorCode(name) % 6
         val aaTchoum = HashMap<String, String>()
         aaTchoum["albedoTexture"] = "./models/human/variant$variant.png"
         val customSkin = MeshMaterial("playerSkin", aaTchoum, "opaque")
         EntityHumanoidRenderer(this, customSkin)
-    }
-
-    // Server-side updating
-    override fun tick() {
-        val world = world
-
-        // Auto-pickups items on the ground
-        if (world is WorldMaster && world.ticksElapsed % 60L == 0L) {
-
-            for (e in world.getEntitiesInBox(Box.fromExtentsCentered(Vector3d(3.0)).translate(location) )) {
-                if (e is EntityGroundItem && e.location.distance(this.location) < 3.0f) {
-                    if (!e.canBePickedUpYet())
-                        continue
-
-                    world.soundManager.playSoundEffect("sounds/item/pickup.ogg", Mode.NORMAL, location, 1.0f, 1.0f)
-
-                    val groundInventoy = e.traits[TraitInventory::class.java]!!.inventory
-
-                    val pileToCollect = groundInventoy.getItemPileAt(0, 0)
-
-                    val overflow = this.traitInventory.inventory.addItem(pileToCollect!!.item, pileToCollect.amount)
-                    pileToCollect.amount = overflow
-
-                    if (pileToCollect.amount <= 0)
-                        world.removeEntity(e)
-                }
-            }
-        }
-
-        super.tick()
-
     }
 }

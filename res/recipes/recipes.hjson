@@ -7,10 +7,11 @@
              S
              S 
             ''',
-            components: {
+            ingredients: {
                 W: "planks",
-                S: "sticks"
-            }
+                S: "stick"
+            },
+            result: "iron_pickaxe"
         },
     ]
 }

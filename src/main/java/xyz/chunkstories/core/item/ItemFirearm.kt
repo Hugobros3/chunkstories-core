@@ -142,10 +142,10 @@ class ItemFirearm(type: ItemDefinition) : ItemWeapon(type), ItemOverlay, ItemZoo
     /**
      * Should be called when the owner has this item selected
      *
-     * @param owner
+     * @param entity
      */
-    override fun tickInHand(owner: Entity, itemPile: ItemPile) {
-        val controller = owner.traits[TraitControllable::class]?.controller
+    override fun tickInHand(entity: Entity, itemPile: ItemPile) {
+        val controller = entity.traits[TraitControllable::class]?.controller
 
         // For now only client-side players can trigger shooting actions
         if (controller is LocalPlayer) {
@@ -156,15 +156,14 @@ class ItemFirearm(type: ItemDefinition) : ItemWeapon(type), ItemOverlay, ItemZoo
 
             if (player!!.inputsManager.getInputByName("mouse.left")!!.isPressed) {
                 // Check for bullet presence (or creative mode)
-                val bulletPresence = checkBullet(itemPile) || owner.traits[TraitCreativeMode::class]?.get() == true
+                val bulletPresence = checkBullet(itemPile) || entity.traits[TraitCreativeMode::class]?.get() == true
                 if (!bulletPresence && !wasTriggerPressedLastTick) {
                     // Play sounds
-                    owner.world.soundManager.playSoundEffect("sounds/dogez/weapon/default/dry.ogg",
-                            Mode.NORMAL, owner.location, 1.0f, 1.0f, 1f, soundRange.toFloat())
+                    entity.world.soundManager.playSoundEffect("sounds/dogez/weapon/default/dry.ogg",
+                            Mode.NORMAL, entity.location, 1.0f, 1.0f, 1f, soundRange.toFloat())
                 } else if ((automatic || !wasTriggerPressedLastTick) && (System.currentTimeMillis() - lastShot) / 1000.0 > 1.0 / (rpm / 60.0)) {
                     // Fire virtual input
-                    player.inputsManager
-                            .onInputPressed(controller.inputsManager.getInputByName("shootGun")!!)
+                    player.inputsManager.onInputPressed(controller.inputsManager.getInputByName("shootGun")!!)
 
                     lastShot = System.currentTimeMillis()
                 }
