@@ -99,20 +99,20 @@ class EntityPlayer(t: EntityDefinition, world: World) : EntityHumanoid(t, world)
                             get() {
                                 val recipe = entity.world.content.recipes.getRecipeForInventorySlots(craftingSlots)
                                 if (recipe != null)
-                                    return Pair(recipe.result.newItem(), 1)
+                                    return Pair(recipe.result.first.newItem(), recipe.result.second)
                                 return null
                             }
 
                         //TODO use packet to talk the server into this
                         override fun commitTransfer(destinationInventory: Inventory, destX: Int, destY: Int, amount: Int) {
                             val recipe = entity.world.content.recipes.getRecipeForInventorySlots(craftingSlots) ?: return
-                            repeat(amount) {
+                            repeat(amount / recipe.result.second) {
                                 recipe.craftUsing(craftingSlots, destinationInventory, destX, destY)
                             }
                         }
                     }
 
-                    ui.slots.add(ui.InventorySlotUI(outputSlot, 8, 8 + height * 20 + 8 + 1 * 20))
+                    ui.slots.add(ui.InventorySlotUI(outputSlot, offsetx + craftSizeReal + 20, 8 + height * 20 + 8 + 1 * 20))
 
                     ui
                 }

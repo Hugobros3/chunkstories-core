@@ -13,5 +13,15 @@
             },
             result: "iron_pickaxe"
         },
+        {
+            pattern: 
+            '''
+            A
+            ''',
+            ingredients: {
+                A: "wood"
+            }
+            result: ["planks", 4]
+        }
     ]
 }

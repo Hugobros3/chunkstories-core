@@ -79,6 +79,14 @@ class TraitHealthFoodOverlay(entity: Entity) : TraitHasOverlay(entity) {
                     val pile = inventory.getItemPileAt(x, 0)
                     if (pile != null) {
                         renderer.drawBox(offset + 3, 24 + 3, 16, 16, pile.item.getTextureName(), Vector4f(1f, 1f, 1f, 1f))
+                    }
+                    offset += 22
+                }
+
+                offset = renderer.gui.viewportWidth / 2 - 22 * inventory.width / 2
+                for (x in 0 until inventory.width) {
+                    val pile = inventory.getItemPileAt(x, 0)
+                    if (pile != null && pile.amount > 1) {
                         renderer.drawStringWithShadow(renderer.fonts.defaultFont(), offset + 15, 20, "${pile.amount}")
                     }
                     offset += 22

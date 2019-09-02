@@ -12,6 +12,7 @@
 		}
 
 		forestgrass: {
+			material: grass
 			textures: {
 				top: ~_top
 				sides: ~_side
@@ -29,41 +30,49 @@
 		grass_prop: {
 			solid: false
 			opaque: false
+			drops: false
 
 			class: xyz.chunkstories.core.voxel.VoxelSmallPlant
-			//model: voxels/blockmodels/grass_prop/grass_prop.dae
+			drops: false
+			miningDifficulty: 0.0
 		}
 
 		dead_grass: {
 			solid: false
 			opaque: false
+			drops: false
 
 			class: xyz.chunkstories.core.voxel.VoxelSmallPlant
+			drops: false
+			miningDifficulty: 0.0
 		}
 
 		/** Trunk woods */
 		wood: {
-			material: bluntwood
+			material: wood
 			textures: {
 				top: ~_top
 				bottom: ~_top
 			}
+			miningDifficulty: 3.0
 		}
 
 		pinewood: {
-			material: bluntwood
+			material: wood
 			textures: {
 				top: ~_top
 				bottom: ~_top
 			}
+			miningDifficulty: 3.0
 		}
 
 		birchwood: {
-			material: bluntwood
+			material: wood
 			textures: {
 				top: ~_top
 				bottom: ~_top
 			}
+			miningDifficulty: 3.0
 		}
 
 		leaves: {
@@ -71,8 +80,9 @@
 			opaque: false
 			selfOpaque: false
 			shadingLightLevel: 2
+			drops: false
 			
-			hardness: 0.5
+			miningDifficulty: 0.5
 			affectedByWind: true
 			materialFlags: 1
 		}
@@ -82,8 +92,9 @@
 			opaque: false
 			selfOpaque: false
 			shadingLightLevel: 2
+			drops: false
 			
-			hardness: 0.5
+			miningDifficulty: 0.5
 			affectedByWind: true
 			materialFlags: 1
 		}
@@ -92,7 +103,8 @@
 			//class: xyz.chunkstories.core.voxel.VoxelLeaves
 			opaque: false
 			selfOpaque: false
-			shadingLightLevel: 2
+			miningDifficulty: 2
+			drops: false
 			
 			hardness: 0.5
 			affectedByWind: true

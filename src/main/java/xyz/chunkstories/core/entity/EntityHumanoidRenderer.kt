@@ -61,13 +61,13 @@ open class EntityHumanoidRenderer(entity: EntityHumanoid, private val customSkin
         }
 
         if(isPlayerEntity) {
-            var selectionColor = Vector4f(1f)
+            val selectionColor = Vector4f(1f)
             val selectedBlock = entity.traits[TraitSight::class]?.getSelectableBlockLookingAt(5.0)?.location
 
             val miningProgress = entity.traits[MinerTrait::class]?.progress
             if(miningProgress != null) {
                 selectionColor.set(1.0f, 0.0f, 0.0f, 1.0f)
-                selectionColor.y = 1f - miningProgress.progress
+                selectionColor.y = 1f - miningProgress.progress.toFloat()
             }
 
             if(selectedBlock != null) {

@@ -10,10 +10,12 @@ import xyz.chunkstories.api.entity.Entity
 import xyz.chunkstories.api.entity.traits.Trait
 import xyz.chunkstories.api.entity.traits.TraitSight
 import xyz.chunkstories.api.entity.traits.serializable.TraitControllable
+import xyz.chunkstories.api.entity.traits.serializable.TraitSelectedItem
 import xyz.chunkstories.api.events.voxel.WorldModificationCause
 import xyz.chunkstories.api.player.Player
 import xyz.chunkstories.api.voxel.MiningTool
 import xyz.chunkstories.core.item.BlockMiningOperation
+import xyz.chunkstories.core.item.ItemMiningTool
 
 class MinerTrait(entity: Entity) : Trait(entity) {
 
@@ -37,12 +39,13 @@ class MinerTrait(entity: Entity) : Trait(entity) {
     }
 
     override fun tick() {
-        val tool = hands
+        val tool = entity.traits[TraitSelectedItem::class]?.selectedItem?.item as? ItemMiningTool ?: hands
 
         val world = entity.world
 
         val controller = entity.traits[TraitControllable::class]?.controller
 
+        //TODO multiplayer
         if (controller is Player) {
             val inputs = controller.inputsManager
 
@@ -56,7 +59,7 @@ class MinerTrait(entity: Entity) : Trait(entity) {
                 val cell = world.peek(lookingAt)
 
                 // Cancel mining if looking away or the block changed by itself
-                if (progress != null && (lookingAt.distance(progress!!.loc) > 0 || !cell.voxel!!.sameKind(progress!!.voxel!!))) {
+                if (progress != null && (lookingAt.distance(progress!!.location) > 0 || !cell.voxel.sameKind(progress!!.voxel))) {
                     progress = null
                 }
 
