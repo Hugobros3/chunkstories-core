@@ -3,44 +3,44 @@
         //Materials file format in dev
         //undefined material
         default: {
-            sounds: "sounds/materials/default/"
-            walkingSounds: "sounds/footsteps/generic[1-3].ogg"
+            // sounds: "sounds/materials/default/"
+            walkingSounds: ["sounds/footsteps/generic[1-3].ogg",]
             jumpingSounds: "sounds/footsteps/jump.ogg"
             landingSounds: "sounds/footsteps/land.ogg"
-            runningSounds: "<walkingSounds>"
-            miningSounds: "<runningSounds>"
-            minedSounds: "<landingSounds>"
+            //runningSounds: "<walkingSounds>"
+            //miningSounds: "<runningSounds>"
+            //minedSounds: "<landingSounds>"
         }
 
         dirt: {
-            walkingSounds: "sounds/materials/<name>/<name>_walk[1-11].ogg"
-            runningSounds: "sounds/materials/<name>/<name>_run[1-9].ogg"
-            landingSounds: "sounds/materials/<name>/<name>_land[1-4].ogg"
-            jumpingSounds: "<walkingSounds>"
-            miningSounds: "<runningSounds>"
-            minedSounds: "<landingSounds>"
+            walkingSounds: "sounds/materials/dirt/dirt_walk[1-11].ogg"
+            runningSounds: "sounds/materials/dirt/dirt_run[1-9].ogg"
+            landingSounds: "sounds/materials/dirt/dirt_land[1-4].ogg"
+            //jumpingSounds: "<walkingSounds>"
+            //miningSounds: "<runningSounds>"
+            //minedSounds: "<landingSounds>"
             mineUsing: shovel
         }
 
         stone: {
-            walkingSounds: "sounds/materials/<name>/<name>_walk[1-11].ogg"
-            runningSounds: "sounds/materials/<name>/<name>_run[1-11].ogg"
-            landingSounds: "<walkingSounds>"
-            jumpingSounds: "<walkingSounds>"
-            miningSounds: "<runningSounds>"
-            minedSounds: "<landingSounds>"
+            walkingSounds: "sounds/materials/stone/stone_walk[1-11].ogg"
+            runningSounds: "sounds/materials/stone/stone_run[1-11].ogg"
+            //landingSounds: "<walkingSounds>"
+            //jumpingSounds: "<walkingSounds>"
+            //miningSounds: "<runningSounds>"
+            //minedSounds: "<landingSounds>"
             miningDifficulty: 5.0
             mineUsing: pickaxe
         }
 
         grass: {
-            //sounds: "sounds/materials/<name>/"
-            walkingSounds: "sounds/materials/<name>/<name>_walk[1-10].ogg"
-            runningSounds: "sounds/materials/<name>/<name>_run[1-4].ogg"
-            landingSounds: "<walkingSounds>"
-            jumpingSounds: "<walkingSounds>"
-            miningSounds: "<runningSounds>"
-            minedSounds: "<landingSounds>"
+            //sounds: "sounds/materials/NAME/"
+            walkingSounds: "sounds/materials/grass/grass_walk[1-10].ogg"
+            runningSounds: "sounds/materials/grass/grass_run[1-4].ogg"
+            //landingSounds: "<walkingSounds>"
+            //jumpingSounds: "<walkingSounds>"
+            //miningSounds: "<runningSounds>"
+            //minedSounds: "<landingSounds>"
             miningDifficulty: 1.1
             mineUsing: shovel
         }
@@ -50,12 +50,12 @@
         }
 
         water: {
-            walkingSounds: "sounds/materials/<name>/<name>_through[1-11].ogg"
-            runningSounds: "<walkingSounds>"
-            landingSounds: "<walkingSounds>"
-            jumpingSounds: "<walkingSounds>"
-            miningSounds: "<runningSounds>"
-            minedSounds: "<landingSounds>"
+            walkingSounds: "sounds/materials/water/water_through[1-11].ogg"
+            //runningSounds: "<walkingSounds>"
+            //landingSounds: "<walkingSounds>"
+            //jumpingSounds: "<walkingSounds>"
+            //miningSounds: "<runningSounds>"
+            //minedSounds: "<landingSounds>"
         }
 
         glass: {
@@ -63,51 +63,51 @@
             walkingSounds: "sounds/materials/glass/glass_hit[1-2].ogg"
             jumpingSounds: "sounds/materials/glass/glass_hit[1-2].ogg"
             landingSounds: "sounds/materials/glass/glass_hard1.ogg"
-            runningSounds: "<walkingSounds>"
-            miningSounds: "<runningSounds>"
-            minedSounds: "<landingSounds>"
+            //runningSounds: "<walkingSounds>"
+            //miningSounds: "<runningSounds>"
+            //minedSounds: "<landingSounds>"
         }
 
         sand: {
-            walkingSounds: "sounds/materials/<name>/<name>_walk[1-11].ogg"
-            runningSounds: "sounds/materials/<name>/<name>_run[1-11].ogg"
-            landingSounds: "<walkingSounds>"
-            jumpingSounds: "<walkingSounds>"
-            miningSounds: "<runningSounds>"
-            minedSounds: "<landingSounds>"
+            walkingSounds: "sounds/materials/sand/sand_walk[1-11].ogg"
+            runningSounds: "sounds/materials/sand/sand_run[1-11].ogg"
+            //landingSounds: "<walkingSounds>"
+            //jumpingSounds: "<walkingSounds>"
+            //miningSounds: "<runningSounds>"
+            //minedSounds: "<landingSounds>"
             mineUsing: shovel
         }
 
         concrete: {
-            walkingSounds: "sounds/materials/<name>/<name>_walk[1-11].ogg"
-            runningSounds: "sounds/materials/<name>/<name>_run[1-11].ogg"
-            landingSounds: "<walkingSounds>"
-            jumpingSounds: "<walkingSounds>"
-            miningSounds: "<runningSounds>"
-            minedSounds: "<landingSounds>"
+            walkingSounds: "sounds/materials/concrete/concrete_walk[1-11].ogg"
+            runningSounds: "sounds/materials/concrete/concrete_run[1-11].ogg"
+            //landingSounds: "<walkingSounds>"
+            //jumpingSounds: "<walkingSounds>"
+            //miningSounds: "<runningSounds>"
+            //minedSounds: "<landingSounds>"
             miningDifficulty: 1.2
             mineUsing: pickaxe
         }
 
         snow: {
             sounds: "sounds/materials/snow/"
-            walkingSounds: "sounds/materials/<name>/snow_walk[1-9].ogg"
-            runningSounds: "sounds/materials/<name>/snow_run[1-10].ogg"
-            landingSounds: "<walkingSounds>"
-            jumpingSounds: "<walkingSounds>"
-            miningSounds: "<runningSounds>"
-            minedSounds: "<landingSounds>"
+            walkingSounds: "sounds/materials/snow/snow_walk[1-9].ogg"
+            runningSounds: "sounds/materials/snow/snow_run[1-10].ogg"
+            //landingSounds: "<walkingSounds>"
+            //jumpingSounds: "<walkingSounds>"
+            //miningSounds: "<runningSounds>"
+            //minedSounds: "<landingSounds>"
             materialHardnessForShovel: 0.5
         }
 
         metal: {
             sounds: "sounds/materials/metalbox/"
-            walkingSounds: "sounds/materials/<name>/metalbox_walk[1-9].ogg"
-            runningSounds: "sounds/materials/<name>/metalbox_run[1-10].ogg"
-            landingSounds: "<walkingSounds>"
-            jumpingSounds: "<walkingSounds>"
-            miningSounds: "<runningSounds>"
-            minedSounds: "<landingSounds>"
+            walkingSounds: "sounds/materials/metal/metalbox_walk[1-9].ogg"
+            runningSounds: "sounds/materials/metal/metalbox_run[1-10].ogg"
+            //landingSounds: "<walkingSounds>"
+            //jumpingSounds: "<walkingSounds>"
+            //miningSounds: "<runningSounds>"
+            //minedSounds: "<landingSounds>"
             miningDifficulty: 2.0
             mineUsing: pickaxe
         }
@@ -116,31 +116,31 @@
         }
 
         metalbar: {
-            walkingSounds: "sounds/materials/<name>/<name>_walk[1-11].ogg"
-            runningSounds: "sounds/materials/<name>/<name>_run[1-11].ogg"
-            landingSounds: "sounds/materials/<name>/<name>_land1.ogg"
-            jumpingSounds: "<walkingSounds>"
-            miningSounds: "<runningSounds>"
-            minedSounds: "<landingSounds>"
+            walkingSounds: "sounds/materials/metalbar/metalbar_walk[1-11].ogg"
+            runningSounds: "sounds/materials/metalbar/metalbar_run[1-11].ogg"
+            landingSounds: "sounds/materials/metalbar/metalbar_land1.ogg"
+            //jumpingSounds: "<walkingSounds>"
+            //miningSounds: "<runningSounds>"
+            //minedSounds: "<landingSounds>"
         }
 
         gravel: {
-            walkingSounds: "sounds/materials/<name>/<name>_walk[1-11].ogg"
-            runningSounds: "sounds/materials/<name>/<name>_run[1-11].ogg"
-            landingSounds: "sounds/materials/<name>/<name>_land[1-2].ogg"
-            jumpingSounds: "<walkingSounds>"
-            miningSounds: "<runningSounds>"
-            minedSounds: "<landingSounds>"
+            walkingSounds: "sounds/materials/gravel/gravel_walk[1-11].ogg"
+            runningSounds: "sounds/materials/gravel/gravel_run[1-11].ogg"
+            landingSounds: "sounds/materials/gravel/gravel_land[1-2].ogg"
+            //jumpingSounds: "<walkingSounds>"
+            //miningSounds: "<runningSounds>"
+            //minedSounds: "<landingSounds>"
             mineUsing: shovel
         }
 
         wood: {
             walkingSounds: "sounds/materials/wood/bluntwood_walk[1-11].ogg"
-            runningSounds: "<walkingSounds>"
-            landingSounds: "<walkingSounds>"
-            jumpingSounds: "<walkingSounds>"
-            miningSounds: "<runningSounds>"
-            minedSounds: "<landingSounds>"
+            //runningSounds: "<walkingSounds>"
+            //landingSounds: "<walkingSounds>"
+            //jumpingSounds: "<walkingSounds>"
+            //miningSounds: "<runningSounds>"
+            //minedSounds: "<landingSounds>"
             miningDifficulty: 2.0
             mineUsing: axe
         }

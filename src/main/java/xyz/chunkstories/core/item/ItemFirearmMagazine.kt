@@ -6,14 +6,13 @@
 
 package xyz.chunkstories.core.item
 
+import xyz.chunkstories.api.content.json.asArray
+import xyz.chunkstories.api.content.json.asString
 import xyz.chunkstories.api.item.Item
 import xyz.chunkstories.api.item.ItemDefinition
 
-import java.util.Arrays
-import java.util.HashSet
-
-class ItemFirearmMagazine(type: ItemDefinition) : Item(type) {
-    private val supportedWeaponsSet = type.resolveProperty("forWeapon", "").split(",").map { it.trim() }
+class ItemFirearmMagazine(definition: ItemDefinition) : Item(definition) {
+    private val supportedWeaponsSet = definition["forWeapon"].asArray?.elements?.mapNotNull { it.asString }?.toSet() ?: definition["forWeapon"].asString?.let { setOf(it) } ?: emptySet()
 
     fun isSuitableFor(item: ItemFirearm): Boolean {
         return supportedWeaponsSet.contains(item.definition.name)

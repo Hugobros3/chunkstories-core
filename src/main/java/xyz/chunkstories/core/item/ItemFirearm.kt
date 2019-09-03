@@ -10,6 +10,7 @@ import org.joml.Vector3d
 import org.joml.Vector3dc
 import org.joml.Vector4f
 import xyz.chunkstories.api.client.LocalPlayer
+import xyz.chunkstories.api.content.json.*
 import xyz.chunkstories.api.entity.Controller
 import xyz.chunkstories.api.entity.Entity
 import xyz.chunkstories.api.entity.traits.TraitHitboxes
@@ -29,26 +30,26 @@ import xyz.chunkstories.api.world.WorldClient
 import xyz.chunkstories.api.world.WorldMaster
 import xyz.chunkstories.core.entity.traits.TraitEyeLevel
 
-class ItemFirearm(type: ItemDefinition) : ItemWeapon(type), ItemOverlay, ItemZoom, ItemCustomHoldingAnimation {
-    val automatic: Boolean
-    val rpm: Double
-    val soundName: String
-    val damage: Double
-    val accuracy: Double
-    val range: Double
-    val soundRange: Double
-    val shots: Int
-    val shake: Double
-    val reloadCooldown: Long
+class ItemFirearm(definition: ItemDefinition) : ItemWeapon(definition), ItemOverlay, ItemZoom, ItemCustomHoldingAnimation {
+    val automatic: Boolean = definition["fireMode"].asString == "fullauto"
+    val rpm: Double = definition["roundsPerMinute"].asDouble ?: 60.0
+    val soundName: String = definition["fireSound"].asString ?: "sounds/weapons/ak47/shoot_old.ogg"
+    val damage: Double = definition["damage"].asDouble ?: 1.0
+    val accuracy: Double = definition["accuracy"].asDouble ?: 0.0
+    val range: Double = definition["range"].asDouble ?: 1000.0
+    val soundRange: Double = definition["soundRange"].asDouble ?: 1000.0
+    val shots: Int = definition["shots"].asInt ?: 1
+    val shake: Double = definition["shake"].asDouble ?: accuracy / 4.0
+    val reloadCooldown: Long = (definition["reloadCooldown"].asInt ?: 150).toLong()
 
-    val isScopedWeapon: Boolean
-    val scopeZoom: Float
-    val scopeSlow: Float
-    val scopeTexture: String
+    val isScopedWeapon: Boolean = definition["scoped"].asBoolean ?: false
+    val scopeZoom: Float = definition["scopeZoom"].asFloat ?: 2.0f
+    val scopeSlow: Float = definition["scopeSlow"].asFloat ?: 2.0f
+    val scopeTexture: String = definition["scopeTexture"].asString ?: "./textures/gui/scope.png"
 
-    val holdingAnimationName: String
-    val shootingAnimationName: String
-    val shootingAnimationDuration: Long
+    val holdingAnimationName: String = definition["holdingAnimationName"].asString ?: "./animations/human/holding-rifle.bvh"
+    val shootingAnimationName: String = definition["shootingAnimationName"].asString ?: "./animations/human/human_shoot_pistol.bvh"
+    val shootingAnimationDuration: Long = (definition["shootingAnimationDuration"].asInt ?: 200).toLong()
 
     private var wasTriggerPressedLastTick = false
     private var lastShot = 0L
@@ -61,35 +62,6 @@ class ItemFirearm(type: ItemDefinition) : ItemWeapon(type), ItemOverlay, ItemZoo
         private set
 
     private var currentMagazine: ItemPile? = null
-
-    init {
-
-        automatic = type.resolveProperty("fireMode", "semiauto") == "fullauto"
-        rpm = java.lang.Double.parseDouble(type.resolveProperty("roundsPerMinute", "60.0"))
-        soundName = type.resolveProperty("fireSound", "sounds/weapons/ak47/shoot_old.ogg")
-
-        damage = java.lang.Double.parseDouble(type.resolveProperty("damage", "1.0"))
-        accuracy = java.lang.Double.parseDouble(type.resolveProperty("accuracy", "0.0"))
-        range = java.lang.Double.parseDouble(type.resolveProperty("range", "1000.0"))
-        soundRange = java.lang.Double.parseDouble(type.resolveProperty("soundRange", "1000.0"))
-
-        reloadCooldown = java.lang.Long.parseLong(type.resolveProperty("reloadCooldown", "150"))
-
-        shots = Integer.parseInt(type.resolveProperty("shots", "1"))
-        shake = java.lang.Double.parseDouble(type.resolveProperty("shake", (accuracy / 4.0).toString() + ""))
-
-        isScopedWeapon = type.resolveProperty("scoped", "false") == "true"
-        scopeZoom = java.lang.Float.parseFloat(type.resolveProperty("scopeZoom", "2.0"))
-        scopeSlow = java.lang.Float.parseFloat(type.resolveProperty("scopeSlow", "2.0"))
-
-        scopeTexture = type.resolveProperty("scopeTexture", "./textures/gui/scope.png")
-
-        holdingAnimationName = type.resolveProperty("holdingAnimationName", "./animations/human/holding-rifle.bvh")
-        shootingAnimationName = type.resolveProperty("shootingAnimationName",
-                "./animations/human/human_shoot_pistol.bvh")
-
-        shootingAnimationDuration = java.lang.Long.parseLong(type.resolveProperty("shootingAnimationDuration", "200"))
-    }
 
     /*
 	public ItemRenderer getCustomItemRenderer(ItemRenderer fallbackRenderer) {
@@ -234,8 +206,7 @@ class ItemFirearm(type: ItemDefinition) : ItemWeapon(type), ItemOverlay, ItemZoo
                     val voxel = peek.voxel
 
                     brokeLastBlock = false
-                    if (!voxel!!.isAir() && voxel.voxelMaterial.resolveProperty("bulletBreakable") != null
-                            && voxel.voxelMaterial.resolveProperty("bulletBreakable") == "true") {
+                    if (!voxel.isAir() && voxel.voxelMaterial["bulletBreakable"].asBoolean == true ) {
                         // TODO Spawn an event to check if it's okay
 
                         // Destroy it
@@ -310,7 +281,7 @@ class ItemFirearm(type: ItemDefinition) : ItemWeapon(type), ItemOverlay, ItemZoo
                         }
 
                         world.soundManager.playSoundEffect(
-                                peek.voxel!!.voxelMaterial.resolveProperty("landingSounds"), Mode.NORMAL,
+                                peek.voxel.voxelMaterial.landingSounds, Mode.NORMAL,
                                 particleSpawnPosition, 1f, 0.05f)
                         world.decalsManager.add(nearestLocation, normal.negate(), Vector3d(0.5), "bullethole")
                     }

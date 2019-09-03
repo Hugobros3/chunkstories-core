@@ -7,6 +7,9 @@
 package xyz.chunkstories.core.item
 
 import xyz.chunkstories.api.Location
+import xyz.chunkstories.api.content.json.asDouble
+import xyz.chunkstories.api.content.json.asString
+import xyz.chunkstories.api.content.resolveIntRange
 import xyz.chunkstories.api.entity.Controller
 import xyz.chunkstories.api.entity.Entity
 import xyz.chunkstories.api.sound.SoundSource
@@ -38,8 +41,8 @@ class BlockMiningOperation(val cell: Cell, internal var tool: MiningTool) {
         voxel = cell.voxel
         material = voxel.voxelMaterial
 
-        miningDifficulty = voxel.definition.resolveProperty("miningDifficulty", material.resolveProperty("miningDifficulty", "1.0")).toDouble()
-        val preferredTool = voxel.definition.resolveProperty("mineUsing", material.resolveProperty("mineUsing", "nothing_in_particular"))
+        miningDifficulty = voxel.definition["miningDifficulty"].asDouble ?: material.miningDifficulty
+        val preferredTool = voxel.definition["mineUsing"].asString ?: material.mineUsing
         toolAppropriate = (preferredTool == "nothing_in_particular" || tool.toolTypeName == preferredTool)
         if(toolAppropriate)
             miningEfficiency = tool.miningEfficiency.toDouble()
@@ -77,9 +80,9 @@ class BlockMiningOperation(val cell: Cell, internal var tool: MiningTool) {
 
         if (progress >= 1.0f) {
             if (entity.world is WorldMaster) {
-                val minedSound = voxel.voxelMaterial.resolveProperty("minedSounds")
+                val minedSound = voxel.voxelMaterial.minedSounds
                 if(minedSound != null)
-                    entity.world.soundManager.playSoundEffect(minedSound, SoundSource.Mode.NORMAL, location, 0.95f + Math.random().toFloat() * 0.10f, 1.0f)
+                    entity.world.soundManager.playSoundEffect(minedSound.resolveIntRange(), SoundSource.Mode.NORMAL, location, 0.95f + Math.random().toFloat() * 0.10f, 1.0f)
                 voxel.breakBlock(cell, tool, entity)
             }
 
@@ -89,10 +92,10 @@ class BlockMiningOperation(val cell: Cell, internal var tool: MiningTool) {
         val now = System.currentTimeMillis()
         if(now - lastSound > 300) {
             lastSound = now
-            val miningSound = voxel.voxelMaterial.resolveProperty("miningSounds")
+            val miningSound = voxel.voxelMaterial.miningSounds
             //println("mining: $miningSound")
             if(miningSound != null)
-                entity.world.soundManager.playSoundEffect(miningSound, SoundSource.Mode.NORMAL, location, 0.85f + Math.random().toFloat() * 0.10f, 1.0f)
+                entity.world.soundManager.playSoundEffect(miningSound.resolveIntRange(), SoundSource.Mode.NORMAL, location, 0.85f + Math.random().toFloat() * 0.10f, 1.0f)
         }
 
         return this

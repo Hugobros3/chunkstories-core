@@ -11,7 +11,7 @@
 			collisionBox: "0.0, 0.0, 0.0, 1.0, 1.0, 1.0"
 			
 			representation: {
-				model: ./voxels/models/torch.obj
+				model: voxels/models/torch.obj
 			}
 		}
 
@@ -198,7 +198,7 @@
 		whool: {
 			class: xyz.chunkstories.core.voxel.Voxel16Variants
 			//todo improve that syntax
-			variants: "white, orange, purple, turquoise, yellow, lime, pink, darkgrey, grey, cyan, violet, sea, brown, kaki, red, black"
+			variants: ["white", "orange", "purple", "turquoise", "yellow", "lime", "pink", "darkgrey", "grey", "cyan", "violet", "sea", "brown", "kaki", "red", "black"]
 		}
 
 		concrete: {
@@ -206,7 +206,7 @@
 			material: concrete
 			//texture: concrete.colored
 			//todo improve that syntax
-			variants: "white, orange, purple, turquoise, yellow, lime, pink, darkgrey, grey, cyan, violet, sea, brown, kaki, red, black"
+			variants:  ["white", "orange", "purple", "turquoise", "yellow", "lime", "pink", "darkgrey", "grey", "cyan", "violet", "sea", "brown", "kaki", "red", "black"]
 		}
 
 		/** GARDENING */
@@ -237,7 +237,7 @@
 			collisionBox: "0.0, 0.0, 0.0, 1.0, 0.875, 1.0"
 			
 			representation: {
-				model: ./voxels/models/soil.obj
+				model: voxels/models/soil.obj
 			}
 		}
 
@@ -245,8 +245,8 @@
 			material: grass
 			
 			textures: {
-				top: ~_top
-				sides: ~_side
+				top: grass_top
+				sides: grass_side
 			}
 		}
 

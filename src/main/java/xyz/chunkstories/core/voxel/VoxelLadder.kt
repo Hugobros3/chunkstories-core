@@ -7,6 +7,7 @@
 package xyz.chunkstories.core.voxel
 
 import org.joml.Matrix4f
+import xyz.chunkstories.api.content.json.asString
 import xyz.chunkstories.api.graphics.MeshMaterial
 import xyz.chunkstories.api.graphics.representation.Model
 import xyz.chunkstories.api.physics.Box
@@ -22,7 +23,7 @@ class VoxelLadder(definition: VoxelDefinition) : Voxel(definition), VoxelClimbab
     private val mappedOverrides = mapOf(0 to MeshMaterial("door_material", mapOf("albedoTexture" to "voxels/textures/${this.voxelTextures[VoxelSide.FRONT.ordinal].name}.png")))
 
     init {
-        model = definition.store.parent.models[definition.resolveProperty("model", "voxels/blockmodels/vine/vine.dae")]
+        model = definition.store.parent.models[definition["model"].asString ?: "voxels/blockmodels/vine/vine.dae"]
 
         customRenderingRoutine = { cell ->
             render(cell, this)

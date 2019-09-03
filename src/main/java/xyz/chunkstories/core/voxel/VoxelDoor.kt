@@ -8,6 +8,8 @@ package xyz.chunkstories.core.voxel
 
 import org.joml.Matrix4f
 import xyz.chunkstories.api.content.Content
+import xyz.chunkstories.api.content.json.Json
+import xyz.chunkstories.api.content.json.asString
 import xyz.chunkstories.api.entity.Entity
 import xyz.chunkstories.api.events.voxel.WorldModificationCause
 import xyz.chunkstories.api.exceptions.world.voxel.IllegalBlockModificationException
@@ -54,7 +56,7 @@ class VoxelDoor(definition: VoxelDefinition) : Voxel(definition) {
     }
 
     init {
-        model = definition.store.parent.models[definition.resolveProperty("model", "voxels/blockmodels/wood_door/wood_door.dae")]
+        model = definition.store.parent.models[definition["model"].asString ?: "voxels/blockmodels/wood_door/wood_door.dae"]
 
         modelFlipped = flipModel(model)
 
@@ -277,11 +279,11 @@ class VoxelDoor(definition: VoxelDefinition) : Voxel(definition) {
     }
 
     override fun enumerateVariants(itemStore: Content.ItemsDefinitions): List<ItemDefinition> {
-        val definition = ItemDefinition(itemStore, name, mapOf(
-                "voxel" to name,
-                "class" to ItemVoxel::class.java.canonicalName,
-                "slotsHeight" to "2"
-        ))
+        val definition = ItemDefinition(itemStore, name, Json.Dict(mapOf(
+                "voxel" to Json.Value.Text(name),
+                "class" to Json.Value.Text(ItemVoxel::class.java.canonicalName),
+                "slotsHeight" to Json.Value.Number(2.0)
+        )))
 
         return listOf(definition)
     }

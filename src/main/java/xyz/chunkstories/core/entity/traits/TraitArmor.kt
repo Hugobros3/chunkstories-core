@@ -29,7 +29,6 @@ class TraitArmor(holder: Entity, width: Int, height: Int) : TraitInventory(holde
 
         for (itemPile in inventory.contents) {
             val a = itemPile.item as ItemArmor
-
             val bpa = a.bodyPartsAffected()
             if (bodyPartName == null && bpa == null)
                 multiplier *= a.damageMultiplier(bodyPartName)

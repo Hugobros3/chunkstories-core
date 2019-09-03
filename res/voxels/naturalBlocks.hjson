@@ -3,8 +3,8 @@
 		/* Dirt with grass on top */
 		grass: {
 			textures: {
-				top: ~_top
-				sides: ~_side
+				top: grass_top
+				sides: grass_side
 				bottom: dirt
 			}
 
@@ -14,17 +14,10 @@
 		forestgrass: {
 			material: grass
 			textures: {
-				top: ~_top
-				sides: ~_side
+				top: forestgrass_top
+				sides: forestgrass_side
 			}
 		}
-
-		/*drygrass: {
-			textures: {
-				top: ~_top
-				sides: ~_side
-			}
-		}*/
 
 		/** Grass blades */
 		grass_prop: {
@@ -51,8 +44,8 @@
 		wood: {
 			material: wood
 			textures: {
-				top: ~_top
-				bottom: ~_top
+				top: wood_top
+				bottom: wood_top
 			}
 			miningDifficulty: 3.0
 		}
@@ -60,8 +53,8 @@
 		pinewood: {
 			material: wood
 			textures: {
-				top: ~_top
-				bottom: ~_top
+				top: pinewood_top
+				bottom: pinewood_top
 			}
 			miningDifficulty: 3.0
 		}
@@ -69,8 +62,8 @@
 		birchwood: {
 			material: wood
 			textures: {
-				top: ~_top
-				bottom: ~_top
+				top: birchwood_top
+				bottom: birchwood_top
 			}
 			miningDifficulty: 3.0
 		}
@@ -121,8 +114,8 @@
 
 		cactus: {
 			textures: {
-				sides: ~side
-				top: ~top
+				sides: cactus_side
+				top: cactus_top
 			}
 			hardness: 0.8
 		}

@@ -11,6 +11,19 @@
                 W: "planks",
                 S: "stick"
             },
+            result: "wood_pickaxe"
+        },
+        {
+            pattern: 
+            '''
+            WWW
+             S
+             S 
+            ''',
+            ingredients: {
+                W: "iron_bar",
+                S: "stick"
+            },
             result: "iron_pickaxe"
         },
         {
@@ -22,6 +35,29 @@
                 A: "wood"
             }
             result: ["planks", 4]
+        },
+        {
+            pattern: 
+            '''
+            A
+            A
+            ''',
+            ingredients: {
+                A: "planks"
+            }
+            result: ["stick", 4]
+        },
+        {
+            pattern: 
+            '''
+            C
+            S
+            ''',
+            ingredients: {
+                C: "coal"
+                S: "stick"
+            }
+            result: ["torch", 4]
         }
     ]
 }

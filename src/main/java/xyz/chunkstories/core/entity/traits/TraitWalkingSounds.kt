@@ -13,6 +13,7 @@ import xyz.chunkstories.api.entity.traits.serializable.TraitVelocity
 import xyz.chunkstories.api.sound.SoundSource.Mode
 import xyz.chunkstories.api.world.WorldClient
 import org.joml.Vector3d
+import xyz.chunkstories.api.content.resolveIntRange
 import xyz.chunkstories.core.entity.blocksWithin
 import xyz.chunkstories.core.voxel.VoxelWater
 import xyz.chunkstories.core.voxel.isInLiquid
@@ -73,22 +74,22 @@ class TraitWalkingSounds(entity: Entity) : Trait(entity) {
         if (justJumped && !inWater) {
             // TODO useless
             justJumped = false
-            entity.world.soundManager.playSoundEffect(material.resolveProperty("jumpingSounds"), Mode.NORMAL, entity.location,
+            entity.world.soundManager.playSoundEffect(material.jumpingSounds.resolveIntRange(), Mode.NORMAL, entity.location,
                     (0.9f + Math.sqrt(entityVelocity.velocity.x() * entityVelocity.velocity.x() + entityVelocity.velocity.z() * entityVelocity.velocity.z()) * 0.1f).toFloat(), 1f).attenuationEnd = 10f
         }
         if (justLanded) {
             justLanded = false
-            entity.world.soundManager.playSoundEffect(material.resolveProperty("landingSounds"), Mode.NORMAL, entity.location,
+            entity.world.soundManager.playSoundEffect(material.landingSounds.resolveIntRange(), Mode.NORMAL, entity.location,
                     (0.9f + Math.sqrt(entityVelocity.velocity.x() * entityVelocity.velocity.x() + entityVelocity.velocity.z() * entityVelocity.velocity.z()) * 0.1f).toFloat(), 1f).attenuationEnd = 10f
         }
 
         if (metersWalked > 0.2 * Math.PI * 2.0) {
             metersWalked %= 0.2 * Math.PI * 2.0
             if (horizontalSpeed.length() <= 0.06) {
-                entity.world.soundManager.playSoundEffect(material.resolveProperty("walkingSounds"), Mode.NORMAL, entity.location,
+                entity.world.soundManager.playSoundEffect(material.walkingSounds.resolveIntRange(), Mode.NORMAL, entity.location,
                         (0.9f + Math.sqrt(entityVelocity.velocity.x() * entityVelocity.velocity.x() + entityVelocity.velocity.z() * entityVelocity.velocity.z()) * 0.1f).toFloat(), 1f).attenuationEnd = 10f
             } else {
-                entity.world.soundManager.playSoundEffect(material.resolveProperty("runningSounds"), Mode.NORMAL, entity.location,
+                entity.world.soundManager.playSoundEffect(material.runningSounds.resolveIntRange(), Mode.NORMAL, entity.location,
                         (0.9f + Math.sqrt(entityVelocity.velocity.x() * entityVelocity.velocity.x() + entityVelocity.velocity.z() * entityVelocity.velocity.z()) * 0.1f).toFloat(), 1f).attenuationEnd = 10f
             }
         }

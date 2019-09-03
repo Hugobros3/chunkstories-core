@@ -7,6 +7,7 @@
 package xyz.chunkstories.core.voxel
 
 import org.joml.Matrix4f
+import xyz.chunkstories.api.content.json.asString
 import xyz.chunkstories.api.entity.Entity
 import xyz.chunkstories.api.entity.traits.serializable.TraitRotation
 import xyz.chunkstories.api.events.voxel.WorldModificationCause
@@ -28,7 +29,7 @@ class VoxelStairs(definition: VoxelDefinition) : Voxel(definition) {
     private val mappedOverrides: Map<Int, MeshMaterial>
 
     init {
-        model = definition.store.parent.models[definition.resolveProperty("model", "voxels/blockmodels/stairs/stairs.dae")]
+        model = definition.store.parent.models[definition["model"].asString ?: "voxels/blockmodels/stairs/stairs.dae"]
         modelFlipped = flipModel(model)
 
         val overrides = model.meshes.mapIndexedNotNull { i, mesh ->

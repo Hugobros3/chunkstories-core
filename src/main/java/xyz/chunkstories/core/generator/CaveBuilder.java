@@ -117,7 +117,7 @@ public class CaveBuilder {
 			// System.out.println(posDelta.x + ":"+posDelta.y);
 			if (posDelta.length() < 64) {
 				// System.out.println("touching terrain we want to gen!");
-				data.structures.add(new StructureToPaste(
+				data.getStructures().add(new StructureToPaste(
 						CaveBuilderStructure.caveSegment(pos, oldPosition, size, oldsize), pos, 0));
 			}
 
