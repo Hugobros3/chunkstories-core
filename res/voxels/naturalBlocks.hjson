@@ -73,7 +73,19 @@
 			opaque: false
 			selfOpaque: false
 			shadingLightLevel: 2
-			drops: false
+			drops: {
+				type: pick_one
+				entries: [
+					{
+						type: nothing
+						weight: 0.95
+					},
+					{
+						item: apple
+						weight: 0.05
+					}
+				]
+			}
 			
 			miningDifficulty: 0.5
 			affectedByWind: true

@@ -6,7 +6,7 @@
 
 package xyz.chunkstories.core.particles;
 
-import xyz.chunkstories.api.particles.*;
+/*import xyz.chunkstories.api.particles.*;
 import xyz.chunkstories.api.world.World;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;

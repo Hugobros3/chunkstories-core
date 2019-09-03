@@ -38,7 +38,7 @@
                 },
                 {
                     // Equally unlikely is to get treasure
-                    type: pick_one
+                    type: loot_table
                     weight: 0.1
                     entries: [
                         {
@@ -81,6 +81,20 @@
                 {
                     item: torch
                     amount: 16
+                },
+                {
+                    type: pick_one
+                    entries: [
+                        {
+                            type: nothing
+                            weight: 0.95
+                        },
+                        {
+                            item: diamond
+                            weight: 0.05
+                            amount: 64
+                        }
+                    ]
                 }
             ]
         }

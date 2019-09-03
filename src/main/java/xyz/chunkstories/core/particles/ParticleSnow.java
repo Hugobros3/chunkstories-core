@@ -4,7 +4,7 @@
 // Website: http://chunkstories.xyz
 //
 
-package xyz.chunkstories.core.particles;
+/*package xyz.chunkstories.core.particles;
 
 import xyz.chunkstories.api.particles.ParticleDataWithVelocity;
 import xyz.chunkstories.api.particles.ParticleTypeDefinition;

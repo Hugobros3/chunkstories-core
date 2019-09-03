@@ -6,7 +6,7 @@
 
 package xyz.chunkstories.core.particles
 
-import org.joml.Vector3f
+/*import org.joml.Vector3f
 import xyz.chunkstories.api.Location
 import xyz.chunkstories.api.particles.ParticleType
 import xyz.chunkstories.api.particles.ParticleTypeDefinition
@@ -51,4 +51,4 @@ class ParticleTypeVoxelFragment(definition: ParticleTypeDefinition) : ParticleTy
 		else
 			this
 	}
-}
+}*/

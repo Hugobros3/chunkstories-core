@@ -6,7 +6,7 @@
 
 package xyz.chunkstories.core.particles
 
-import org.joml.Vector3d
+/*import org.joml.Vector3d
 import xyz.chunkstories.api.Location
 import xyz.chunkstories.api.graphics.structs.IgnoreGLSL
 import xyz.chunkstories.api.particles.ParticleType
@@ -51,4 +51,4 @@ val solidParticleIterationLogic: ParticleTypeSolid.ParticleWithVelocity.(World) 
 		this
 }
 
-const val DELTA_60TPS = 1.0 / 60.0
+const val DELTA_60TPS = 1.0 / 60.0*/

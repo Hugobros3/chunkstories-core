@@ -2,6 +2,7 @@
 	blocks: {
 		/** In this file we declare the 'mineral' blocks, those are solid and not life-based */
 		stone: {
+			drops: cobble
 		}
 
 		gravel: {
@@ -46,7 +47,6 @@
 
 		/* SNOW & ICE */
 		snowblock: {
-			
 			material: snow
 			texture: snow
 		}
