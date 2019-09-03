@@ -38,7 +38,7 @@
                 },
                 {
                     // Equally unlikely is to get treasure
-                    type: loot_table
+                    type: pick_one
                     weight: 0.1
                     entries: [
                         {
