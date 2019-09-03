@@ -21,84 +21,84 @@ import xyz.chunkstories.api.world.cell.Cell
 
 /** Represents a mining operation in progress, keeps all the state related to that */
 class BlockMiningOperation(val cell: Cell, internal var tool: MiningTool) {
-    val voxel: Voxel
-    val material: VoxelMaterial
-    val location: Location
+	val voxel: Voxel
+	val material: VoxelMaterial
+	val location: Location
 
-    var progress: Double = 0.0
-    val started: Long
-    var lastSound: Long = 0
+	var progress: Double = 0.0
+	val started: Long
+	var lastSound: Long = 0
 
-    val miningDifficulty: Double
-    val toolAppropriate: Boolean
-    val miningEfficiency: Double
-    //val materialHardnessForThisTool: Float
-    internal var timesSoundPlayed = 0
+	val miningDifficulty: Double
+	val toolAppropriate: Boolean
+	val miningEfficiency: Double
+	//val materialHardnessForThisTool: Float
+	internal var timesSoundPlayed = 0
 
-    init {
-        this.location = cell.location
+	init {
+		this.location = cell.location
 
-        voxel = cell.voxel
-        material = voxel.voxelMaterial
+		voxel = cell.voxel
+		material = voxel.voxelMaterial
 
-        miningDifficulty = voxel.definition["miningDifficulty"].asDouble ?: material.miningDifficulty
-        val preferredTool = voxel.definition["mineUsing"].asString ?: material.mineUsing
-        toolAppropriate = (preferredTool == "nothing_in_particular" || tool.toolTypeName == preferredTool)
-        if(toolAppropriate)
-            miningEfficiency = tool.miningEfficiency.toDouble()
-        else
-            miningEfficiency = 1.0
+		miningDifficulty = voxel.definition["miningDifficulty"].asDouble ?: material.miningDifficulty
+		val preferredTool = voxel.definition["mineUsing"].asString ?: material.mineUsing
+		toolAppropriate = (preferredTool == "nothing_in_particular" || tool.toolTypeName == preferredTool)
+		if(toolAppropriate)
+			miningEfficiency = tool.miningEfficiency.toDouble()
+		else
+			miningEfficiency = 1.0
 
-        println("$miningDifficulty $preferredTool $toolAppropriate $tool ${tool.toolTypeName} $miningEfficiency")
-        //var hardnessString: String? = null
+		println("$miningDifficulty $preferredTool $toolAppropriate $tool ${tool.toolTypeName} $miningEfficiency")
+		//var hardnessString: String? = null
 
-        // First order, check the voxel itself if it states a certain hardness for this
-        // tool type
-        /*hardnessString = voxel.definition.resolveProperty("hardnessFor" + tool.toolTypeName)
+		// First order, check the voxel itself if it states a certain hardness for this
+		// tool type
+		/*hardnessString = voxel.definition.resolveProperty("hardnessFor" + tool.toolTypeName)
 
-        // Then check if the voxel states a general hardness multiplier
-        if (hardnessString == null)
-            hardnessString = voxel.definition.resolveProperty("hardness")
+		// Then check if the voxel states a general hardness multiplier
+		if (hardnessString == null)
+			hardnessString = voxel.definition.resolveProperty("hardness")
 
-        // if the voxel is devoid of information, we do the same on the material
-        if (hardnessString == null)
-            hardnessString = material.resolveProperty("materialHardnessFor" + tool.toolTypeName)
+		// if the voxel is devoid of information, we do the same on the material
+		if (hardnessString == null)
+			hardnessString = material.resolveProperty("materialHardnessFor" + tool.toolTypeName)
 
-        // Eventually we default to 1.0
-        if (hardnessString == null)
-            hardnessString = material.resolveProperty("materialHardness", "1.0")*/
+		// Eventually we default to 1.0
+		if (hardnessString == null)
+			hardnessString = material.resolveProperty("materialHardness", "1.0")*/
 
-        //this.materialHardnessForThisTool = java.lang.Float.parseFloat(hardnessString)
+		//this.materialHardnessForThisTool = java.lang.Float.parseFloat(hardnessString)
 
-        this.progress = 0.0
-        this.started = System.currentTimeMillis()
-    }
+		this.progress = 0.0
+		this.started = System.currentTimeMillis()
+	}
 
-    fun keepGoing(entity: Entity, controller: Controller): BlockMiningOperation? {
-        // Progress using efficiency / ticks per second
-        progress += miningEfficiency / 60f / miningDifficulty
+	fun keepGoing(entity: Entity, controller: Controller): BlockMiningOperation? {
+		// Progress using efficiency / ticks per second
+		progress += miningEfficiency / 60f / miningDifficulty
 
-        if (progress >= 1.0f) {
-            if (entity.world is WorldMaster) {
-                val minedSound = voxel.voxelMaterial.minedSounds
-                if(minedSound != null)
-                    entity.world.soundManager.playSoundEffect(minedSound.resolveIntRange(), SoundSource.Mode.NORMAL, location, 0.95f + Math.random().toFloat() * 0.10f, 1.0f)
-                voxel.breakBlock(cell, tool, entity)
-            }
+		if (progress >= 1.0f) {
+			if (entity.world is WorldMaster) {
+				val minedSound = voxel.voxelMaterial.minedSounds
+				if(minedSound != null)
+					entity.world.soundManager.playSoundEffect(minedSound.resolveIntRange(), SoundSource.Mode.NORMAL, location, 0.95f + Math.random().toFloat() * 0.10f, 1.0f)
+				voxel.breakBlock(cell, tool, entity)
+			}
 
-            return null
-        }
+			return null
+		}
 
-        val now = System.currentTimeMillis()
-        if(now - lastSound > 300) {
-            lastSound = now
-            val miningSound = voxel.voxelMaterial.miningSounds
-            //println("mining: $miningSound")
-            if(miningSound != null)
-                entity.world.soundManager.playSoundEffect(miningSound.resolveIntRange(), SoundSource.Mode.NORMAL, location, 0.85f + Math.random().toFloat() * 0.10f, 1.0f)
-        }
+		val now = System.currentTimeMillis()
+		if(now - lastSound > 300) {
+			lastSound = now
+			val miningSound = voxel.voxelMaterial.miningSounds
+			//println("mining: $miningSound")
+			if(miningSound != null)
+				entity.world.soundManager.playSoundEffect(miningSound.resolveIntRange(), SoundSource.Mode.NORMAL, location, 0.85f + Math.random().toFloat() * 0.10f, 1.0f)
+		}
 
-        return this
-    }
+		return this
+	}
 
 }

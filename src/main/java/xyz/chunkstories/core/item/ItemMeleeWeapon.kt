@@ -15,21 +15,21 @@ import xyz.chunkstories.api.item.ItemDefinition
 import xyz.chunkstories.core.entity.MeleeWeapon
 
 class ItemMeleeWeapon(definition: ItemDefinition) : Item(definition), MeleeWeapon {
-    override val cooldownMillis: Int
-    override val warmupMillis: Int
-    override val damage: Float
-    override val reach: Double
-    override val attackSound: String?
+	override val cooldownMillis: Int
+	override val warmupMillis: Int
+	override val damage: Float
+	override val reach: Double
+	override val attackSound: String?
 
-    init {
-        cooldownMillis = definition["cooldownMillis"].asInt ?: 100//definition.resolveProperty("cooldownMillis", "100").toDouble().toInt()
-        warmupMillis = definition["warmupMillis"].asInt ?: 0//definition.resolveProperty("warmupMillis", "0").toDouble().toInt()
+	init {
+		cooldownMillis = definition["cooldownMillis"].asInt ?: 100//definition.resolveProperty("cooldownMillis", "100").toDouble().toInt()
+		warmupMillis = definition["warmupMillis"].asInt ?: 0//definition.resolveProperty("warmupMillis", "0").toDouble().toInt()
 
-        reach = definition["reach"].asDouble ?: 3.0//java.lang.Double.parseDouble(definition.resolveProperty("reach", "3"))
-        damage = definition["damage"].asFloat ?: 100.0f//definition.resolveProperty("damage", "100").toFloat()
+		reach = definition["reach"].asDouble ?: 3.0//java.lang.Double.parseDouble(definition.resolveProperty("reach", "3"))
+		damage = definition["damage"].asFloat ?: 100.0f//definition.resolveProperty("damage", "100").toFloat()
 
-        attackSound = definition["attackSound"]?.asString//definition.resolveProperty("attackSound")
+		attackSound = definition["attackSound"]?.asString//definition.resolveProperty("attackSound")
 
-        //itemRenderScale = java.lang.Float.parseFloat(definition.resolveProperty("itemRenderScale", "2"))
-    }
+		//itemRenderScale = java.lang.Float.parseFloat(definition.resolveProperty("itemRenderScale", "2"))
+	}
 }

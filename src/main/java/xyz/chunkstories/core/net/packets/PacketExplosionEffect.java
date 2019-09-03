@@ -48,8 +48,7 @@ public class PacketExplosionEffect extends PacketWorld {
 	}
 
 	@Override
-	public void process(PacketSender sender, DataInputStream in, PacketReceptionContext processor)
-			throws IOException, PacketProcessingException {
+	public void process(PacketSender sender, DataInputStream in, PacketReceptionContext processor) throws IOException, PacketProcessingException {
 		center = new Vector3d(in.readDouble(), in.readDouble(), in.readDouble());
 		radius = in.readDouble();
 		debrisSpeed = in.readDouble();

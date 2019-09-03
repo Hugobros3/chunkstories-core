@@ -66,8 +66,7 @@ public class CaveBuilder {
 		Random rnd = new Random();
 		rnd.setSeed(pos.x * 1548 + pos.y * 487 + pos.z);
 
-		Vector3d direction = new Vector3d(rnd.nextFloat() * 2.0 - 1.0, rnd.nextFloat() * 2.0 - 1.0,
-				rnd.nextFloat() * 2.0 - 1.0);
+		Vector3d direction = new Vector3d(rnd.nextFloat() * 2.0 - 1.0, rnd.nextFloat() * 2.0 - 1.0, rnd.nextFloat() * 2.0 - 1.0);
 		direction.normalize();
 
 		int step = 8;
@@ -99,8 +98,7 @@ public class CaveBuilder {
 			size += rnd.nextDouble() * 0.25 - 0.5;
 			size = Math2.clampd(size, sizemin, sizemax);
 
-			Vector3d newdirection = new Vector3d(rnd.nextFloat() * 2.0 - 1.0, rnd.nextFloat() * 2.0 - 1.0,
-					rnd.nextFloat() * 2.0 - 1.0);
+			Vector3d newdirection = new Vector3d(rnd.nextFloat() * 2.0 - 1.0, rnd.nextFloat() * 2.0 - 1.0, rnd.nextFloat() * 2.0 - 1.0);
 			newdirection.normalize();
 
 			double newdirectioninfluence = rnd.nextDouble();
@@ -117,8 +115,7 @@ public class CaveBuilder {
 			// System.out.println(posDelta.x + ":"+posDelta.y);
 			if (posDelta.length() < 64) {
 				// System.out.println("touching terrain we want to gen!");
-				data.getStructures().add(new StructureToPaste(
-						CaveBuilderStructure.caveSegment(pos, oldPosition, size, oldsize), pos, 0));
+				data.getStructures().add(new StructureToPaste(CaveBuilderStructure.caveSegment(pos, oldPosition, size, oldsize), pos, 0));
 			}
 
 			if (nextFork > 0)

@@ -3,7 +3,7 @@
 // Check out README.md for more information
 // Website: http://chunkstories.xyz
 //
-/*
+
 package xyz.chunkstories.core.particles;
 
 import xyz.chunkstories.api.particles.ParticleDataWithVelocity;
@@ -60,5 +60,4 @@ public class ParticleSmoke extends ParticleTypeHandler {
 		if (b.timer < 0 || b.isCollidingAgainst(world))
 			b.destroy();
 	}
-}
-*/
+}*/

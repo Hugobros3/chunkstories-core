@@ -18,46 +18,46 @@ import xyz.chunkstories.api.voxel.textures.VoxelTexture
 import xyz.chunkstories.api.world.cell.Cell
 
 class Voxel16Variants(definition: VoxelDefinition) : Voxel(definition) {
-    private val textures: Array<VoxelTexture>// = arrayOfNulls<VoxelTexture>(16)
-    val variantsString = definition["variants"].asArray!!.elements.mapNotNull { it.asString }
+	private val textures: Array<VoxelTexture>// = arrayOfNulls<VoxelTexture>(16)
+	val variantsString = definition["variants"].asArray!!.elements.mapNotNull { it.asString }
 
-    init {
-        //val variantsString = definition.resolveProperty("variants", "0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15")
+	init {
+		//val variantsString = definition.resolveProperty("variants", "0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15")
 
-       // val split = variantsString.split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-       // assert(split.size == 16)
+	// val split = variantsString.split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+	// assert(split.size == 16)
 
-        /*for (i in 0..15) {
-            val variants = arrayOfNulls<String>(16)
-            variants[i] = split[i].replace(" ".toRegex(), "")
-            textures[i] = store().textures().get(definition.resolveProperty("texture", definition.name) + "/" + variants[i])
-        }*/
+		/*for (i in 0..15) {
+			val variants = arrayOfNulls<String>(16)
+			variants[i] = split[i].replace(" ".toRegex(), "")
+			textures[i] = store().textures().get(definition.resolveProperty("texture", definition.name) + "/" + variants[i])
+		}*/
 
-        textures = (0..15).map { i ->
-            val variant = variantsString[i]//split[i].replace(" ".toRegex(), "").trim()
-            store.textures.get(definition["texture"].asString ?: definition.name + "/" + variant)
-            //store.textures.get(definition.resolveProperty("texture", definition.name) + "/" + variant)
-        }.toTypedArray()
-    }
+		textures = (0..15).map { i ->
+			val variant = variantsString[i]//split[i].replace(" ".toRegex(), "").trim()
+			store.textures.get(definition["texture"].asString ?: definition.name + "/" + variant)
+			//store.textures.get(definition.resolveProperty("texture", definition.name) + "/" + variant)
+		}.toTypedArray()
+	}
 
-    override fun getVoxelTexture(cell: Cell, side: VoxelSide): VoxelTexture {
-        return textures[cell.metaData]
-    }
+	override fun getVoxelTexture(cell: Cell, side: VoxelSide): VoxelTexture {
+		return textures[cell.metaData]
+	}
 
-    override fun enumerateVariants(itemStore: Content.ItemsDefinitions): List<ItemDefinition> {
-        //val variantsString = definition.resolveProperty("variants", "0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15")
-        return variantsString.mapIndexed { i, variant ->
-            ItemDefinition(itemStore, "$name.$variant", Json.Dict(mapOf(
-                    "voxel" to Json.Value.Text(name),
-                    "class" to Json.Value.Text(ItemVoxelVariant::class.java.canonicalName!!),
-                    "metaData" to Json.Value.Number(i.toDouble()),
-                    "variant" to Json.Value.Text(variant)
-            )))
-        }
-    }
+	override fun enumerateVariants(itemStore: Content.ItemsDefinitions): List<ItemDefinition> {
+		//val variantsString = definition.resolveProperty("variants", "0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15")
+		return variantsString.mapIndexed { i, variant ->
+			ItemDefinition(itemStore, "$name.$variant", Json.Dict(mapOf(
+					"voxel" to Json.Value.Text(name),
+					"class" to Json.Value.Text(ItemVoxelVariant::class.java.canonicalName!!),
+					"metaData" to Json.Value.Number(i.toDouble()),
+					"variant" to Json.Value.Text(variant)
+			)))
+		}
+	}
 
-    override fun getVariant(cell: Cell): ItemDefinition {
-        return variants[cell.metaData % variants.size]
-    }
+	override fun getVariant(cell: Cell): ItemDefinition {
+		return variants[cell.metaData % variants.size]
+	}
 }
 

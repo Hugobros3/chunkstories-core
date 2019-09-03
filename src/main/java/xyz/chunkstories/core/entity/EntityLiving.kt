@@ -19,16 +19,16 @@ import xyz.chunkstories.core.entity.traits.TraitBasicMovement
 import xyz.chunkstories.core.entity.traits.TraitTakesFallDamage
 
 abstract class EntityLiving(t: EntityDefinition, world: World) : Entity(t, world) {
-    val traitRotation: TraitRotation
-    val traitVelocity: TraitVelocity
-    var traitHealth: TraitHealth
+	val traitRotation: TraitRotation
+	val traitVelocity: TraitVelocity
+	var traitHealth: TraitHealth
 
-    init {
-        traitVelocity = TraitVelocity(this)
-        traitRotation = TraitRotation(this)
-        traitHealth = TraitHealth(this)
+	init {
+		traitVelocity = TraitVelocity(this)
+		traitRotation = TraitRotation(this)
+		traitHealth = TraitHealth(this)
 
-        // Adds the trait that makes it so these entities take fall damage
-        TraitTakesFallDamage(this)
-    }
+		// Adds the trait that makes it so these entities take fall damage
+		TraitTakesFallDamage(this)
+	}
 }

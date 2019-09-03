@@ -19,61 +19,61 @@ import xyz.chunkstories.core.item.ItemMiningTool
 
 class MinerTrait(entity: Entity) : Trait(entity) {
 
-    var progress: BlockMiningOperation? = null
-        private set
+	var progress: BlockMiningOperation? = null
+		private set
 
-    private val hands: MiningTool = object : MiningTool {
+	private val hands: MiningTool = object : MiningTool {
 
-        override val miningEfficiency: Float
-            get() = 1f
+		override val miningEfficiency: Float
+			get() = 1f
 
-        override val toolTypeName: String
-            get() = "hands"
+		override val toolTypeName: String
+			get() = "hands"
 
-    }
+	}
 
-    init {
+	init {
 
-        if (entity !is WorldModificationCause)
-            throw RuntimeException("Sorry but only entities implementing WorldModificationCause may be miners.")
-    }
+		if (entity !is WorldModificationCause)
+			throw RuntimeException("Sorry but only entities implementing WorldModificationCause may be miners.")
+	}
 
-    override fun tick() {
-        val tool = entity.traits[TraitSelectedItem::class]?.selectedItem?.item as? ItemMiningTool ?: hands
+	override fun tick() {
+		val tool = entity.traits[TraitSelectedItem::class]?.selectedItem?.item as? ItemMiningTool ?: hands
 
-        val world = entity.world
+		val world = entity.world
 
-        val controller = entity.traits[TraitControllable::class]?.controller
+		val controller = entity.traits[TraitControllable::class]?.controller
 
-        //TODO multiplayer
-        if (controller is Player) {
-            val inputs = controller.inputsManager
+		//TODO multiplayer
+		if (controller is Player) {
+			val inputs = controller.inputsManager
 
-            var lookingAt = entity.traits[TraitSight::class]?.getSelectableBlockLookingAt(5.0)?.location
+			var lookingAt = entity.traits[TraitSight::class]?.getSelectableBlockLookingAt(5.0)?.location
 
-            if (lookingAt != null && lookingAt.distance(entity.location) > 7f)
-                lookingAt = null
+			if (lookingAt != null && lookingAt.distance(entity.location) > 7f)
+				lookingAt = null
 
-            if (lookingAt != null && inputs.getInputByName("mouse.left")!!.isPressed) {
+			if (lookingAt != null && inputs.getInputByName("mouse.left")!!.isPressed) {
 
-                val cell = world.peek(lookingAt)
+				val cell = world.peek(lookingAt)
 
-                // Cancel mining if looking away or the block changed by itself
-                if (progress != null && (lookingAt.distance(progress!!.location) > 0 || !cell.voxel.sameKind(progress!!.voxel))) {
-                    progress = null
-                }
+				// Cancel mining if looking away or the block changed by itself
+				if (progress != null && (lookingAt.distance(progress!!.location) > 0 || !cell.voxel.sameKind(progress!!.voxel))) {
+					progress = null
+				}
 
-                if (progress == null) {
-                    // Try starting mining something
-                    progress = BlockMiningOperation(world.peek(lookingAt), tool)
-                } else {
-                    progress!!.keepGoing(entity, controller)
-                }
-            } else {
-                progress = null
-            }
-        }
+				if (progress == null) {
+					// Try starting mining something
+					progress = BlockMiningOperation(world.peek(lookingAt), tool)
+				} else {
+					progress!!.keepGoing(entity, controller)
+				}
+			} else {
+				progress = null
+			}
+		}
 
 
-    }
+	}
 }

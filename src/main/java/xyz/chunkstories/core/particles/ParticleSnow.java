@@ -3,7 +3,7 @@
 // Check out README.md for more information
 // Website: http://chunkstories.xyz
 //
-/*
+
 package xyz.chunkstories.core.particles;
 
 import xyz.chunkstories.api.particles.ParticleDataWithVelocity;
@@ -22,8 +22,7 @@ public class ParticleSnow extends ParticleTypeHandler {
 	public class SnowData extends ParticleData implements ParticleDataWithVelocity {
 
 		int hp = 60 * 2; // 5s
-		Vector3d vel = new Vector3d((Math.random() * 0.5 - 0.25) * 0.5, -Math.random() * 0.15 - 0.10,
-				(Math.random() * 0.5 - 0.25) * 0.5);
+		Vector3d vel = new Vector3d((Math.random() * 0.5 - 0.25) * 0.5, -Math.random() * 0.15 - 0.10, (Math.random() * 0.5 - 0.25) * 0.5);
 
 		public SnowData(float x, float y, float z) {
 			super(x, y, z);
@@ -61,5 +60,4 @@ public class ParticleSnow extends ParticleTypeHandler {
 		if (b.hp < 0 || b.y() < 0)
 			b.destroy();
 	}
-}
-*/
+}*/

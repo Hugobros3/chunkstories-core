@@ -12,15 +12,15 @@ import java.util.Collection;
 import xyz.chunkstories.api.item.ItemDefinition;
 
 public class ItemArmorHead extends ItemArmor {
-    public static final Collection<String> bodyParts = Arrays.asList(new String[] { "boneHead" });
+	public static final Collection<String> bodyParts = Arrays.asList(new String[] { "boneHead" });
 
-    public ItemArmorHead(ItemDefinition type) {
-        super(type);
-    }
+	public ItemArmorHead(ItemDefinition type) {
+		super(type);
+	}
 
-    @Override
-    public Collection<String> bodyPartsAffected() {
-        return bodyParts;
-    }
+	@Override
+	public Collection<String> bodyPartsAffected() {
+		return bodyParts;
+	}
 
 }

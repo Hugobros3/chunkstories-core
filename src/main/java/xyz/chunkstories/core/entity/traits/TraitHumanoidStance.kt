@@ -16,28 +16,28 @@ import java.io.DataOutputStream
 import java.io.IOException
 
 class TraitHumanoidStance(entity: Entity) : TraitSerializable(entity) {
-    var stance = HumanoidStance.STANDING
-        private set
+	var stance = HumanoidStance.STANDING
+		private set
 
-    fun set(flying: HumanoidStance) {
-        this.stance = flying
-        this.pushComponentEveryone()
-    }
+	fun set(flying: HumanoidStance) {
+		this.stance = flying
+		this.pushComponentEveryone()
+	}
 
-    @Throws(IOException::class)
-    override fun push(destinator: StreamTarget, dos: DataOutputStream) {
-        dos.writeByte(this.stance.ordinal)
-    }
+	@Throws(IOException::class)
+	override fun push(destinator: StreamTarget, dos: DataOutputStream) {
+		dos.writeByte(this.stance.ordinal)
+	}
 
-    @Throws(IOException::class)
-    override fun pull(from: StreamSource, dis: DataInputStream) {
-        stance = HumanoidStance.values()[dis.readByte().toInt()]
+	@Throws(IOException::class)
+	override fun pull(from: StreamSource, dis: DataInputStream) {
+		stance = HumanoidStance.values()[dis.readByte().toInt()]
 
-        // the server accepts these from the player, and thus replicates them
-        this.pushComponentEveryoneButController()
-    }
+		// the server accepts these from the player, and thus replicates them
+		this.pushComponentEveryoneButController()
+	}
 
-    enum class HumanoidStance private constructor(val eyeLevel: Double) {
-        STANDING(1.65), CROUCHING(1.15)
-    }
+	enum class HumanoidStance private constructor(val eyeLevel: Double) {
+		STANDING(1.65), CROUCHING(1.15)
+	}
 }

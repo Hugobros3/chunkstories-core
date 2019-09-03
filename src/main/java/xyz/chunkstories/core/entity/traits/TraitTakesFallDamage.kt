@@ -18,32 +18,32 @@ import xyz.chunkstories.core.voxel.isOnLadder
 
 class TraitTakesFallDamage(entity: Entity) : Trait(entity) {
 
-    private var lastStandingHeight = java.lang.Double.NaN
-    private var wasStandingLastTick = true
+	private var lastStandingHeight = java.lang.Double.NaN
+	private var wasStandingLastTick = true
 
-    fun resetFallDamage() {
-        lastStandingHeight = java.lang.Double.NaN
-    }
+	fun resetFallDamage() {
+		lastStandingHeight = java.lang.Double.NaN
+	}
 
-    override fun tick() {
-        if (entity.world is WorldMaster) {
-            // Ladders, water and flying allows to bypass fall damage
-            if (entity.isOnLadder() || entity.isInLiquid() || entity.traits[TraitFlyingMode::class]?.get() == true)
-                resetFallDamage()
+	override fun tick() {
+		if (entity.world is WorldMaster) {
+			// Ladders, water and flying allows to bypass fall damage
+			if (entity.isOnLadder() || entity.isInLiquid() || entity.traits[TraitFlyingMode::class]?.get() == true)
+				resetFallDamage()
 
-            val collisions = entity.traits[TraitCollidable::class.java] ?: return
-            if (collisions.isOnGround) {
-                if (!wasStandingLastTick && !java.lang.Double.isNaN(lastStandingHeight)) {
-                    val fallDistance = lastStandingHeight - entity.location.y()
-                        if (fallDistance > 5) {
-                            val fallDamage = (fallDistance * fallDistance / 2).toFloat()
-                            entity.traits[TraitHealth::class]?.damage(DamageCause.DAMAGE_CAUSE_FALL, fallDamage)
-                        }
+			val collisions = entity.traits[TraitCollidable::class.java] ?: return
+			if (collisions.isOnGround) {
+				if (!wasStandingLastTick && !java.lang.Double.isNaN(lastStandingHeight)) {
+					val fallDistance = lastStandingHeight - entity.location.y()
+						if (fallDistance > 5) {
+							val fallDamage = (fallDistance * fallDistance / 2).toFloat()
+							entity.traits[TraitHealth::class]?.damage(DamageCause.DAMAGE_CAUSE_FALL, fallDamage)
+						}
 
-                }
-                lastStandingHeight = entity.location.y()
-            }
-            this.wasStandingLastTick = collisions.isOnGround
-        }
-    }
+				}
+				lastStandingHeight = entity.location.y()
+			}
+			this.wasStandingLastTick = collisions.isOnGround
+		}
+	}
 }

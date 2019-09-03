@@ -85,8 +85,7 @@ public class Sign extends NonTrivialMapper {
 				int tileY = ((NBTInt) entity.getTag("y")).data;
 				int tileZ = ((NBTInt) entity.getTag("z")).data;
 
-				if (entityId.data.toLowerCase().equals("sign")
-						|| entityId.data.toLowerCase().equals("minecraft:sign")) {
+				if (entityId.data.toLowerCase().equals("sign") || entityId.data.toLowerCase().equals("minecraft:sign")) {
 					if ((tileX & 0xF) != x || tileY != y || (tileZ & 0xF) != z) {
 						continue;
 					}

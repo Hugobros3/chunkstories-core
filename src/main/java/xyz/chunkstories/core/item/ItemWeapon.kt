@@ -17,28 +17,28 @@ import xyz.chunkstories.api.item.inventory.ItemPile
 
 open class ItemWeapon(type: ItemDefinition) : Item(type) {
 
-    fun pileAsDamageCause(pile: ItemPile): DamageCause {
-        val inventory = pile.inventory
+	fun pileAsDamageCause(pile: ItemPile): DamageCause {
+		val inventory = pile.inventory
 
-        val holder = inventory.owner
-        if (holder is Entity) {
+		val holder = inventory.owner
+		if (holder is Entity) {
 
-            return object : EntityDamageCause {
+			return object : EntityDamageCause {
 
-                override val name: String
-                    get() = this@ItemWeapon.name + " #{weildby} " + holder.toString()
+				override val name: String
+					get() = this@ItemWeapon.name + " #{weildby} " + holder.toString()
 
-                override val responsibleEntity: Entity
-                    get() = holder
+				override val responsibleEntity: Entity
+					get() = holder
 
-            }
-        }
+			}
+		}
 
-        // Damager: this !
-        return object: DamageCause {
-            override val name: String
-                get() = this@ItemWeapon.name
-        }
-    }
+		// Damager: this !
+		return object: DamageCause {
+			override val name: String
+				get() = this@ItemWeapon.name
+		}
+	}
 
 }

@@ -18,65 +18,65 @@ import xyz.chunkstories.core.entity.traits.TraitHumanoidStance
 import xyz.chunkstories.core.entity.traits.TraitHumanoidStance.HumanoidStance
 
 abstract class AggressiveAI<E>(entity: E, private val targetsTypes: Collection<Class<out Entity>>)
-    : GenericAI<E>(entity) where E : Entity, E : DamageCause {
+	: GenericAI<E>(entity) where E : Entity, E : DamageCause {
 
-    open var attackEntityCooldown = 60 * 5
+	open var attackEntityCooldown = 60 * 5
 
-    abstract val aggroRadius: Double
+	abstract val aggroRadius: Double
 
-    abstract fun aggroBark()
+	abstract fun aggroBark()
 
-    open fun pickTarget(): Entity? {
-        for (entityToLook in entity.world.getEntitiesInBox(Box.Companion.fromExtentsCentered(Vector3d(aggroRadius * 2f)).translate(entity.location))) {
-            var visibilityModifier = 1f
-            if (entityToLook is EntityPlayer) {
+	open fun pickTarget(): Entity? {
+		for (entityToLook in entity.world.getEntitiesInBox(Box.Companion.fromExtentsCentered(Vector3d(aggroRadius * 2f)).translate(entity.location))) {
+			var visibilityModifier = 1f
+			if (entityToLook is EntityPlayer) {
 
-                // Crouched players are 70% less visible
-                if (entityToLook.traits[TraitHumanoidStance::class.java]!!.stance == HumanoidStance.CROUCHING)
-                    visibilityModifier -= 0.7f
+				// Crouched players are 70% less visible
+				if (entityToLook.traits[TraitHumanoidStance::class.java]!!.stance == HumanoidStance.CROUCHING)
+					visibilityModifier -= 0.7f
 
-                // If the entity is sprinting, it's 100% more obvious
-                if (entityToLook.traits[TraitVelocity::class.java]!!.velocity.length() > 0.7)
-                    visibilityModifier += 1.0f
-            }
+				// If the entity is sprinting, it's 100% more obvious
+				if (entityToLook.traits[TraitVelocity::class.java]!!.velocity.length() > 0.7)
+					visibilityModifier += 1.0f
+			}
 
-            if (entityToLook != entity
-                    && entityToLook.location.distance(entity.location) * visibilityModifier <= aggroRadius
-                    && entityToLook is EntityHumanoid
-                    && !entityToLook.traits[TraitHealth::class.java]!!.isDead) {
-                // Check target is in set
-                if (targetsTypes.contains(entityToLook.javaClass)) {
-                    aggroBark()
+			if (entityToLook != entity
+					&& entityToLook.location.distance(entity.location) * visibilityModifier <= aggroRadius
+					&& entityToLook is EntityHumanoid
+					&& !entityToLook.traits[TraitHealth::class.java]!!.isDead) {
+				// Check target is in set
+				if (targetsTypes.contains(entityToLook.javaClass)) {
+					aggroBark()
 
-                    return entityToLook
-                }
-            }
-        }
+					return entityToLook
+				}
+			}
+		}
 
-        return null
-    }
+		return null
+	}
 
-    abstract fun attack(target: Entity)
+	abstract fun attack(target: Entity)
 
-    override fun tick() {
-        super.tick()
+	override fun tick() {
+		super.tick()
 
-        if (entity.traits[TraitHealth::class.java]!!.isDead)
-            return
+		if (entity.traits[TraitHealth::class.java]!!.isDead)
+			return
 
-        if (attackEntityCooldown > 0)
-            attackEntityCooldown--
+		if (attackEntityCooldown > 0)
+			attackEntityCooldown--
 
-        // Find entities to attack
-        if (this.currentTask !is AiTaskAttackEntity && attackEntityCooldown == 0) {
-            // Only look for them once in 2s
-            attackEntityCooldown = (Math.random() * 60.0 * 2.0).toInt()
+		// Find entities to attack
+		if (this.currentTask !is AiTaskAttackEntity && attackEntityCooldown == 0) {
+			// Only look for them once in 2s
+			attackEntityCooldown = (Math.random() * 60.0 * 2.0).toInt()
 
-            val newTarget = pickTarget()
-            if(newTarget != null) {
-                attack(newTarget)
-            }
-        }
-    }
+			val newTarget = pickTarget()
+			if(newTarget != null) {
+				attack(newTarget)
+			}
+		}
+	}
 
 }

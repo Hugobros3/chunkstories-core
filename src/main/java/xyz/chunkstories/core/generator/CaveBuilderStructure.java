@@ -18,8 +18,7 @@ public class CaveBuilderStructure extends Structure {
 	final Vector3i to;
 	final double fromSize, toSize;
 
-	public CaveBuilderStructure(Vector3i from, Vector3i to, double fromSize, double toSize, int width, int height,
-			int length) {
+	public CaveBuilderStructure(Vector3i from, Vector3i to, double fromSize, double toSize, int width, int height, int length) {
 		super(width, height, length);
 		this.from = from;
 		this.to = to;
@@ -83,7 +82,7 @@ public class CaveBuilderStructure extends Structure {
 
 	private boolean inchunk(int x, int y, int z, Chunk chunk) {
 
-		return x >= chunk.getChunkX() * 32 && x < chunk.getChunkX() * 32 + 32 && y >= chunk.getChunkY() * 32
-				&& y < chunk.getChunkY() * 32 + 32 && z >= chunk.getChunkZ() * 32 && z < chunk.getChunkZ() * 32 + 32;
+		return x >= chunk.getChunkX() * 32 && x < chunk.getChunkX() * 32 + 32 && y >= chunk.getChunkY() * 32 && y < chunk.getChunkY() * 32 + 32
+				&& z >= chunk.getChunkZ() * 32 && z < chunk.getChunkZ() * 32 + 32;
 	}
 }

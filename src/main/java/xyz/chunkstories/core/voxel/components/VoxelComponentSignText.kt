@@ -17,19 +17,19 @@ import java.io.IOException
 
 class VoxelComponentSignText(holder: CellComponents) : VoxelComponent(holder) {
 
-    var signText = ""
-        set(value) {
-            field = value
-            holder.cell.refreshRepresentation()
-        }
+	var signText = ""
+		set(value) {
+			field = value
+			holder.cell.refreshRepresentation()
+		}
 
-    @Throws(IOException::class)
-    override fun push(destinator: StreamTarget, dos: DataOutputStream) {
-        dos.writeUTF(signText)
-    }
+	@Throws(IOException::class)
+	override fun push(destinator: StreamTarget, dos: DataOutputStream) {
+		dos.writeUTF(signText)
+	}
 
-    @Throws(IOException::class)
-    override fun pull(from: StreamSource, dis: DataInputStream) {
-        signText = dis.readUTF()
-    }
+	@Throws(IOException::class)
+	override fun pull(from: StreamSource, dis: DataInputStream) {
+		signText = dis.readUTF()
+	}
 }

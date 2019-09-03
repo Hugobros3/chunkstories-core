@@ -3,7 +3,7 @@
 // Check out README.md for more information
 // Website: http://chunkstories.xyz
 //
-/*
+
 package xyz.chunkstories.core.particles;
 
 import xyz.chunkstories.api.particles.*;
@@ -23,8 +23,7 @@ public class ParticleFire extends ParticleTypeHandler {
 		destroyOnCollision = type.resolveProperty("destroyOnCollision", "true").equals("true");
 	}
 
-	public class ParticleFireData extends ParticleData
-			implements ParticleDataWithVelocity, ParticleDataWithTextureCoordinates {
+	public class ParticleFireData extends ParticleData implements ParticleDataWithVelocity, ParticleDataWithTextureCoordinates {
 
 		public int timer = 60 * 60;
 		public float temp = 7000;
@@ -136,5 +135,4 @@ public class ParticleFire extends ParticleTypeHandler {
 			// destroyOnCollision)
 			b.destroy();
 	}
-}
-*/
+}*/

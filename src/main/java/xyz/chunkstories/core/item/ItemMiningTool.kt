@@ -18,37 +18,37 @@ import xyz.chunkstories.api.graphics.representation.ModelInstance
 import xyz.chunkstories.api.voxel.MiningTool
 
 class ItemMiningTool(definition: ItemDefinition) : Item(definition), MiningTool {
-    override val toolTypeName: String = definition["toolType"].asString ?: "pickaxe"
-    override val miningEfficiency: Float = definition["miningEfficiency"].asFloat ?: 0.5f //java.lang.Float.parseFloat(type.resolveProperty(, "0.5"))
+	override val toolTypeName: String = definition["toolType"].asString ?: "pickaxe"
+	override val miningEfficiency: Float = definition["miningEfficiency"].asFloat ?: 0.5f //java.lang.Float.parseFloat(type.resolveProperty(, "0.5"))
 
-    val animationCycleDuration: Long = (definition["animationCycleDuration"].asInt ?: 500).toLong()
+	val animationCycleDuration: Long = (definition["animationCycleDuration"].asInt ?: 500).toLong()
 
-    override fun buildRepresentation(worldPosition: Matrix4f, representationsGobbler: RepresentationsGobbler) {
-        //TODO move that logic where it belongs: the player rendering class
-        //val owner = pile.inventory.owner
-        //val miningAction = (owner as? Entity)?.traits?.get(MinerTrait::class)?.progress
+	override fun buildRepresentation(worldPosition: Matrix4f, representationsGobbler: RepresentationsGobbler) {
+		//TODO move that logic where it belongs: the player rendering class
+		//val owner = pile.inventory.owner
+		//val miningAction = (owner as? Entity)?.traits?.get(MinerTrait::class)?.progress
 
-        val modelName = definition["model"].asString
-        if(modelName != null) {
-            val model = definition.store.parent.models[modelName]
+		val modelName = definition["model"].asString
+		if(modelName != null) {
+			val model = definition.store.parent.models[modelName]
 
-            val handTransformation = Matrix4f(worldPosition)
+			val handTransformation = Matrix4f(worldPosition)
 
-            /*if (miningAction != null) {
-                handTransformation.rotate(Math.PI.toFloat(), 0f, 0f, 1f)
-            }*/
-            handTransformation.rotate(Math.PI.toFloat() * 1.5f, 0f, 1f, 0f)
-            handTransformation.translate(0f, -0.2f, 0f)
-            handTransformation.scale(0.5f)
+			/*if (miningAction != null) {
+				handTransformation.rotate(Math.PI.toFloat(), 0f, 0f, 1f)
+			}*/
+			handTransformation.rotate(Math.PI.toFloat() * 1.5f, 0f, 1f, 0f)
+			handTransformation.translate(0f, -0.2f, 0f)
+			handTransformation.scale(0.5f)
 
-            val position = ModelPosition(handTransformation)
+			val position = ModelPosition(handTransformation)
 
-            val modelInstance = ModelInstance(model, position)
-            representationsGobbler.acceptRepresentation(modelInstance)
+			val modelInstance = ModelInstance(model, position)
+			representationsGobbler.acceptRepresentation(modelInstance)
 
-            return
-        }
+			return
+		}
 
-        super.buildRepresentation(worldPosition, representationsGobbler)
-    }
+		super.buildRepresentation(worldPosition, representationsGobbler)
+	}
 }

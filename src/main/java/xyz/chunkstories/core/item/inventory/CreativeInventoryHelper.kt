@@ -1,3 +1,9 @@
+//
+// This file is a part of the Chunk Stories Core codebase
+// Check out README.md for more information
+// Website: http://chunkstories.xyz
+//
+
 package xyz.chunkstories.core.item.inventory
 
 import xyz.chunkstories.api.content.Content
@@ -9,35 +15,35 @@ import xyz.chunkstories.api.item.inventory.ItemPile
 import java.util.ArrayList
 
 fun Content.Voxels.createCreativeInventory() : Inventory {
-    val allItems = ArrayList<ItemVoxel>()
+	val allItems = ArrayList<ItemVoxel>()
 
-    val voxels = this
+	val voxels = this
 
-    for(voxel in voxels.all) {
+	for(voxel in voxels.all) {
 
-        // Ignore air
-        if (voxel.definition.name == "air")
-            continue
+		// Ignore air
+		if (voxel.definition.name == "air")
+			continue
 
-        allItems.addAll(voxel.enumerateItemsForBuilding())
-    }
+		allItems.addAll(voxel.enumerateItemsForBuilding())
+	}
 
-    val width = Math.ceil(allItems.size / 10.0).toInt()
-    val height = 10
+	val width = Math.ceil(allItems.size / 10.0).toInt()
+	val height = 10
 
-    return Inventory(width, height, null, magic).apply {
-        for(item in allItems)
-            addItem(item, item.definition.maxStackSize)
-    }
+	return Inventory(width, height, null, magic).apply {
+		for(item in allItems)
+			addItem(item, item.definition.maxStackSize)
+	}
 }
 
 val magic = object : InventoryCallbacks {
-    override val inventoryName: String
-        get() = "All blocks"
+	override val inventoryName: String
+		get() = "All blocks"
 
-    override fun isAccessibleTo(entity: Entity): Boolean = true
+	override fun isAccessibleTo(entity: Entity): Boolean = true
 
-    override fun refreshCompleteInventory() {}
+	override fun refreshCompleteInventory() {}
 
-    override fun refreshItemSlot(x: Int, y: Int, pileChanged: ItemPile?) {}
+	override fun refreshItemSlot(x: Int, y: Int, pileChanged: ItemPile?) {}
 }

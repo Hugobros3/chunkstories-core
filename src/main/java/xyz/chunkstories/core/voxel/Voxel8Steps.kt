@@ -17,23 +17,23 @@ class Voxel8Steps
 
 (definition: VoxelDefinition)//for (int i = 0; i < 8; i++)
 //	steps[i] = store().models().getVoxelModel("steps.m" + i);
-    : Voxel(definition) {
+	: Voxel(definition) {
 
-    /*@Override
+	/*@Override
 	public VoxelRenderer getVoxelRenderer(CellData info) {
 		// return nextGen;
 		return steps[info.getMetaData() % 8];
 	}*/
 
-    override fun isFaceOpaque(side: VoxelSide, metadata: Int): Boolean {
-        if (side == VoxelSide.BOTTOM)
-            return true
-        return if (side == VoxelSide.TOP) true else super.isFaceOpaque(side, metadata)
+	override fun isFaceOpaque(side: VoxelSide, metadata: Int): Boolean {
+		if (side == VoxelSide.BOTTOM)
+			return true
+		return if (side == VoxelSide.TOP) true else super.isFaceOpaque(side, metadata)
 
-    }
+	}
 
-    override fun getCollisionBoxes(info: Cell): Array<Box>? {
-        val box2 = Box.fromExtents(1.0, (info.metaData % 8 + 1) / 8.0, 1.0)
-        return arrayOf(box2)
-    }
+	override fun getCollisionBoxes(info: Cell): Array<Box>? {
+		val box2 = Box.fromExtents(1.0, (info.metaData % 8 + 1) / 8.0, 1.0)
+		return arrayOf(box2)
+	}
 }

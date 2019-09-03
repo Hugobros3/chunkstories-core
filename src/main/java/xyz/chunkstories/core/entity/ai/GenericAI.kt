@@ -25,46 +25,46 @@ import kotlin.math.sqrt
 //TODO refactor properly for components & traits
 abstract class GenericAI<E: Entity>(entity: E) : AI<E>(entity) {
 
-    val movementTrait: TraitBasicMovement
-        get() = entity.traits[TraitBasicMovement::class]!!
+	val movementTrait: TraitBasicMovement
+		get() = entity.traits[TraitBasicMovement::class]!!
 
-    val velocityTrait: TraitVelocity
-        get() = entity.traits[TraitVelocity::class]!!
+	val velocityTrait: TraitVelocity
+		get() = entity.traits[TraitVelocity::class]!!
 
-    internal var counter: Long = 0
+	internal var counter: Long = 0
 
-    init {
-        currentTask = AiTaskLookArround(this, 5.0)
-    }
+	init {
+		currentTask = AiTaskLookArround(this, 5.0)
+	}
 
-    abstract fun bark()
+	abstract fun bark()
 
-    override fun tick() {
-        if (entity.traits[TraitHealth::class]?.isDead == true) {
-            // Dead entities shouldn't be moving
-            movementTrait.targetVelocity.x = 0.0
-            movementTrait.targetVelocity.z = 0.0
-            return
-        }
+	override fun tick() {
+		if (entity.traits[TraitHealth::class]?.isDead == true) {
+			// Dead entities shouldn't be moving
+			movementTrait.targetVelocity.x = 0.0
+			movementTrait.targetVelocity.z = 0.0
+			return
+		}
 
-        counter++
+		counter++
 
-        currentTask.execute()
+		currentTask.execute()
 
-        // Random bark
-        if (rng.nextFloat() > 0.9990) {
-            bark()
-        }
+		// Random bark
+		if (rng.nextFloat() > 0.9990) {
+			bark()
+		}
 
-        // Jump when in water
-        if (entity.world.peek(entity.location.add(0.0, 1.15, 0.0)).voxel.liquid) {
-            if (velocityTrait.velocity.y() < 0.0)
-                velocityTrait.addVelocity(0.0, 0.10, 0.0)
-        }
+		// Jump when in water
+		if (entity.world.peek(entity.location.add(0.0, 1.15, 0.0)).voxel.liquid) {
+			if (velocityTrait.velocity.y() < 0.0)
+				velocityTrait.addVelocity(0.0, 0.10, 0.0)
+		}
 
-    }
+	}
 
-    companion object {
-        internal var rng = Random()
-    }
+	companion object {
+		internal var rng = Random()
+	}
 }
