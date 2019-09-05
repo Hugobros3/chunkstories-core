@@ -3,32 +3,6 @@
         {
             pattern: 
             '''
-            WWW
-             S
-             S 
-            ''',
-            ingredients: {
-                W: "planks",
-                S: "stick"
-            },
-            result: "wood_pickaxe"
-        },
-        {
-            pattern: 
-            '''
-            WWW
-             S
-             S 
-            ''',
-            ingredients: {
-                W: "iron_bar",
-                S: "stick"
-            },
-            result: "iron_pickaxe"
-        },
-        {
-            pattern: 
-            '''
             A
             ''',
             ingredients: {

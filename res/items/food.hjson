@@ -1,0 +1,39 @@
+{
+    items: {
+        bread: {
+            class: xyz.chunkstories.core.item.ItemFood
+            calories: 20
+            maxStackSize: 5
+        }
+
+        soup: {
+            class: xyz.chunkstories.core.item.ItemFood
+            calories: 15
+            maxStackSize: 10
+        }
+
+        cookie: {
+            class: xyz.chunkstories.core.item.ItemFood
+            calories: 10
+            maxStackSize: 30
+        }
+
+        pie: {
+            class: xyz.chunkstories.core.item.ItemFood
+            calories: 20
+            maxStackSize: 2
+        }
+
+        apple: {
+            class: xyz.chunkstories.core.item.ItemFood
+            calories: 25
+            maxStackSize: 5
+        }
+
+        steak: {
+            class: xyz.chunkstories.core.item.ItemFood
+            calories: 40
+            maxStackSize: 5
+        }
+    }
+}

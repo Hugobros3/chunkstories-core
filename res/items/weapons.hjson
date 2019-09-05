@@ -1,0 +1,27 @@
+{
+    items: {
+        wood_sword: {
+            class: xyz.chunkstories.core.item.ItemMeleeWeapon
+            warmup: 150
+            cooldownMillis: 700
+            reach: 6.0
+            damage: 20
+            attackSound: "sounds/item/sword_swing.ogg"
+        }
+
+        iron_sword: {
+            class: xyz.chunkstories.core.item.ItemMeleeWeapon
+            warmup: 150
+            cooldownMillis: 1300
+            reach: 6.0
+            damage: 45
+            attackSound: "sounds/item/sword_swing.ogg"
+        }
+
+        bow: {
+        }
+
+        arrow: {
+        }
+    }
+}

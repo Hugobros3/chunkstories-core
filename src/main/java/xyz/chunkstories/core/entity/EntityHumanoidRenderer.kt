@@ -73,8 +73,10 @@ open class EntityHumanoidRenderer(entity: EntityHumanoid, private val customSkin
 			val miningProgress = entity.traits[MinerTrait::class]?.progress
 			if(miningProgress != null) {
 				selectionColor.set(1.0f, 0.0f, 0.0f, 1.0f)
-				selectionColor.y = 1f - miningProgress.progress.toFloat()
+				selectionColor.y = 1f - miningProgress.progress.toFloat().coerceAtMost(1.0f)
 			}
+
+			//selectionColor.set(1.0f, Float.POSITIVE_INFINITY, 0.0f, 1.0f)
 
 			if(selectedBlock != null) {
 				val cell = entity.world.peek(selectedBlock)

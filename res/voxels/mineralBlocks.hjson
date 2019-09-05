@@ -2,7 +2,17 @@
 	blocks: {
 		/** In this file we declare the 'mineral' blocks, those are solid and not life-based */
 		stone: {
-			drops: cobble
+			drops: {
+				type: match_tool
+				default: false
+				predicates: [
+					{
+						match: tool_type
+						tool_type: pickaxe
+						drops: cobble
+					}
+				]
+			}
 		}
 
 		gravel: {

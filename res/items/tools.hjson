@@ -1,0 +1,41 @@
+{
+    items: {
+        wood_pickaxe: {
+            class: xyz.chunkstories.core.item.ItemMiningTool
+            toolType: pickaxe
+            miningEfficiency: 3.3
+        }
+
+        wood_shovel: {
+            class: xyz.chunkstories.core.item.ItemMiningTool
+            toolType: shovel
+            miningEfficiency: 1.6
+        }
+
+        wood_axe: {
+            class: xyz.chunkstories.core.item.ItemMiningTool
+            toolType: axe
+            miningEfficiency: 1.2
+        }
+
+        iron_pickaxe: {
+            class: xyz.chunkstories.core.item.ItemMiningTool
+            toolType: pickaxe
+            miningEfficiency: 5.9
+            model: "items/models/pickaxe.dae"
+            modelDiffuse: "items/models/pickaxe.png"
+        }
+
+        iron_shovel: {
+            class: xyz.chunkstories.core.item.ItemMiningTool
+            toolType: shovel
+            miningEfficiency: 2.0
+        }
+
+        iron_axe: {
+            class: xyz.chunkstories.core.item.ItemMiningTool
+            toolType: axe
+            miningEfficiency: 1.6
+        }
+    }
+}

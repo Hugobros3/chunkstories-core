@@ -60,7 +60,7 @@ void main()
 	float sunSpot = 2.1 * clamp(pow(dot(world.sunPosition, reflect(eyeDirection, normal2.xyz)), 512.0), 0.0, 100.0);
 	float NdL = clamp(pow(dot(world.sunPosition, normal2.xyz), 1.0), 0.0, 1.0);
 
-	vec4 waterColor = vec4(0.0, 0.0, 0.0, 1.0 * (1.0 - shittyFresnel));
+	vec4 waterColor = vec4(0.0, 0.0, 0.0, 0.5 + 0.5 * (1.0 - shittyFresnel));
 	//waterColor += vec4(1.0) * sunSpot;
 	waterColor.rgb += vec3(0.2, 0.2, 0.5) * getSkyColor(world.time, reflect(eyeDirection, normal2.xyz));
 

@@ -1,0 +1,18 @@
+{
+    items: {
+        diamond: {
+        }
+
+        gold_bar: {
+        }
+
+        iron_bar: {
+        }
+
+        copper_bar: {
+        }
+
+        coal: {
+        }
+    }
+}

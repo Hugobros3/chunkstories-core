@@ -1,0 +1,8 @@
+{
+    items: {
+        wheat: {
+            //class: xyz.chunkstories.core.item.ItemFood
+            //calories: 5
+        }
+    }
+}

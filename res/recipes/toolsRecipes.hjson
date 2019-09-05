@@ -1,0 +1,82 @@
+{
+    recipes: [
+        {
+            pattern: 
+            '''
+            WW 
+            WS
+             S 
+            ''',
+            ingredients: {
+                W: "planks",
+                S: "stick"
+            },
+            result: "wood_axe"
+        },
+        {
+            pattern: 
+            '''
+             W 
+             S
+             S 
+            ''',
+            ingredients: {
+                W: "planks",
+                S: "stick"
+            },
+            result: "wood_shovel"
+        },
+        {
+            pattern: 
+            '''
+            WWW
+             S
+             S 
+            ''',
+            ingredients: {
+                W: "planks",
+                S: "stick"
+            },
+            result: "wood_pickaxe"
+        },
+        {
+            pattern: 
+            '''
+            WW 
+            WS
+             S 
+            ''',
+            ingredients: {
+                W: "iron_bar",
+                S: "stick"
+            },
+            result: "iron_axe"
+        },
+        {
+            pattern: 
+            '''
+             W 
+             S
+             S 
+            ''',
+            ingredients: {
+                W: "iron_bar",
+                S: "stick"
+            },
+            result: "iron_shovel"
+        },
+        {
+            pattern: 
+            '''
+            WWW
+             S
+             S 
+            ''',
+            ingredients: {
+                W: "iron_bar",
+                S: "stick"
+            },
+            result: "iron_pickaxe"
+        }
+    ]
+}
