@@ -24,6 +24,8 @@
             }
             startHealth: 20
             maxHealth: 20
+            
+            drops: steak
         }
         
         player: {

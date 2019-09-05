@@ -4,7 +4,7 @@
             pattern: 
             '''
             WW 
-            WS
+            WS 
              S 
             ''',
             ingredients: {

@@ -26,10 +26,10 @@ class VoxelSmallPlant(definition: VoxelDefinition) : Voxel(definition) {
 			val matrix = Matrix4f()
 
 			matrix.translate(0.5f, 0f, 0.5f)
-			matrix.rotate(Math.PI.toFloat() * 2f * Math.random().toFloat(), 0f, 1f, 0f)
+			matrix.rotate(wangUniform(cell.z + 32187) * 2f * Math.random().toFloat(), 0f, 1f, 0f)
 			matrix.translate(-0.5f, 0f, -0.5f)
 
-			matrix.translate((-0.5f + Math.random().toFloat()) * 0.25f, 0f, (-0.5f + Math.random().toFloat()) * 0.25f)
+			matrix.translate((-0.5f + wangUniform(cell.x + 48461558)) * 0.25f, 0f, (-0.5f + wangUniform(cell.y + 871413)) * 0.25f)
 
 			addModel(model, matrix, mappedOverrides)
 		}
@@ -48,4 +48,16 @@ class VoxelSmallPlant(definition: VoxelDefinition) : Voxel(definition) {
 		override val miningEfficiency = Float.POSITIVE_INFINITY
 		override val toolTypeName = "world"
 	}
+}
+
+inline fun wangUniform(seed: Int): Float = (wangHash(seed) and 0xffff).toFloat() / 65536.0f
+
+/* Deterministic rng */
+inline fun wangHash(seed: Int): Int {
+	var hash = (seed xor 61) xor (seed shr 16)
+	hash *= 9
+	hash = hash xor (hash shr 4)
+	hash *= 0x27d4eb2d
+	hash = hash xor (hash shr 15)
+	return hash
 }

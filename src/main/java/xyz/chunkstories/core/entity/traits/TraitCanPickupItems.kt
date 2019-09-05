@@ -21,7 +21,7 @@ class TraitCanPickupItems(entity: Entity) : Trait(entity) {
 
 	override fun tick() {
 		// Auto-pickups items on the ground
-		if (entity.world is WorldMaster && entity.world.ticksElapsed % 60L == 0L) {
+		if (entity.world is WorldMaster && entity.world.ticksElapsed % 10L == 0L) {
 
 			for (e in  entity.world.getEntitiesInBox(Box.fromExtentsCentered(Vector3d(3.0)).translate(entity.location) )) {
 				if (e is EntityGroundItem && e.location.distance(entity.location) < 3.0f) {
@@ -34,11 +34,15 @@ class TraitCanPickupItems(entity: Entity) : Trait(entity) {
 
 					val pileToCollect = groundInventoy.getItemPileAt(0, 0)
 
-					val overflow = traitInventory.inventory.addItem(pileToCollect!!.item, pileToCollect.amount)
-					pileToCollect.amount = overflow
+					if(pileToCollect != null) {
+						val overflow = traitInventory.inventory.addItem(pileToCollect.item, pileToCollect.amount)
+						pileToCollect.amount = overflow
 
-					if (pileToCollect.amount <= 0)
+						if (pileToCollect.amount <= 0)
+							entity.world.removeEntity(e)
+					} else {
 						entity.world.removeEntity(e)
+					}
 				}
 			}
 		}
