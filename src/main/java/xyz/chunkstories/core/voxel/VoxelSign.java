@@ -41,7 +41,6 @@ public class VoxelSign extends Voxel// implements VoxelCustomIcon
 	/* @Override public VoxelDynamicRenderer getVoxelRenderer(CellData info) {
 	 * return signRenderer; } */
 
-	@Override
 	public void onPlace(FutureCell cell, WorldModificationCause cause) throws IllegalBlockModificationException {
 		// We don't create the components here, as the cell isn't actually changed yet!
 		int x = cell.getX();

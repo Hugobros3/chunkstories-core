@@ -57,7 +57,7 @@ class BigVoxel(definition: VoxelDefinition) : Voxel(definition) {
 	}
 
 	@Throws(IllegalBlockModificationException::class)
-	override fun onPlace(context: FutureCell, cause: WorldModificationCause?) {
+	fun onPlace(context: FutureCell, cause: WorldModificationCause?) {
 		// Be cool with the system doing it's thing
 		if (cause == null)
 			return

@@ -43,7 +43,7 @@ open class HorizonGenerator(definition: WorldGeneratorDefinition, world: World) 
 
 	private val GROUND_VOXEL: Voxel?
 	private val FOREST_GROUND_VOXEL: Voxel?
-	private val DRY_GROUND_VOXEL: Voxel?
+	//private val DRY_GROUND_VOXEL: Voxel?
 
 	private val SAND: Voxel?
 	private val GRAVEL: Voxel?
@@ -70,18 +70,18 @@ open class HorizonGenerator(definition: WorldGeneratorDefinition, world: World) 
 
 		caveBuilder = CaveBuilder(world, this)
 
-		this.WATER_HEIGHT = definition["waterHeight"].asInt ?: 48 //pint(type.resolveProperty("waterHeight"), 48)
-		this.MOUNTAIN_OFFSET = definition["mountainOffset"].asDouble ?: 0.3//pdouble(definition.resolveProperty("mountainOffset"), 0.3)
-		this.MOUNTAIN_SCALE = definition["mountainScale"].asInt ?: 128 //pint(definition.resolveProperty("mountainScale"), 128)
-		this.BASE_HEIGHT_SCALE = definition["baseHeightScale"].asInt ?: 64 //pint(definition.resolveProperty("baseHeightScale"), 64)
-		this.PLATEAU_HEIGHT_SCALE = definition["plateauHeightScale"].asInt ?: 64 //pint(definition.resolveProperty("plateauHeightScale"), 64)
+		this.WATER_HEIGHT = definition["waterHeight"].asInt ?: 48
+		this.MOUNTAIN_OFFSET = definition["mountainOffset"].asDouble ?: 0.3
+		this.MOUNTAIN_SCALE = definition["mountainScale"].asInt ?: 128
+		this.BASE_HEIGHT_SCALE = definition["baseHeightScale"].asInt ?: 64
+		this.PLATEAU_HEIGHT_SCALE = definition["plateauHeightScale"].asInt ?: 64
 
 		this.AIR_VOXEL = world.gameContext.content.voxels.air
 		this.STONE_VOXEL = world.gameContext.content.voxels.getVoxel("stone")
 		this.WATER_VOXEL = world.gameContext.content.voxels.getVoxel("water")
 		this.GROUND_VOXEL = world.gameContext.content.voxels.getVoxel("grass")
 		this.FOREST_GROUND_VOXEL = world.gameContext.content.voxels.getVoxel("forestgrass")
-		this.DRY_GROUND_VOXEL = world.gameContext.content.voxels.getVoxel("drygrass")
+		//this.DRY_GROUND_VOXEL = world.gameContext.content.voxels.getVoxel("drygrass")
 		this.UNDERGROUND_VOXEL = world.gameContext.content.voxels.getVoxel("dirt")
 		this.TALLGRASS = world.gameContext.content.voxels.getVoxel("grass_prop")
 

@@ -1,32 +1,38 @@
 {
     entities: {
-        // Basic entities used for the game to initialize itself
-        player: {
-            class: xyz.chunkstories.core.entity.EntityPlayer
-            collidesWithEntities: true
-            startHealth: 100
-            maxHealth: 100
-        }
-
-        zombie: {
-            class: xyz.chunkstories.core.entity.zombie.EntityZombie
-            collidesWithEntities: true
-            startHealth: 50
-            maxHealth: 100
-        }
 
         groundItem: {
             class: xyz.chunkstories.api.entity.EntityGroundItem
             collisions: {
-                withOtherEntities: "false"
+                withOtherEntities: false
             }
+        }
+
+        zombie: {
+            class: xyz.chunkstories.core.entity.zombie.EntityZombie
+            collisions: {
+                withOtherEntities: true
+            }
+            startHealth: 50
+            maxHealth: 100
         }
 
         pig: {
             class: xyz.chunkstories.core.entity.pig.EntityPig
-            collidesWithEntities: true
+            collisions: {
+                withOtherEntities: true
+            }
             startHealth: 20
             maxHealth: 20
+        }
+        
+        player: {
+            class: xyz.chunkstories.core.entity.EntityPlayer
+            collisions: {
+                withOtherEntities: true
+            }
+            startHealth: 100
+            maxHealth: 100
         }
     }
 }

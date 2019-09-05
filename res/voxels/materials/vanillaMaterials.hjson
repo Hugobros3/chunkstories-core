@@ -4,7 +4,7 @@
         //undefined material
         default: {
             // sounds: "sounds/materials/default/"
-            walkingSounds: ["sounds/footsteps/generic[1-3].ogg",]
+            walkingSounds: "sounds/footsteps/generic[1-3].ogg"
             jumpingSounds: "sounds/footsteps/jump.ogg"
             landingSounds: "sounds/footsteps/land.ogg"
             //runningSounds: "<walkingSounds>"

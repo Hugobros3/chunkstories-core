@@ -9,13 +9,18 @@ package xyz.chunkstories.core.voxel
 import xyz.chunkstories.api.content.Content
 import xyz.chunkstories.api.content.json.Json
 import xyz.chunkstories.api.content.json.asArray
+import xyz.chunkstories.api.content.json.asInt
 import xyz.chunkstories.api.content.json.asString
+import xyz.chunkstories.api.entity.Entity
 import xyz.chunkstories.api.item.ItemDefinition
+import xyz.chunkstories.api.item.ItemVoxel
+import xyz.chunkstories.api.physics.RayResult
 import xyz.chunkstories.api.voxel.Voxel
 import xyz.chunkstories.api.voxel.VoxelDefinition
 import xyz.chunkstories.api.voxel.VoxelSide
 import xyz.chunkstories.api.voxel.textures.VoxelTexture
 import xyz.chunkstories.api.world.cell.Cell
+import xyz.chunkstories.api.world.cell.FutureCell
 
 class Voxel16Variants(definition: VoxelDefinition) : Voxel(definition) {
 	private val textures: Array<VoxelTexture>// = arrayOfNulls<VoxelTexture>(16)
@@ -61,3 +66,17 @@ class Voxel16Variants(definition: VoxelDefinition) : Voxel(definition) {
 	}
 }
 
+class ItemVoxelVariant(definition: ItemDefinition) : ItemVoxel(definition) {
+	val metadata = definition["metaData"].asInt ?: 0
+	val variant = definition["variant"].asString
+
+	override fun getTextureName(): String {
+		return "voxels/textures/" + voxel.name + "/" + variant + ".png"
+	}
+
+	override fun prepareNewBlockData(cell: FutureCell, adjacentCell: Cell, adjacentCellSide: VoxelSide, placingEntity: Entity, hit: RayResult.Hit.VoxelHit): Boolean {
+		super.prepareNewBlockData(cell, adjacentCell, adjacentCellSide, placingEntity, hit)
+		cell.metaData = metadata
+		return true
+	}
+}

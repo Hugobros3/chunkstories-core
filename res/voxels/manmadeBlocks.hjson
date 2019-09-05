@@ -3,11 +3,12 @@
 	blocks: {
 		/* GAMEPLAY TOOLS */
 		torch: {
+			class: xyz.chunkstories.core.voxel.VoxelTorch
 			
 			solid: false
 			opaque: false
 			emittedLightLevel: 15
-			hardness: 0.0
+			miningDifficulty: 0.0
 			collisionBox: "0.0, 0.0, 0.0, 1.0, 1.0, 1.0"
 			
 			representation: {

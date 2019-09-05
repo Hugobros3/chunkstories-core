@@ -179,7 +179,7 @@ class VoxelDoor(definition: VoxelDefinition) : Voxel(definition) {
 	}
 
 	@Throws(IllegalBlockModificationException::class)
-	override fun onPlace(cell: FutureCell, cause: WorldModificationCause?) {
+	fun onPlace(cell: FutureCell, cause: WorldModificationCause?) {
 		// Ignore all that crap on a slave world
 		if (cell.world !is WorldMaster)
 			return

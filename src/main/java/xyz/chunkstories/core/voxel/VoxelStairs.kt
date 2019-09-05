@@ -106,7 +106,7 @@ class VoxelStairs(definition: VoxelDefinition) : Voxel(definition) {
 		return boxes
 	}
 
-	override fun onPlace(cell: FutureCell, cause: WorldModificationCause?) {
+	fun onPlace(cell: FutureCell, cause: WorldModificationCause?) {
 		// id+dir of slope
 		// 0LEFT x-
 		// 1RIGHT x+
