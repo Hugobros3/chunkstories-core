@@ -6,20 +6,25 @@
 
 package xyz.chunkstories.core.voxel
 
-import xyz.chunkstories.api.Location
-import xyz.chunkstories.api.entity.Controller
+import xyz.chunkstories.api.content.Content
+import xyz.chunkstories.api.content.json.Json
 import xyz.chunkstories.api.entity.Entity
+import xyz.chunkstories.api.entity.EntityGroundItem
 import xyz.chunkstories.api.entity.traits.serializable.TraitControllable
+import xyz.chunkstories.api.entity.traits.serializable.TraitInventory
+import xyz.chunkstories.api.entity.traits.serializable.TraitVelocity
 import xyz.chunkstories.api.events.voxel.WorldModificationCause
 import xyz.chunkstories.api.exceptions.world.WorldException
 import xyz.chunkstories.api.exceptions.world.voxel.IllegalBlockModificationException
 import xyz.chunkstories.api.input.Input
+import xyz.chunkstories.api.item.ItemDefinition
+import xyz.chunkstories.api.item.ItemVoxel
 import xyz.chunkstories.api.item.inventory.Inventory
+import xyz.chunkstories.api.physics.RayResult
 import xyz.chunkstories.api.player.Player
 import xyz.chunkstories.api.voxel.Voxel
 import xyz.chunkstories.api.voxel.VoxelDefinition
 import xyz.chunkstories.api.voxel.VoxelSide
-import xyz.chunkstories.api.voxel.components.VoxelComponent
 import xyz.chunkstories.api.voxel.components.VoxelInventoryComponent
 import xyz.chunkstories.api.voxel.textures.VoxelTexture
 import xyz.chunkstories.api.world.WorldMaster
@@ -27,20 +32,12 @@ import xyz.chunkstories.api.world.cell.Cell
 import xyz.chunkstories.api.world.cell.FutureCell
 import xyz.chunkstories.api.world.chunk.ChunkCell
 import xyz.chunkstories.api.world.chunk.FreshChunkCell
-
-import xyz.chunkstories.api.util.compatibility.getSideMcStairsChestFurnace
+import kotlin.math.abs
 
 class VoxelChest(type: VoxelDefinition) : Voxel(type) {
-    internal var frontTexture: VoxelTexture
-    internal var sideTexture: VoxelTexture
-    internal var topTexture: VoxelTexture
-
-    init {
-
-        frontTexture = store.textures.get(name + "_front")
-        sideTexture = store.textures.get(name + "_side")
-        topTexture = store.textures.get(name + "_top")
-    }
+    protected var frontTexture: VoxelTexture = store.textures.get(name + "_front")
+    protected var sideTexture: VoxelTexture = store.textures.get(name + "_side")
+    protected var topTexture: VoxelTexture = store.textures.get(name + "_top")
 
     override fun handleInteraction(entity: Entity, voxelContext: ChunkCell, input: Input): Boolean {
         if (input.name == "mouse.right" && voxelContext.world is WorldMaster) {
@@ -72,48 +69,64 @@ class VoxelChest(type: VoxelDefinition) : Voxel(type) {
         cell.registerComponent("chestInventory", component)
     }
 
-    override fun getVoxelTexture(info: Cell, side: VoxelSide): VoxelTexture {
-        val actualSide = getSideMcStairsChestFurnace(info.metaData)
+    override fun getVoxelTexture(cell: Cell, side: VoxelSide): VoxelTexture {
+        val actualSide = VoxelSide.values()[cell.metaData]//getSideMcStairsChestFurnace(cell.metaData)
 
         if (side == VoxelSide.TOP)
             return topTexture
 
         return if (side == actualSide) frontTexture else sideTexture
-
     }
 
-    @Throws(IllegalBlockModificationException::class)
-    // Chunk stories chests use Minecraft format to ease porting of maps
-    fun onPlace(cell: FutureCell, cause: WorldModificationCause) {
-        // Can't access the components of a non-yet placed FutureCell
-        // getInventory(context);
-
-        var stairsSide = 0
-        // See:
-        // http://minecraft.gamepedia.com/Data_values#Ladders.2C_Furnaces.2C_Chests.2C_Trapped_Chests
-        if (cause is Entity) {
-            val loc = (cause as Entity).location
-            val dx = loc.x() - (cell.x + 0.5)
-            val dz = loc.z() - (cell.z + 0.5)
-            if (Math.abs(dx) > Math.abs(dz)) {
-                if (dx > 0)
-                    stairsSide = 4
-                else
-                    stairsSide = 5
-            } else {
-                if (dz > 0)
-                    stairsSide = 2
-                else
-                    stairsSide = 3
-            }
-            cell.metaData = stairsSide
-        }
-    }
-
-    @Throws(WorldException::class)
     override fun onRemove(cell: ChunkCell, cause: WorldModificationCause?) {
+        val world =  cell.world
+        val location = cell.location
+        location.add(0.5, 0.5, 0.5)
 
-        // Delete the components as to not pollute the chunk's components space
-        // context.components().erase();
+        val inventoryComponent = cell.components.getVoxelComponent("chestInventory") as? VoxelInventoryComponent ?: return
+        for(itemPile in inventoryComponent.inventory.contents) {
+            val entity = world.content.entities.getEntityDefinition("groundItem")!!.newEntity<EntityGroundItem>(world)
+            entity.location = location
+            entity.traits[TraitInventory::class]!!.inventory.addItem(itemPile.item, itemPile.amount)
+            entity.traits[TraitVelocity::class]?.let { it.addVelocity(Math.random() * 0.2 - 0.1, Math.random() * 0.1 + 0.1, Math.random() * 0.2 - 0.1) }
+            world.addEntity(entity)
+        }
+
+        //inventoryComponent gets nuked by the engine when the cell is wiped after this
+    }
+
+    override fun enumerateVariants(itemStore: Content.ItemsDefinitions): List<ItemDefinition> {
+        val definition = ItemDefinition(itemStore, name, Json.Dict(mapOf(
+                "voxel" to Json.Value.Text(name),
+                "class" to Json.Value.Text(ItemChest::class.java.canonicalName!!)
+        )))
+
+        return listOf(definition)
+    }
+}
+
+class ItemChest(definition: ItemDefinition) : ItemVoxel(definition) {
+    override fun prepareNewBlockData(cell: FutureCell, adjacentCell: Cell, adjacentCellSide: VoxelSide, placingEntity: Entity, hit: RayResult.Hit.VoxelHit): Boolean {
+        super.prepareNewBlockData(cell, adjacentCell, adjacentCellSide, placingEntity, hit)
+
+        val loc = placingEntity.location
+        val dx = (cell.x + 0.5) - loc.x()
+        val dz = (cell.z + 0.5) - loc.z()
+
+        val facing = if (abs(dx) > abs(dz)) {
+            if (dx > 0)
+                VoxelSide.LEFT
+            else
+                VoxelSide.RIGHT
+        } else {
+            if (dz > 0)
+                VoxelSide.BACK
+            else
+                VoxelSide.FRONT
+        }
+
+        cell.metaData = facing.ordinal
+
+        return true
     }
 }

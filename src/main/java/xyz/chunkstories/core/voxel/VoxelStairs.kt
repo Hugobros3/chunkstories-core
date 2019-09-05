@@ -7,6 +7,8 @@
 package xyz.chunkstories.core.voxel
 
 import org.joml.Matrix4f
+import xyz.chunkstories.api.content.Content
+import xyz.chunkstories.api.content.json.Json
 import xyz.chunkstories.api.content.json.asString
 import xyz.chunkstories.api.entity.Entity
 import xyz.chunkstories.api.entity.traits.serializable.TraitRotation
@@ -14,13 +16,17 @@ import xyz.chunkstories.api.events.voxel.WorldModificationCause
 import xyz.chunkstories.api.graphics.MeshMaterial
 import xyz.chunkstories.api.graphics.representation.Model
 import xyz.chunkstories.api.graphics.reverseWindingOrder
+import xyz.chunkstories.api.item.ItemDefinition
+import xyz.chunkstories.api.item.ItemVoxel
 import xyz.chunkstories.api.physics.Box
+import xyz.chunkstories.api.physics.RayResult
 import xyz.chunkstories.api.voxel.ChunkMeshRenderingInterface
 import xyz.chunkstories.api.voxel.Voxel
 import xyz.chunkstories.api.voxel.VoxelDefinition
 import xyz.chunkstories.api.voxel.VoxelSide
 import xyz.chunkstories.api.world.cell.Cell
 import xyz.chunkstories.api.world.cell.FutureCell
+import kotlin.math.abs
 
 class VoxelStairs(definition: VoxelDefinition) : Voxel(definition) {
 
@@ -59,13 +65,13 @@ class VoxelStairs(definition: VoxelDefinition) : Voxel(definition) {
 
 	fun render(cell: Cell, mesher: ChunkMeshRenderingInterface) {
 		val meta = cell.metaData
-		val rotation = when (meta % 4) {
+		val rotation = meta % 4 - 1/*when (meta % 4) {
 			0 -> 3
 			1 -> 1
 			2 -> 2
 			3 -> 0
 			else -> -1
-		}
+		}*/
 		val flipped = (meta and 0x4) != 0
 
 		val matrix = Matrix4f()
@@ -88,9 +94,9 @@ class VoxelStairs(definition: VoxelDefinition) : Voxel(definition) {
 				Box.fromExtents(1.0, 0.5, 1.0),
 				when (meta % 4) {
 					0 -> Box.fromExtents(0.5, 0.5, 1.0).translate(0.5, -0.0, 0.0)
-					1 -> Box.fromExtents(0.5, 0.5, 1.0).translate(0.0, -0.0, 0.0)
-					2 -> Box.fromExtents(1.0, 0.5, 0.5).translate(0.0, -0.0, 0.5)
-					3 -> Box.fromExtents(1.0, 0.5, 0.5).translate(0.0, -0.0, 0.0)
+					1 -> Box.fromExtents(1.0, 0.5, 0.5).translate(0.0, -0.0, 0.0)
+					2 -> Box.fromExtents(0.5, 0.5, 1.0).translate(0.0, -0.0, 0.0)
+					3 -> Box.fromExtents(1.0, 0.5, 0.5).translate(0.0, -0.0, 0.5)
 					else -> Box.fromExtents(0.5, 0.5, 1.0).translate(0.5, -0.0, 0.25)
 				}
 		)
@@ -106,40 +112,45 @@ class VoxelStairs(definition: VoxelDefinition) : Voxel(definition) {
 		return boxes
 	}
 
-	fun onPlace(cell: FutureCell, cause: WorldModificationCause?) {
-		// id+dir of slope
-		// 0LEFT x-
-		// 1RIGHT x+
-		// 2BACK z-
-		// 3FRONT z+
+	override fun enumerateVariants(itemStore: Content.ItemsDefinitions): List<ItemDefinition> {
+		val definition = ItemDefinition(itemStore, name, Json.Dict(mapOf(
+				"voxel" to Json.Value.Text(name),
+				"class" to Json.Value.Text(ItemStairs::class.java.canonicalName!!)
+		)))
 
-		if (cause is Entity) {
-			var stairsSide: Int
+		return listOf(definition)
+	}
+}
 
-			val entity = cause as Entity?
-			val loc = entity!!.location
-			val dx = loc.x() - (cell.x + 0.5)
-			val dz = loc.z() - (cell.z + 0.5)
+class ItemStairs(definition: ItemDefinition) : ItemVoxel(definition) {
+	override fun prepareNewBlockData(cell: FutureCell, adjacentCell: Cell, adjacentCellSide: VoxelSide, placingEntity: Entity, hit: RayResult.Hit.VoxelHit): Boolean {
+		super.prepareNewBlockData(cell, adjacentCell, adjacentCellSide, placingEntity, hit)
 
-			// System.out.println("dx: "+dx+" dz:" + dz);
+		val loc = placingEntity.location
+		val dx = (cell.x + 0.5) - loc.x()
+		val dz = (cell.z + 0.5) - loc.z()
 
-			stairsSide = if (Math.abs(dx) > Math.abs(dz)) {
-				if (dx > 0)
-					1
-				else
-					0
-			} else {
-				if (dz > 0)
-					3
-				else
-					2
-			}
-
-			if (entity.traits[TraitRotation::class]?.verticalRotation ?: 0f > 0.0f)
-			//if (entity.traits.tryWithBoolean<TraitRotation>(TraitRotation::class.java) { er -> er.verticalRotation < 0 })
-				stairsSide += 4
-
-			cell.metaData = stairsSide
+		val facing = if (abs(dx) > abs(dz)) {
+			if (dx > 0)
+				VoxelSide.LEFT
+			else
+				VoxelSide.RIGHT
+		} else {
+			if (dz > 0)
+				VoxelSide.BACK
+			else
+				VoxelSide.FRONT
 		}
+
+		val flipped = if(adjacentCellSide == VoxelSide.BOTTOM)
+			true
+		else if(adjacentCellSide == VoxelSide.TOP)
+			false
+		else
+			(hit.hitPosition.y() % 1) > 0.5
+
+		cell.metaData = facing.ordinal or ((if(flipped) 1 else 0) shl 2)
+
+		return true
 	}
 }

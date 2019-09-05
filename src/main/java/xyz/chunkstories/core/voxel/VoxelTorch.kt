@@ -94,15 +94,6 @@ class VoxelTorch(definition: VoxelDefinition) : Voxel(definition) {
         return super.getCollisionBoxes(info)
     }
 
-    override fun enumerateVariants(itemStore: Content.ItemsDefinitions): List<ItemDefinition> {
-        val definition = ItemDefinition(itemStore, name, Json.Dict(mapOf(
-                "voxel" to Json.Value.Text(name),
-                "class" to Json.Value.Text(ItemTorch::class.java.canonicalName!!)
-        )))
-
-        return listOf(definition)
-    }
-
     override fun tick(cell: EditableCell) {
         val side = VoxelSide.values()[cell.metaData]
         val adjacent = cell.world.peek(cell.x - side.dx, cell.y - side.dy, cell.z - side.dz)
@@ -114,6 +105,15 @@ class VoxelTorch(definition: VoxelDefinition) : Voxel(definition) {
     object TorchVoidPop : MiningTool {
         override val miningEfficiency = Float.POSITIVE_INFINITY
         override val toolTypeName = "world"
+    }
+
+    override fun enumerateVariants(itemStore: Content.ItemsDefinitions): List<ItemDefinition> {
+        val definition = ItemDefinition(itemStore, name, Json.Dict(mapOf(
+                "voxel" to Json.Value.Text(name),
+                "class" to Json.Value.Text(ItemTorch::class.java.canonicalName!!)
+        )))
+
+        return listOf(definition)
     }
 }
 

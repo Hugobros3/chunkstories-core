@@ -1,6 +1,5 @@
 {
     entities: {
-
         groundItem: {
             class: xyz.chunkstories.api.entity.EntityGroundItem
             collisions: {
