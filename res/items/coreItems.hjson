@@ -120,33 +120,5 @@
 
         coal: {
         }
-
-        // Standalone demo of the weapons component
-        /*weapon_ak47: {
-            class: xyz.chunkstories.core.item.ItemFirearm
-            slotsWidth: 3
-            slotsHeight: 3
-            maxStackSize: 1
-            roundsPerMinute: 600.0
-            fireMode: fullauto
-            reloadCooldown: 1500
-            range: 95
-            soundRange: 160
-            accuracy: 1.9
-            damage: 50
-            fireSound: "sounds/weapons/ak47/shootNear.ogg"
-            modelObj: "items/models/ak47.hq.dae"
-            modelDiffuse: "items/models/ak47.hq.png"
-            shootingAnimationName: "animations/human/human_shoot_assault_rifle.bvh"
-            shootingAnimationDuration: 100
-        }
-
-        mag_ak47: {
-            class: xyz.chunkstories.core.item.ItemFirearmMagazine
-            slotsWidth: 2
-            slotsHeight: 2
-            maxStackSize: 30
-            forWeapon: [ weapon_ak47  ]
-        }*/
     }
 }
