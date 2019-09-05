@@ -16,7 +16,7 @@ I use the Liberation font-family, I included all the licensing information at fo
 
 ### Sound effects
 
- * My incredible acting skills
+ * My incredible foley skills
  * http://soundbible.com/2068-Woosh.html
  * https://freesound.org/people/MissCellany/sounds/240640/
 

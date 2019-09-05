@@ -4,6 +4,7 @@
             class: xyz.chunkstories.api.entity.EntityGroundItem
             collisions: {
                 withOtherEntities: false
+                selectable: false
             }
         }
 
