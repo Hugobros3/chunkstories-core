@@ -10,6 +10,7 @@ import org.joml.Vector3d
 import xyz.chunkstories.api.entity.Entity
 import xyz.chunkstories.api.entity.EntityGroundItem
 import xyz.chunkstories.api.entity.traits.Trait
+import xyz.chunkstories.api.entity.traits.serializable.TraitHealth
 import xyz.chunkstories.api.entity.traits.serializable.TraitInventory
 import xyz.chunkstories.api.physics.Box
 import xyz.chunkstories.api.sound.SoundSource
@@ -21,7 +22,7 @@ class TraitCanPickupItems(entity: Entity) : Trait(entity) {
 
 	override fun tick() {
 		// Auto-pickups items on the ground
-		if (entity.world is WorldMaster && entity.world.ticksElapsed % 10L == 0L) {
+		if (entity.world is WorldMaster && entity.world.ticksElapsed % 10L == 0L && entity.traits[TraitHealth::class]?.isDead != true) {
 
 			for (e in  entity.world.getEntitiesInBox(Box.fromExtentsCentered(Vector3d(3.0)).translate(entity.location) )) {
 				if (e is EntityGroundItem && e.location.distance(entity.location) < 3.0f) {
