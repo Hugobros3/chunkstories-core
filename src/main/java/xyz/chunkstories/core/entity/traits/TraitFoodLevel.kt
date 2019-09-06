@@ -31,7 +31,7 @@ class TraitFoodLevel(entity: Entity, defaultValue: Float) : TraitSerializableFlo
 
 		// Take damage when starving
 		if (world.ticksElapsed % 100L == 0L) {
-			if (getValue() == 0f)
+			if (getValue() <= 0f)
 				traitHealth.damage(HUNGER_DAMAGE_CAUSE, 1f)
 			else {
 				// 27 minutes to start starving at 0.1 starveFactor

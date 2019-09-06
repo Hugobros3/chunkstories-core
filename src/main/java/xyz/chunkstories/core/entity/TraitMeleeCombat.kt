@@ -8,6 +8,7 @@ package xyz.chunkstories.core.entity
 
 import xyz.chunkstories.api.entity.DamageCause
 import xyz.chunkstories.api.entity.Entity
+import xyz.chunkstories.api.entity.MeleeWeapon
 import xyz.chunkstories.api.entity.traits.Trait
 import xyz.chunkstories.api.entity.traits.TraitSight
 import xyz.chunkstories.api.entity.traits.serializable.TraitHealth
@@ -20,7 +21,7 @@ import xyz.chunkstories.api.sound.SoundSource
 import xyz.chunkstories.api.world.WorldMaster
 
 open class TraitMeleeCombat<E>(entity: E, val naturalWeapon: MeleeWeapon?) : Trait(entity)
-		where E : Entity, E : DamageCause {
+		where E : Entity {
 	var ongoingAttack: Attack? = null
 
 	override fun handleInput(input: Input): Boolean {
@@ -51,7 +52,7 @@ open class TraitMeleeCombat<E>(entity: E, val naturalWeapon: MeleeWeapon?) : Tra
 	}
 
 	private fun landAttack(ongoingAttack: Attack) {
-		ongoingAttack.target.traits[TraitHealth::class]?.damage(entity as DamageCause, ongoingAttack.targetPart, ongoingAttack.damage)
+		ongoingAttack.target.traits[TraitHealth::class]?.damage(DamageCause.Entity(entity, ongoingAttack.weapon), ongoingAttack.targetPart, ongoingAttack.damage)
 		ongoingAttack.target.traits[TraitVelocity::class]?.let { ev ->
 			val attacker = entity
 			val attackKnockback = ongoingAttack.target.location.sub(attacker.location.add(0.0, 0.0, 0.0))
@@ -94,17 +95,4 @@ open class TraitMeleeCombat<E>(entity: E, val naturalWeapon: MeleeWeapon?) : Tra
 			COOLDOWN
 		}
 	}
-}
-
-interface MeleeWeapon {
-	val damage: Float
-	/** How much time until the hit lands */
-	val warmupMillis: Int
-
-	/** How long until we can attack again */
-	val cooldownMillis: Int
-
-	val reach: Double
-
-	val attackSound: String?
 }

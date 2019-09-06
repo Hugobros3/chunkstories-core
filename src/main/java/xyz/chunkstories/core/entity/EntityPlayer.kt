@@ -12,6 +12,7 @@ import xyz.chunkstories.api.Location
 import xyz.chunkstories.api.entity.DamageCause
 import xyz.chunkstories.api.entity.Entity
 import xyz.chunkstories.api.entity.EntityDefinition
+import xyz.chunkstories.api.entity.MeleeWeapon
 import xyz.chunkstories.api.entity.traits.TraitDontSave
 import xyz.chunkstories.api.entity.traits.TraitInteractible
 import xyz.chunkstories.api.entity.traits.TraitSight
@@ -36,7 +37,7 @@ import java.util.*
 * Core/Vanilla player, has all the functionality you'd want from it:
 * creative/survival mode, flying and walking controller...
 */
-class EntityPlayer(t: EntityDefinition, world: World) : EntityHumanoid(t, world), WorldModificationCause, InventoryOwner, DamageCause {
+class EntityPlayer(t: EntityDefinition, world: World) : EntityHumanoid(t, world), WorldModificationCause, InventoryOwner {
 	private val controllerComponent: TraitControllable
 
 	protected var traitInventory: TraitInventory
@@ -135,6 +136,7 @@ class EntityPlayer(t: EntityDefinition, world: World) : EntityHumanoid(t, world)
 				}
 
 		val fists = object : MeleeWeapon {
+			override val name = "fists"
 			override val damage = 15f
 			override val warmupMillis = 20
 			override val cooldownMillis = 180

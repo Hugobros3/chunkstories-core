@@ -10,9 +10,9 @@ import xyz.chunkstories.api.content.json.asDouble
 import xyz.chunkstories.api.content.json.asFloat
 import xyz.chunkstories.api.content.json.asInt
 import xyz.chunkstories.api.content.json.asString
+import xyz.chunkstories.api.entity.MeleeWeapon
 import xyz.chunkstories.api.item.Item
 import xyz.chunkstories.api.item.ItemDefinition
-import xyz.chunkstories.core.entity.MeleeWeapon
 
 class ItemMeleeWeapon(definition: ItemDefinition) : Item(definition), MeleeWeapon {
 	override val cooldownMillis: Int

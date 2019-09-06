@@ -8,6 +8,7 @@ package xyz.chunkstories.core.entity
 
 import xyz.chunkstories.api.entity.Entity
 import xyz.chunkstories.api.entity.EntityDefinition
+import xyz.chunkstories.api.entity.traits.TraitLoot
 import xyz.chunkstories.api.entity.traits.serializable.TraitControllable
 import xyz.chunkstories.api.entity.traits.serializable.TraitHealth
 import xyz.chunkstories.api.entity.traits.serializable.TraitRotation
@@ -30,5 +31,6 @@ abstract class EntityLiving(t: EntityDefinition, world: World) : Entity(t, world
 
 		// Adds the trait that makes it so these entities take fall damage
 		TraitTakesFallDamage(this)
+		TraitLoot(this)
 	}
 }
