@@ -1,7 +1,7 @@
 {
     entities: {
-        groundItem: {
-            class: xyz.chunkstories.api.entity.EntityGroundItem
+        droppedItem: {
+            class: xyz.chunkstories.api.entity.EntityDroppedItem
             collisions: {
                 withOtherEntities: false
                 selectable: false

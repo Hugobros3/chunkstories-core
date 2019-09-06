@@ -6,16 +6,14 @@
 
 package xyz.chunkstories.core.voxel
 
+import org.joml.Vector3d
+import xyz.chunkstories.api.Location
 import xyz.chunkstories.api.content.Content
 import xyz.chunkstories.api.content.json.Json
 import xyz.chunkstories.api.entity.Entity
-import xyz.chunkstories.api.entity.EntityGroundItem
+import xyz.chunkstories.api.entity.EntityDroppedItem
 import xyz.chunkstories.api.entity.traits.serializable.TraitControllable
-import xyz.chunkstories.api.entity.traits.serializable.TraitInventory
-import xyz.chunkstories.api.entity.traits.serializable.TraitVelocity
 import xyz.chunkstories.api.events.voxel.WorldModificationCause
-import xyz.chunkstories.api.exceptions.world.WorldException
-import xyz.chunkstories.api.exceptions.world.voxel.IllegalBlockModificationException
 import xyz.chunkstories.api.input.Input
 import xyz.chunkstories.api.item.ItemDefinition
 import xyz.chunkstories.api.item.ItemVoxel
@@ -79,17 +77,21 @@ class VoxelChest(type: VoxelDefinition) : Voxel(type) {
     }
 
     override fun onRemove(cell: ChunkCell, cause: WorldModificationCause?) {
-        val world =  cell.world
+        val world = cell.world
         val location = cell.location
         location.add(0.5, 0.5, 0.5)
 
         val inventoryComponent = cell.components.getVoxelComponent("chestInventory") as? VoxelInventoryComponent ?: return
-        for(itemPile in inventoryComponent.inventory.contents) {
-            val entity = world.content.entities.getEntityDefinition("groundItem")!!.newEntity<EntityGroundItem>(world)
+        for (itemPile in inventoryComponent.inventory.contents) {
+            /*val entity = world.content.entities.getEntityDefinition("groundItem")!!.newEntity<EntityGroundItem>(world)
             entity.location = location
             entity.traits[TraitInventory::class]!!.inventory.addItem(itemPile.item, itemPile.amount)
             entity.traits[TraitVelocity::class]?.let { it.addVelocity(Math.random() * 0.2 - 0.1, Math.random() * 0.1 + 0.1, Math.random() * 0.2 - 0.1) }
-            world.addEntity(entity)
+            world.addEntity(entity)*/
+            val velocity = Vector3d(Math.random() * 0.125 - 0.0625, 0.1, Math.random() * 0.125 - 0.0625)
+            val lootLocation = Location(cell.location)
+            lootLocation.add(0.5, 0.5, 0.5)
+            EntityDroppedItem.spawn(itemPile.item, itemPile.amount, lootLocation, velocity)
         }
 
         //inventoryComponent gets nuked by the engine when the cell is wiped after this

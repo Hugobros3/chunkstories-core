@@ -240,7 +240,8 @@ class ItemDoor(definition: ItemDefinition) : ItemVoxel(definition) {
 
 	override fun buildRepresentation(worldPosition: Matrix4f, representationsGobbler: RepresentationsGobbler) {
 		val representation = ModelInstance(door.model, ModelPosition(worldPosition).apply {
-			matrix.translate(-0.4f, -0.4f, -0.0f)
+            matrix.scale(0.5f)
+			matrix.translate(-0.5f, -0.3f, -0.0f)
 		}, door.mappedOverrides)
 		representationsGobbler.acceptRepresentation(representation, -1)
 	}
@@ -292,7 +293,7 @@ class ItemDoor(definition: ItemDefinition) : ItemVoxel(definition) {
 
         cell.metaData = VoxelDoor.computeMeta(isOpen, hingeSide, doorSideFacing)
 
-        println("placing door: dx=$dx dz=$dz rslt=$doorSideFacing meta=${cell.metaData}")
+        //println("placing door: dx=$dx dz=$dz rslt=$doorSideFacing meta=${cell.metaData}")
 
         return true
     }

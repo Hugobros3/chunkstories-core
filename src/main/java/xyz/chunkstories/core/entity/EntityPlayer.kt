@@ -67,11 +67,19 @@ class EntityPlayer(t: EntityDefinition, world: World) : EntityHumanoid(t, world)
 				return inventory.run {
 					//val crafts = loadRecipes(recipesTest, entity.world.content)
 
-					val ui = InventoryUI(layer, width * 20 + 16, height * 20 + 16 + 8 + 20 * craftingAreaSideSize + 8)
+					val ui = InventoryUI(layer, width * 20 + 16, height * 20 + 16 + 8 + 20 * craftingAreaSideSize + 8 + 8)
 					for (x in 0 until width) {
 						for (y in 0 until height) {
 							val slot = InventorySlot.RealSlot(this, x, y)
 							val uiSlot = ui.InventorySlotUI(slot, x * 20 + 8, y * 20 + 8)
+							ui.slots.add(uiSlot)
+						}
+					}
+
+					entity.traits[TraitArmor::class]?.inventory?.let {
+						for(armorSlot in 0 until it.width) {
+							val slot = InventorySlot.RealSlot(it, armorSlot, 0)
+							val uiSlot = ui.InventorySlotUI(slot, 0 * 20 + 8,  84 + armorSlot * 20 + 8)
 							ui.slots.add(uiSlot)
 						}
 					}
@@ -87,7 +95,7 @@ class EntityPlayer(t: EntityDefinition, world: World) : EntityHumanoid(t, world)
 					val craftingUiSlots = Array(craftingAreaSideSize) { y ->
 						Array(craftingAreaSideSize) { x ->
 							val slot = craftingSlots[y][x]
-							val uiSlot = ui.InventorySlotUI(slot, offsetx + x * 20, 8 + height * 20 + 8 + (craftingAreaSideSize - y - 1) * 20)
+							val uiSlot = ui.InventorySlotUI(slot, offsetx + x * 20, 8 + height * 20 + 8 + 8 + (craftingAreaSideSize - y - 1) * 20)
 							uiSlot
 						}
 					}
@@ -113,7 +121,7 @@ class EntityPlayer(t: EntityDefinition, world: World) : EntityHumanoid(t, world)
 						}
 					}
 
-					ui.slots.add(ui.InventorySlotUI(outputSlot, offsetx + craftSizeReal + 20, 8 + height * 20 + 8 + 1 * 20))
+					ui.slots.add(ui.InventorySlotUI(outputSlot, offsetx + craftSizeReal + 20, 8 + height * 20 + 8 + 8 + 1 * 20))
 
 					ui
 				}
