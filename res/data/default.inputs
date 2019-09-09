@@ -2,9 +2,9 @@
 #Uses GLFW keys, with or without GLFW_KEY_ prefix (game finds out automagically)
 
 #Default inputs of the game
-keyBind forward Z
+keyBind forward W
 keyBind back S
-keyBind left Q
+keyBind left A
 keyBind right D
 keyBind jump SPACE
 keyBind run LEFT_SHIFT
