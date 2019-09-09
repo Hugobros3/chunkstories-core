@@ -30,62 +30,62 @@ import xyz.chunkstories.api.world.cell.Cell
 // TODO expose the gui to the api to enable this
 class VoxelSign(definition: VoxelDefinition) : Voxel(definition) {
 
-    override fun handleInteraction(entity: Entity, voxelContext: ChunkCell, input: Input): Boolean {
-        return false
-    }
+	override fun handleInteraction(entity: Entity, voxelContext: ChunkCell, input: Input): Boolean {
+		return false
+	}
 
-    /* @Override public VoxelDynamicRenderer getVoxelRenderer(CellData info) {
-	 * return signRenderer; } */
+	/* @Override public VoxelDynamicRenderer getVoxelRenderer(CellData info) {
+	* return signRenderer; } */
 
-    @Throws(IllegalBlockModificationException::class)
-    fun onPlace(cell: FutureCell, cause: WorldModificationCause?) {
-        // We don't create the components here, as the cell isn't actually changed yet!
-        val x = cell.x
-        val y = cell.y
-        val z = cell.z
+	@Throws(IllegalBlockModificationException::class)
+	fun onPlace(cell: FutureCell, cause: WorldModificationCause?) {
+		// We don't create the components here, as the cell isn't actually changed yet!
+		val x = cell.x
+		val y = cell.y
+		val z = cell.z
 
-        if (cause != null && cause is Entity) {
-            val blockLocation = Vector3d(x + 0.5, y.toDouble(), z + 0.5)
-            blockLocation.sub((cause as Entity).location)
-            blockLocation.negate()
+		if (cause != null && cause is Entity) {
+			val blockLocation = Vector3d(x + 0.5, y.toDouble(), z + 0.5)
+			blockLocation.sub((cause as Entity).location)
+			blockLocation.negate()
 
-            val direction = Vector2f(blockLocation.x().toFloat(), blockLocation.z().toFloat())
-            direction.normalize()
-            // System.out.println("x:"+direction.x+"y:"+direction.y);
+			val direction = Vector2f(blockLocation.x().toFloat(), blockLocation.z().toFloat())
+			direction.normalize()
+			// System.out.println("x:"+direction.x+"y:"+direction.y);
 
-            var asAngle = Math.acos(direction.y().toDouble()) / Math.PI * 180
-            asAngle *= -1.0
-            if (direction.x() < 0)
-                asAngle *= -1.0
+			var asAngle = Math.acos(direction.y().toDouble()) / Math.PI * 180
+			asAngle *= -1.0
+			if (direction.x() < 0)
+				asAngle *= -1.0
 
-            // asAngle += 180.0;
+			// asAngle += 180.0;
 
-            asAngle %= 360.0
-            asAngle += 360.0
-            asAngle %= 360.0
+			asAngle %= 360.0
+			asAngle += 360.0
+			asAngle %= 360.0
 
-            // System.out.println(asAngle);
+			// System.out.println(asAngle);
 
-            val meta = (16 * asAngle / 360).toInt()
-            cell.metaData = meta
-        }
-    }
+			val meta = (16 * asAngle / 360).toInt()
+			cell.metaData = meta
+		}
+	}
 
-    override fun whenPlaced(cell: FreshChunkCell) {
-        val signTextComponent = VoxelComponentSignText(cell.components)
-        signTextComponent.signText = "Random String ${Math.random()}"
-        cell.registerComponent("signData", signTextComponent)
-    }
+	override fun whenPlaced(cell: FreshChunkCell) {
+		val signTextComponent = VoxelComponentSignText(cell.components)
+		signTextComponent.signText = "Random String ${Math.random()}"
+		cell.registerComponent("signData", signTextComponent)
+	}
 
-    /** Gets the sign component from a chunkcell, assuming it is indeed a sign
-     * cell  */
-    fun getSignData(context: ChunkCell): VoxelComponentSignText {
-        return context.components.getVoxelComponent("signData") as VoxelComponentSignText
-    }
+	/** Gets the sign component from a chunkcell, assuming it is indeed a sign
+	* cell  */
+	fun getSignData(context: ChunkCell): VoxelComponentSignText {
+		return context.components.getVoxelComponent("signData") as VoxelComponentSignText
+	}
 }
 
 class ItemSign(definition: ItemDefinition) : ItemVoxel(definition) {
-    override fun prepareNewBlockData(cell: FutureCell, adjacentCell: Cell, adjacentCellSide: VoxelSide, placingEntity: Entity, hit: RayResult.Hit.VoxelHit): Boolean {
-        return super.prepareNewBlockData(cell, adjacentCell, adjacentCellSide, placingEntity, hit)
-    }
+	override fun prepareNewBlockData(cell: FutureCell, adjacentCell: Cell, adjacentCellSide: VoxelSide, placingEntity: Entity, hit: RayResult.Hit.VoxelHit): Boolean {
+		return super.prepareNewBlockData(cell, adjacentCell, adjacentCellSide, placingEntity, hit)
+	}
 }

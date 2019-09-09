@@ -157,8 +157,7 @@ public class HumanoidSkeletonAnimator extends CompoundAnimationHelper {
 
 			if (selectedItem != null) {
 				characterRotationMatrix.translate(new Vector3f(0f, k, 0));
-				characterRotationMatrix.rotate(
-						-(entityRotation.getPitch() + ((stance.getStance() == HumanoidStance.CROUCHING) ? -50f : 0f)) / 180f * 3.14159f,
+				characterRotationMatrix.rotate(-(entityRotation.getPitch() + ((stance.getStance() == HumanoidStance.CROUCHING) ? -50f : 0f)) / 180f * 3.14159f,
 						new Vector3f(1, 0, 0));
 				characterRotationMatrix.translate(new Vector3f(0f, -k, 0));
 

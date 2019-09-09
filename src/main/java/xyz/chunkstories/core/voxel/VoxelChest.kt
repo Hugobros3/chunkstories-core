@@ -33,102 +33,102 @@ import xyz.chunkstories.api.world.chunk.FreshChunkCell
 import kotlin.math.abs
 
 class VoxelChest(type: VoxelDefinition) : Voxel(type) {
-    protected var frontTexture: VoxelTexture = store.textures.get(name + "_front")
-    protected var sideTexture: VoxelTexture = store.textures.get(name + "_side")
-    protected var topTexture: VoxelTexture = store.textures.get(name + "_top")
+	protected var frontTexture: VoxelTexture = store.textures.get(name + "_front")
+	protected var sideTexture: VoxelTexture = store.textures.get(name + "_side")
+	protected var topTexture: VoxelTexture = store.textures.get(name + "_top")
 
-    override fun handleInteraction(entity: Entity, voxelContext: ChunkCell, input: Input): Boolean {
-        if (input.name == "mouse.right" && voxelContext.world is WorldMaster) {
+	override fun handleInteraction(entity: Entity, voxelContext: ChunkCell, input: Input): Boolean {
+		if (input.name == "mouse.right" && voxelContext.world is WorldMaster) {
 
-            val controller = entity.traits[TraitControllable::class]?.controller
-            if (controller is Player) {
-                val player = controller as Player?
-                val playerEntity = player!!.controlledEntity
+			val controller = entity.traits[TraitControllable::class]?.controller
+			if (controller is Player) {
+				val player = controller as Player?
+				val playerEntity = player!!.controlledEntity
 
-                if (playerEntity != null) {
-                    if (playerEntity.location.distance(voxelContext.location) <= 5) {
-                        player.openInventory(getInventory(voxelContext))
-                    }
-                }
-            }
-        }
-        return false
-    }
+				if (playerEntity != null) {
+					if (playerEntity.location.distance(voxelContext.location) <= 5) {
+						player.openInventory(getInventory(voxelContext))
+					}
+				}
+			}
+		}
+		return false
+	}
 
-    private fun getInventory(context: ChunkCell): Inventory {
-        val comp = context.components.getVoxelComponent("chestInventory")
-        val component = comp as VoxelInventoryComponent?
-        return component!!.inventory
-    }
+	private fun getInventory(context: ChunkCell): Inventory {
+		val comp = context.components.getVoxelComponent("chestInventory")
+		val component = comp as VoxelInventoryComponent?
+		return component!!.inventory
+	}
 
-    override fun whenPlaced(cell: FreshChunkCell) {
-        // Create a new component and insert it into the chunk
-        val component = VoxelInventoryComponent(cell.components, 10, 6)
-        cell.registerComponent("chestInventory", component)
-    }
+	override fun whenPlaced(cell: FreshChunkCell) {
+		// Create a new component and insert it into the chunk
+		val component = VoxelInventoryComponent(cell.components, 10, 6)
+		cell.registerComponent("chestInventory", component)
+	}
 
-    override fun getVoxelTexture(cell: Cell, side: VoxelSide): VoxelTexture {
-        val actualSide = VoxelSide.values()[cell.metaData]//getSideMcStairsChestFurnace(cell.metaData)
+	override fun getVoxelTexture(cell: Cell, side: VoxelSide): VoxelTexture {
+		val actualSide = VoxelSide.values()[cell.metaData]//getSideMcStairsChestFurnace(cell.metaData)
 
-        if (side == VoxelSide.TOP)
-            return topTexture
+		if (side == VoxelSide.TOP)
+			return topTexture
 
-        return if (side == actualSide) frontTexture else sideTexture
-    }
+		return if (side == actualSide) frontTexture else sideTexture
+	}
 
-    override fun onRemove(cell: ChunkCell, cause: WorldModificationCause?) {
-        val world = cell.world
-        val location = cell.location
-        location.add(0.5, 0.5, 0.5)
+	override fun onRemove(cell: ChunkCell, cause: WorldModificationCause?) {
+		val world = cell.world
+		val location = cell.location
+		location.add(0.5, 0.5, 0.5)
 
-        val inventoryComponent = cell.components.getVoxelComponent("chestInventory") as? VoxelInventoryComponent ?: return
-        for (itemPile in inventoryComponent.inventory.contents) {
-            /*val entity = world.content.entities.getEntityDefinition("groundItem")!!.newEntity<EntityGroundItem>(world)
-            entity.location = location
-            entity.traits[TraitInventory::class]!!.inventory.addItem(itemPile.item, itemPile.amount)
-            entity.traits[TraitVelocity::class]?.let { it.addVelocity(Math.random() * 0.2 - 0.1, Math.random() * 0.1 + 0.1, Math.random() * 0.2 - 0.1) }
-            world.addEntity(entity)*/
-            val velocity = Vector3d(Math.random() * 0.125 - 0.0625, 0.1, Math.random() * 0.125 - 0.0625)
-            val lootLocation = Location(cell.location)
-            lootLocation.add(0.5, 0.5, 0.5)
-            EntityDroppedItem.spawn(itemPile.item, itemPile.amount, lootLocation, velocity)
-        }
+		val inventoryComponent = cell.components.getVoxelComponent("chestInventory") as? VoxelInventoryComponent ?: return
+		for (itemPile in inventoryComponent.inventory.contents) {
+			/*val entity = world.content.entities.getEntityDefinition("groundItem")!!.newEntity<EntityGroundItem>(world)
+			entity.location = location
+			entity.traits[TraitInventory::class]!!.inventory.addItem(itemPile.item, itemPile.amount)
+			entity.traits[TraitVelocity::class]?.let { it.addVelocity(Math.random() * 0.2 - 0.1, Math.random() * 0.1 + 0.1, Math.random() * 0.2 - 0.1) }
+			world.addEntity(entity)*/
+			val velocity = Vector3d(Math.random() * 0.125 - 0.0625, 0.1, Math.random() * 0.125 - 0.0625)
+			val lootLocation = Location(cell.location)
+			lootLocation.add(0.5, 0.5, 0.5)
+			EntityDroppedItem.spawn(itemPile.item, itemPile.amount, lootLocation, velocity)
+		}
 
-        //inventoryComponent gets nuked by the engine when the cell is wiped after this
-    }
+		//inventoryComponent gets nuked by the engine when the cell is wiped after this
+	}
 
-    override fun enumerateVariants(itemStore: Content.ItemsDefinitions): List<ItemDefinition> {
-        val definition = ItemDefinition(itemStore, name, Json.Dict(mapOf(
-                "voxel" to Json.Value.Text(name),
-                "class" to Json.Value.Text(ItemChest::class.java.canonicalName!!)
-        )))
+	override fun enumerateVariants(itemStore: Content.ItemsDefinitions): List<ItemDefinition> {
+		val definition = ItemDefinition(itemStore, name, Json.Dict(mapOf(
+				"voxel" to Json.Value.Text(name),
+				"class" to Json.Value.Text(ItemChest::class.java.canonicalName!!)
+		)))
 
-        return listOf(definition)
-    }
+		return listOf(definition)
+	}
 }
 
 class ItemChest(definition: ItemDefinition) : ItemVoxel(definition) {
-    override fun prepareNewBlockData(cell: FutureCell, adjacentCell: Cell, adjacentCellSide: VoxelSide, placingEntity: Entity, hit: RayResult.Hit.VoxelHit): Boolean {
-        super.prepareNewBlockData(cell, adjacentCell, adjacentCellSide, placingEntity, hit)
+	override fun prepareNewBlockData(cell: FutureCell, adjacentCell: Cell, adjacentCellSide: VoxelSide, placingEntity: Entity, hit: RayResult.Hit.VoxelHit): Boolean {
+		super.prepareNewBlockData(cell, adjacentCell, adjacentCellSide, placingEntity, hit)
 
-        val loc = placingEntity.location
-        val dx = (cell.x + 0.5) - loc.x()
-        val dz = (cell.z + 0.5) - loc.z()
+		val loc = placingEntity.location
+		val dx = (cell.x + 0.5) - loc.x()
+		val dz = (cell.z + 0.5) - loc.z()
 
-        val facing = if (abs(dx) > abs(dz)) {
-            if (dx > 0)
-                VoxelSide.LEFT
-            else
-                VoxelSide.RIGHT
-        } else {
-            if (dz > 0)
-                VoxelSide.BACK
-            else
-                VoxelSide.FRONT
-        }
+		val facing = if (abs(dx) > abs(dz)) {
+			if (dx > 0)
+				VoxelSide.LEFT
+			else
+				VoxelSide.RIGHT
+		} else {
+			if (dz > 0)
+				VoxelSide.BACK
+			else
+				VoxelSide.FRONT
+		}
 
-        cell.metaData = facing.ordinal
+		cell.metaData = facing.ordinal
 
-        return true
-    }
+		return true
+	}
 }
