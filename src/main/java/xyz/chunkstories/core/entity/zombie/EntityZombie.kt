@@ -46,7 +46,7 @@ class EntityZombie @JvmOverloads constructor(t: EntityDefinition, world: World, 
 				return super.damage(cause, hitLocation, damage)
 			}
 		}
-		this.traitHealth.setHealth(infectionStage.hp)
+		this.traitHealth.health = infectionStage.hp
 
 		ZombieRenderer(this)
 	}

@@ -33,7 +33,7 @@ internal class TraitMaybeFlyControlledMovement(val entityPlayer: EntityPlayer) :
 			oldStyleFlyControls = !oldStyleFlyControls
 		this.toggleFlyControlsPressed = toggleFlyControlsPressed
 
-		if (entityPlayer.traitFlyingMode.get()) {
+		if (entityPlayer.traitFlyingMode.isFlying) {
 			if(oldStyleFlyControls) {
 				// Delegate movement handling to the fly mode component
 				flyOldStyle(controller)
@@ -47,7 +47,7 @@ internal class TraitMaybeFlyControlledMovement(val entityPlayer: EntityPlayer) :
 		// TODO check if this is needed
 		// Instead of creating a packet and dealing with it ourselves, we instead push
 		// the relevant components
-		entityPlayer.traitLocation.pushComponentEveryoneButController()
+		//entityPlayer.traitLocation.pushComponentEveryoneButController()
 		// In that case that means pushing to the server.
 	}
 
@@ -56,9 +56,9 @@ internal class TraitMaybeFlyControlledMovement(val entityPlayer: EntityPlayer) :
 
 		if (focus && entityPlayer.traits[TraitCollidable::class.java]!!.isOnGround) {
 			if (controller.inputsManager.getInputByName("crouch")!!.isPressed)
-				entityPlayer.traitStance.set(TraitHumanoidStance.HumanoidStance.CROUCHING)
+				entityPlayer.traitStance.stance = TraitHumanoidStance.HumanoidStance.CROUCHING
 			else
-				entityPlayer.traitStance.set(TraitHumanoidStance.HumanoidStance.STANDING)
+				entityPlayer.traitStance.stance = TraitHumanoidStance.HumanoidStance.STANDING
 		}
 
 		super.tickMovementWithController(controller)
@@ -117,15 +117,15 @@ internal class TraitMaybeFlyControlledMovement(val entityPlayer: EntityPlayer) :
 		val strafeAngle = figureOutStrafeAngle(controller)
 
 		flySpeed = 0.1
-		targetVelocity.x = Math.sin((entityRotation.horizontalRotation + strafeAngle) / 180f * Math.PI) * horizontalSpeed
-		targetVelocity.z = Math.cos((entityRotation.horizontalRotation + strafeAngle) / 180f * Math.PI) * horizontalSpeed
+		targetVelocity.x = Math.sin((entityRotation.yaw + strafeAngle) / 180f * Math.PI) * horizontalSpeed
+		targetVelocity.z = Math.cos((entityRotation.yaw + strafeAngle) / 180f * Math.PI) * horizontalSpeed
 		targetVelocity.y = when {
 			controller.inputsManager.getInputByName("jump")!!.isPressed -> flySpeed
 			controller.inputsManager.getInputByName("crouch")!!.isPressed -> -flySpeed
 			else -> 0.0
 		}
 
-		val velocity = entityVelocity.velocity
+		val velocity = Vector3d(entityVelocity.velocity)
 		acceleration = Vector3d(targetVelocity.x() - velocity.x(), targetVelocity.y() - velocity.y(), targetVelocity.z() - velocity.z())
 
 		val maxAcceleration = 0.005
@@ -139,7 +139,7 @@ internal class TraitMaybeFlyControlledMovement(val entityPlayer: EntityPlayer) :
 		collisions.moveWithCollisionRestrain(velocity)
 
 		// Flying also means we're standing
-		entityPlayer.traitStance.set(TraitHumanoidStance.HumanoidStance.STANDING)
+		entityPlayer.traitStance.stance = TraitHumanoidStance.HumanoidStance.STANDING
 
 		if(collisions.isOnGround)
 			isCurrentlyFlying = false
@@ -168,8 +168,8 @@ internal class TraitMaybeFlyControlledMovement(val entityPlayer: EntityPlayer) :
 			cameraSpeed *= 8f
 
 		if (controller.inputsManager.getInputByName("back")!!.isPressed) {
-			val horizRotRad = ((entityRotation.horizontalRotation + 180f) / 180f * Math.PI).toFloat()
-			val vertRotRad = (-entityRotation.verticalRotation / 180f * Math.PI).toFloat()
+			val horizRotRad = ((entityRotation.yaw + 180f) / 180f * Math.PI).toFloat()
+			val vertRotRad = (-entityRotation.pitch / 180f * Math.PI).toFloat()
 			if (ignoreCollisions)
 				entity.traitLocation.move(Math.sin(horizRotRad.toDouble()) * cameraSpeed * Math.cos(vertRotRad.toDouble()), Math.sin(vertRotRad.toDouble()) * cameraSpeed,
 						Math.cos(horizRotRad.toDouble()) * cameraSpeed * Math.cos(vertRotRad.toDouble()))
@@ -178,8 +178,8 @@ internal class TraitMaybeFlyControlledMovement(val entityPlayer: EntityPlayer) :
 						Math.cos(horizRotRad.toDouble()) * cameraSpeed * Math.cos(vertRotRad.toDouble()))
 		}
 		if (controller.inputsManager.getInputByName("forward")!!.isPressed) {
-			val horizRotRad = (entityRotation.horizontalRotation / 180f * Math.PI).toFloat()
-			val vertRotRad = (entityRotation.verticalRotation / 180f * Math.PI).toFloat()
+			val horizRotRad = (entityRotation.yaw / 180f * Math.PI).toFloat()
+			val vertRotRad = (entityRotation.pitch / 180f * Math.PI).toFloat()
 			if (ignoreCollisions)
 				entity.traitLocation.move(Math.sin(horizRotRad.toDouble()) * cameraSpeed * Math.cos(vertRotRad.toDouble()), Math.sin(vertRotRad.toDouble()) * cameraSpeed,
 						Math.cos(horizRotRad.toDouble()) * cameraSpeed * Math.cos(vertRotRad.toDouble()))
@@ -188,14 +188,14 @@ internal class TraitMaybeFlyControlledMovement(val entityPlayer: EntityPlayer) :
 						Math.cos(horizRotRad.toDouble()) * cameraSpeed * Math.cos(vertRotRad.toDouble()))
 		}
 		if (controller.inputsManager.getInputByName("right")!!.isPressed) {
-			val horizRot = ((entityRotation.horizontalRotation + 90) / 180f * Math.PI).toFloat()
+			val horizRot = ((entityRotation.yaw + 90) / 180f * Math.PI).toFloat()
 			if (ignoreCollisions)
 				entity.traitLocation.move(-Math.sin(horizRot.toDouble()) * cameraSpeed, 0.0, -Math.cos(horizRot.toDouble()) * cameraSpeed)
 			else
 				entityCollisions!!.moveWithCollisionRestrain(-Math.sin(horizRot.toDouble()) * cameraSpeed, 0.0, -Math.cos(horizRot.toDouble()) * cameraSpeed)
 		}
 		if (controller.inputsManager.getInputByName("left")!!.isPressed) {
-			val horizRot = ((entityRotation.horizontalRotation - 90) / 180f * Math.PI).toFloat()
+			val horizRot = ((entityRotation.yaw - 90) / 180f * Math.PI).toFloat()
 			if (ignoreCollisions)
 				entity.traitLocation.move(-Math.sin(horizRot.toDouble()) * cameraSpeed, 0.0, -Math.cos(horizRot.toDouble()) * cameraSpeed)
 			else
@@ -203,6 +203,6 @@ internal class TraitMaybeFlyControlledMovement(val entityPlayer: EntityPlayer) :
 		}
 
 		// Flying also means we're standing
-		entityPlayer.traitStance.set(TraitHumanoidStance.HumanoidStance.STANDING)
+		entityPlayer.traitStance.stance = TraitHumanoidStance.HumanoidStance.STANDING
 	}
 }

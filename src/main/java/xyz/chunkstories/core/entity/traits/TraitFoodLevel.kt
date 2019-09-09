@@ -6,21 +6,58 @@
 
 package xyz.chunkstories.core.entity.traits
 
+import xyz.chunkstories.api.content.json.Json
+import xyz.chunkstories.api.content.json.asFloat
 import xyz.chunkstories.api.entity.DamageCause
 import xyz.chunkstories.api.entity.Entity
-import xyz.chunkstories.api.entity.traits.generic.TraitSerializableFloat
-import xyz.chunkstories.api.entity.traits.serializable.TraitHealth
-import xyz.chunkstories.api.entity.traits.serializable.TraitVelocity
+import xyz.chunkstories.api.entity.Subscriber
+import xyz.chunkstories.api.entity.traits.Trait
+import xyz.chunkstories.api.entity.traits.serializable.*
+import xyz.chunkstories.api.net.Interlocutor
 import xyz.chunkstories.api.world.WorldMaster
+import java.io.DataInputStream
+import java.io.DataOutputStream
 
-class TraitFoodLevel(entity: Entity, defaultValue: Float) : TraitSerializableFloat(entity, defaultValue) {
+class TraitFoodLevel(entity: Entity, val defaultValue: Float) : Trait(entity), TraitSerializable, TraitNetworked<TraitFoodLevel.FoodLevelUpdate> {
+	override val serializedTraitName = "food"
+
+	var foodLevel: Float = defaultValue
+		set(value) {
+			field = value
+			sendMessageController(FoodLevelUpdate(value))
+		}
+
+	data class FoodLevelUpdate(val value: Float) : TraitMessage() {
+		override fun write(dos: DataOutputStream) {
+			dos.writeFloat(value)
+		}
+	}
+
+	override fun readMessage(dis: DataInputStream) = FoodLevelUpdate(dis.readFloat())
+
+	override fun processMessage(message: FoodLevelUpdate, from: Interlocutor) {
+		if(entity.world is WorldMaster)
+			return
+
+		foodLevel = message.value
+	}
+
+	override fun whenSubscriberRegisters(subscriber: Subscriber) {
+		if(subscriber == entity.traits[TraitControllable::class]?.controller)
+			sendMessage(subscriber, FoodLevelUpdate(foodLevel))
+	}
+
+	override fun serialize() = Json.Value.Number(foodLevel.toDouble())
+
+	override fun deserialize(json: Json) {
+		foodLevel = json.asFloat ?: foodLevel
+	}
+
 	companion object {
-
 		var HUNGER_DAMAGE_CAUSE: DamageCause = object : DamageCause {
 
 			override val name: String
 				get() = "Hunger"
-
 		}
 	}
 
@@ -31,7 +68,7 @@ class TraitFoodLevel(entity: Entity, defaultValue: Float) : TraitSerializableFlo
 
 		// Take damage when starving
 		if (world.ticksElapsed % 100L == 0L) {
-			if (getValue() <= 0f)
+			if (foodLevel <= 0f)
 				traitHealth.damage(HUNGER_DAMAGE_CAUSE, 1f)
 			else {
 				// 27 minutes to start starving at 0.1 starveFactor
@@ -48,18 +85,15 @@ class TraitFoodLevel(entity: Entity, defaultValue: Float) : TraitSerializableFlo
 						starve = 0.15f
 				}
 
-				val newfoodLevel = getValue() - starve
-				setValue(newfoodLevel)
+				foodLevel -= starve
 			}
 		}
 
 		// Having some food energy allows to restore HP, but also makes the entity go hungry
-		if (getValue() > 20 && !traitHealth.isDead) {
-			if (traitHealth.getHealth() < traitHealth.maxHealth) {
-				traitHealth.setHealth(traitHealth.getHealth() + 0.01f)
-
-				val newfoodLevel = getValue() - 0.01f
-				setValue(newfoodLevel)
+		if (foodLevel > 20 && !traitHealth.isDead) {
+			if (traitHealth.health < traitHealth.maxHealth) {
+				traitHealth.health += 0.01f
+				foodLevel -= 0.01f
 			}
 		}
 	}

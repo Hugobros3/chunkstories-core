@@ -28,7 +28,7 @@ class TraitTakesFallDamage(entity: Entity) : Trait(entity) {
 	override fun tick() {
 		if (entity.world is WorldMaster) {
 			// Ladders, water and flying allows to bypass fall damage
-			if (entity.isOnLadder() || entity.isInLiquid() || entity.traits[TraitFlyingMode::class]?.get() == true)
+			if (entity.isOnLadder() || entity.isInLiquid() || entity.traits[TraitFlyingMode::class]?.let { it.isAllowed && it.isFlying } == true)
 				resetFallDamage()
 
 			val collisions = entity.traits[TraitCollidable::class.java] ?: return

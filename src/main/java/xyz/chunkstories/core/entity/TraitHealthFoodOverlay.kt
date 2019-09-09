@@ -22,9 +22,9 @@ class TraitHealthFoodOverlay(entity: Entity) : TraitHasOverlay(entity) {
 	private fun clamp(f: Float, min: Float, max: Float) = if (f < min) min else if (f > max) max else f
 
 	override fun drawEntityOverlay(renderer: GuiDrawer) {
-		val health = entity.traits[TraitHealth::class]?.getHealth() ?: 0f
+		val health = entity.traits[TraitHealth::class]?.health ?: 0f
 		val maxHealth = entity.traits[TraitHealth::class]?.maxHealth ?: 0f
-		val foodLevel = entity.traits[TraitFoodLevel::class]?.getValue() ?: 0f
+		val foodLevel = entity.traits[TraitFoodLevel::class]?.foodLevel ?: 0f
 		val maxFood = 100.0f
 
 		if ((entity.world as? WorldClient)?.client?.player?.controlledEntity == entity) {
@@ -68,11 +68,11 @@ class TraitHealthFoodOverlay(entity: Entity) : TraitHasOverlay(entity) {
 
 			val inventory = entity.traits[TraitInventory::class]?.inventory
 			if (inventory != null) {
-				val selectedItem = entity.traits[TraitSelectedItem::class]?.getSelectedSlot()
+				val selectedSlot = entity.traits[TraitSelectedItem::class]?.selectedSlot
 				var offset = renderer.gui.viewportWidth / 2 - 22 * inventory.width / 2
 				for (x in 0 until inventory.width) {
 
-					if (selectedItem == x)
+					if (selectedSlot == x)
 						renderer.drawBox(offset, 24, 22, 22, "textures/gui/inventory/slot.png", Vector4f(2f, 2f, 2f, 0.5f))
 					else
 						renderer.drawBox(offset, 24, 22, 22, "textures/gui/inventory/slot.png", Vector4f(1f, 1f, 1f, 0.5f))

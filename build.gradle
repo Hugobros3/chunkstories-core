@@ -53,7 +53,7 @@ spotless {
 }
 
 ext {
-	apiRevisionBuiltAgainst = '202'
+	apiRevisionBuiltAgainst = '203'
 	useEclipseCompiler = false
 }
 

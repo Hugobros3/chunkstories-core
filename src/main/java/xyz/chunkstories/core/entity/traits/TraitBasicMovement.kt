@@ -179,8 +179,9 @@ open class TraitBasicMovement(entity: Entity) : Trait(entity) {
 
 	fun jump(force: Double) {
 		entity.traits[TraitVelocity::class]?.let { ev ->
-			val velocity = ev.velocity
+			val velocity = Vector3d(ev.velocity)
 			velocity.y += force
+			ev.setVelocity(velocity)
 		}
 	}
 }
