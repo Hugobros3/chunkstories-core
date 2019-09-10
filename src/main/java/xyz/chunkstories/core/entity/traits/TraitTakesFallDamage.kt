@@ -17,6 +17,7 @@ import xyz.chunkstories.core.voxel.isInLiquid
 import xyz.chunkstories.core.voxel.isOnLadder
 
 class TraitTakesFallDamage(entity: Entity) : Trait(entity) {
+	override val traitName = "fallDamage"
 
 	private var lastStandingHeight = java.lang.Double.NaN
 	private var wasStandingLastTick = true

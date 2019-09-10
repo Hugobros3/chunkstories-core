@@ -24,7 +24,7 @@ import java.io.DataOutputStream
 import java.io.IOException
 
 internal class TraitZombieInfectionStage(entity: Entity, initialStage: ZombieInfectionStage) : Trait(entity), TraitSerializable, TraitNetworked<TraitZombieInfectionStage.InfectionStageUpdate> {
-	override val serializedTraitName = "stage"
+	override val traitName = "stage"
 	var stage: ZombieInfectionStage = initialStage
 		set(value) {
 			field = value

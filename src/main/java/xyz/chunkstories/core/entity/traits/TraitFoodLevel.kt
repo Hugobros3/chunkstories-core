@@ -19,7 +19,7 @@ import java.io.DataInputStream
 import java.io.DataOutputStream
 
 class TraitFoodLevel(entity: Entity, val defaultValue: Float) : Trait(entity), TraitSerializable, TraitNetworked<TraitFoodLevel.FoodLevelUpdate> {
-	override val serializedTraitName = "food"
+	override val traitName = "food"
 
 	var foodLevel: Float = defaultValue
 		set(value) {

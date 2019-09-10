@@ -18,6 +18,8 @@ import xyz.chunkstories.api.sound.SoundSource
 import xyz.chunkstories.api.world.WorldMaster
 
 class TraitCanPickupItems(entity: Entity) : Trait(entity) {
+	override val traitName = "itemsPickup"
+
 	private val traitInventory: TraitInventory by lazy {
 		entity.traits[TraitInventory::class] ?: throw Exception("TraitCanPickupItems requires TraitInventory")
 	}

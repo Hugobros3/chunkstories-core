@@ -25,7 +25,7 @@ import java.io.DataOutputStream
 import java.io.IOException
 
 class TraitHumanoidStance(entity: Entity) : Trait(entity), TraitSerializable, TraitNetworked<TraitHumanoidStance.HumanoidStanceUpdate> {
-	override val serializedTraitName = "stance"
+	override val traitName = "stance"
 
 	var stance = HumanoidStance.STANDING
 		set(value) {
