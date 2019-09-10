@@ -24,7 +24,7 @@ class AiTaskLookArround<E : Entity>(ai: AI<E>, var lookAtNearbyEntities: Double)
 
 	override fun execute() {
 		if (Math.random() > 0.990) {
-			targetH = entity.traits[TraitRotation::class.java]!!.horizontalRotation + (Math.random() * 2.0 - 1.0) * 30f
+			targetH = entity.traits[TraitRotation::class.java]!!.yaw + (Math.random() * 2.0 - 1.0) * 30f
 
 			if (Math.random() > 0.5)
 				targetV = targetV / 2.0f + (Math.random() * 2.0 - 1.0) * 20f
@@ -35,8 +35,8 @@ class AiTaskLookArround<E : Entity>(ai: AI<E>, var lookAtNearbyEntities: Double)
 				targetV = -90.0
 		}
 
-		val diffH = targetH - entity.traits[TraitRotation::class.java]!!.horizontalRotation
-		val diffV = targetV - entity.traits[TraitRotation::class.java]!!.verticalRotation
+		val diffH = targetH - entity.traits[TraitRotation::class.java]!!.yaw
+		val diffV = targetV - entity.traits[TraitRotation::class.java]!!.pitch
 
 		entity.traits[TraitRotation::class.java]!!.addRotation(diffH / 15f, diffV / 15f)
 

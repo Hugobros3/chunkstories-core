@@ -19,6 +19,7 @@ import xyz.chunkstories.core.voxel.VoxelWater
 import xyz.chunkstories.core.voxel.isInLiquid
 
 class TraitWalkingSounds(entity: Entity) : Trait(entity) {
+	override val traitName = "sounds"
 
 	private var metersWalked = 0.0
 

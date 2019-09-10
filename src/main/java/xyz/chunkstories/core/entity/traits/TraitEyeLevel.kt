@@ -10,5 +10,7 @@ import xyz.chunkstories.api.entity.Entity
 import xyz.chunkstories.api.entity.traits.Trait
 
 abstract class TraitEyeLevel(entity: Entity) : Trait(entity) {
+	override val traitName = "eyeLevel"
+
 	abstract val eyeLevel: Double
 }

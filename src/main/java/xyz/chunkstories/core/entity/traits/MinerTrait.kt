@@ -18,6 +18,7 @@ import xyz.chunkstories.core.item.BlockMiningOperation
 import xyz.chunkstories.core.item.ItemMiningTool
 
 class MinerTrait(entity: Entity) : Trait(entity) {
+	override val traitName = "mining"
 
 	var progress: BlockMiningOperation? = null
 		private set

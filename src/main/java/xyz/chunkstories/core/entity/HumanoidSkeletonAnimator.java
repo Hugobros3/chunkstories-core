@@ -6,6 +6,7 @@
 
 package xyz.chunkstories.core.entity;
 
+import org.joml.Vector3dc;
 import xyz.chunkstories.api.animation.Animation;
 import xyz.chunkstories.api.animation.CompoundAnimationHelper;
 import xyz.chunkstories.api.entity.Entity;
@@ -86,7 +87,7 @@ public class HumanoidSkeletonAnimator extends CompoundAnimationHelper {
 				return r;
 		}
 
-		Vector3d vel = entityVelocity.getVelocity();
+		Vector3d vel = new Vector3d(entityVelocity.getVelocity());
 
 		// Extract just the horizontal speed from that
 		double horizSpd = Math.sqrt(vel.x() * vel.x() + vel.z() * vel.z());
@@ -116,9 +117,9 @@ public class HumanoidSkeletonAnimator extends CompoundAnimationHelper {
 		// Only the torso is modified, the effect is replicated accross the other bones
 		// later
 		if (boneName.endsWith("boneTorso"))
-			characterRotationMatrix.rotate((entityRotation.getHorizontalRotation()) / 180f * 3.14159f, new Vector3f(0, 1, 0));
+			characterRotationMatrix.rotate((entityRotation.getYaw()) / 180f * 3.14159f, new Vector3f(0, 1, 0));
 
-		Vector3d vel = entityVelocity.getVelocity();
+		Vector3dc vel = entityVelocity.getVelocity();
 
 		double horizSpd = Math.sqrt(vel.x() * vel.x() + vel.z() * vel.z());
 
@@ -126,7 +127,7 @@ public class HumanoidSkeletonAnimator extends CompoundAnimationHelper {
 
 		if (boneName.endsWith("boneHead")) {
 			Matrix4f modify = new Matrix4f(getAnimationPlayingForBone(boneName, animationTime).getBone(boneName).getTransformationMatrix(animationTime));
-			modify.rotate((float) -(entityRotation.getVerticalRotation() / 180 * Math.PI), new Vector3f(1, 0, 0));
+			modify.rotate((float) -(entityRotation.getPitch() / 180 * Math.PI), new Vector3f(1, 0, 0));
 			return modify;
 		}
 
@@ -156,8 +157,7 @@ public class HumanoidSkeletonAnimator extends CompoundAnimationHelper {
 
 			if (selectedItem != null) {
 				characterRotationMatrix.translate(new Vector3f(0f, k, 0));
-				characterRotationMatrix.rotate(
-						-(entityRotation.getVerticalRotation() + ((stance.getStance() == HumanoidStance.CROUCHING) ? -50f : 0f)) / 180f * 3.14159f,
+				characterRotationMatrix.rotate(-(entityRotation.getPitch() + ((stance.getStance() == HumanoidStance.CROUCHING) ? -50f : 0f)) / 180f * 3.14159f,
 						new Vector3f(1, 0, 0));
 				characterRotationMatrix.translate(new Vector3f(0f, -k, 0));
 

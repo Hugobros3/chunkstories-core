@@ -20,6 +20,7 @@ import xyz.chunkstories.api.world.WorldMaster
 import xyz.chunkstories.core.voxel.isInLiquid
 
 open class TraitBasicMovement(entity: Entity) : Trait(entity) {
+	override val traitName = "movement"
 
 	var acceleration = Vector3d()
 	var targetVelocity = Vector3d(0.0)
@@ -179,8 +180,9 @@ open class TraitBasicMovement(entity: Entity) : Trait(entity) {
 
 	fun jump(force: Double) {
 		entity.traits[TraitVelocity::class]?.let { ev ->
-			val velocity = ev.velocity
+			val velocity = Vector3d(ev.velocity)
 			velocity.y += force
+			ev.setVelocity(velocity)
 		}
 	}
 }

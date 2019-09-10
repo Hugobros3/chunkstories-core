@@ -18,7 +18,6 @@ import xyz.chunkstories.core.voxel.isInLiquid
 import xyz.chunkstories.core.voxel.isOnLadder
 
 abstract class TraitControlledMovement(entity: Entity) : TraitBasicMovement(entity) {
-
 	protected var running: Boolean = false
 	abstract val backwardsSpeed: Double
 	abstract val forwardSpeed: Double
@@ -39,7 +38,7 @@ abstract class TraitControlledMovement(entity: Entity) : TraitBasicMovement(enti
 		val inLiquid = entity.isInLiquid()
 
 		if (focus) {
-			if (entityVelocity.velocity.y <= 0.02) {
+			if (entityVelocity.velocity.y() <= 0.02) {
 				if (controller.inputsManager.getInputByName("jump")!!.isPressed) {
 					//println("jumped ${collisions.isOnGround} and ${!inLiquid} ${collisions.isStuckInEntity}")
 					if (collisions.isOnGround && !inLiquid)
@@ -72,11 +71,11 @@ abstract class TraitControlledMovement(entity: Entity) : TraitBasicMovement(enti
 		val strafeAngle = figureOutStrafeAngle(controller)
 
 		if (climbing) {
-			entityVelocity.setVelocityY((Math.sin(entityRotation.verticalRotation / 180f * Math.PI) * horizontalSpeed).toFloat().toDouble())
+			entityVelocity.setVelocityY((Math.sin(entityRotation.pitch / 180f * Math.PI) * horizontalSpeed).toFloat().toDouble())
 		}
 
-		targetVelocity.x = Math.sin((entityRotation.horizontalRotation + strafeAngle) / 180f * Math.PI) * horizontalSpeed
-		targetVelocity.z = Math.cos((entityRotation.horizontalRotation + strafeAngle) / 180f * Math.PI) * horizontalSpeed
+		targetVelocity.x = Math.sin((entityRotation.yaw + strafeAngle) / 180f * Math.PI) * horizontalSpeed
+		targetVelocity.z = Math.cos((entityRotation.yaw + strafeAngle) / 180f * Math.PI) * horizontalSpeed
 
 		super.tickMovement()
 	}

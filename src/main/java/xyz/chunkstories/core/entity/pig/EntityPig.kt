@@ -66,7 +66,7 @@ class PigRenderer(pig: EntityPig) : TraitRenderable<EntityPig>(pig) {
 		matrix.translate(entity.location.toVec3f())
 		matrix.translate(0f, 0.75f, 0f)
 		matrix.scale(0.75f)
-		val rotH = -90f + (entity.traits[TraitRotation::class]?.horizontalRotation ?: Math.random().toFloat())
+		val rotH = -90f + (entity.traits[TraitRotation::class]?.yaw ?: Math.random().toFloat())
 		matrix.rotate(rotH / 180 * Math.PI.toFloat(), 0f, 1f, 0f)
 		val position = ModelPosition(matrix)
 

@@ -145,7 +145,7 @@ class CreativeBlockSelector(gui: Gui, parentLayer: Layer?) : Layer(gui, parentLa
 			gui.client.ingame?.apply {
 				val controlledEntity = this.player.controlledEntity
 				controlledEntity?.apply {
-					val selectedItemSlot = traits[TraitSelectedItem::class]?.getSelectedSlot() ?: return@apply
+					val selectedItemSlot = traits[TraitSelectedItem::class]?.selectedSlot ?: return@apply
 					val targetInventory = traits[TraitInventory::class]?.inventory ?: return@apply
 
 					val world = world

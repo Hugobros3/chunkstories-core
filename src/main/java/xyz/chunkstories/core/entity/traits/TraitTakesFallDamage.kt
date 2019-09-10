@@ -17,6 +17,7 @@ import xyz.chunkstories.core.voxel.isInLiquid
 import xyz.chunkstories.core.voxel.isOnLadder
 
 class TraitTakesFallDamage(entity: Entity) : Trait(entity) {
+	override val traitName = "fallDamage"
 
 	private var lastStandingHeight = java.lang.Double.NaN
 	private var wasStandingLastTick = true
@@ -28,7 +29,7 @@ class TraitTakesFallDamage(entity: Entity) : Trait(entity) {
 	override fun tick() {
 		if (entity.world is WorldMaster) {
 			// Ladders, water and flying allows to bypass fall damage
-			if (entity.isOnLadder() || entity.isInLiquid() || entity.traits[TraitFlyingMode::class]?.get() == true)
+			if (entity.isOnLadder() || entity.isInLiquid() || entity.traits[TraitFlyingMode::class]?.let { it.isAllowed && it.isFlying } == true)
 				resetFallDamage()
 
 			val collisions = entity.traits[TraitCollidable::class.java] ?: return

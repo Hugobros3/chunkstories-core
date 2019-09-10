@@ -35,7 +35,7 @@ fun Entity.lookAt(delta: Vector3d) {
 	while (targetH < 0.0)
 		targetH += 360.0
 
-	var diffH = targetH - this.traits[TraitRotation::class.java]!!.horizontalRotation
+	var diffH = targetH - this.traits[TraitRotation::class.java]!!.yaw
 
 	// Ensures we always take the fastest route
 	if (Math.abs(diffH + 360) < Math.abs(diffH))
@@ -43,7 +43,7 @@ fun Entity.lookAt(delta: Vector3d) {
 	else if (Math.abs(diffH - 360) < Math.abs(diffH))
 		diffH = diffH - 360
 
-	var diffV = targetV - this.traits[TraitRotation::class.java]!!.verticalRotation
+	var diffV = targetV - this.traits[TraitRotation::class.java]!!.pitch
 
 	if (java.lang.Double.isNaN(diffH))
 		diffH = 0.0

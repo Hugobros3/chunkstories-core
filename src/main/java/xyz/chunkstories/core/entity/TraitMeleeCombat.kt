@@ -22,6 +22,7 @@ import xyz.chunkstories.api.world.WorldMaster
 
 open class TraitMeleeCombat<E>(entity: E, val naturalWeapon: MeleeWeapon?) : Trait(entity)
 		where E : Entity {
+	override val traitName = "combat"
 	var ongoingAttack: Attack? = null
 
 	override fun handleInput(input: Input): Boolean {

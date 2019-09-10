@@ -57,8 +57,8 @@ internal class PlayerController(private val entityPlayer: EntityPlayer) : TraitC
 		lastPX = cPX
 		lastPY = cPY
 
-		var rotH = entityPlayer.traitRotation.horizontalRotation.toDouble()
-		var rotV = entityPlayer.traitRotation.verticalRotation.toDouble()
+		var rotH = entityPlayer.traitRotation.yaw.toDouble()
+		var rotV = entityPlayer.traitRotation.pitch.toDouble()
 
 		var modifier = 1.0
 		val selectedItem = entityPlayer.traits[TraitSelectedItem::class]?.selectedItem
@@ -108,7 +108,7 @@ internal class PlayerController(private val entityPlayer: EntityPlayer) : TraitC
 		// We are moving inventory bringup here !
 		if (input.name == "inventory" && entityPlayer.world is WorldClient) {
 
-			if (entityPlayer.traitCreativeMode.get()) {
+			if (entityPlayer.traitCreativeMode.enabled) {
 				entityPlayer.world.client.gui.let {
 					it.topLayer = CreativeBlockSelector(it, it.topLayer)
 				}
@@ -160,7 +160,7 @@ internal class PlayerController(private val entityPlayer: EntityPlayer) : TraitC
 
 		if (entityPlayer.world is WorldMaster && lookingAt is RayResult.Hit.VoxelHit) {
 			// Creative mode features building and picking.
-			if (entityPlayer.traitCreativeMode.get()) {
+			if (entityPlayer.traitCreativeMode.enabled) {
 				if (input.name == "mouse.left") {
 					val cell = lookingAt.cell
 					cell.voxel.breakBlock(cell, TraitCreativeMode.CREATIVE_MODE_MINING_TOOL, entity)
@@ -171,7 +171,7 @@ internal class PlayerController(private val entityPlayer: EntityPlayer) : TraitC
 					if (!voxel.isAir()) {
 						// Spawn new itemPile in his inventory
 						val item = voxel.getVariant(peekedCell).newItem<ItemVoxel>()
-						entityPlayer.traits[TraitInventory::class]?.inventory!!.setItemAt(entityPlayer.traitSelectedItem.getSelectedSlot(), 0, item, 1, force = true)
+						entityPlayer.traits[TraitInventory::class]?.inventory!!.setItemAt(entityPlayer.traitSelectedItem.selectedSlot, 0, item, 1, force = true)
 						return true
 					}
 				}

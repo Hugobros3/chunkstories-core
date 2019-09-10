@@ -25,10 +25,10 @@ class ItemFood(definition: ItemDefinition) : Item(definition) {
 			if (input.name == "mouse.right") {
 				// Any entity with a food level can eat
 				entity.traits[TraitFoodLevel::class]?.let {
-					if(it.getValue() > 100)
+					if(it.foodLevel > 100)
 						return@let
 
-					it.setValue(it.getValue() + calories)
+					it.foodLevel += calories
 					itemPile.amount--
 				}
 			}

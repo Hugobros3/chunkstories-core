@@ -38,7 +38,7 @@ class FoodCommand : CommandHandler {
 		val foodTrait = entity.traits[TraitFoodLevel::class]
 
 		if (foodTrait != null) {
-			foodTrait.setValue(food)
+			foodTrait.foodLevel = food
 			emitter.sendMessage("Food set to: $food")
 		} else {
 			emitter.sendMessage("This action doesn't apply to your current entity.")

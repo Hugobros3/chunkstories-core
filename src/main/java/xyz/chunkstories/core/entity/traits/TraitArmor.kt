@@ -15,6 +15,7 @@ import xyz.chunkstories.core.item.armor.ItemArmor
 
 @Specialized // doesn't take the place of entity inventory
 class TraitArmor(holder: Entity, width: Int, height: Int) : TraitInventory(holder, width, height) {
+	override val traitName = "armor"
 
 	override val inventoryName: String
 		get() = "Armor"
