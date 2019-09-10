@@ -6,6 +6,8 @@
 
 package xyz.chunkstories.core.voxel.components
 
+import xyz.chunkstories.api.content.json.Json
+import xyz.chunkstories.api.content.json.asString
 import xyz.chunkstories.api.voxel.components.VoxelComponent
 import xyz.chunkstories.api.world.cell.CellComponents
 import xyz.chunkstories.api.world.serialization.StreamSource
@@ -23,13 +25,9 @@ class VoxelComponentSignText(holder: CellComponents) : VoxelComponent(holder) {
 			holder.cell.refreshRepresentation()
 		}
 
-	@Throws(IOException::class)
-	override fun push(destinator: StreamTarget, dos: DataOutputStream) {
-		dos.writeUTF(signText)
-	}
+	override fun serialize(): Json? = Json.Value.Text(signText)
 
-	@Throws(IOException::class)
-	override fun pull(from: StreamSource, dis: DataInputStream) {
-		signText = dis.readUTF()
+	override fun deserialize(json: Json) {
+		signText = json.asString ?: signText
 	}
 }
