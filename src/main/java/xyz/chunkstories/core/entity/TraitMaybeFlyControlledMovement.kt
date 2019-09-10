@@ -9,6 +9,7 @@ package xyz.chunkstories.core.entity
 import org.joml.Vector3d
 import xyz.chunkstories.api.client.LocalPlayer
 import xyz.chunkstories.api.entity.traits.TraitCollidable
+import xyz.chunkstories.api.entity.traits.serializable.TraitFlyingMode
 import xyz.chunkstories.api.entity.traits.serializable.TraitHealth
 import xyz.chunkstories.api.entity.traits.serializable.TraitRotation
 import xyz.chunkstories.api.entity.traits.serializable.TraitVelocity
@@ -27,13 +28,21 @@ internal class TraitMaybeFlyControlledMovement(val entityPlayer: EntityPlayer) :
 	var oldStyleFlyControls = false
 	var toggleFlyControlsPressed = false
 
+	var lastJumpTap = 0L
+	var holdingJump = false
+	var isCurrentlyFlying: Boolean
+		get() = entity.traits[TraitFlyingMode::class]!!.isFlying
+		set(value) {
+			entity.traits[TraitFlyingMode::class]!!.isFlying = value
+		}
+
 	override fun tickMovementWithController(controller: LocalPlayer) {
 		val toggleFlyControlsPressed = controller.inputsManager.getInputByName("toggleFlyControls")!!.isPressed
 		if(toggleFlyControlsPressed && !this.toggleFlyControlsPressed)
 			oldStyleFlyControls = !oldStyleFlyControls
 		this.toggleFlyControlsPressed = toggleFlyControlsPressed
 
-		if (entityPlayer.traitFlyingMode.isFlying) {
+		if (entityPlayer.traitFlyingMode.isAllowed) {
 			if(oldStyleFlyControls) {
 				// Delegate movement handling to the fly mode component
 				flyOldStyle(controller)
@@ -63,10 +72,6 @@ internal class TraitMaybeFlyControlledMovement(val entityPlayer: EntityPlayer) :
 
 		super.tickMovementWithController(controller)
 	}
-
-	var lastJumpTap = 0L
-	var holdingJump = false
-	var isCurrentlyFlying = false
 
 	fun fly(controller: LocalPlayer) {
 		val collisions = entity.traits[TraitCollidable::class.java] ?: return
