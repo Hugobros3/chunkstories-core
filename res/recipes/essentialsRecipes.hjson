@@ -9,7 +9,7 @@
                 A: "wood"
             }
             result: ["planks", 4]
-        },
+        }
         {
             pattern: 
             '''
@@ -20,7 +20,18 @@
                 A: "planks"
             }
             result: ["stick", 4]
-        },
+        }
+        {
+            pattern: 
+            '''
+            AA
+            AA
+            ''',
+            ingredients: {
+                A: "planks"
+            }
+            result: ["crafting_table", 1]
+        }
         {
             pattern: 
             '''

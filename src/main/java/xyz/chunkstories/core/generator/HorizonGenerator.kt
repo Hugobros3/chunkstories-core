@@ -139,7 +139,6 @@ open class HorizonGenerator(definition: WorldGeneratorDefinition, world: World) 
 		for (x in 0..31)
 			for (z in 0..31) {
 				sliceData.heights[x * 32 + z] = getHeightAtInternal(cx * 32 + x, cz * 32 + z)
-
 				sliceData.forestness[x * 32 + z] = getForestness(cx * 32 + x, cz * 32 + z)
 			}
 

@@ -52,8 +52,6 @@ class EntityPlayer(t: EntityDefinition, world: World) : EntityHumanoid(t, world)
 
 	internal var traitSight: TraitSight
 
-	//private val onLadder = false
-
 	internal var lastCameraLocation: Location? = null
 	internal var variant: Int = 0
 
@@ -63,9 +61,10 @@ class EntityPlayer(t: EntityDefinition, world: World) : EntityHumanoid(t, world)
 	init {
 		traitInventory = object : TraitInventory(this, 10, 4) {
 			override fun createMainInventoryPanel(inventory: Inventory, layer: Layer): InventoryUI? {
-				val craftingAreaSideSize = 3
 				return inventory.run {
 					//val crafts = loadRecipes(recipesTest, entity.world.content)
+					val craftingStation = entity.traits[TraitCrafting::class]?.getCraftingStation()
+					val craftingAreaSideSize = craftingStation?.craftingAreaSideSize ?: 0
 
 					val ui = InventoryUI(layer, width * 20 + 16, height * 20 + 16 + 8 + 20 * craftingAreaSideSize + 8 + 8)
 					for (x in 0 until width) {
@@ -84,44 +83,7 @@ class EntityPlayer(t: EntityDefinition, world: World) : EntityHumanoid(t, world)
 						}
 					}
 
-					val craftSizeReal = 20 * craftingAreaSideSize
-					val offsetx = ui.width / 2 - craftSizeReal / 2
-
-					val craftingSlots = Array(craftingAreaSideSize) { y ->
-						Array(craftingAreaSideSize) { x ->
-							InventorySlot.FakeSlot()
-						}
-					}
-					val craftingUiSlots = Array(craftingAreaSideSize) { y ->
-						Array(craftingAreaSideSize) { x ->
-							val slot = craftingSlots[y][x]
-							val uiSlot = ui.InventorySlotUI(slot, offsetx + x * 20, 8 + height * 20 + 8 + 8 + (craftingAreaSideSize - y - 1) * 20)
-							uiSlot
-						}
-					}
-
-					craftingUiSlots.forEach { it.forEach { ui.slots.add(it) } }
-
-					val outputSlot = object : InventorySlot.SummoningSlot() {
-
-						override val visibleContents: Pair<Item, Int>?
-							get() {
-								val recipe = entity.world.content.recipes.getRecipeForInventorySlots(craftingSlots)
-								if (recipe != null)
-									return Pair(recipe.result.first.newItem(), recipe.result.second)
-								return null
-							}
-
-						//TODO use packet to talk the server into this
-						override fun commitTransfer(destinationInventory: Inventory, destX: Int, destY: Int, amount: Int) {
-							val recipe = entity.world.content.recipes.getRecipeForInventorySlots(craftingSlots) ?: return
-							repeat(amount / recipe.result.second) {
-								recipe.craftUsing(craftingSlots, destinationInventory, destX, destY)
-							}
-						}
-					}
-
-					ui.slots.add(ui.InventorySlotUI(outputSlot, offsetx + craftSizeReal + 20, 8 + height * 20 + 8 + 8 + 1 * 20))
+					craftingStation?.bringUpCraftingMenuSlots(ui, 8 + height * 20 + 8)
 
 					ui
 				}
@@ -190,6 +152,7 @@ class EntityPlayer(t: EntityDefinition, world: World) : EntityHumanoid(t, world)
 					}
 				}
 
+		TraitCrafting(this)
 		TraitCanPickupItems(this)
 
 		val variant = ColorsTools.getUniqueColorCode(name) % 6

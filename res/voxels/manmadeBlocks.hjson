@@ -16,6 +16,11 @@
 			}
 		}
 
+		crafting_table: {
+			material: bluntwood
+			craftingAreaSize: 3
+		}
+
 		bricks: {
 			material: stone
 			hardness: 1.2
