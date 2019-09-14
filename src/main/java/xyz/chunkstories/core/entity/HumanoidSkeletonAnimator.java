@@ -21,7 +21,7 @@ import xyz.chunkstories.api.world.World;
 import xyz.chunkstories.api.world.WorldClient;
 import xyz.chunkstories.core.entity.traits.TraitHumanoidStance;
 import xyz.chunkstories.core.entity.traits.TraitHumanoidStance.HumanoidStance;
-import xyz.chunkstories.core.entity.traits.MinerTrait;
+import xyz.chunkstories.core.entity.traits.TraitMining;
 import xyz.chunkstories.core.item.ItemMiningTool;
 import xyz.chunkstories.core.item.BlockMiningOperation;
 import org.joml.Matrix4f;
@@ -66,7 +66,7 @@ public class HumanoidSkeletonAnimator extends CompoundAnimationHelper {
 					Item item = selectedItemPile.getItem();
 
 					if (item instanceof ItemMiningTool) {
-						MinerTrait trait = entity.traits.get(MinerTrait.class);
+						TraitMining trait = entity.traits.get(TraitMining.class);
 						if (trait != null) {
 							if (trait.getProgress() != null)
 								return world.getGameContext().getContent().getAnimationsLibrary().getAnimation("./animations/human/mining.bvh");
@@ -138,7 +138,7 @@ public class HumanoidSkeletonAnimator extends CompoundAnimationHelper {
 			animationTime *= 1.5;
 		else if (Arrays.asList(new String[] { "boneArmLU", "boneArmRU", "boneArmLD", "boneArmRD", "boneItemInHand", "boneTorso" }).contains(boneName)) {
 
-			MinerTrait trait = entity.traits.get(MinerTrait.class);
+			TraitMining trait = entity.traits.get(TraitMining.class);
 			if (trait != null && Arrays.asList(new String[] { "boneArmLU", "boneArmLD", "boneItemInHand" }).contains(boneName)) {
 				BlockMiningOperation miningProgress = trait.getProgress();
 				if (miningProgress != null) {

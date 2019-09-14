@@ -17,7 +17,7 @@ import xyz.chunkstories.api.voxel.MiningTool
 import xyz.chunkstories.core.item.BlockMiningOperation
 import xyz.chunkstories.core.item.ItemMiningTool
 
-class MinerTrait(entity: Entity) : Trait(entity) {
+class TraitMining(entity: Entity) : Trait(entity) {
 	override val traitName = "mining"
 
 	var progress: BlockMiningOperation? = null
@@ -45,8 +45,6 @@ class MinerTrait(entity: Entity) : Trait(entity) {
 		val world = entity.world
 
 		val controller = entity.traits[TraitControllable::class]?.controller
-
-		//TODO multiplayer
 		if (controller is Player) {
 			val inputs = controller.inputsManager
 

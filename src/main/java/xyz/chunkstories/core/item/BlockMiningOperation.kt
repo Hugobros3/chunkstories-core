@@ -49,26 +49,7 @@ class BlockMiningOperation(val cell: Cell, internal var tool: MiningTool) {
 		else
 			miningEfficiency = 1.0
 
-		println("$miningDifficulty $preferredTool $toolAppropriate $tool ${tool.toolTypeName} $miningEfficiency")
-		//var hardnessString: String? = null
-
-		// First order, check the voxel itself if it states a certain hardness for this
-		// tool type
-		/*hardnessString = voxel.definition.resolveProperty("hardnessFor" + tool.toolTypeName)
-
-		// Then check if the voxel states a general hardness multiplier
-		if (hardnessString == null)
-			hardnessString = voxel.definition.resolveProperty("hardness")
-
-		// if the voxel is devoid of information, we do the same on the material
-		if (hardnessString == null)
-			hardnessString = material.resolveProperty("materialHardnessFor" + tool.toolTypeName)
-
-		// Eventually we default to 1.0
-		if (hardnessString == null)
-			hardnessString = material.resolveProperty("materialHardness", "1.0")*/
-
-		//this.materialHardnessForThisTool = java.lang.Float.parseFloat(hardnessString)
+		//println("$miningDifficulty $preferredTool $toolAppropriate $tool ${tool.toolTypeName} $miningEfficiency")
 
 		this.progress = 0.0
 		this.started = System.currentTimeMillis()
@@ -81,8 +62,7 @@ class BlockMiningOperation(val cell: Cell, internal var tool: MiningTool) {
 		if (progress >= 1.0f) {
 			if (entity.world is WorldMaster) {
 				val minedSound = voxel.voxelMaterial.minedSounds
-				if(minedSound != null)
-					entity.world.soundManager.playSoundEffect(minedSound.resolveIntRange(), SoundSource.Mode.NORMAL, location, 0.95f + Math.random().toFloat() * 0.10f, 1.0f)
+				entity.world.soundManager.playSoundEffect(minedSound.resolveIntRange(), SoundSource.Mode.NORMAL, location, 0.95f + Math.random().toFloat() * 0.10f, 1.0f)
 				voxel.breakBlock(cell, tool, entity)
 			}
 
@@ -93,9 +73,7 @@ class BlockMiningOperation(val cell: Cell, internal var tool: MiningTool) {
 		if(now - lastSound > 300) {
 			lastSound = now
 			val miningSound = voxel.voxelMaterial.miningSounds
-			//println("mining: $miningSound")
-			if(miningSound != null)
-				entity.world.soundManager.playSoundEffect(miningSound.resolveIntRange(), SoundSource.Mode.NORMAL, location, 0.85f + Math.random().toFloat() * 0.10f, 1.0f)
+			entity.world.soundManager.playSoundEffect(miningSound.resolveIntRange(), SoundSource.Mode.NORMAL, location, 0.85f + Math.random().toFloat() * 0.10f, 1.0f)
 		}
 
 		return this

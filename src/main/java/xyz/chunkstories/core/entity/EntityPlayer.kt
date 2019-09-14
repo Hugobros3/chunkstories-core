@@ -9,7 +9,6 @@ package xyz.chunkstories.core.entity
 import org.joml.Vector3d
 import org.joml.Vector3dc
 import xyz.chunkstories.api.Location
-import xyz.chunkstories.api.entity.DamageCause
 import xyz.chunkstories.api.entity.Entity
 import xyz.chunkstories.api.entity.EntityDefinition
 import xyz.chunkstories.api.entity.MeleeWeapon
@@ -23,7 +22,6 @@ import xyz.chunkstories.api.gui.Layer
 import xyz.chunkstories.api.gui.inventory.InventorySlot
 import xyz.chunkstories.api.gui.inventory.InventoryUI
 import xyz.chunkstories.api.input.Input
-import xyz.chunkstories.api.item.Item
 import xyz.chunkstories.api.item.inventory.Inventory
 import xyz.chunkstories.api.item.inventory.InventoryOwner
 import xyz.chunkstories.api.player.Player
@@ -140,7 +138,7 @@ class EntityPlayer(t: EntityDefinition, world: World) : EntityHumanoid(t, world)
 			}
 		}
 
-		MinerTrait(this)
+		TraitMining(this)
 
 		traitHealth =
 				object : EntityHumanoidHealth(this) {

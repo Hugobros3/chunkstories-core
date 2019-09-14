@@ -8,13 +8,11 @@ package xyz.chunkstories.core.entity
 
 import org.joml.Matrix4f
 import org.joml.Vector3d
-import org.joml.Vector4d
 import org.joml.Vector4f
 import xyz.chunkstories.api.client.Client
 import xyz.chunkstories.api.entity.traits.TraitAnimated
 import xyz.chunkstories.api.entity.traits.TraitRenderable
 import xyz.chunkstories.api.entity.traits.TraitSight
-import xyz.chunkstories.api.entity.traits.serializable.TraitInventory
 import xyz.chunkstories.api.entity.traits.serializable.TraitSelectedItem
 import xyz.chunkstories.api.graphics.MeshMaterial
 import xyz.chunkstories.api.graphics.representation.ModelInstance
@@ -22,7 +20,7 @@ import xyz.chunkstories.api.graphics.representation.ModelPosition
 import xyz.chunkstories.api.graphics.representation.drawCube
 import xyz.chunkstories.api.graphics.systems.dispatching.RepresentationsGobbler
 import xyz.chunkstories.api.util.kotlin.toVec3f
-import xyz.chunkstories.core.entity.traits.MinerTrait
+import xyz.chunkstories.core.entity.traits.TraitMining
 
 open class EntityHumanoidRenderer(entity: EntityHumanoid, private val customSkin: MeshMaterial? = null) : TraitRenderable<EntityHumanoid>(entity) {
 
@@ -70,7 +68,7 @@ open class EntityHumanoidRenderer(entity: EntityHumanoid, private val customSkin
 			val selectionColor = Vector4f(1f)
 			val selectedBlock = entity.traits[TraitSight::class]?.getSelectableBlockLookingAt(5.0)?.location
 
-			val miningProgress = entity.traits[MinerTrait::class]?.progress
+			val miningProgress = entity.traits[TraitMining::class]?.progress
 			if(miningProgress != null) {
 				selectionColor.set(1.0f, 0.0f, 0.0f, 1.0f)
 				selectionColor.y = 1f - miningProgress.progress.toFloat().coerceAtMost(1.0f)
