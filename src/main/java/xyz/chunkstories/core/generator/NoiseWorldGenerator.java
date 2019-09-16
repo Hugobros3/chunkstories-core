@@ -18,23 +18,28 @@ import java.util.Random;
 
 public class NoiseWorldGenerator extends WorldGenerator {
 	Random rnd = new Random();
-	SeededSimplexNoiseGenerator ssng;
+	private SeededSimplexNoiseGenerator ssng;
 
-	int ws;
+	private int ws;
 	private Voxel STONE_VOXEL;
 	private Voxel WATER_VOXEL;
 
-	public NoiseWorldGenerator(WorldGeneratorDefinition type, World w) {
-		super(type, w);
-		ssng = new SeededSimplexNoiseGenerator(w.getWorldInfo().getSeed());
+	public NoiseWorldGenerator(WorldGeneratorDefinition type, World world) {
+		super(type, world);
+		ssng = new SeededSimplexNoiseGenerator(world.getWorldInfo().getSeed());
 		ws = world.getSizeInChunks() * 32;
 
 		this.STONE_VOXEL = world.getGameContext().getContent().getVoxels().getVoxel("stone");
 		this.WATER_VOXEL = world.getGameContext().getContent().getVoxels().getVoxel("water");
 	}
 
-	@Override
-	public void generateChunk(Chunk chunk) {
+	public void generateWorldSlice(Chunk[] chunks) {
+		for (int chunkY = 0; chunkY < chunks.length; chunkY++) {
+			generateChunk(chunks[chunkY]);
+		}
+	}
+
+	private void generateChunk(Chunk chunk) {
 		int cx = chunk.getChunkX();
 		int cy = chunk.getChunkY();
 		int cz = chunk.getChunkZ();

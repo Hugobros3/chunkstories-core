@@ -89,8 +89,7 @@ open class HorizonGenerator(definition: WorldGeneratorDefinition, world: World) 
 		this.GRAVEL = world.gameContext.content.voxels.getVoxel("gravel")
 
 		try {
-			val translator = MinecraftBlocksTranslator(world.gameContext,
-					File("converter_mapping.txt"))
+			val translator = MinecraftBlocksTranslator(world.gameContext, world.content.getAsset("converter_mapping.txt"))
 
 			for (i in 1..OKA_TREE_VARIANTS)
 				oakTrees.add (McSchematicStructure
@@ -170,10 +169,12 @@ open class HorizonGenerator(definition: WorldGeneratorDefinition, world: World) 
 					// Top soil
 					var topVoxel: Voxel?
 					val forestIntensity = sliceData.forestness[x * 32 + z]
+
 					if (Math.random() < (forestIntensity - 0.5) * 1.5f && forestIntensity > 0.5)
 						topVoxel = FOREST_GROUND_VOXEL // ground
 					else
 						topVoxel = GROUND_VOXEL
+
 					var groundVoxel = UNDERGROUND_VOXEL
 
 					// if we're close to water level make the ground sand
@@ -200,7 +201,7 @@ open class HorizonGenerator(definition: WorldGeneratorDefinition, world: World) 
 					if (topVoxel !== FOREST_GROUND_VOXEL || Math.random() > 0.8) {
 						if (bushChance > 0.5) {
 							if (bushChance > 0.95) {
-								val surfaceVoxel = SURFACE_DECORATIONS!![rnd.nextInt(SURFACE_DECORATIONS!!.size)]
+								val surfaceVoxel = SURFACE_DECORATIONS[rnd.nextInt(SURFACE_DECORATIONS.size)]
 								chunks[surface / 32].pokeSimpleSilently(x, surface, z, surfaceVoxel, -1, -1, 0)
 							} else
 								chunks[surface / 32].pokeSimpleSilently(x, surface, z, TALLGRASS, -1, -1, 0)
@@ -215,10 +216,6 @@ open class HorizonGenerator(definition: WorldGeneratorDefinition, world: World) 
 		for (chunkY in chunks.indices) {
 			sliceData.structures.forEach { stp -> stp.structure.paste(chunks[chunkY], stp.position, stp.flags) }
 		}
-	}
-
-	override fun generateChunk(chunk: Chunk) {
-		throw UnsupportedOperationException()
 	}
 
 	private fun generateChunk(chunk: Chunk, rnd: Random, sliceData: SliceData) {

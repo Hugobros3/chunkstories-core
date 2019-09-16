@@ -17,7 +17,7 @@
             plateauHeightScale: 24
         }
 
-        island: {
+        /*island: {
             class: xyz.chunkstories.core.generator.IslandGenerator
             maxGenerationHeight: 384
             
@@ -26,14 +26,19 @@
             mountainScale: 128
             baseHeightScale: 16
             plateauHeightScale: 24
-        }
+        }*/
 
         flat: {
             class: xyz.chunkstories.core.generator.FlatGenerator
         }
 
-        noise: {
-            class: xyz.chunkstories.core.generator.NoiseWorldGenerator
+        walled: {
+            class: xyz.chunkstories.core.generator.FlatGenerator
+            cellSize: 256.0
         }
+
+        /*noise: {
+            class: xyz.chunkstories.core.generator.NoiseWorldGenerator
+        }*/
     }
 }
