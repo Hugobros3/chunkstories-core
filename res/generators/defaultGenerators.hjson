@@ -15,6 +15,132 @@
             mountainScale: 128
             baseHeightScale: 64
             plateauHeightScale: 24
+
+            minerals: [
+                {
+                    voxel: coal_ore
+                    frequency: 0.003
+                    amount_max: 20
+                    amount_min: 4
+                }
+                {
+                    voxel: iron_ore
+                    frequency: 0.002
+                    amount_max: 10
+                    amount_min: 2
+                }
+                {
+                    voxel: gold_ore
+                    frequency: 0.0005
+                    amount_max: 10
+                    amount_min: 2
+                }
+                {
+                    voxel: diamond_ore
+                    max_height: 16
+                    frequency: 0.0002
+                    amount_max: 8
+                    amount_min: 1
+                }
+            ]
+
+            biomes: {
+                beach: {
+                    surfaceBlock: sand
+                    groundBlock: sand
+                    underwaterGround: sand
+
+                    surfaceDecorationsDensity: 0.0
+                    surfaceDecorations: []
+
+                    treesDensity: 0.0
+                    treesVariants: []
+
+                    additionalStructures: []
+                },
+                grassland: {
+                    surfaceBlock: grass
+                    groundBlock: dirt
+                    underwaterGround: gravel
+
+                    surfaceDecorationsDensity: 0.4
+                    surfaceDecorations: [
+                            [ "grass_prop", 10.0 ],
+                            [ "flower_yellow", 0.2 ],
+                            [ "flower_red", 0.2 ],
+                            [ "flower_orange", 0.2 ],
+                            [ "flower_blue", 0.2 ],
+                            [ "flower_purple", 0.2 ],
+                            [ "flower_white", 0.2 ],
+                            [ "mushroom_red", 0.2 ],
+                            [ "mushroom_brown", 0.2 ],
+                        ]
+
+                    treesDensity: 0.1
+                    treesVariants: [
+                        // Oak trees
+                        {
+                            type: mcschematic
+                            url: structures/oak_tree1.schematic
+                            weight: 1.0
+                        },
+                        {
+                            type: mcschematic
+                            url: structures/oak_tree2.schematic
+                            weight: 1.0
+                        }
+                        {
+                            type: mcschematic
+                            url: structures/oak_tree3.schematic
+                            weight: 1.0
+                        }
+                        {
+                            type: mcschematic
+                            url: structures/oak_tree4.schematic
+                            weight: 1.0
+                        }
+                        {
+                            type: mcschematic
+                            url: structures/oak_tree5.schematic
+                            weight: 1.0
+                        }
+                        {
+                            type: mcschematic
+                            url: structures/oak_tree6.schematic
+                            weight: 1.0
+                        }
+                        // Fallen
+                        {
+                            type: mcschematic
+                            url: structures/oak_fallen1.schematic
+                            weight: 1.0
+                        }
+                        {
+                            type: mcschematic
+                            url: structures/oak_fallen2.schematic
+                            weight: 1.0
+                        }
+                        // Redwood
+                        {
+                            type: mcschematic
+                            url: structures/redwood_tree1.schematic
+                            weight: 1.0
+                        }
+                        {
+                            type: mcschematic
+                            url: structures/redwood_tree2.schematic
+                            weight: 1.0
+                        }
+                        {
+                            type: mcschematic
+                            url: structures/redwood_tree3.schematic
+                            weight: 1.0
+                        }
+                    ]
+
+                    additionalStructures: []
+                }
+            }
         }
 
         /*island: {

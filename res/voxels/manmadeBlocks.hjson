@@ -18,6 +18,12 @@
 
 		crafting_table: {
 			material: bluntwood
+
+			textures: {
+				top: crafting_table_top
+				sides: crafting_table
+			}
+
 			craftingAreaSize: 3
 		}
 

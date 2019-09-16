@@ -5,7 +5,7 @@
 //
 
 package xyz.chunkstories.core.generator
-
+/*
 import xyz.chunkstories.api.math.Math2
 import xyz.chunkstories.api.world.World
 import xyz.chunkstories.api.world.generator.WorldGeneratorDefinition
@@ -96,3 +96,4 @@ class IslandGenerator(type: WorldGeneratorDefinition, world: World) : HorizonGen
 		return height.toInt()
 	}
 }
+*/

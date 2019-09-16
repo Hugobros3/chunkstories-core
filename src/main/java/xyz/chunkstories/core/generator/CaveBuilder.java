@@ -17,19 +17,21 @@ import org.joml.Vector3i;
 import java.util.Random;
 
 public class CaveBuilder {
-	final World world;
-	final HorizonGenerator generator;
+	private final World world;
+	private final HorizonGenerator generator;
 
 	public CaveBuilder(World world, HorizonGenerator generator) {
 		this.world = world;
 		this.generator = generator;
 	}
 
-	public void generateCaves(int cx, int cz, Random rnd, SliceData data) {
+	public void generateCaves(int cx, int cz, SliceData sliceData) {
 		int rx = cx >> 3;
 		int rz = cz >> 3;
 
-		int sir = world.getSizeInChunks() >> 3;
+		int sir = world.getWorldInfo().getSize().sizeInChunks >> 3;
+
+		Random rnd = new Random();
 
 		for (int irx = rx - 2; irx <= rx + 2; irx++)
 			for (int irz = rz - 2; irz <= rz + 2; irz++) {
@@ -53,12 +55,12 @@ public class CaveBuilder {
 					pos.y = 32 + rnd.nextInt(groundHeight);
 
 					int length = rnd.nextInt(64);
-					propagateSnake(cx, cz, pos, length, 0, data);
+					propagateSnake(cx, cz, pos, length, 0, sliceData);
 				}
 			}
 	}
 
-	private void propagateSnake(int cx, int cz, Vector3i pos, int length, int forkdepth, SliceData data) {
+	private void propagateSnake(int cx, int cz, Vector3i pos, int length, int forkdepth, SliceData sliceData) {
 		// System.out.println("propagating snake");
 		if (length <= 0)
 			return;
@@ -115,14 +117,14 @@ public class CaveBuilder {
 			// System.out.println(posDelta.x + ":"+posDelta.y);
 			if (posDelta.length() < 64) {
 				// System.out.println("touching terrain we want to gen!");
-				data.getStructures().add(new StructureToPaste(CaveBuilderStructure.caveSegment(pos, oldPosition, size, oldsize), pos, 0));
+				sliceData.getStructures().add(new StructureToPaste(CaveBuilderStructure.caveSegment(pos, oldPosition, size, oldsize), pos, 0));
 			}
 
 			if (nextFork > 0)
 				nextFork--;
 			if (nextFork == 0) {
 				// System.out.println("fork snake");
-				propagateSnake(cx, cz, pos, length - rnd.nextInt(j), forkdepth + 1, data);
+				propagateSnake(cx, cz, pos, length - rnd.nextInt(j), forkdepth + 1, sliceData);
 				nextFork = 2 + rnd.nextInt(1 + (int) (length / 1.5));
 			}
 		}
