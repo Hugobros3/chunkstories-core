@@ -18,25 +18,25 @@
 
             minerals: [
                 {
-                    voxel: coal_ore
+                    name: coal_ore
                     frequency: 0.003
                     amount_max: 20
                     amount_min: 4
                 }
                 {
-                    voxel: iron_ore
+                    name: iron_ore
                     frequency: 0.002
                     amount_max: 10
                     amount_min: 2
                 }
                 {
-                    voxel: gold_ore
+                    name: gold_ore
                     frequency: 0.0005
                     amount_max: 10
                     amount_min: 2
                 }
                 {
-                    voxel: diamond_ore
+                    name: diamond_ore
                     max_height: 16
                     frequency: 0.0002
                     amount_max: 8

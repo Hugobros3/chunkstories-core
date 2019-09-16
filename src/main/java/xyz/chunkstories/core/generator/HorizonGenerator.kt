@@ -7,6 +7,7 @@
 package xyz.chunkstories.core.generator
 
 import org.joml.Vector3i
+import xyz.chunkstories.api.content.json.asArray
 import xyz.chunkstories.api.content.json.asDict
 import xyz.chunkstories.api.content.json.asDouble
 import xyz.chunkstories.api.content.json.asInt
@@ -38,8 +39,11 @@ open class HorizonGenerator(definition: WorldGeneratorDefinition, world: World) 
     private val waterVoxel: Voxel = world.gameContext.content.voxels.getVoxel("water")!!
 
     private val translator = MinecraftBlocksTranslator(world.gameContext, world.content.getAsset("converter_mapping.txt"))
-    private val biomes = loadBiomesFromJson(world.content, definition["biomes"].asDict ?: throw Exception("World generator ${definition.name} lacks a 'biomes' section."), translator)
+    private val biomes = loadBiomesFromJson(world.content, definition["biomes"].asDict
+            ?: throw Exception("World generator ${definition.name} lacks a 'biomes' section."), translator)
     private val caveBuilder = CaveBuilder(world, this)
+
+    private val spawnableMinerals = definition["minerals"].asArray?.let { loadOresSpawningSection(it, world.content) } ?: emptyList()
 
     interface Biome {
         val surfaceBlock: Voxel
@@ -96,10 +100,57 @@ open class HorizonGenerator(definition: WorldGeneratorDefinition, world: World) 
         caveBuilder.generateCaves(cx, cz, sliceData)
 
         for (chunkY in chunks.indices) {
-            generateChunk(chunks[chunkY], sliceData)
+            val chunk = chunks[chunkY]
+            val cy = chunk.chunkY
+            for (x in 0..31) {
+                for (z in 0..31) {
+                    val groundHeight = sliceData.heights[x * 32 + z]
+                    var y = cy * 32
+                    while (y < cy * 32 + 32 && y <= groundHeight) {
+                        chunk.pokeSimpleSilently(x, y, z, stoneVoxel, -1, -1, 0)
+                        y++
+                    }
+                }
+            }
+            sliceData.structures.forEach {
+                it.structure.paste(chunk, it.position, it.flags)
+            }
         }
 
+        sliceData.structures.clear()
+
         val rng = Random("$cx$cz".hashCode().toLong())
+
+        // Ores
+        for (oreType in spawnableMinerals) {
+            val nSamples = 32 // Try 32 locations (out of 1024 possible)
+            for (n in 0 until nSamples) {
+                val x = rng.nextInt(32)
+                val z = rng.nextInt(32)
+                val h = getHeightAtInternal(cx * 32 + x, cz * 32 + z)
+
+                // Sample one 32th the total possible space
+                for (n2 in 0 until h / 32) {
+                    val y = rng.nextInt(h)
+                    val chance = rng.nextDouble()
+
+                    if(y !in oreType.heightRange)
+                        continue
+
+                    // Boost freq by 32*32 since we didn't sampler every block and frequency is given per-block
+                    if(chance < oreType.frequency * 32.0 * 32.0 ) {
+                        val spawnAmount = oreType.amount.random()
+                        for(s in 0 until spawnAmount) {
+                            val dx = -1 + rng.nextInt(4)
+                            val dy = -1 + rng.nextInt(4)
+                            val dz = -1 + rng.nextInt(4)
+                            if(chunks.getOrNull((y + dy) / 32)?.peekSimple(x + dx, y + dy, z + dz) == stoneVoxel)
+                                chunks.getOrNull((y + dy) / 32)?.pokeSimple(x + dx, y + dy, z + dz, oreType.voxel, 0, 0, 0)
+                        }
+                    }
+                }
+            }
+        }
 
         val maxheight = chunks.size * 32 - 1
         for (x in 0..31) {
@@ -159,67 +210,29 @@ open class HorizonGenerator(definition: WorldGeneratorDefinition, world: World) 
         }
     }
 
-    private fun generateChunk(chunk: Chunk, sliceData: SliceData) {
-        val cy = chunk.chunkY
-
-        if (chunk.chunkY * 32 >= 384)
-            return
-
-        var voxel: Voxel? = null
-        for (x in 0..31)
-            for (z in 0..31) {
-                val groundHeight = sliceData.heights[x * 32 + z]
-                var y = cy * 32
-                while (y < cy * 32 + 32 && y <= groundHeight) {
-                    voxel = stoneVoxel
-                    chunk.pokeSimpleSilently(x, y, z, voxel, -1, -1, 0)
-                    y++
-                }
-            }
-
-        //TODO ores
-
-        // At this point those structures are essentially the cave holes !
-        for (pm in sliceData.structures) {
-            pm.structure.paste(chunk, pm.position, pm.flags)
-        }
-        sliceData.structures.clear()
-    }
-
     private fun addTrees(cx: Int, cz: Int, data: SliceData) {
         val rnd = Random()
         // take into account the nearby chunks
         for (gcx in cx - 1..cx + 1)
             for (gcz in cz - 1..cz + 1) {
+
+                // Consistency
                 rnd.setSeed((gcx * 32 + gcz + 48716148).toLong())
 
-                // how many trees are there supposed to be in that chunk
-                // float treenoise = 0.5f + fractalNoise(gcx * 32 + 2, gcz * 32 + 32, 3, 0.25f,
-                // 0.85f);
-
+                // Sample that many locations and try to spawn a tree there
                 val ntrees = 32
-
                 for (i in 0 until ntrees) {
                     val x = gcx * 32 + rnd.nextInt(32)
                     val z = gcz * 32 + rnd.nextInt(32)
 
                     val biome = decideBiome(x, z)
 
-                    //val forestness = getForestness(x, z)
                     if (rnd.nextDouble() < biome.treesDensity) {
-
                         val y = getHeightAtInternal(x, z) - 1
                         if (y > waterHeight) {
-
-                            /*val type = rnd.nextInt(treeTypes.size)
-                            val treeType = treeTypes[type]
-                            val variant = rnd.nextInt(treeType.size)
-                            val treeStructure = treeType[variant]*/
                             val treeStructure = biome.treesVariants.random(rnd)
-
                             data.structures.add(StructureToPaste(treeStructure, Vector3i(x, y, z), Structure.FLAG_USE_OFFSET or Structure.FLAG_DONT_OVERWRITE_AIR))
                         }
-
                     }
                 }
             }
@@ -277,8 +290,6 @@ open class HorizonGenerator(definition: WorldGeneratorDefinition, world: World) 
             height += plateauHeight * plateauHeightScale
         else
             height += plateauHeight * baseHeight * plateauHeightScale.toFloat()
-
-        // height = 64 + plateauHeight * PLATEAU_HEIGHT_SCALE;
 
         return height.toInt()
     }
