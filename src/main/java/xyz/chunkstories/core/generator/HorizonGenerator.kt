@@ -29,10 +29,10 @@ open class HorizonGenerator(definition: WorldGeneratorDefinition, world: World) 
     private val worldSizeInBlocks = world.sizeInChunks * 32
 
     private val waterHeight = definition["waterHeight"].asInt ?: 48
-    private val mountainScale = definition["mountainScale"].asDouble ?: 0.3
+    private val mountainScale = definition["mountainScale"].asDouble ?: 128.0
     private val mountainOffset = definition["mountainOffset"].asDouble ?: 0.3
     private val baseHeightScale = definition["baseHeightScale"].asInt ?: 64
-    private val plateauHeightScale = definition["plateauHeightScale"].asInt ?: 64
+    private val plateauHeightScale = definition["plateauHeightScale"].asInt ?: 24
 
     private val airVoxel: Voxel = world.gameContext.content.voxels.air
     private val stoneVoxel: Voxel = world.gameContext.content.voxels.getVoxel("stone")!!
@@ -239,14 +239,14 @@ open class HorizonGenerator(definition: WorldGeneratorDefinition, world: World) 
     }
 
     private fun fractalNoise(x: Int, z: Int, octaves: Int, freq: Float, persistence: Float): Float {
-        var freq = freq
+        var frequency = freq
         var total = 0.0f
         var maxAmplitude = 0.0f
         var amplitude = 1.0f
-        freq *= (worldSizeInBlocks / (64 * 32)).toFloat()
+        frequency *= (worldSizeInBlocks / (64 * 32)).toFloat()
         for (i in 0 until octaves) {
-            total += ssng.looped_noise(x * freq, z * freq, worldSizeInBlocks.toFloat()) * amplitude
-            freq *= 2.0f
+            total += ssng.looped_noise(x * frequency, z * frequency, worldSizeInBlocks.toFloat()) * amplitude
+            frequency *= 2.0f
             maxAmplitude += amplitude
             amplitude *= persistence
         }
@@ -254,14 +254,15 @@ open class HorizonGenerator(definition: WorldGeneratorDefinition, world: World) 
     }
 
     private fun ridgedNoise(x: Int, z: Int, octaves: Int, freq: Float, persistence: Float): Float {
-        var freq = freq
+        var frequency = freq
         var total = 0.0f
         var maxAmplitude = 0.0f
         var amplitude = 1.0f
-        freq *= (worldSizeInBlocks / (64 * 32)).toFloat()
+        frequency *= (worldSizeInBlocks / (64 * 32)).toFloat()
+
         for (i in 0 until octaves) {
-            total += (1.0f - abs(ssng.looped_noise(x * freq, z * freq, worldSizeInBlocks.toFloat()))) * amplitude
-            freq *= 2.0f
+            total += (1.0f - abs(ssng.looped_noise(x * frequency, z * frequency, worldSizeInBlocks.toFloat()))) * amplitude
+            frequency *= 2.0f
             maxAmplitude += amplitude
             amplitude *= persistence
         }
@@ -272,7 +273,6 @@ open class HorizonGenerator(definition: WorldGeneratorDefinition, world: World) 
         var height = 0.0
 
         val baseHeight = ridgedNoise(x, z, 5, 1.0f, 0.5f)
-
         height += baseHeight * baseHeightScale
 
         var mountainFactor = fractalNoise(x + 548, z + 330, 3, 0.5f, 0.5f)
@@ -309,4 +309,5 @@ open class HorizonGenerator(definition: WorldGeneratorDefinition, world: World) 
 
         return Math2.clamp(f.toDouble(), 0.0, 1.0)
     }*/
+
 }
