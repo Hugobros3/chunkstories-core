@@ -20,6 +20,12 @@ uniform WorldConditions world;
 #include ../sky/sky.glsl
 #include ../normalcompression.glsl
 
+#include struct xyz.chunkstories.api.math.random.PrecomputedSimplexSeed
+uniform PrecomputedSimplexSeed simplexSeed;
+
+#include simplex.glsl
+#include noise.glsl
+
 void main()
 {
 	// The magic virtual texturing stuff 
@@ -34,7 +40,12 @@ void main()
 	if(albedo.a < 1.0) {
 		albedo.rgb *= vec3(0.4, 0.8, 0.4);
 		albedo.a = 1.0;
+
 	}
+	
+	//albedo.rgb = vec3(vertex.y / 64.0 - 1.0);
+	//albedo.rgb = vec3(0.5 + 1.0 * fractalNoise(vertex.xz, 5, 1.0, 0.5));
+	//albedo.rgb = vec3(fract(vertex.x) < 0.5 ? 1.0 : 0.0, fract(vertex.z) < 0.5 ? 1.0 : 0.0, mod(vertex.y, 256.0) / 256.0);
 
 	float ao = 0.95 + 0.05 * color.z;
 

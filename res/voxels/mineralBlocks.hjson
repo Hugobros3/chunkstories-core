@@ -75,6 +75,18 @@
 		coal_ore: {
 			texture: stone_coal_ore
 			material: stone
+
+			drops: {
+				type: match_tool
+				default: false
+				predicates: [
+					{
+						match: tool_type
+						tool_type: pickaxe
+						drops: coal
+					}
+				]
+			}
 		}
 
 		copper_ore: {
