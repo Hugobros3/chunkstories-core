@@ -259,6 +259,7 @@ open class HorizonGenerator(definition: WorldGeneratorDefinition, world: World) 
         var maxAmplitude = 0.0f
         var amplitude = 1.0f
         frequency *= (worldSizeInBlocks / (64 * 32)).toFloat()
+
         for (i in 0 until octaves) {
             total += (1.0f - abs(ssng.looped_noise(x * frequency, z * frequency, worldSizeInBlocks.toFloat()))) * amplitude
             frequency *= 2.0f
@@ -271,12 +272,10 @@ open class HorizonGenerator(definition: WorldGeneratorDefinition, world: World) 
     open fun getHeightAtInternal(x: Int, z: Int): Int {
         var height = 0.0
 
-        val baseHeight = ridgedNoise(x, z, 2,  0.5f, 0.5f)
-        height += baseHeight * 128
-        //val baseHeight = ridgedNoise(x, z, 5, 1.0f, 0.5f)
-        //height += baseHeight * baseHeightScale
+        val baseHeight = ridgedNoise(x, z, 5, 1.0f, 0.5f)
+        height += baseHeight * baseHeightScale
 
-        /*var mountainFactor = fractalNoise(x + 548, z + 330, 3, 0.5f, 0.5f)
+        var mountainFactor = fractalNoise(x + 548, z + 330, 3, 0.5f, 0.5f)
         mountainFactor *= (1.0 + 0.125 * ridgedNoise(x + 14, z + 9977, 2, 4.0f, 0.7f)).toFloat()
         mountainFactor -= mountainOffset.toFloat()
         mountainFactor /= (1 - mountainOffset).toFloat()
@@ -290,7 +289,7 @@ open class HorizonGenerator(definition: WorldGeneratorDefinition, world: World) 
         if (height >= waterHeight)
             height += plateauHeight * plateauHeightScale
         else
-            height += plateauHeight * baseHeight * plateauHeightScale.toFloat()*/
+            height += plateauHeight * baseHeight * plateauHeightScale.toFloat()
 
         return height.toInt()
     }
@@ -310,4 +309,5 @@ open class HorizonGenerator(definition: WorldGeneratorDefinition, world: World) 
 
         return Math2.clamp(f.toDouble(), 0.0, 1.0)
     }*/
+
 }

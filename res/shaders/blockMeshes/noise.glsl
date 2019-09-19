@@ -13,7 +13,7 @@ float looped_noise(vec2 pos, float period, float invPeriod) {
     return noise4d(nx, ny, nz, nw);
 }
 
-#define WORLD_SIZE 1024.0
+#define WORLD_SIZE 4096.0
 
 float fractalNoise(vec2 pos, int octaves, float freq, float persistence) {
     float frequency = freq;
@@ -39,22 +39,11 @@ float ridgedNoise(vec2 pos, int octaves, float freq, float persistence) {
     float amplitude = 1.0f;
 
     frequency *= (WORLD_SIZE / (64 * 32));
-    /*for(int i = 0; i < octaves; i++) {
+    for(int i = 0; i < octaves; i++) {
         total += (1.0f - abs(looped_noise(pos * frequency, WORLD_SIZE, 0.0))) * amplitude;
         frequency *= 2.0f;
         maxAmplitude += amplitude;
         amplitude *= persistence;
-    }*/
-
-    total += (1.0f - abs(looped_noise(pos * frequency, WORLD_SIZE, 0.0))) * amplitude;
-    frequency *= 2.0f;
-    maxAmplitude += amplitude;
-    amplitude *= persistence;
-    
-    total += (1.0f - abs(looped_noise(pos * frequency, WORLD_SIZE, 0.0))) * amplitude;
-    frequency *= 2.0f;
-    maxAmplitude += amplitude;
-    amplitude *= persistence;
-
+    }
     return total / maxAmplitude;
 }   

@@ -7,6 +7,7 @@ const vec4 grad4[32] = {
     vec4(0.0, -1.0, 1.0, -1.0),
     vec4(0.0, -1.0, -1.0, 1.0),
     vec4(0.0, -1.0, -1.0, -1.0),
+
     vec4(1.0, 0.0, 1.0, 1.0),
     vec4(1.0, 0.0, 1.0, -1.0),
     vec4(1.0, 0.0, -1.0, 1.0),
@@ -15,6 +16,7 @@ const vec4 grad4[32] = {
     vec4(-1.0, 0.0, 1.0, -1.0),
     vec4(-1.0, 0.0, -1.0, 1.0),
     vec4(-1.0, 0.0, -1.0, -1.0),
+
     vec4(1.0, 1.0, 0.0, 1.0),
     vec4(1.0, 1.0, 0.0, -1.0),
     vec4(1.0, -1.0, 0.0, 1.0),
@@ -23,6 +25,7 @@ const vec4 grad4[32] = {
     vec4(-1.0, 1.0, 0.0, -1.0),
     vec4(-1.0, -1.0, 0.0, 1.0),
     vec4(-1.0, -1.0, 0.0, -1.0),
+
     vec4(1.0, 1.0, 1.0, 0.0),
     vec4(1.0, 1.0, -1.0, 0.0),
     vec4(1.0, -1.0, 1.0, 0.0),
@@ -33,11 +36,13 @@ const vec4 grad4[32] = {
     vec4(-1.0, -1.0, -1.0, 0.0)
 };
 
-const float F4 = ((sqrt(5.0) - 1.0) / 4.0);
-const float G4 = ((5.0 - sqrt(5.0)) / 20.0);
+const float F4 = 0.309017;
+const float G4 = 0.1381966;
+//const float F4 = ((sqrt(5.0) - 1.0) / 4.0);
+//const float G4 = ((5.0 - sqrt(5.0)) / 20.0);
 
 int fastfloor(float x) {
-    int xi = int(x);
+    int xi = int(floor(x));
     return x < xi ? xi - 1 : xi;
 }
 
@@ -140,10 +145,10 @@ float noise4d(/*PrecomputedSimplexSeed seed, */float x, float y, float z, float 
     float z4 = z0 - 1.0f + 4.0f * G4;
     float w4 = w0 - 1.0f + 4.0f * G4;
     // Work out the hashed gradient indices of the five simplex corners
-    int ii = i % 256;
-    int jj = j % 256;
-    int kk = k % 256;
-    int ll = l % 256;
+    int ii = i & 255;
+    int jj = j & 255;
+    int kk = k & 255;
+    int ll = l & 255;
     int gi0 = simplexSeed.perm[ii + simplexSeed.perm[jj + simplexSeed.perm[kk + simplexSeed.perm[ll]]]] % 32;
     int gi1 = simplexSeed.perm[ii + i1 + simplexSeed.perm[jj + j1 + simplexSeed.perm[kk + k1 + simplexSeed.perm[ll + l1]]]] % 32;
     int gi2 = simplexSeed.perm[ii + i2 + simplexSeed.perm[jj + j2 + simplexSeed.perm[kk + k2 + simplexSeed.perm[ll + l2]]]] % 32;
@@ -151,14 +156,14 @@ float noise4d(/*PrecomputedSimplexSeed seed, */float x, float y, float z, float 
     int gi4 = simplexSeed.perm[ii + 1 + simplexSeed.perm[jj + 1 + simplexSeed.perm[kk + 1 + simplexSeed.perm[ll + 1]]]] % 32;
     // Calculate the contribution from the five corners
     float t0 = 0.6f - x0 * x0 - y0 * y0 - z0 * z0 - w0 * w0;
-    if (t0 < 0.0f)
+    if (t0 < 0)
         n0 = 0.0f;
     else {
         t0 *= t0;
         n0 = t0 * t0 * dot(grad4[gi0], vec4(x0, y0, z0, w0));
     }
     float t1 = 0.6f - x1 * x1 - y1 * y1 - z1 * z1 - w1 * w1;
-    if (t1 < 0.0f)
+    if (t1 < 0)
         n1 = 0.0f;
     else {
         t1 *= t1;
@@ -171,7 +176,7 @@ float noise4d(/*PrecomputedSimplexSeed seed, */float x, float y, float z, float 
         t2 *= t2;
         n2 = t2 * t2 * dot(grad4[gi2], vec4(x2, y2, z2, w2));
     }
-    float t3 = 0.6f - (x3 * x3) - y3 * y3 - z3 * z3 - w3 * w3;
+    float t3 = 0.6f - (x3 * x3) - (y3 * y3) - z3 * z3 - (w3 * w3);
     if (t3 < 0.0f)
         n3 = 0.0f;
     else {

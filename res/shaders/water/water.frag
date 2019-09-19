@@ -46,8 +46,7 @@ void main()
 	if(albedo.a == 0.0) {
 		discard;
 	}
-		discard;
-
+	
 	if(albedo.a < 1.0) {
 		albedo.rgb *= vec3(0.2, 1.0, 0.5);
 		albedo.a = 1.0;

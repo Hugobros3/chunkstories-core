@@ -27,24 +27,13 @@ uniform PrecomputedSimplexSeed simplexSeed;
 #include simplex.glsl
 #include noise.glsl
 
-/**
-waterLevel: 48
-            mountainOffset: 0.3
-            mountainScale: 128
-            baseHeightScale: 64
-            plateauHeightScale: 24
-			*/
-
 float heightAt(vec2 pos) {
 	float height = 0.0;
-	
-	float baseHeight = ridgedNoise(pos, 2, 0.5, 0.5);
-	height += baseHeight * 128.0;
 
-	//float baseHeight = ridgedNoise(pos, 5, 1.0, 0.5);
-	//height += baseHeight * 64.0;
+	float baseHeight = ridgedNoise(pos, 5, 1.0, 0.5);
+	height += baseHeight * 64.0;
 
-	/*float mountainFactor = fractalNoise(pos + vec2(548.0, 330.0), 3, 0.5, 0.5);
+	float mountainFactor = fractalNoise(pos + vec2(548.0, 330.0), 3, 0.5, 0.5);
 	mountainFactor *= (1.0 + 0.125 * ridgedNoise(pos + vec2(14, 9977), 2, 4.0, 0.7));
 	mountainFactor -= 0.3;
 	mountainFactor /= (1.0 - 0.3);
@@ -58,7 +47,7 @@ float heightAt(vec2 pos) {
 	if(height > 48)
 		height += plateaHeight * 24.0;
 	else
-		height += plateaHeight * baseHeight * 24.0;*/	
+		height += plateaHeight * baseHeight * 24.0;
 
 	return height;
 }
@@ -69,7 +58,7 @@ void main()
 	vertexPos += vec3(chunkInfo.chunkX, chunkInfo.chunkY, chunkInfo.chunkZ) * 32.0;
 
 	//if((mod(vertexPos.x , 32.0) < 16.0) == (mod(vertexPos.z , 32.0) < 16.0))
-	//	vertexPos.y = floor(heightAt(vec2(floor(vertexPos.x), floor(vertexPos.z))));
+	//	vertexPos.y = 1+floor(heightAt(vec2(floor(vertexPos.x), floor(vertexPos.z))));
 
 	//vec4 viewSpace = camera.viewMatrix * vec4(vertexPos, 1.0);
 	//vec4 projected = camera.projectionMatrix * viewSpace;
