@@ -26,6 +26,14 @@ uniform PrecomputedSimplexSeed simplexSeed;
 #include simplex.glsl
 #include noise.glsl
 
+float temperatureAt(vec2 pos) {
+	float temp = 0.0;
+
+   	temp += fractalNoise(pos, 2, 0.25, 0.5, vec4(666.0, -78.0, 31.0, 98.0));
+
+	return temp;
+}
+
 void main()
 {
 	// The magic virtual texturing stuff 
@@ -38,14 +46,24 @@ void main()
 	}
 
 	if(albedo.a < 1.0) {
-		albedo.rgb *= vec3(0.4, 0.8, 0.4);
-		albedo.a = 1.0;
+		float temperature = temperatureAt(vertex.xz);
 
+		//albedo.rgb *= vec3(0.4, 0.8, 0.4);
+		//vec3 grassColor = mix(vec3(0.0, 0.0, 1.0), vec3(1.0, 0.0, 0.0), 0.5 + 0.5 * temperature);
+		vec3 grassColor = mix(vec3(0.4, 0.8, 0.4), vec3(0.5, 0.85, 0.25), 0.5 + 0.5 * temperature);
+		albedo.rgb *= grassColor;
+
+
+		albedo.a = 1.0;
 	}
 	
 	//albedo.rgb = vec3(vertex.y / 64.0 - 1.0);
 	//albedo.rgb = vec3(0.5 + 1.0 * fractalNoise(vertex.xz, 5, 1.0, 0.5));
-	//albedo.rgb = vec3(fract(vertex.x) < 0.5 ? 1.0 : 0.0, fract(vertex.z) < 0.5 ? 1.0 : 0.0, mod(vertex.y, 256.0) / 256.0);
+	//albedo.rgb = vec3(fract(vertex.x) < 0.95 ? 1.0 : 0.0, fract(vertex.z) < 0.95 ? 1.0 : 0.0, mod(vertex.y, 256.0) / 256.0);
+
+	if(vertex.y <= 64.0) {
+	//	albedo.rgb = vec3(0.0, 0.0, 1.0);
+	}
 
 	float ao = 0.95 + 0.05 * color.z;
 

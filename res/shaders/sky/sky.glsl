@@ -44,7 +44,7 @@ vec3 sunAbsorb    = aAbs(rCoeff, mCoeff, opticalSunDepth);
 #define foggyness clamp(overcastFactor * overcastFactor * 4.0, 0.0, 1.0)
 
 vec3 getAtmosphericScatteringAmbient(){
-	float uDotV = -1.0; //float lDotV = dot(l, v);
+	float uDotV = -0.5; //float lDotV = dot(l, v);
 	
 	float opticalDepth    = gDepth(uDotV);	//Get depth from viewpoint
 	
@@ -58,6 +58,8 @@ vec3 getAtmosphericScatteringAmbient(){
 	
 	vec3 finalScatter = aScatter(sunAbsorb, viewAbsorb, sunCoeff, viewCoeff, viewScatter); //Scatters all sunlight
 	vec3 result = (finalScatter * PI) * (2.0 * scatterBrightness);
+
+	result += vec3(0.0, 0.4, 1.0) * 0.0025;
 	
 	return result;
 }
@@ -97,6 +99,8 @@ vec3 getAtmosphericScattering(vec3 v, vec3 sunVec, vec3 upVec, float sunspotStre
 	//vec3 sunSpot = vec3(0);
 	
 	vec3 result = (finalScatter + sunSpot) * PI * (2.0 * scatterBrightness);
+
+	result += vec3(0.0, 0.4, 1.0) * 0.0025;
 	
     return result;
     //return result;

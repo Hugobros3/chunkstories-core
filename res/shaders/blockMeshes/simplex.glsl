@@ -193,3 +193,7 @@ float noise4d(/*PrecomputedSimplexSeed seed, */float x, float y, float z, float 
     // Sum up and scale the result to cover the range [-1,1]
     return 27.0f * (n0 + n1 + n2 + n3 + n4);
 }
+
+float noise4d(vec4 vec) {
+    return noise4d(vec.x, vec.y, vec.z, vec.w);
+}

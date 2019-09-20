@@ -7,6 +7,7 @@
 package xyz.chunkstories.core.generator
 
 import org.joml.Vector3i
+import org.joml.Vector4f
 import xyz.chunkstories.api.content.json.asArray
 import xyz.chunkstories.api.content.json.asDict
 import xyz.chunkstories.api.content.json.asDouble
@@ -23,6 +24,12 @@ import xyz.chunkstories.api.world.generator.WorldGenerator
 import xyz.chunkstories.api.world.generator.WorldGeneratorDefinition
 import java.util.*
 import kotlin.math.abs
+import xyz.chunkstories.api.math.Math2.clamp
+import javax.swing.Spring.height
+import xyz.chunkstories.core.generator.HorizonGenerator
+import xyz.chunkstories.core.generator.HorizonGenerator.Biome
+
+
 
 open class HorizonGenerator(definition: WorldGeneratorDefinition, world: World) : WorldGenerator(definition, world) {
     private val ssng = SeededSimplexNoiseGenerator(world.worldInfo.seed)
@@ -69,10 +76,19 @@ open class HorizonGenerator(definition: WorldGeneratorDefinition, world: World) 
         }
     }
 
+    val tempRng = Vector4f(666.0f, -78.0f, 31.0f, 98.0f)
+
     fun decideBiome(x: Int, z: Int): Biome {
         val worldHeight = getHeightAtInternal(x, z)
 
-        var biome: Biome = biomes["grassland"]!!
+        val temperature = fractalNoise(x, z, 2, 0.25f, 0.5f, tempRng) * 0.5 + 0.5
+
+        var biome: Biome = when {
+            temperature < 0.3 -> biomes["snowland"]
+            temperature > 0.7 -> biomes["desert"]
+            else -> biomes["grassland"]
+        }!!
+
 
         //TODO more complex logic than this !
         if (worldHeight < waterHeight + 3) {
@@ -238,14 +254,17 @@ open class HorizonGenerator(definition: WorldGeneratorDefinition, world: World) 
             }
     }
 
-    private fun fractalNoise(x: Int, z: Int, octaves: Int, freq: Float, persistence: Float): Float {
+    private fun fractalNoise(x: Int, z: Int, octaves: Int, freq: Float, persistence: Float, offset: Vector4f): Float {
+        val x = x / worldSizeInBlocks.toFloat()
+        val z = z / worldSizeInBlocks.toFloat()
+
         var frequency = freq
         var total = 0.0f
         var maxAmplitude = 0.0f
         var amplitude = 1.0f
         frequency *= (worldSizeInBlocks / (64 * 32)).toFloat()
         for (i in 0 until octaves) {
-            total += ssng.looped_noise(x * frequency, z * frequency, worldSizeInBlocks.toFloat()) * amplitude
+            total += ssng.looped_noise(x, z, offset, Vector4f(frequency * worldSizeInBlocks.toFloat() / 4096.0f)) * amplitude
             frequency *= 2.0f
             maxAmplitude += amplitude
             amplitude *= persistence
@@ -253,7 +272,10 @@ open class HorizonGenerator(definition: WorldGeneratorDefinition, world: World) 
         return total / maxAmplitude
     }
 
-    private fun ridgedNoise(x: Int, z: Int, octaves: Int, freq: Float, persistence: Float): Float {
+    private fun ridgedNoise(x: Int, z: Int, octaves: Int, freq: Float, persistence: Float, offset: Vector4f): Float {
+        val x = x / worldSizeInBlocks.toFloat()
+        val z = z / worldSizeInBlocks.toFloat()
+
         var frequency = freq
         var total = 0.0f
         var maxAmplitude = 0.0f
@@ -261,35 +283,34 @@ open class HorizonGenerator(definition: WorldGeneratorDefinition, world: World) 
         frequency *= (worldSizeInBlocks / (64 * 32)).toFloat()
 
         for (i in 0 until octaves) {
-            total += (1.0f - abs(ssng.looped_noise(x * frequency, z * frequency, worldSizeInBlocks.toFloat()))) * amplitude
+            total += (1.0f - abs(ssng.looped_noise(x, z, offset, Vector4f(frequency * worldSizeInBlocks.toFloat() / 4096.0f)))) * amplitude
             frequency *= 2.0f
             maxAmplitude += amplitude
             amplitude *= persistence
         }
         return total / maxAmplitude
     }
+
+    val rng1 = Vector4f(-47.0f, 154.0f, 126.0f, 148.0f)
+    val rng2 = Vector4f(0.0f, 154.0f, 121.0f, -48.0f)
+    val rng3 = Vector4f(245.0f, 87.0f, -33.0f, -88.0f)
+    val rng4 = Vector4f(0.0f, 154.0f, 121.0f, -48.0f)
+    val rng5 = Vector4f(-5752.0f, -2200.0f, -457.0f, 948.0f)
 
     open fun getHeightAtInternal(x: Int, z: Int): Int {
         var height = 0.0
 
-        val baseHeight = ridgedNoise(x, z, 5, 1.0f, 0.5f)
-        height += baseHeight * baseHeightScale
+        val maxHeight = fractalNoise(x, z, 1, 1.0f, 0.5f, rng1)
+        height += (32f + 48 * maxHeight + 48f * maxHeight * maxHeight) * ridgedNoise(x, z, 2, 1.0f, 0.5f, rng2)
 
-        var mountainFactor = fractalNoise(x + 548, z + 330, 3, 0.5f, 0.5f)
-        mountainFactor *= (1.0 + 0.125 * ridgedNoise(x + 14, z + 9977, 2, 4.0f, 0.7f)).toFloat()
-        mountainFactor -= mountainOffset.toFloat()
-        mountainFactor /= (1 - mountainOffset).toFloat()
-        mountainFactor = Math2.clamp(mountainFactor.toDouble(), 0.0, 1.0)
+        var roughness = fractalNoise(x, z, 1, 1.0f, 0.5f, rng3)
+        roughness = clamp(roughness * 2.5 - 0.33, 0.25, 1.0)
 
-        height += mountainFactor * mountainScale
+        height += 32f * roughness * fractalNoise(x, z, 4, 8.0f, 0.5f, rng4)
 
-        var plateauHeight = Math2.clamp((fractalNoise(x + 225, z + 321, 3, 1f, 0.5f) * 32.0f - 8.0f).toDouble(), 0.0, 1.0)
-        plateauHeight *= Math2.clamp((fractalNoise(x + 3158, z + 9711, 3, 0.125f, 0.5f) * 0.5f + 0.5f).toDouble(), 0.0, 1.0)
+        height += 32 * clamp(
+                ridgedNoise(x, z, 2, 1.0f, 0.5f, rng5) * 2.0 - 1.0, 0.0, 1.0)
 
-        if (height >= waterHeight)
-            height += plateauHeight * plateauHeightScale
-        else
-            height += plateauHeight * baseHeight * plateauHeightScale.toFloat()
 
         return height.toInt()
     }

@@ -37,10 +37,12 @@ void main()
 	//vec4 albedo = vtexture2D(textureId, texCoord);
 	vec4 albedo = texture(albedoTextures, vec3(texCoord, textureId));
 
+	vec2 floored = vec2(floor(vertex.x), floor(vertex.z));
+
 	vec3 normal2 = normalize(normal + 0.0 * vec3(sin(vertex.x), 0.0, cos(vertex.y)));
 
-	vec3 shallow = texture(waterNormalShallow, vertex.xz * 0.125).xzy * 2.0 - vec3(1.0);
-	vec3 deep = texture(waterNormalDeep, vertex.xz * 0.125 * 0.125).xzy * 2.0 - vec3(1.0);
+	vec3 shallow = texture(waterNormalShallow, floored.xy + world.time * 0*0.25 * vec2(10.0, -78.0)).xzy * 2.0 - vec3(1.0);
+	vec3 deep = texture(waterNormalDeep, floored.xy * 0.125 * 0.125 + world.time * 0.5 * vec2(-40.0, 3.0)).xzy * 2.0 - vec3(1.0);
 	normal2 = normalize(shallow + deep * 0.5 + 5.0 * normal2);
 
 	if(albedo.a == 0.0) {
@@ -60,14 +62,10 @@ void main()
 	float sunSpot = 2.1 * clamp(pow(dot(world.sunPosition, reflect(eyeDirection, normal2.xyz)), 512.0), 0.0, 100.0);
 	float NdL = clamp(pow(dot(world.sunPosition, normal2.xyz), 1.0), 0.0, 1.0);
 
-	vec4 waterColor = vec4(0.0, 0.0, 0.0, 0.5 + 0.5 * (1.0 - shittyFresnel));
-	//waterColor += vec4(1.0) * sunSpot;
+	vec4 waterColor = vec4(0.0, 0.0, 0.0, clamp(0.8 + 0.2 * (1.0 - shittyFresnel), 0.0, 1.0));
 	waterColor.rgb += vec3(0.2, 0.2, 0.5) * getSkyColor(world.time, reflect(eyeDirection, normal2.xyz));
 
 	vec4 fogColor = getFogColor(world.time, camera.position - vertex);
 
-	//shadedBuffer = waterColor;
 	shadedBuffer = vec4(mix(waterColor.rgb, fogColor.rgb, fogColor.a), waterColor.a);
-	//shadedBuffer = vec4(reflect(eye, normal.xyz), 1.0);
-	//shadedBuffer = vec4(eye, 1.0);
 }

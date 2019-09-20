@@ -27,38 +27,26 @@ uniform PrecomputedSimplexSeed simplexSeed;
 #include simplex.glsl
 #include noise.glsl
 
-float heightAt(vec2 pos) {
-	float height = 0.0;
-
-	float baseHeight = ridgedNoise(pos, 5, 1.0, 0.5);
-	height += baseHeight * 64.0;
-
-	float mountainFactor = fractalNoise(pos + vec2(548.0, 330.0), 3, 0.5, 0.5);
-	mountainFactor *= (1.0 + 0.125 * ridgedNoise(pos + vec2(14, 9977), 2, 4.0, 0.7));
-	mountainFactor -= 0.3;
-	mountainFactor /= (1.0 - 0.3);
-	mountainFactor = clamp(mountainFactor, 0.0, 1.0);
-
-	height += mountainFactor * 128;
-
-	float plateaHeight = clamp(fractalNoise(pos+vec2(225.0, 321.0), 3, 1.0, 0.5) * 32.0 - 8.0, 0.0, 1.0);
-	plateaHeight *= clamp(fractalNoise(pos+vec2(3158.0, 9711.0), 3, 0.125, 0.5) * 0.5 + 0.5, 0.0, 1.0);
-
-	if(height > 48)
-		height += plateaHeight * 24.0;
-	else
-		height += plateaHeight * baseHeight * 24.0;
-
-	return height;
-}
-
 void main()
 {
 	vec3 vertexPos = vertexIn.xyz;
 	vertexPos += vec3(chunkInfo.chunkX, chunkInfo.chunkY, chunkInfo.chunkZ) * 32.0;
 
+	/*vertexPos.xz -= camera.position.xz;
+	vertexPos.x = abs(pow(vertexPos.x, 1.0)) * sign(vertexPos.x);
+	vertexPos.z = abs(pow(vertexPos.z, 1.0)) * sign(vertexPos.z);
+	vertexPos.xz += camera.position.xz;*/
+
 	//if((mod(vertexPos.x , 32.0) < 16.0) == (mod(vertexPos.z , 32.0) < 16.0))
-	//	vertexPos.y = 1+floor(heightAt(vec2(floor(vertexPos.x), floor(vertexPos.z))));
+	//vertexPos.y = 1+(heightAt(vertexPos.xz));
+
+	float dx = -(1+heightAt(vertexPos.xz + vec2(0.1, 0.0)) - vertexPos.y);
+	float dz = -(1+heightAt(vertexPos.xz + vec2(0.0, 0.1)) - vertexPos.y);
+
+	float r = sqrt(1.0 - dx * dx - dz * dz);
+	vec3 nrml = vec3(dx, r, dz);
+
+	//nrml = pow(nrml, vec3(0.8));
 
 	//vec4 viewSpace = camera.viewMatrix * vec4(vertexPos, 1.0);
 	//vec4 projected = camera.projectionMatrix * viewSpace;
@@ -69,7 +57,9 @@ void main()
 
 	color = vec4(colorIn.x, colorIn.y, colorIn.z, 1.0);
 	//color = vec4(1.0);
+	
 	normal = camera.normalMatrix * normalIn;
+	//normal = camera.normalMatrix * nrml;
 	texCoord = texCoordIn;
 	textureId = int(textureIdIn);
 

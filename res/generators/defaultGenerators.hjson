@@ -58,6 +58,25 @@
 
                     additionalStructures: []
                 },
+                desert: {
+                    surfaceBlock: sand
+                    groundBlock: sand
+                    underwaterGround: sand
+
+                    surfaceDecorationsDensity: 0.0
+                    surfaceDecorations: []
+
+                    treesDensity: 0.00
+                    treesVariants: [
+                        /*{
+                            type: mcschematic
+                            url: structures/cactus.schematic
+                            weight: 1.0
+                        },*/
+                    ]
+
+                    additionalStructures: []
+                },
                 grassland: {
                     surfaceBlock: grass
                     groundBlock: dirt
@@ -120,6 +139,38 @@
                             url: structures/oak_fallen2.schematic
                             weight: 1.0
                         }
+                        // Redwood
+                        {
+                            type: mcschematic
+                            url: structures/redwood_tree1.schematic
+                            weight: 1.0
+                        }
+                        {
+                            type: mcschematic
+                            url: structures/redwood_tree2.schematic
+                            weight: 1.0
+                        }
+                        {
+                            type: mcschematic
+                            url: structures/redwood_tree3.schematic
+                            weight: 1.0
+                        }
+                    ]
+
+                    additionalStructures: []
+                },
+                snowland: {
+                    surfaceBlock: grass
+                    groundBlock: dirt
+                    underwaterGround: gravel
+
+                    surfaceDecorationsDensity: 1.0
+                    surfaceDecorations: [
+                            [ "snow", 10.0 ]
+                        ]
+
+                    treesDensity: 0.02
+                    treesVariants: [
                         // Redwood
                         {
                             type: mcschematic
