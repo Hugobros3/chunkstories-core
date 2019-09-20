@@ -97,10 +97,10 @@
 			material: wood
 			
 			textures: {
-				top: chesttop
-				bottom: chesttop
-				sides: chestside
-				front: chest_front
+				top: wood_chest_top
+				bottom: wood_chest_top
+				sides: wood_chest_side
+				front: wood_chest_front
 			}
 		}
 

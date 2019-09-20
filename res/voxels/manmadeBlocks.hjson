@@ -17,6 +17,7 @@
 		}
 
 		crafting_table: {
+			//class: xyz.chunkstories.core.voxel.VoxelCraftingTable
 			material: bluntwood
 
 			textures: {
@@ -25,6 +26,20 @@
 			}
 
 			craftingAreaSize: 3
+		}
+
+		furnace: {
+			class: xyz.chunkstories.core.voxel.VoxelFurnace
+			opaque: false
+			selfOpaque: true
+			material: stone
+			
+			textures: {
+				top: furnace
+				bottom: furnace
+				sides: furnace
+				front: furnace_front
+			}
 		}
 
 		bricks: {

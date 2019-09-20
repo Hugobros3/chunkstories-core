@@ -13,7 +13,6 @@ import xyz.chunkstories.api.content.json.asDict
 import xyz.chunkstories.api.content.json.asDouble
 import xyz.chunkstories.api.content.json.asInt
 import xyz.chunkstories.api.converter.MinecraftBlocksTranslator
-import xyz.chunkstories.api.math.Math2
 import xyz.chunkstories.api.math.random.SeededSimplexNoiseGenerator
 import xyz.chunkstories.api.math.random.WeightedSet
 import xyz.chunkstories.api.voxel.Voxel
@@ -25,10 +24,6 @@ import xyz.chunkstories.api.world.generator.WorldGeneratorDefinition
 import java.util.*
 import kotlin.math.abs
 import xyz.chunkstories.api.math.Math2.clamp
-import javax.swing.Spring.height
-import xyz.chunkstories.core.generator.HorizonGenerator
-import xyz.chunkstories.core.generator.HorizonGenerator.Biome
-
 
 
 open class HorizonGenerator(definition: WorldGeneratorDefinition, world: World) : WorldGenerator(definition, world) {
@@ -48,7 +43,7 @@ open class HorizonGenerator(definition: WorldGeneratorDefinition, world: World) 
     private val translator = MinecraftBlocksTranslator(world.gameContext, world.content.getAsset("converter_mapping.txt"))
     private val biomes = loadBiomesFromJson(world.content, definition["biomes"].asDict
             ?: throw Exception("World generator ${definition.name} lacks a 'biomes' section."), translator)
-    private val caveBuilder = CaveBuilder(world, this)
+    private val caveBuilder = Caves(world, this)
 
     private val spawnableMinerals = definition["minerals"].asArray?.let { loadOresSpawningSection(it, world.content) } ?: emptyList()
 
@@ -69,18 +64,16 @@ open class HorizonGenerator(definition: WorldGeneratorDefinition, world: World) 
     internal inner class SliceData(private val cx: Int, private val cz: Int) {
         val heights = IntArray(1024)
         val structures = mutableListOf<StructureToPaste>()
-        val biome = Array<Biome>(1024) { xz ->
+        val biome = Array(1024) { xz ->
             val x = xz shr 5
             val z = xz and 0x1f
-            decideBiome(cx * 32 + x, cz * 32 + z)
+            decideBiome(cx * 32 + x, cz * 32 + z, heights[x * 32 + z])
         }
     }
 
     val tempRng = Vector4f(666.0f, -78.0f, 31.0f, 98.0f)
 
-    fun decideBiome(x: Int, z: Int): Biome {
-        val worldHeight = getHeightAtInternal(x, z)
-
+    fun decideBiome(x: Int, z: Int, worldHeight: Int): Biome {
         val temperature = fractalNoise(x, z, 2, 0.25f, 0.5f, tempRng) * 0.5 + 0.5
 
         var biome: Biome = when {
@@ -241,7 +234,8 @@ open class HorizonGenerator(definition: WorldGeneratorDefinition, world: World) 
                     val x = gcx * 32 + rnd.nextInt(32)
                     val z = gcz * 32 + rnd.nextInt(32)
 
-                    val biome = decideBiome(x, z)
+                    val worldHeight = getHeightAtInternal(x, z)
+                    val biome = decideBiome(x, z, worldHeight)
 
                     if (rnd.nextDouble() < biome.treesDensity) {
                         val y = getHeightAtInternal(x, z) - 1
@@ -311,24 +305,6 @@ open class HorizonGenerator(definition: WorldGeneratorDefinition, world: World) 
         height += 32 * clamp(
                 ridgedNoise(x, z, 2, 1.0f, 0.5f, rng5) * 2.0 - 1.0, 0.0, 1.0)
 
-
         return height.toInt()
     }
-
-    /*private fun getForestness(x: Int, z: Int): Float {
-        var mountainFactor = fractalNoise(x + 548, z + 330, 3, 0.5f, 0.5f)
-        mountainFactor *= (1.0 + 0.125 * ridgedNoise(x + 14, z + 9977, 2, 4.0f, 0.7f)).toFloat()
-
-        mountainFactor -= 0.3f
-        mountainFactor *= 2.0f
-
-        mountainFactor = Math2.clamp(mountainFactor.toDouble(), 0.0, 2.0)
-
-        var f = 0.1f + Math2.clamp(4.0 * fractalNoise(x + 1397, z + 321, 3, 0.5f, 0.5f), 0.0, 1.0)
-
-        f -= (mountainFactor * 0.45).toFloat()
-
-        return Math2.clamp(f.toDouble(), 0.0, 1.0)
-    }*/
-
 }

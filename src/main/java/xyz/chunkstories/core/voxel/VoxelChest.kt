@@ -33,10 +33,6 @@ import xyz.chunkstories.api.world.chunk.FreshChunkCell
 import kotlin.math.abs
 
 class VoxelChest(type: VoxelDefinition) : Voxel(type) {
-	protected var frontTexture: VoxelTexture = store.textures.get(name + "_front")
-	protected var sideTexture: VoxelTexture = store.textures.get(name + "_side")
-	protected var topTexture: VoxelTexture = store.textures.get(name + "_top")
-
 	override fun handleInteraction(entity: Entity, voxelContext: ChunkCell, input: Input): Boolean {
 		if (input.name == "mouse.right" && voxelContext.world is WorldMaster) {
 
@@ -56,8 +52,7 @@ class VoxelChest(type: VoxelDefinition) : Voxel(type) {
 	}
 
 	private fun getInventory(context: ChunkCell): Inventory {
-		val comp = context.components.getVoxelComponent("chestInventory")
-		val component = comp as VoxelInventoryComponent?
+		val component = context.components.getVoxelComponent("chestInventory") as VoxelInventoryComponent?
 		return component!!.inventory
 	}
 
@@ -68,26 +63,22 @@ class VoxelChest(type: VoxelDefinition) : Voxel(type) {
 	}
 
 	override fun getVoxelTexture(cell: Cell, side: VoxelSide): VoxelTexture {
-		val actualSide = VoxelSide.values()[cell.metaData]//getSideMcStairsChestFurnace(cell.metaData)
+		val actualSide = VoxelSide.values()[cell.metaData]
 
 		if (side == VoxelSide.TOP)
-			return topTexture
+			return voxelTextures[VoxelSide.TOP.ordinal]
+		if (side == VoxelSide.BOTTOM)
+			return voxelTextures[VoxelSide.BOTTOM.ordinal]
 
-		return if (side == actualSide) frontTexture else sideTexture
+		return if (side == actualSide) voxelTextures[VoxelSide.FRONT.ordinal] else voxelTextures[VoxelSide.LEFT.ordinal]
 	}
 
 	override fun onRemove(cell: ChunkCell, cause: WorldModificationCause?) {
-		val world = cell.world
 		val location = cell.location
 		location.add(0.5, 0.5, 0.5)
 
 		val inventoryComponent = cell.components.getVoxelComponent("chestInventory") as? VoxelInventoryComponent ?: return
 		for (itemPile in inventoryComponent.inventory.contents) {
-			/*val entity = world.content.entities.getEntityDefinition("groundItem")!!.newEntity<EntityGroundItem>(world)
-			entity.location = location
-			entity.traits[TraitInventory::class]!!.inventory.addItem(itemPile.item, itemPile.amount)
-			entity.traits[TraitVelocity::class]?.let { it.addVelocity(Math.random() * 0.2 - 0.1, Math.random() * 0.1 + 0.1, Math.random() * 0.2 - 0.1) }
-			world.addEntity(entity)*/
 			val velocity = Vector3d(Math.random() * 0.125 - 0.0625, 0.1, Math.random() * 0.125 - 0.0625)
 			val lootLocation = Location(cell.location)
 			lootLocation.add(0.5, 0.5, 0.5)
