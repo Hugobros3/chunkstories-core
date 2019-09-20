@@ -70,23 +70,27 @@ open class EntityHumanoidRenderer(entity: EntityHumanoid, private val customSkin
 
 			val miningProgress = entity.traits[TraitMining::class]?.progress
 			if(miningProgress != null) {
-				selectionColor.set(1.0f, 0.0f, 0.0f, 1.0f)
-				selectionColor.y = 1f - miningProgress.progress.toFloat().coerceAtMost(1.0f)
+				miningProgress.represent(representationsGobbler)
+				//selectionColor.set(1.0f, 0.0f, 0.0f, 1.0f)
+				//selectionColor.y = 1f - miningProgress.progress.toFloat().coerceAtMost(1.0f)
+				//
+			} else {
+				if(selectedBlock != null) {
+					val cell = entity.world.peek(selectedBlock)
+					val boxes = cell.voxel.getTranslatedCollisionBoxes(cell)
+					if(boxes != null) {
+						for(box in boxes) {
+							representationsGobbler.drawCube(box.min, box.max, selectionColor)
+						}
+					} else {
+						representationsGobbler.drawCube(Vector3d(selectedBlock), Vector3d(selectedBlock).also { it.add(1.0, 1.0, 1.0) }, selectionColor)
+					}
+				}
 			}
 
 			//selectionColor.set(1.0f, Float.POSITIVE_INFINITY, 0.0f, 1.0f)
 
-			if(selectedBlock != null) {
-				val cell = entity.world.peek(selectedBlock)
-				val boxes = cell.voxel.getTranslatedCollisionBoxes(cell)
-				if(boxes != null) {
-					for(box in boxes) {
-						representationsGobbler.drawCube(box.min, box.max, selectionColor)
-					}
-				} else {
-					representationsGobbler.drawCube(Vector3d(selectedBlock), Vector3d(selectedBlock).also { it.add(1.0, 1.0, 1.0) }, selectionColor)
-				}
-			}
+
 		}
 	}
 
