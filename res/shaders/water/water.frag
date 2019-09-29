@@ -30,6 +30,10 @@ uniform sampler2D waterNormalDeep;
     return fragposition;
 }*/
 
+vec3 granular(vec3 vec) {
+	return floor(vec * 4.0) / 4.0;
+}
+
 void main()
 {
 	// The magic virtual texturing stuff 
@@ -37,12 +41,12 @@ void main()
 	//vec4 albedo = vtexture2D(textureId, texCoord);
 	vec4 albedo = texture(albedoTextures, vec3(texCoord, textureId));
 
-	vec2 floored = vec2(floor(vertex.x), floor(vertex.z));
+	vec3 floored = granular(vertex.xyz);
 
 	vec3 normal2 = normalize(normal + 0.0 * vec3(sin(vertex.x), 0.0, cos(vertex.y)));
 
-	vec3 shallow = texture(waterNormalShallow, floored.xy + world.time * 0*0.25 * vec2(10.0, -78.0)).xzy * 2.0 - vec3(1.0);
-	vec3 deep = texture(waterNormalDeep, floored.xy * 0.125 * 0.125 + world.time * 0.5 * vec2(-40.0, 3.0)).xzy * 2.0 - vec3(1.0);
+	vec3 shallow = texture(waterNormalShallow, floored.xz + world.time * 0*0.25 * vec2(10.0, -78.0)).xzy * 2.0 - vec3(1.0);
+	vec3 deep = texture(waterNormalDeep, floored.xz * 0.125 * 0.125 + world.time * 0.5 * vec2(-40.0, 3.0)).xzy * 2.0 - vec3(1.0);
 	normal2 = normalize(shallow + deep * 0.5 + 5.0 * normal2);
 
 	if(albedo.a == 0.0) {
@@ -54,7 +58,7 @@ void main()
 		albedo.a = 1.0;
 	}
 
-	vec3 eye = vertex.xyz - camera.position;
+	vec3 eye = granular(vertex.xyz) - camera.position;
 	vec3 eyeDirection = normalize(eye);
 
 	float shittyFresnel = clamp(pow(dot(eyeDirection, -normal2), 1.0), 0.0, 1.0);

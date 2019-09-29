@@ -64,7 +64,7 @@ class EntityPlayer(t: EntityDefinition, world: World) : EntityHumanoid(t, world)
 					val craftingStation = entity.traits[TraitCrafting::class]?.getCraftingStation()
 					val craftingAreaSideSize = craftingStation?.craftingAreaSideSize ?: 0
 
-					val ui = InventoryUI(layer, width * 20 + 16, height * 20 + 16 + 8 + 20 * craftingAreaSideSize + 8 + 8)
+					val ui = InventoryUI(layer, width * 20 + 16, height * 20 + 16 + 8 + 20 * 3 + 8 + 8)
 					for (x in 0 until width) {
 						for (y in 0 until height) {
 							val slot = InventorySlot.RealSlot(this, x, y)

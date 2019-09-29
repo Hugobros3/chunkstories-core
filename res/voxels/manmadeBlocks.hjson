@@ -29,7 +29,7 @@
 		}
 
 		furnace: {
-			class: xyz.chunkstories.core.voxel.VoxelFurnace
+			class: xyz.chunkstories.core.voxel.BlockFurnace
 			opaque: false
 			selfOpaque: true
 			material: stone

@@ -14,7 +14,7 @@ import xyz.chunkstories.api.world.cell.Cell
 import xyz.chunkstories.api.world.cell.FutureCell
 import kotlin.math.abs
 
-class VoxelFurnace(definition: VoxelDefinition) : Voxel(definition) {
+class BlockFurnace(definition: VoxelDefinition) : Voxel(definition) {
     override fun getVoxelTexture(cell: Cell, side: VoxelSide): VoxelTexture {
         val actualSide = VoxelSide.values()[cell.metaData]//getSideMcStairsChestFurnace(cell.metaData)
 
