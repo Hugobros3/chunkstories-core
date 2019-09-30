@@ -7,10 +7,7 @@
 package xyz.chunkstories.core.voxel
 
 import xyz.chunkstories.api.content.Content
-import xyz.chunkstories.api.content.json.Json
-import xyz.chunkstories.api.content.json.asArray
-import xyz.chunkstories.api.content.json.asInt
-import xyz.chunkstories.api.content.json.asString
+import xyz.chunkstories.api.content.json.*
 import xyz.chunkstories.api.entity.Entity
 import xyz.chunkstories.api.item.ItemDefinition
 import xyz.chunkstories.api.item.ItemVoxel
@@ -52,12 +49,19 @@ class Voxel16Variants(definition: VoxelDefinition) : Voxel(definition) {
 	override fun enumerateVariants(itemStore: Content.ItemsDefinitions): List<ItemDefinition> {
 		//val variantsString = definition.resolveProperty("variants", "0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15")
 		return variantsString.mapIndexed { i, variant ->
-			ItemDefinition(itemStore, "$name.$variant", Json.Dict(mapOf(
+
+			val map = mutableMapOf<String, Json>(
 					"voxel" to Json.Value.Text(name),
 					"class" to Json.Value.Text(ItemVoxelVariant::class.java.canonicalName!!),
 					"metaData" to Json.Value.Number(i.toDouble()),
 					"variant" to Json.Value.Text(variant)
-			)))
+			)
+
+			val additionalItems = definition["itemProperties"].asDict?.elements
+			if(additionalItems != null)
+				map.putAll(additionalItems)
+
+			ItemDefinition(itemStore, "$name.$variant", Json.Dict(map))
 		}
 	}
 

@@ -20,7 +20,7 @@ import xyz.chunkstories.api.events.voxel.WorldModificationCause
 import xyz.chunkstories.api.graphics.MeshMaterial
 import xyz.chunkstories.api.gui.Layer
 import xyz.chunkstories.api.gui.inventory.InventorySlot
-import xyz.chunkstories.api.gui.inventory.InventoryUI
+import xyz.chunkstories.api.gui.inventory.InventoryManagementUIPanel
 import xyz.chunkstories.api.input.Input
 import xyz.chunkstories.api.item.inventory.Inventory
 import xyz.chunkstories.api.item.inventory.InventoryOwner
@@ -58,13 +58,13 @@ class EntityPlayer(t: EntityDefinition, world: World) : EntityHumanoid(t, world)
 
 	init {
 		traitInventory = object : TraitInventory(this, 10, 4) {
-			override fun createMainInventoryPanel(inventory: Inventory, layer: Layer): InventoryUI? {
+			override fun createMainInventoryPanel(inventory: Inventory, layer: Layer): InventoryManagementUIPanel? {
 				return inventory.run {
 					//val crafts = loadRecipes(recipesTest, entity.world.content)
 					val craftingStation = entity.traits[TraitCrafting::class]?.getCraftingStation()
 					val craftingAreaSideSize = craftingStation?.craftingAreaSideSize ?: 0
 
-					val ui = InventoryUI(layer, width * 20 + 16, height * 20 + 16 + 8 + 20 * 3 + 8 + 8)
+					val ui = InventoryManagementUIPanel(layer, width * 20 + 16, height * 20 + 16 + 8 + 20 * 3 + 8 + 8)
 					for (x in 0 until width) {
 						for (y in 0 until height) {
 							val slot = InventorySlot.RealSlot(this, x, y)

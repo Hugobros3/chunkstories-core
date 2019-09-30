@@ -13,7 +13,7 @@ import xyz.chunkstories.api.entity.traits.Trait
 import xyz.chunkstories.api.entity.traits.TraitSight
 import xyz.chunkstories.api.gui.inventory.InventoryManagementUI
 import xyz.chunkstories.api.gui.inventory.InventorySlot
-import xyz.chunkstories.api.gui.inventory.InventoryUI
+import xyz.chunkstories.api.gui.inventory.InventoryManagementUIPanel
 import xyz.chunkstories.api.item.Item
 import xyz.chunkstories.api.item.inventory.Inventory
 
@@ -35,7 +35,7 @@ class TraitCrafting(entity: Entity) : Trait(entity) {
 }
 
 abstract class CraftingStation(val craftingAreaSideSize: Int, val recipes: Content.Recipes) {
-    fun bringUpCraftingMenuSlots(ui: InventoryUI, baseHeight: Int) {
+    fun bringUpCraftingMenuSlots(ui: InventoryManagementUIPanel, baseHeight: Int) {
         val craftSizeReal = 20 * craftingAreaSideSize
         val offsetx = ui.width / 2 - craftSizeReal / 2
 

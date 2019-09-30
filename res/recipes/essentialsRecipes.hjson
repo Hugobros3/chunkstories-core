@@ -24,17 +24,6 @@
         {
             pattern: 
             '''
-            AA
-            AA
-            ''',
-            ingredients: {
-                A: "planks"
-            }
-            result: ["crafting_table", 1]
-        }
-        {
-            pattern: 
-            '''
             C
             S
             ''',

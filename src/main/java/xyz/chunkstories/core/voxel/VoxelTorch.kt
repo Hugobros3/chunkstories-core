@@ -10,6 +10,7 @@ import org.joml.Matrix4f
 import org.joml.Vector4f
 import xyz.chunkstories.api.content.Content
 import xyz.chunkstories.api.content.json.Json
+import xyz.chunkstories.api.content.json.asDict
 import xyz.chunkstories.api.content.json.asString
 import xyz.chunkstories.api.entity.Entity
 import xyz.chunkstories.api.graphics.MeshMaterial
@@ -114,10 +115,15 @@ class VoxelTorch(definition: VoxelDefinition) : Voxel(definition) {
 	}
 
 	override fun enumerateVariants(itemStore: Content.ItemsDefinitions): List<ItemDefinition> {
-		val definition = ItemDefinition(itemStore, name, Json.Dict(mapOf(
+		val map = mutableMapOf<String, Json>(
 				"voxel" to Json.Value.Text(name),
-				"class" to Json.Value.Text(ItemTorch::class.java.canonicalName!!)
-		)))
+				"class" to Json.Value.Text(ItemTorch::class.java.canonicalName!!))
+
+		val additionalItems = definition["itemProperties"].asDict?.elements
+		if(additionalItems != null)
+			map.putAll(additionalItems)
+
+		val definition = ItemDefinition(itemStore, name, Json.Dict(map))
 
 		return listOf(definition)
 	}

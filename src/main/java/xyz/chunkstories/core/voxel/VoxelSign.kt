@@ -18,6 +18,9 @@ import xyz.chunkstories.api.world.chunk.FreshChunkCell
 import xyz.chunkstories.core.voxel.components.VoxelComponentSignText
 import org.joml.Vector2f
 import org.joml.Vector3d
+import xyz.chunkstories.api.content.Content
+import xyz.chunkstories.api.content.json.Json
+import xyz.chunkstories.api.content.json.asDict
 import xyz.chunkstories.api.item.ItemDefinition
 import xyz.chunkstories.api.item.ItemVoxel
 import xyz.chunkstories.api.physics.RayResult
@@ -81,6 +84,21 @@ class VoxelSign(definition: VoxelDefinition) : Voxel(definition) {
 	* cell  */
 	fun getSignData(context: ChunkCell): VoxelComponentSignText {
 		return context.components.getVoxelComponent("signData") as VoxelComponentSignText
+	}
+
+	override fun enumerateVariants(itemStore: Content.ItemsDefinitions): List<ItemDefinition> {
+		val map = mutableMapOf<String, Json>(
+				"voxel" to Json.Value.Text(name),
+				"class" to Json.Value.Text(ItemSign::class.java.canonicalName!!)
+		)
+
+		val additionalItems = definition["itemProperties"].asDict?.elements
+		if (additionalItems != null)
+			map.putAll(additionalItems)
+
+		val definition = ItemDefinition(itemStore, name, Json.Dict(map))
+
+		return listOf(definition)
 	}
 }
 

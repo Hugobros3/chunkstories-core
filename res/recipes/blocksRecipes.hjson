@@ -1,0 +1,27 @@
+{
+    recipes: [
+        {
+            pattern: 
+            '''
+            AA
+            AA
+            ''',
+            ingredients: {
+                A: "planks"
+            }
+            result: ["crafting_table", 1]
+        },
+        {
+            pattern: 
+            '''
+            AAA
+            A A
+            AAA
+            ''',
+            ingredients: {
+                A: "cobble"
+            }
+            result: ["furnace", 1]
+        }
+    ]
+}

@@ -10,6 +10,7 @@ import org.joml.Vector3d
 import xyz.chunkstories.api.Location
 import xyz.chunkstories.api.content.Content
 import xyz.chunkstories.api.content.json.Json
+import xyz.chunkstories.api.content.json.asDict
 import xyz.chunkstories.api.entity.Entity
 import xyz.chunkstories.api.entity.EntityDroppedItem
 import xyz.chunkstories.api.entity.traits.serializable.TraitControllable
@@ -89,10 +90,15 @@ class VoxelChest(type: VoxelDefinition) : Voxel(type) {
 	}
 
 	override fun enumerateVariants(itemStore: Content.ItemsDefinitions): List<ItemDefinition> {
-		val definition = ItemDefinition(itemStore, name, Json.Dict(mapOf(
+		val map = mutableMapOf<String, Json>(
 				"voxel" to Json.Value.Text(name),
-				"class" to Json.Value.Text(ItemChest::class.java.canonicalName!!)
-		)))
+				"class" to Json.Value.Text(ItemChest::class.java.canonicalName!!))
+
+		val additionalItems = definition["itemProperties"].asDict?.elements
+		if(additionalItems != null)
+			map.putAll(additionalItems)
+
+		val definition = ItemDefinition(itemStore, name, Json.Dict(map))
 
 		return listOf(definition)
 	}

@@ -112,6 +112,13 @@
 		iron_ore: {
 			texture: stone_iron_ore
 			material: stone
+
+			// Properties for the associated item
+			itemProperties: {
+				smeltingDrops: {
+					item: iron_bar
+				}
+			}
 		}
 	}
 }

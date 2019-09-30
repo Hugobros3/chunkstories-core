@@ -13,6 +13,7 @@
         }
 
         coal: {
+            fuelPower: 80
         }
     }
 }
