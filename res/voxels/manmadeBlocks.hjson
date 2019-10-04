@@ -42,7 +42,17 @@
 			}
 		}
 
+		bookshelf: {
+			material: bluntwood
+
+			textures: {
+				top: planks
+				sides: bookshelf
+			}
+		}
+
 		bricks: {
+			texture: bricks
 			material: stone
 			hardness: 1.2
 		}
@@ -51,14 +61,14 @@
 			class: xyz.chunkstories.core.voxel.VoxelStairs
 			opaque: false
 			material: stone
-			texture: redbricks
+			texture: bricks
 		}
 
 		bricks_slab: {
 			class: xyz.chunkstories.core.voxel.VoxelHalfTile
 			opaque: false
 			material: stone
-			texture: redbricks
+			texture: bricks
 		}
 
 		cobble_stairs: {
@@ -75,23 +85,6 @@
 			texture: cobble
 		}
 
-		ardoise: {
-		}
-
-		ardoise_stairs: {
-			class: xyz.chunkstories.core.voxel.VoxelStairs
-			opaque: false
-			material: stone
-			texture: ardoise
-		}
-
-		ardoise_slab: {
-			class: xyz.chunkstories.core.voxel.VoxelHalfTile
-			opaque: false
-			material: stone
-			texture: ardoise
-		}
-
 		hardsand_stairs: {
 			class: xyz.chunkstories.core.voxel.VoxelStairs
 			opaque: false
@@ -104,10 +97,6 @@
 			opaque: false
 			material: stone
 			texture: hardsand
-		}
-
-		//one of those is redundant
-		redbricks: {
 		}
 
 		/** GLASS */
@@ -125,11 +114,6 @@
 			texture: glass
 			material: glass
 			hardness: 0.5
-		}
-
-		/** SCULPTED BLOCKS */
-		smoothstone: {
-			material: stone
 		}
 
 		stonebrick: {
@@ -190,7 +174,7 @@
 		gold_block: {
 		}
 
-		ironGrill: {
+		iron_bars: {
 			class: xyz.chunkstories.core.voxel.VoxelPane
 			opaque: false
 			selfOpaque: true

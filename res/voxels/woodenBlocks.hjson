@@ -5,7 +5,7 @@
 			material: wood
 		}
 
-		goldplanks: {
+		/*goldplanks: {
 			material: wood
 		}
 
@@ -15,7 +15,7 @@
 
 		darkplanks: {
 			material: wood
-		}
+		}*/
 
 		/** PLANK STAIRS */
 		planks_stairs: {
@@ -25,7 +25,7 @@
 			texture: planks
 		}
 
-		goldplanks_stairs: {
+		/*goldplanks_stairs: {
 			class: xyz.chunkstories.core.voxel.VoxelStairs
 			opaque: false
 			material: wood
@@ -44,7 +44,7 @@
 			opaque: false
 			material: wood
 			texture: darkplanks
-		}
+		}*/
 
 		wood_fence: {
 			class: xyz.chunkstories.core.voxel.VoxelFence
@@ -61,7 +61,7 @@
 			texture: planks
 		}
 
-		goldplanks_slab: {
+		/*goldplanks_slab: {
 			class: xyz.chunkstories.core.voxel.VoxelHalfTile
 			opaque: false
 			material: wood
@@ -80,14 +80,12 @@
 			opaque: false
 			material: wood
 			texture: darkplanks
-		}
+		}*/
 
-		/** MISC */
 		ladder: {
 			class: xyz.chunkstories.core.voxel.VoxelLadder
 			material: wood
 			opaque: false
-			//hardnessForAxe: 0.5
 		}
 
 		wood_chest: {

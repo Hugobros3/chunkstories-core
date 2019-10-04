@@ -56,7 +56,7 @@
 		}
 
 		/* SNOW & ICE */
-		snowblock: {
+		snow_block: {
 			material: snow
 			texture: snow
 		}

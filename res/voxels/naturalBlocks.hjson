@@ -50,7 +50,7 @@
 			miningDifficulty: 3.0
 		}
 
-		pinewood: {
+		pine_wood: {
 			material: wood
 			textures: {
 				top: pinewood_top
@@ -59,7 +59,7 @@
 			miningDifficulty: 3.0
 		}
 
-		birchwood: {
+		birch_wood: {
 			material: wood
 			textures: {
 				top: birchwood_top
@@ -92,7 +92,7 @@
 			materialFlags: 1
 		}
 
-		pineleaves: {
+		pine_leaves: {
 			//class: xyz.chunkstories.core.voxel.VoxelLeaves
 			opaque: false
 			selfOpaque: false
@@ -104,7 +104,7 @@
 			materialFlags: 1
 		}
 
-		birchleaves: {
+		birch_leaves: {
 			//class: xyz.chunkstories.core.voxel.VoxelLeaves
 			opaque: false
 			selfOpaque: false
@@ -190,6 +190,13 @@
 		}
 
 		mushroom_brown: {
+			solid: false
+			opaque: false
+			
+			class: xyz.chunkstories.core.voxel.VoxelSmallPlant
+		}
+
+		sapling: {
 			solid: false
 			opaque: false
 			

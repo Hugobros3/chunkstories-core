@@ -25,11 +25,11 @@ _mappings
 3:2 forestgrass
 4 cobble
 5 planks
-5:1 darkplanks
-5:2 whiteplanks
-5:3 goldplanks
-5:4 goldplanks
-5:5 darkplanks
+#5:1 dark_planks
+#5:2 white_planks
+#5:3 gold_planks
+#5:4 gold_planks
+#5:5 dark_planks
 6 sapling
 7 rock
 8 water keepmeta
@@ -42,12 +42,12 @@ _mappings
 15 iron_ore
 16 coal_ore
 17 wood
-17:2 birchwood
+17:2 birch_wood
 18 leaves
-18:1 pineleaves
-18:2 birchleaves
-18:5 pineleaves
-18:6 birchleaves
+18:1 pine_leaves
+18:2 birch_leaves
+18:5 pine_leaves
+18:6 birch_leaves
 #19 sponge
 20 glass
 #Lapis stuff
@@ -86,9 +86,9 @@ _mappings
 43:1 hard_sand
 43:2 planks
 43:3 cobble
-43:4 redbricks
+43:4 bricks
 43:5 stonebrick
-43:6 ardoise
+#43:6 ardoise
 43:7 white_concrete
 44 slab slab
 44:1 hardsand_slab slab
@@ -96,7 +96,7 @@ _mappings
 44:3 cobble_slab slab
 44:4 brick_slab slab
 44:5 stonebrick_slab slab
-44:6 ardoise_slab slab
+#44:6 ardoise_slab slab
 44:7 white_concrete_slab slab
 44:8 slab slab
 44:9 hardsand_slab slab
@@ -104,9 +104,9 @@ _mappings
 44:11 cobble_slab slab
 44:12 brick_slab slab
 44:13 stonebrick_slab slab
-44:14 ardoise_slab slab
+#44:14 ardoise_slab slab
 44:15 white_concrete_slab slab
-45 redbricks
+45 bricks
 #46 explosives
 47 bookshelf
 48 cobble_mossy
@@ -143,7 +143,7 @@ _mappings
 #77 stone_button
 78 snow keepmeta
 79 ice
-80 snowblock
+80 snow_block
 81 cactus
 #Clay has no real equivalent yet
 82 sand
@@ -171,7 +171,7 @@ _mappings
 98:3 stonebrick_fancy
 #99 brown giant mushroom
 #100 red giant mushroom
-101 ironGrill
+101 iron_bars
 102 glass_pane
 #103 melon block
 #104 pumpking stem
@@ -182,9 +182,9 @@ _mappings
 109 stonebrick_stairs keepmeta
 110 grass
 #111 lily pad
-112 ardoise
+#112 ardoise
 113 wood_fence
-114 ardoise_stairs keepmeta
+#114 ardoise_stairs keepmeta
 #115 hell pustuls
 #116 workbench II
 #117 Soldering station
@@ -200,17 +200,18 @@ _mappings
 125:4 goldplanks
 125:5 darkplanks
 126 planks_slab slab
-126:1 darkplanks_slab slab
-126:2 whiteplanks_slab slab
-126:3 goldplanks_slab slab
-126:4 goldplanks_slab slab
-126:5 darkplanks_slab slab
+#126:1 darkplanks_slab slab
+#126:2 whiteplanks_slab slab
+#126:3 goldplanks_slab slab
+#126:4 goldplanks_slab slab
+#126:5 darkplanks_slab slab
 
-126:9 darkplanks_slab slab
-126:10 whiteplanks_slab slab
-126:11 goldplanks_slab slab
-126:12 goldplanks_slab slab
-126:13 darkplanks_slab slab
+#126:9 darkplanks_slab slab
+#126:10 whiteplanks_slab slab
+#126:11 goldplanks_slab slab
+#126:12 goldplanks_slab slab
+#126:13 darkplanks_slab slab
+
 #127 cocoa fruit
 128 hardsand_stairs keepmeta
 129 silver_ore
@@ -218,9 +219,12 @@ _mappings
 #131 traphook
 #132 string
 #133 silver_block
-134 darkplanks_stairs keepmeta
-135 whiteplanks_stairs keepmeta
-136 goldplanks_stairs keepmeta
+134 planks_stairs keepmeta
+135 planks_stairs keepmeta
+136 planks_stairs keepmeta
+#134 darkplanks_stairs keepmeta
+#135 whiteplanks_stairs keepmeta
+#136 goldplanks_stairs keepmeta
 #137 computer
 #138 skylight
 139 cobble_wall

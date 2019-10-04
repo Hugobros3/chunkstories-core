@@ -66,7 +66,7 @@
                     surfaceDecorationsDensity: 0.0
                     surfaceDecorations: []
 
-                    treesDensity: 0.00
+                    treesDensity: 0.0
                     treesVariants: [
                         /*{
                             type: mcschematic

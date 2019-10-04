@@ -62,26 +62,35 @@ open class HorizonGenerator(definition: WorldGeneratorDefinition, world: World) 
     }
 
     internal inner class SliceData(private val cx: Int, private val cz: Int) {
-        val heights = IntArray(1024)
+        val heights: IntArray = IntArray(1024)
+        val biomes: Array<Biome>
+
         val structures = mutableListOf<StructureToPaste>()
-        val biome = Array(1024) { xz ->
-            val x = xz shr 5
-            val z = xz and 0x1f
-            decideBiome(cx * 32 + x, cz * 32 + z, heights[x * 32 + z])
+
+        init {
+            for (x in 0..31) {
+                for (z in 0..31) {
+                    heights[x * 32 + z] = getHeightAtInternal(cx * 32 + x, cz * 32 + z)
+                }
+            }
+            biomes = Array(1024) { xz ->
+                val x = xz shr 5
+                val z = xz and 0x1f
+                decideBiome(cx * 32 + x, cz * 32 + z, heights[x * 32 + z])
+            }
         }
     }
 
-    val tempRng = Vector4f(666.0f, -78.0f, 31.0f, 98.0f)
+    private val tempRngSeed = Vector4f(666.0f, -78.0f, 31.0f, 98.0f)
 
     fun decideBiome(x: Int, z: Int, worldHeight: Int): Biome {
-        val temperature = fractalNoise(x, z, 2, 0.25f, 0.5f, tempRng) * 0.5 + 0.5
+        val temperature = fractalNoise(x, z, 2, 0.25f, 0.5f, tempRngSeed) * 0.5 + 0.5
 
         var biome: Biome = when {
             temperature < 0.3 -> biomes["snowland"]
             temperature > 0.7 -> biomes["desert"]
             else -> biomes["grassland"]
         }!!
-
 
         //TODO more complex logic than this !
         if (worldHeight < waterHeight + 3) {
@@ -98,13 +107,6 @@ open class HorizonGenerator(definition: WorldGeneratorDefinition, world: World) 
         val cz = chunks[0].chunkZ
 
         val sliceData = SliceData(cx, cz)
-
-        // Generate the heights in advance!
-        for (x in 0..31) {
-            for (z in 0..31) {
-                sliceData.heights[x * 32 + z] = getHeightAtInternal(cx * 32 + x, cz * 32 + z)
-            }
-        }
 
         caveBuilder.generateCaves(cx, cz, sliceData)
 
@@ -164,7 +166,7 @@ open class HorizonGenerator(definition: WorldGeneratorDefinition, world: World) 
         val maxheight = chunks.size * 32 - 1
         for (x in 0..31) {
             for (z in 0..31) {
-                val biome = sliceData.biome[x * 32 + z]
+                val biome = sliceData.biomes[x * 32 + z]
 
                 var y = maxheight
                 val worldY = sliceData.heights[x * 32 + z]

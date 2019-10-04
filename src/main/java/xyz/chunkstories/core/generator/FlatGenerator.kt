@@ -31,7 +31,7 @@ class FlatGenerator(definition: WorldGeneratorDefinition, world: World) : WorldG
 
         this.GROUND_VOXEL = world.gameContext.content.voxels.getVoxel("grass")!!
         this.WALL_VOXEL = world.gameContext.content.voxels.getVoxel("cobble")!!
-        this.WALL_TOP_VOXEL = world.gameContext.content.voxels.getVoxel("ironGrill")!!
+        this.WALL_TOP_VOXEL = world.gameContext.content.voxels.getVoxel("iron_bars")!!
 
         this.cellSize = definition["cellSize"].asInt ?: 0
     }
