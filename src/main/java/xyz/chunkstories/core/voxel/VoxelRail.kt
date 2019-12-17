@@ -7,6 +7,7 @@
 package xyz.chunkstories.core.voxel
 
 import org.joml.Matrix4f
+import xyz.chunkstories.api.content.json.asString
 import xyz.chunkstories.api.graphics.representation.Model
 import xyz.chunkstories.api.voxel.Voxel
 import xyz.chunkstories.api.voxel.VoxelDefinition
@@ -17,7 +18,7 @@ class VoxelRail(definition: VoxelDefinition) : Voxel(definition) {
 	val model: Model
 
 	init {
-		model = definition.store.parent.models["voxels/blockmodels/rails/rails.dae"]
+		model = definition.store.parent.models[definition["representation.model"].asString ?: ""]
 
 		//val mappedOverrides = mapOf(0 to MeshMaterial("material", mapOf("albedoTexture" to "voxels/textures/${this.voxelTextures[VoxelSide.FRONT.ordinal].name}.png")))
 

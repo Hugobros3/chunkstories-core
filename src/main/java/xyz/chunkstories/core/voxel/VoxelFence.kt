@@ -16,53 +16,6 @@ import xyz.chunkstories.api.world.cell.Cell
 
 class VoxelFence(type: VoxelDefinition) : Voxel(type) {
 
-	/*@Override
-	public VoxelModel getVoxelRenderer(CellData info) {
-		Voxel vox;
-		vox = info.getNeightborVoxel(0);
-		boolean connectLeft = (vox.isSolid() && vox.getDefinition().isOpaque()) || vox.equals(this);
-		vox = info.getNeightborVoxel(1);
-		boolean connectFront = (vox.isSolid() && vox.getDefinition().isOpaque()) || vox.equals(this);
-		vox = info.getNeightborVoxel(2);
-		boolean connectRight = (vox.isSolid() && vox.getDefinition().isOpaque()) || vox.equals(this);
-		vox = info.getNeightborVoxel(3);
-		boolean connectBack = (vox.isSolid() && vox.getDefinition().isOpaque()) || vox.equals(this);
-
-		String type = "default";
-		if (connectLeft && connectFront && connectRight && connectBack)
-			type = "allDir";
-		else if (connectLeft && connectFront && connectRight)
-			type = "allButBack";
-		else if (connectLeft && connectFront && connectBack)
-			type = "allButRight";
-		else if (connectLeft && connectBack && connectRight)
-			type = "allButFront";
-		else if (connectBack && connectFront && connectRight)
-			type = "allButLeft";
-		else if (connectLeft && connectRight)
-			type = "allX";
-		else if (connectFront && connectBack)
-			type = "allZ";
-		else if (connectLeft && connectBack)
-			type = "leftBack";
-		else if (connectRight && connectBack)
-			type = "rightBack";
-		else if (connectLeft && connectFront)
-			type = "leftFront";
-		else if (connectRight && connectFront)
-			type = "rightFront";
-		else if (connectLeft)
-			type = "left";
-		else if (connectRight)
-			type = "right";
-		else if (connectFront)
-			type = "front";
-		else if (connectBack)
-			type = "back";
-
-		return store.models().getVoxelModel("wood_fence" + "." + type);
-	}*/
-
 	val post: Model
 	val beams: Array<Model>
 
@@ -70,28 +23,9 @@ class VoxelFence(type: VoxelDefinition) : Voxel(type) {
 		post = definition.store.parent.models["voxels/blockmodels/fence/fence_post.dae"]
 		beams = VoxelSide.values().copyOfRange(0, 4).map { definition.store.parent.models["voxels/blockmodels/fence/fence_${it.name.toLowerCase()}.dae"] }.toTypedArray()
 
-		/*val overrides = top.meshes.mapIndexedNotNull { i, mesh ->
-			val texName = when (mesh.material.name) {
-				"FrontMaterial" -> voxelTextures[VoxelSide.FRONT.ordinal].name
-				"BackMaterial" -> voxelTextures[VoxelSide.BACK.ordinal].name
-				"LeftMaterial" -> voxelTextures[VoxelSide.LEFT.ordinal].name
-				"RightMaterial" -> voxelTextures[VoxelSide.RIGHT.ordinal].name
-				"TopMaterial" -> voxelTextures[VoxelSide.TOP.ordinal].name
-				"BottomMaterial" -> voxelTextures[VoxelSide.BOTTOM.ordinal].name
-				else -> return@mapIndexedNotNull null
-			}
-
-			Pair(i, MeshMaterial(mesh.material.name, mapOf("albedoTexture" to "voxels/textures/$texName.png")))
-		}
-
-		val mappedOverrides = overrides.toMap()*/
 		val mappedOverrides = mapOf(0 to MeshMaterial("fence_material", mapOf("albedoTexture" to "voxels/textures/${this.voxelTextures[VoxelSide.FRONT.ordinal].name}.png")))
 
 		customRenderingRoutine = { cell ->
-			/*if (bottomOrTop(cell.metaData))
-				addModel(bottom, materialsOverrides = mappedOverrides)
-			else
-				addModel(top, materialsOverrides = mappedOverrides)*/
 			addModel(post, materialsOverrides = mappedOverrides)
 
 			var vox: Voxel?

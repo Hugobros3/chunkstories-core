@@ -6,24 +6,45 @@
 
 package xyz.chunkstories.core.voxel
 
+import xyz.chunkstories.api.content.json.Json
+import xyz.chunkstories.api.content.json.asArray
+import xyz.chunkstories.api.content.json.asDict
+import xyz.chunkstories.api.content.json.asString
+import xyz.chunkstories.api.graphics.MeshMaterial
+import xyz.chunkstories.api.graphics.representation.Model
 import xyz.chunkstories.api.physics.Box
 import xyz.chunkstories.api.voxel.Voxel
 import xyz.chunkstories.api.voxel.VoxelDefinition
 import xyz.chunkstories.api.voxel.VoxelSide
 import xyz.chunkstories.api.world.cell.Cell
 
-class Voxel8Steps
-//VoxelModel[] steps = new VoxelModel[8];
+class Voxel8Steps(definition: VoxelDefinition) : Voxel(definition) {
+	val meshes: Array<Pair<Model, Map<Int, MeshMaterial>>>
 
-(definition: VoxelDefinition)//for (int i = 0; i < 8; i++)
-//	steps[i] = store().models().getVoxelModel("steps.m" + i);
-	: Voxel(definition) {
+	init {
+	    val steps = definition["steps"].asDict?.elements ?: emptyMap()
 
-	/*@Override
-	public VoxelRenderer getVoxelRenderer(CellData info) {
-		// return nextGen;
-		return steps[info.getMetaData() % 8];
-	}*/
+		val models = mutableListOf<Pair<Model, Map<Int, MeshMaterial>>>()
+
+		for(i in 0..7) {
+			val step = steps["$i"].asDict ?: Json.Dict(emptyMap())
+
+			val representation = step["representation"].asDict ?: Json.Dict(emptyMap())
+			val model = definition.store.parent.models[representation["model"].asString ?: "voxels/blockmodels/cube/cube.dae"]
+
+			val mappedOverrides = deriveModelOverridesForFaceTextures(model)
+
+			models.add(Pair(model, mappedOverrides))
+		}
+
+		meshes = models.toTypedArray()
+
+		customRenderingRoutine = {
+			cell ->
+			val (model, overrides) = meshes[cell.metaData % 8]
+			addModel(model, materialsOverrides = overrides)
+		}
+	}
 
 	override fun isFaceOpaque(side: VoxelSide, metadata: Int): Boolean {
 		if (side == VoxelSide.BOTTOM)
@@ -32,8 +53,8 @@ class Voxel8Steps
 
 	}
 
-	override fun getCollisionBoxes(info: Cell): Array<Box>? {
-		val box2 = Box.fromExtents(1.0, (info.metaData % 8 + 1) / 8.0, 1.0)
+	override fun getCollisionBoxes(cell: Cell): Array<Box>? {
+		val box2 = Box.fromExtents(1.0, (cell.metaData % 8 + 1) / 8.0, 1.0)
 		return arrayOf(box2)
 	}
 }

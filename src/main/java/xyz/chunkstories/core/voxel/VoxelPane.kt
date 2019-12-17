@@ -117,40 +117,6 @@ class VoxelPane(definition: VoxelDefinition) : Voxel(definition) {
 		vox = info.getNeightborVoxel(3)
 		val connectBack = vox!!.solid && vox.opaque || vox == this
 
-		/*
-		if (connectLeft && connectFront && connectRight && connectBack) {
-			boxes = arrayOf(Box(0.45, 0.0, 0.0, 0.1, 1.0, 1.0), Box(0.0, 0.0, 0.45, 1.0, 1.0, 0.1))
-		} else if (connectLeft && connectFront && connectRight)
-			boxes = arrayOf(Box(0.0, 0.0, 0.45, 1.0, 1.0, 0.1), Box(0.1, 1.0, 0.5).translate(0.45, 0.0, 0.5))
-		else if (connectLeft && connectFront && connectBack)
-			boxes = arrayOf(Box(0.45, 0.0, 0.0, 0.1, 1.0, 1.0), Box(0.5, 1.0, 0.1).translate(0.0, 0.0, 0.45))
-		else if (connectLeft && connectBack && connectRight)
-			boxes = arrayOf(Box(0.0, 0.0, 0.45, 1.0, 1.0, 0.1), Box(0.1, 1.0, 0.5).translate(0.45, 0.0, 0.0))
-		else if (connectBack && connectFront && connectRight)
-			boxes = arrayOf(Box(0.45, 0.0, 0.0, 0.1, 1.0, 1.0), Box(0.5, 1.0, 0.1).translate(0.5, 0.0, 0.45))
-		else if (connectLeft && connectRight)
-			boxes = arrayOf(Box(0.0, 0.0, 0.45, 1.0, 1.0, 0.1))
-		else if (connectFront && connectBack)
-			boxes = arrayOf(Box(0.45, 0.0, 0.0, 0.1, 1.0, 1.0))
-		else if (connectLeft && connectBack)
-			boxes = arrayOf(Box(0.55, 1.0, 0.1).translate(0.0, 0.0, 0.45), Box(0.1, 1.0, 0.55).translate(0.45, 0.0, 0.0))
-		else if (connectRight && connectBack)
-			boxes = arrayOf(Box(0.55, 1.0, 0.1).translate(0.45, 0.0, 0.45), Box(0.1, 1.0, 0.55).translate(0.45, 0.0, 0.0))
-		else if (connectLeft && connectFront)
-			boxes = arrayOf(Box(0.55, 1.0, 0.1).translate(0.0, 0.0, 0.45), Box(0.1, 1.0, 0.55).translate(0.45, 0.0, 0.45))
-		else if (connectRight && connectFront)
-			boxes = arrayOf(Box(0.55, 1.0, 0.1).translate(0.45, 0.0, 0.45), Box(0.1, 1.0, 0.55).translate(0.45, 0.0, 0.45))
-		else if (connectLeft)
-			boxes = arrayOf(Box(0.0, 0.0, 0.45, 0.5, 1.0, 0.1).translate(0.0, 0.0, 0.0))
-		else if (connectRight)
-			boxes = arrayOf(Box(0.0, 0.0, 0.45, 0.5, 1.0, 0.1).translate(0.5, 0.0, 0.0))
-		else if (connectFront)
-			boxes = arrayOf(Box(0.45, 0.0, 0.0, 0.1, 1.0, 0.5).translate(0.0, 0.0, 0.5))
-		else if (connectBack)
-			boxes = arrayOf(Box(0.45, 0.0, 0.0, 0.1, 1.0, 0.5).translate(0.0, 0.0, 0.0))
-		else
-			boxes = arrayOf(Box(0.45, 0.0, 0.0, 0.1, 1.0, 1.0), Box(0.0, 0.0, 0.45, 1.0, 1.0, 0.1))*/
-
 		val width = 0.1
 		val delta1 = 0.45
 		val delta2 = 0.55

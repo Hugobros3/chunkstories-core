@@ -26,7 +26,7 @@ class VoxelSmallPlant(definition: VoxelDefinition) : Voxel(definition) {
 			val matrix = Matrix4f()
 
 			matrix.translate(0.5f, 0f, 0.5f)
-			matrix.rotate(wangUniform(cell.z + 32187) * 2f * Math.random().toFloat(), 0f, 1f, 0f)
+			matrix.rotate(wangUniform(cell.z + 32187) * 2f, 0f, 1f, 0f)
 			matrix.translate(-0.5f, 0f, -0.5f)
 
 			matrix.translate((-0.5f + wangUniform(cell.x + 48461558)) * 0.25f, 0f, (-0.5f + wangUniform(cell.y + 871413)) * 0.25f)

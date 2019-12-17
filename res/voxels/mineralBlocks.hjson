@@ -66,6 +66,14 @@
 			opaque: false
 			selfOpaque: true
 			material: snow
+
+			steps: {
+				0: {
+					representation: {
+						model: voxels/blockmodels/snow/snow.dae
+					}
+				}
+			}
 		}
 
 		ice: {
