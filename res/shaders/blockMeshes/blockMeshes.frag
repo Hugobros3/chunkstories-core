@@ -20,19 +20,19 @@ uniform WorldConditions world;
 #include ../sky/sky.glsl
 #include ../normalcompression.glsl
 
-#include struct xyz.chunkstories.api.math.random.PrecomputedSimplexSeed
-uniform PrecomputedSimplexSeed simplexSeed;
+//#include struct xyz.chunkstories.api.math.random.PrecomputedSimplexSeed
+//uniform PrecomputedSimplexSeed simplexSeed;
 
-#include simplex.glsl
-#include noise.glsl
+//#include simplex.glsl
+//#include noise.glsl
 
-float temperatureAt(vec2 pos) {
+/*float temperatureAt(vec2 pos) {
 	float temp = 0.0;
 
    	temp += fractalNoise(pos, 2, 0.25, 0.5, vec4(666.0, -78.0, 31.0, 98.0));
 
 	return temp;
-}
+}*/
 
 void main()
 {
@@ -46,7 +46,7 @@ void main()
 	}
 
 	if(albedo.a < 1.0) {
-		float temperature = temperatureAt(vertex.xz);
+		float temperature = 0.5;//temperatureAt(vertex.xz);
 
 		//albedo.rgb *= vec3(0.4, 0.8, 0.4);
 		//vec3 grassColor = mix(vec3(0.0, 0.0, 1.0), vec3(1.0, 0.0, 0.0), 0.5 + 0.5 * temperature);

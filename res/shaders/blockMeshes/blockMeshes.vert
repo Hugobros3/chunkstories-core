@@ -21,11 +21,11 @@ instanced ChunkRenderInfo chunkInfo; // look mom, no uniforms !
 
 #define PI 3.14159265359
 #define pi PI
-#include struct xyz.chunkstories.api.math.random.PrecomputedSimplexSeed
-uniform PrecomputedSimplexSeed simplexSeed;
+//#include struct xyz.chunkstories.api.math.random.PrecomputedSimplexSeed
+//uniform PrecomputedSimplexSeed simplexSeed;
 
-#include simplex.glsl
-#include noise.glsl
+//#include simplex.glsl
+//#include noise.glsl
 
 void main()
 {
@@ -40,11 +40,11 @@ void main()
 	//if((mod(vertexPos.x , 32.0) < 16.0) == (mod(vertexPos.z , 32.0) < 16.0))
 	//vertexPos.y = 1+(heightAt(vertexPos.xz));
 
-	float dx = -(1+heightAt(vertexPos.xz + vec2(0.1, 0.0)) - vertexPos.y);
+	/*float dx = -(1+heightAt(vertexPos.xz + vec2(0.1, 0.0)) - vertexPos.y);
 	float dz = -(1+heightAt(vertexPos.xz + vec2(0.0, 0.1)) - vertexPos.y);
 
 	float r = sqrt(1.0 - dx * dx - dz * dz);
-	vec3 nrml = vec3(dx, r, dz);
+	vec3 nrml = vec3(dx, r, dz);*/
 
 	//nrml = pow(nrml, vec3(0.8));
 
