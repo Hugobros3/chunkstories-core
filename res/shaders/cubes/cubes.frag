@@ -29,7 +29,7 @@ uniform Camera camera;
 #include struct xyz.chunkstories.api.graphics.structs.WorldConditions
 uniform WorldConditions world;
 
-#include struct xyz.chunkstories.graphics.vulkan.systems.world.ViewportSize
+#include struct xyz.chunkstories.graphics.common.structs.ViewportSize
 uniform ViewportSize viewportSize;
 
 #include ../sky/sky.glsl

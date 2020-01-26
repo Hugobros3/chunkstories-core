@@ -24,7 +24,7 @@ out Box box;
 #include struct xyz.chunkstories.api.graphics.structs.Camera
 uniform Camera camera;
 
-#include struct xyz.chunkstories.graphics.vulkan.systems.world.ViewportSize
+#include struct xyz.chunkstories.graphics.common.structs.ViewportSize
 uniform ViewportSize viewportSize;
 
 #include struct xyz.chunkstories.graphics.common.world.ChunkRenderInfo
