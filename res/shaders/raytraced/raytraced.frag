@@ -25,7 +25,7 @@ uniform Camera camera;
 #define MAX_RAY_STEPS_GI 64
 #define MAX_RAY_STEPS_SHADOW 64
 
-#include struct xyz.chunkstories.graphics.vulkan.systems.world.VolumetricTextureMetadata
+#include struct xyz.chunkstories.graphics.vulkan.systems.drawing.rt.VolumetricTextureMetadata
 uniform VolumetricTextureMetadata voxelDataInfo;
 
 #include struct xyz.chunkstories.graphics.common.structs.ViewportSize
@@ -37,9 +37,78 @@ uniform WorldConditions world;
 #include ../sky/sky.glsl
 #include ../normalcompression.glsl
 
-const float gr = (1.0 + sqrt(5.0)) / 2.0;
-
+const float goldenRatio = (1.0 + sqrt(5.0)) / 2.0;
 const float inverseVoxelDataSize = 1.0 / voxel_data_sizef;
+
+struct Hit {
+	float t;
+	ivec3 voxel;
+	vec3 data;
+	vec3 normal;
+};
+
+#define RT_USE_MASK_OPS yes
+
+Hit raytrace(vec3 origin, vec3 direction, float tMax) {
+	ivec3 gridPosition = ivec3(floor(origin + 0.)) & ivec3(voxel_data_size - 1);
+
+	vec3 tSpeed = abs(vec3(1.0) / direction);
+	/*ivec3 vstep = ivec3(
+		direction.x >= 0.0 ? 1 : -1,
+	 	direction.y >= 0.0 ? 1 : -1,
+	 	direction.z >= 0.0 ? 1 : -1);*/
+	ivec3 vstep = ivec3(greaterThan(direction, vec3(0.0))) * 2 - ivec3(1);
+
+	vec3 nextEdge = floor(origin) + vec3(vstep) * 0.5 + vec3(0.5);
+
+	vec3 timeToEdge = abs((nextEdge - origin) * tSpeed);
+	float f = 0.0;
+	vec3 normal = vec3(0.0);
+
+	while(true) {
+		vec4 data = texture(voxelData, gridPosition * inverseVoxelDataSize);
+		if(data.a != 0.0)
+			return Hit(f, gridPosition, data.rgb, normal);
+
+		float minTime = min(timeToEdge.x, min(timeToEdge.y, timeToEdge.z));
+
+		if(minTime > tMax)
+			break;
+
+		#ifdef RT_USE_MASK_OPS
+			bvec3 mask = lessThanEqual(timeToEdge.xyz, min(timeToEdge.yzx, timeToEdge.zxy));
+			gridPosition += ivec3(mask) * vstep;
+			timeToEdge += vec3(mask) * tSpeed;
+			normal = vec3(mask) * vec3(vstep);
+			if(any(greaterThanEqual(gridPosition & ivec3(0xFFFF), ivec3(voxel_data_size))))
+				break;
+		#else
+			if(minTime == timeToEdge.x) {
+				gridPosition.x += vstep.x;
+				if((gridPosition.x & 0xFFFF) >= voxel_data_size)
+					break;
+				timeToEdge.x += tSpeed.x;
+				normal = vec3(float(vstep.x), 0.0, 0.0);
+			} else if(minTime == timeToEdge.y) {
+				gridPosition.y += vstep.y;
+				if((gridPosition.y & 0xFFFF) >= voxel_data_size)
+					break;
+				timeToEdge.y += tSpeed.y;
+				normal = vec3(0.0, float(vstep.y), 0.0);
+			} else {
+				gridPosition.z += vstep.z;
+				if((gridPosition.z & 0xFFFF) >= voxel_data_size)
+					break;
+				timeToEdge.z += tSpeed.z;
+				normal = vec3(0.0, 0.0, float(vstep.z));
+			}
+		#endif
+
+		f = minTime;
+	}
+
+	return Hit(-1.0f, gridPosition, vec3(0.0), vec3(0.0));
+}
 
 bool getVoxel(ivec3 c) {
 	ivec3 adjusted = c - voxelDataInfo.baseChunkPos * 32;
@@ -47,108 +116,37 @@ bool getVoxel(ivec3 c) {
 
 	bvec3 outOfBounds1 = lessThan(adjusted, ivec3(0));
 	bvec3 outOfBounds2 = greaterThanEqual(adjusted, vec3(voxel_data_size));
-	/*if(adjusted.x < 0 || adjusted.y < 0 || adjusted.z < 0)
-		return false;
-	if(adjusted.x >= voxel_data_size || adjusted.y >= voxel_data_size || adjusted.z >= voxel_data_size)
-		return false;*/
 	bool outOfBounds = any(outOfBounds1) || any(outOfBounds2);
 	return texture(voxelData, c * inverseVoxelDataSize).a != 0.0 && !outOfBounds;
 }
 
 bool shadow(in vec3 rayPos, in vec3 rayDir) {
-	ivec3 mapPosz = ivec3(floor(rayPos + 0.));
-
-	vec3 deltaDist = abs(vec3(length(rayDir)) / rayDir);
-	ivec3 rayStep = ivec3(sign(rayDir) + 0.);
-	vec3 sideDist = (sign(rayDir) * (vec3(mapPosz) - rayPos) + (sign(rayDir) * 0.5) + 0.5) * deltaDist; 
-	
-	bvec3 mask;
-
-	int i;
-
-	//bool result = false;
-	
-	for (i = 0; i < MAX_RAY_STEPS_SHADOW; i++) {
-		if (getVoxel(mapPosz)){
-		    //result = true;
-			return true;
-		}
-		mask = lessThanEqual(sideDist.xyz, min(sideDist.yzx, sideDist.zxy));	
-
-		sideDist += vec3(mask) * deltaDist;
-		mapPosz += ivec3(mask) * rayStep;
-	}
-
-	//return result;
-	return false;
+	Hit hit = raytrace(rayPos, normalize(rayDir), 64.0);
+	return (hit.t >= 0.0);
 }
 
 void gi(in vec3 rayPos, in vec3 rayDir, out float ao, out vec4 colour) {
-	ivec3 mapPos = ivec3(floor(rayPos + 0.));
-	ivec3 initPos = mapPos;
-
-	vec3 deltaDist = abs(vec3(length(rayDir)) / rayDir);
-	ivec3 rayStep = ivec3(sign(rayDir) + 0.);
-	vec3 sideDist = (sign(rayDir) * (vec3(mapPos) - rayPos) + (sign(rayDir) * 0.5) + 0.5) * deltaDist; 
-	
-	bvec3 mask;
-	
-	//float ao = 0.0;
-	ao = 0.0;
-	
-	int i;
-	for (i = 0; i < MAX_RAY_STEPS_GI; i++) {
-		if (getVoxel(mapPos) && i > 0){
-			colour = texture(voxelData, mapPos / voxel_data_sizef);
-			ao = 1.0;
-			break;
-		}
-		mask = lessThanEqual(sideDist.xyz, min(sideDist.yzx, sideDist.zxy));	
-
-		sideDist += vec3(mask) * deltaDist;
-		mapPos += ivec3(mask) * rayStep;
-	}
-	//Computing the hit position
-	vec3 hit_pos;
-
-	//for each cube face we might have hit, this has it's position
-	vec3 faceHitPos = mapPos + clamp(-rayStep * 2.0, vec3(-0.001), vec3(1.001));
-	vec3 distanceTraveled = abs(rayPos - faceHitPos); //we derive the distance travaled in each direction
-
-	vec3 axisScaling = distanceTraveled / rayDir; // for each direction we computes a scaling factor
-	float axisScaled = dot(vec3(mask), axisScaling); // we actually only cares about the collision axis
-	
-	hit_pos = rayPos + rayDir * abs(axisScaled);
-	
-	//crappy method
-	//hit_pos = lineIntersection(mapPos - vec3(0.001), mapPos + vec3(1.001), rayPos, rayDir);
-	
-	//if(colour.a < 1.0)
-	//	colour.rgb *= vec3(0.2, 1.0, 0.5);
-
 	vec3 sunLight_g = sunAbsorb;
-	//vec3 shadowLight_g = getAtmosphericScatteringAmbient() / pi;
-	
-	if(i == MAX_RAY_STEPS_GI) {
+
+	Hit hit = raytrace(rayPos, normalize(rayDir), 64.0);
+	ao = hit.t >= 0.0 ? 1.0 : 0.0;
+	if(hit.t >= 0.0) {
+		ao = 1.0;
+
+		vec3 hit_pos = rayPos + rayDir * hit.t;
+
+		//what if we sampled the shadowmap there HUMMMM
+		vec3 light = float(!shadow(vec3(hit_pos), normalize(world.sunPosition))) * sunLight_g * clamp(dot(-normalize(world.sunPosition), vec3(hit.normal) * sign(rayDir)), 0.0, 1.0);
+		
+		light += colour.rgb * clamp((colour.a - 0.5) * 2.0, 0.0, 1.0);
+		
+		colour.rgb *= light;
+		colour.a = 1.0;
+	} else {
+		ao = 0.0;
 		colour = vec4(0.0, 0.0, 0.0, 0.0);
 		return;
 	}
-	
-	//light += shadowLight_g;
-
-	//what if we sampled the shadowmap there HUMMMM
-	vec3 light = float(!shadow(vec3(hit_pos), normalize(world.sunPosition))) * sunLight_g * clamp(dot(-normalize(world.sunPosition), vec3(mask) * sign(rayDir)), 0.0, 1.0);
-	
-	light += colour.rgb * clamp((colour.a - 0.5) * 2.0, 0.0, 1.0);
-	
-	colour.rgb *= light;
-	colour.a = 1.0;
-	
-	//add light if the hitpoint happens to be an emmissive block
-	//if(texture(currentChunk, vec3(mapPos) / voxel_sizef).a >= 2.0 / 255.0)
-	//	colour.rgb += 1.0 * pow(texture(currentChunk, vec3(mapPos) / voxel_sizef).rgb, vec3(gamma));
-	
-	//colour.a = ao;
 }
 
 vec4 convertScreenSpaceToCameraSpace(vec2 screenSpaceCoordinates, sampler2D depthBuffer) {
@@ -158,8 +156,7 @@ vec4 convertScreenSpaceToCameraSpace(vec2 screenSpaceCoordinates, sampler2D dept
 }
 
 //note: uniform pdf rand [0;1[
-float hash12n(vec2 p)
-{
+float hash12n(vec2 p) {
 	p  = fract(p * vec2(5.3987, 5.4421));
     p += dot(p.yx, p.xy + vec2(21.5351, 14.3137));
 	return fract(p.x * p.y * 95.4307);
@@ -187,13 +184,12 @@ void main() {
 	vec2 pixelCoordinates = texCoord * vec2(viewportSize.size);
 	vec2 noiseBucket = floor(pixelCoordinates / vec2(64.0));
 	
-	int tileId = int(fract(hash12n(noiseBucket) + gr * voxelDataInfo.noise) * 256.0) % 256;
+	int tileId = int(fract(hash12n(noiseBucket) + goldenRatio * voxelDataInfo.noise) * 256.0) % 256;
 
 	float tx = tileId % 8;
 	float ty = tileId / 8;
 	vec2 offsetTimed = vec2(64 * tx, 64 * ty);
 	vec4 baseNoise = clamp(texture(blueNoise, (pixelCoordinates + offsetTimed) / vec2(1024.0)), 0.0, 0.9999);
-	//baseNoise.x = hash12n(texCoord);
 
 	vec4 noise = vec4(0.0);
 	
