@@ -43,7 +43,7 @@ const float inverseVoxelDataSize = 1.0 / voxel_data_sizef;
 struct Hit {
 	float t;
 	ivec3 voxel;
-	vec3 data;
+	vec4 data;
 	vec3 normal;
 };
 
@@ -68,7 +68,7 @@ Hit raytrace(vec3 origin, vec3 direction, float tMax) {
 	while(true) {
 		vec4 data = texture(voxelData, gridPosition * inverseVoxelDataSize);
 		if(data.a != 0.0)
-			return Hit(f, gridPosition, data.rgb, normal);
+			return Hit(f, gridPosition, data, normal);
 
 		float minTime = min(timeToEdge.x, min(timeToEdge.y, timeToEdge.z));
 
@@ -107,17 +107,7 @@ Hit raytrace(vec3 origin, vec3 direction, float tMax) {
 		f = minTime;
 	}
 
-	return Hit(-1.0f, gridPosition, vec3(0.0), vec3(0.0));
-}
-
-bool getVoxel(ivec3 c) {
-	ivec3 adjusted = c - voxelDataInfo.baseChunkPos * 32;
-	vec3 adjusted_scaled = mod(c, voxel_data_size) * inverseVoxelDataSize;
-
-	bvec3 outOfBounds1 = lessThan(adjusted, ivec3(0));
-	bvec3 outOfBounds2 = greaterThanEqual(adjusted, vec3(voxel_data_size));
-	bool outOfBounds = any(outOfBounds1) || any(outOfBounds2);
-	return texture(voxelData, c * inverseVoxelDataSize).a != 0.0 && !outOfBounds;
+	return Hit(-1.0f, gridPosition, vec4(0.0), vec3(0.0));
 }
 
 bool shadow(in vec3 rayPos, in vec3 rayDir) {
@@ -125,7 +115,7 @@ bool shadow(in vec3 rayPos, in vec3 rayDir) {
 	return (hit.t >= 0.0);
 }
 
-void gi(in vec3 rayPos, in vec3 rayDir, out float ao, out vec4 colour) {
+void radiosityBounce(in vec3 rayPos, in vec3 rayDir, out float ao, out vec4 colour) {
 	vec3 sunLight_g = sunAbsorb;
 
 	Hit hit = raytrace(rayPos, normalize(rayDir), 64.0);
@@ -136,11 +126,10 @@ void gi(in vec3 rayPos, in vec3 rayDir, out float ao, out vec4 colour) {
 		vec3 hit_pos = rayPos + rayDir * hit.t;
 
 		//what if we sampled the shadowmap there HUMMMM
-		vec3 light = float(!shadow(vec3(hit_pos), normalize(world.sunPosition))) * sunLight_g * clamp(dot(-normalize(world.sunPosition), vec3(hit.normal) * sign(rayDir)), 0.0, 1.0);
+		vec3 bouncedLight = float(!shadow(vec3(hit_pos), normalize(world.sunPosition))) * sunLight_g * clamp(dot(-normalize(world.sunPosition), vec3(hit.normal) * sign(rayDir)), 0.0, 1.0);
+		vec3 emittedLight = hit.data.rgb * clamp((hit.data.a - 0.5) * 2.0, 0.0, 1.0);
 		
-		light += colour.rgb * clamp((colour.a - 0.5) * 2.0, 0.0, 1.0);
-		
-		colour.rgb *= light;
+		colour.rgb = (bouncedLight + emittedLight);
 		colour.a = 1.0;
 	} else {
 		ao = 0.0;
@@ -160,6 +149,22 @@ float hash12n(vec2 p) {
 	p  = fract(p * vec2(5.3987, 5.4421));
     p += dot(p.yx, p.xy + vec2(21.5351, 14.3137));
 	return fract(p.x * p.y * 95.4307);
+}
+
+vec3 mapRectToCosineHemisphere(const vec3 n, const vec2 uv) {
+	// create tnb:
+	//http://jcgt.org/published/0006/01/01/paper.pdf
+	float signZ = (n.z >= 0.0f) ? 1.0f : -1.0f;     //do not use sign(nor.z), it can produce 0.0
+	float a = -1.0f / (signZ + n.z);
+	float b = n.x * n.y * a;
+	vec3 b1 = vec3(1.0f + signZ * n.x * n.x * a, signZ*b, -signZ * n.x);
+	vec3 b2 = vec3(b, signZ + n.y * n.y * a, -n.y);
+
+	// remap uv to cosine distributed points on the hemisphere around n
+	float phi = 2.0f * 3.141592 * uv.x;
+	float cosTheta = sqrt(uv.y);
+	float sinTheta = sqrt(1.0f - uv.y);
+	return normalize(cosTheta * (cos(phi)*b1 + sin(phi)*b2) + sinTheta * n);
 }
 
 void main() {
@@ -198,16 +203,16 @@ void main() {
 		noise += fract(baseNoise + (float(voxelDataInfo.noise % 8 + i) * gr));
 	}
 	noise /= float(noiseSamples);*/
-	//noise = fract(baseNoise + (float(voxelDataInfo.noise) * gr));
+	//noise = fract(baseNoise + (float(voxelDataInfo.noise) * goldenRatio));
 	noise = baseNoise;
 
-	vec3 direction = normalize(noise.xyz * 2.0 - vec3(1.0));
-
+	//vec3 direction = normalize(noise.xyz * 2.0 - vec3(1.0));
 	//Flip the random vector if it's facing in the wrong direction so we get an hemisphere
-	direction *= sign(dot(direction, normal));
+	//direction *= sign(dot(direction, normal));
+	vec3 direction = mapRectToCosineHemisphere(normal, noise.xy);
 
-	vec3 adjusted_worldspace_pos = worldSpacePosition.xyz + normal * 0.1;
-	gi(adjusted_worldspace_pos, direction, ao, accumulator);
+	vec3 adjusted_worldspace_pos = worldSpacePosition.xyz + normal * 0.01;
+	radiosityBounce(adjusted_worldspace_pos, direction, ao, accumulator);
 	
 	vec4 litPixel = vec4(0.0, 0.0, 0.0, 1.0);
 	// Ambient light
