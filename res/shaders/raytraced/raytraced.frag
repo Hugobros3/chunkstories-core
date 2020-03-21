@@ -11,6 +11,46 @@ uniform sampler2D colorBuffer;
 uniform sampler2D normalBuffer;
 uniform sampler2D depthBuffer;
 
+#ifdef USE_SHADOWMAPS
+#include struct xyz.chunkstories.graphics.common.structs.ShadowMappingInfo
+uniform ShadowMappingInfo shadowInfo;
+uniform sampler2DShadow shadowBuffers[4];
+
+void sampleShadowMap(vec4 worldSpacePosition, mat4 cameraMatrix, sampler2DShadow shadowMap, int cascade, float NdL, in out float shadowFactor, in out float outOfBounds)  {
+	vec4 coordinatesInShadowmap = cameraMatrix * worldSpacePosition;
+	coordinatesInShadowmap.xy *= 0.5;
+	coordinatesInShadowmap.xy += vec2(0.5);
+	
+	if(coordinatesInShadowmap.x > 1.0 || coordinatesInShadowmap.y > 1.0 || coordinatesInShadowmap.x < 0.0 || coordinatesInShadowmap.y < 0.0 || coordinatesInShadowmap.z < 0.0 || coordinatesInShadowmap.z > 1.0) {
+		//outOfBounds = 1.0;
+		//shadowFactor = 1.0;
+		return;
+	} else {
+		float bias = pow(2.0, 4 - cascade) * 0.0004 * (1.0 - NdL);
+		shadowFactor = clamp((texture(shadowMap, vec3(coordinatesInShadowmap.xyz + vec3(0.0, 0.0, bias)), 0.0)), 0.0, 1.0);
+		outOfBounds = 0.0;
+	}
+}
+
+void sampleShadowMaps(vec4 worldSpacePosition, float NdL, in out float shadowFactor, in out float outOfBounds) {
+	#define sampleLvl(i) sampleShadowMap(worldSpacePosition, shadowInfo.cameras[i].viewMatrix, shadowBuffers[i], i, NdL, shadowFactor, outOfBounds);
+
+	// Unrolled for GLSL 330 compatibility
+	if(shadowInfo.cascadesCount >= 1) {
+		sampleLvl(0)
+	}
+	if(shadowInfo.cascadesCount >= 2) {
+		sampleLvl(1)
+	}
+	if(shadowInfo.cascadesCount >= 3) {
+		sampleLvl(2)
+	}
+	if(shadowInfo.cascadesCount >= 4) {
+		sampleLvl(3)
+	}
+}
+#endif
+
 uniform sampler2D blueNoise;
 
 uniform sampler3D voxelData;
@@ -22,9 +62,6 @@ uniform Camera camera;
 #define voxel_data_size 128
 #define voxel_data_sizef 128.0
 
-#define MAX_RAY_STEPS_GI 64
-#define MAX_RAY_STEPS_SHADOW 64
-
 #include struct xyz.chunkstories.graphics.vulkan.systems.drawing.rt.VolumetricTextureMetadata
 uniform VolumetricTextureMetadata voxelDataInfo;
 
@@ -35,6 +72,14 @@ uniform ViewportSize viewportSize;
 uniform WorldConditions world;
 
 #include ../sky/sky.glsl
+#define sunRadiance sunAbsorb
+#define skyRadiance getAtmosphericScatteringAmbient() / pi
+/*
+#define PI 3.14159265359
+#define pi PI
+#define sunRadiance vec3(1.0)
+#define skyRadiance vec3(0.0, 0.2, 0.5)*/
+
 #include ../normalcompression.glsl
 
 const float goldenRatio = (1.0 + sqrt(5.0)) / 2.0;
@@ -47,10 +92,13 @@ struct Hit {
 	vec3 normal;
 };
 
-#define RT_USE_MASK_OPS yes
+//#define RT_USE_MASK_OPS yes
 
 Hit raytrace(vec3 origin, vec3 direction, float tMax) {
-	ivec3 gridPosition = ivec3(floor(origin + 0.)) & ivec3(voxel_data_size - 1);
+	ivec3 gridPosition = ivec3(floor(origin + 0.));
+
+	if(any(greaterThanEqual((gridPosition - voxelDataInfo.baseChunkPos * ivec3(32)) & ivec3(0xFFFF), ivec3(voxel_data_size))))
+		return Hit(-1.0f, gridPosition, vec4(0.0), vec3(0.0));
 
 	vec3 tSpeed = abs(vec3(1.0) / direction);
 	/*ivec3 vstep = ivec3(
@@ -60,7 +108,7 @@ Hit raytrace(vec3 origin, vec3 direction, float tMax) {
 	ivec3 vstep = ivec3(greaterThan(direction, vec3(0.0))) * 2 - ivec3(1);
 
 	vec3 nextEdge = floor(origin) + vec3(vstep) * 0.5 + vec3(0.5);
-
+	
 	vec3 timeToEdge = abs((nextEdge - origin) * tSpeed);
 	float f = 0.0;
 	vec3 normal = vec3(0.0);
@@ -79,28 +127,28 @@ Hit raytrace(vec3 origin, vec3 direction, float tMax) {
 			bvec3 mask = lessThanEqual(timeToEdge.xyz, min(timeToEdge.yzx, timeToEdge.zxy));
 			gridPosition += ivec3(mask) * vstep;
 			timeToEdge += vec3(mask) * tSpeed;
-			normal = vec3(mask) * vec3(vstep);
-			if(any(greaterThanEqual(gridPosition & ivec3(0xFFFF), ivec3(voxel_data_size))))
+			normal = vec3(mask) * -vec3(vstep);
+			if(any(greaterThanEqual((gridPosition - voxelDataInfo.baseChunkPos * ivec3(32)) & ivec3(0xFFFF), ivec3(voxel_data_size))))
 				break;
 		#else
 			if(minTime == timeToEdge.x) {
 				gridPosition.x += vstep.x;
-				if((gridPosition.x & 0xFFFF) >= voxel_data_size)
+				if(((gridPosition.x - voxelDataInfo.baseChunkPos.x * 32) & 0xFFFF) >= voxel_data_size)
 					break;
 				timeToEdge.x += tSpeed.x;
-				normal = vec3(float(vstep.x), 0.0, 0.0);
+				normal = vec3(-float(vstep.x), 0.0, 0.0);
 			} else if(minTime == timeToEdge.y) {
 				gridPosition.y += vstep.y;
-				if((gridPosition.y & 0xFFFF) >= voxel_data_size)
+				if(((gridPosition.y - voxelDataInfo.baseChunkPos.y * 32) & 0xFFFF) >= voxel_data_size)
 					break;
 				timeToEdge.y += tSpeed.y;
-				normal = vec3(0.0, float(vstep.y), 0.0);
+				normal = vec3(0.0, -float(vstep.y), 0.0);
 			} else {
 				gridPosition.z += vstep.z;
-				if((gridPosition.z & 0xFFFF) >= voxel_data_size)
+				if(((gridPosition.z - voxelDataInfo.baseChunkPos.z * 32) & 0xFFFF) >= voxel_data_size)
 					break;
 				timeToEdge.z += tSpeed.z;
-				normal = vec3(0.0, 0.0, float(vstep.z));
+				normal = vec3(0.0, 0.0, -float(vstep.z));
 			}
 		#endif
 
@@ -110,29 +158,45 @@ Hit raytrace(vec3 origin, vec3 direction, float tMax) {
 	return Hit(-1.0f, gridPosition, vec4(0.0), vec3(0.0));
 }
 
-bool shadow(in vec3 rayPos, in vec3 rayDir) {
-	Hit hit = raytrace(rayPos, normalize(rayDir), 64.0);
-	return (hit.t >= 0.0);
+vec3 sunlightContribution(vec3 position, vec3 surfaceNormal) {
+	float ndl = clamp(dot(normalize(world.sunPosition), surfaceNormal), 0.0, 1.0);
+	if(ndl == 0.0)
+		return vec3(0.0);
+
+	#ifdef USE_SHADOWMAPS
+		float shadowFactor = 1.0;
+		float outOfBounds = 1.0;
+
+		sampleShadowMaps(vec4(position, 1.0), ndl, shadowFactor, outOfBounds);
+
+		shadowFactor = mix(shadowFactor, 1.0, outOfBounds);
+		return sunRadiance * ndl * shadowFactor;
+	#else
+		Hit hit = raytrace(position, normalize(world.sunPosition), 64.0);
+		if (hit.t >= 0.0) {
+			return vec3(0.0);
+		}
+
+		return sunRadiance * ndl;
+	#endif
 }
 
 void radiosityBounce(in vec3 rayPos, in vec3 rayDir, out float ao, out vec4 colour) {
-	vec3 sunLight_g = sunAbsorb;
-
 	Hit hit = raytrace(rayPos, normalize(rayDir), 64.0);
-	ao = hit.t >= 0.0 ? 1.0 : 0.0;
+	//ao = hit.t >= 0.0 ? 1.0 : 0.0;
 	if(hit.t >= 0.0) {
-		ao = 1.0;
+		ao = 0.0;
 
 		vec3 hit_pos = rayPos + rayDir * hit.t;
 
 		//what if we sampled the shadowmap there HUMMMM
-		vec3 bouncedLight = float(!shadow(vec3(hit_pos), normalize(world.sunPosition))) * sunLight_g * clamp(dot(-normalize(world.sunPosition), vec3(hit.normal) * sign(rayDir)), 0.0, 1.0);
+		vec3 bouncedLight = sunlightContribution(hit_pos, hit.normal);
 		vec3 emittedLight = hit.data.rgb * clamp((hit.data.a - 0.5) * 2.0, 0.0, 1.0);
 		
 		colour.rgb = (bouncedLight + emittedLight);
 		colour.a = 1.0;
 	} else {
-		ao = 0.0;
+		ao = 1.0;
 		colour = vec4(0.0, 0.0, 0.0, 0.0);
 		return;
 	}
@@ -170,7 +234,7 @@ vec3 mapRectToCosineHemisphere(const vec3 n, const vec2 uv) {
 void main() {
 	vec2 texCoord = vec2(vertexPos.x * 0.5 + 0.5, 0.5 + vertexPos.y * 0.5);
 	vec4 albedo = pow(texture(colorBuffer, texCoord), vec4(2.1));
-	//vec3 normal = camera.normalMatrixInverted * texture(normalBuffer, texCoord).xyz * 2.0 - vec3(1.0);
+
 	vec3 decodedNormal = normalize(decodeNormal(texture(normalBuffer, texCoord).rg));
 	vec3 normal = normalize(camera.normalMatrixInverted * decodedNormal);
 
@@ -194,54 +258,27 @@ void main() {
 	float tx = tileId % 8;
 	float ty = tileId / 8;
 	vec2 offsetTimed = vec2(64 * tx, 64 * ty);
-	vec4 baseNoise = clamp(texture(blueNoise, (pixelCoordinates + offsetTimed) / vec2(1024.0)), 0.0, 0.9999);
+	vec4 noise = fract(texture(blueNoise, (pixelCoordinates + offsetTimed) / vec2(1024.0)));
 
-	vec4 noise = vec4(0.0);
-	
-	/*int noiseSamples = 8;
-	for(int i = 0; i < noiseSamples; i++) {
-		noise += fract(baseNoise + (float(voxelDataInfo.noise % 8 + i) * gr));
-	}
-	noise /= float(noiseSamples);*/
-	//noise = fract(baseNoise + (float(voxelDataInfo.noise) * goldenRatio));
-	noise = baseNoise;
-
-	//vec3 direction = normalize(noise.xyz * 2.0 - vec3(1.0));
-	//Flip the random vector if it's facing in the wrong direction so we get an hemisphere
-	//direction *= sign(dot(direction, normal));
 	vec3 direction = mapRectToCosineHemisphere(normal, noise.xy);
 
 	vec3 adjusted_worldspace_pos = worldSpacePosition.xyz + normal * 0.01;
 	radiosityBounce(adjusted_worldspace_pos, direction, ao, accumulator);
 	
 	vec4 litPixel = vec4(0.0, 0.0, 0.0, 1.0);
-	// Ambient light
-	litPixel.rgb += (1.0 - ao) * getAtmosphericScatteringAmbient() / pi;
 
-	//litPixel.rgb += vec3(pow(blocklight, 2.0));
+	// Ambient light
+	litPixel.rgb += ao * skyRadiance;
+
 	litPixel.rgb += vec3(clamp((blocklight - 14.0 / 15.0) * 150.0, 0.0, 1.0));
 
 	// Direct light
-	litPixel.rgb += float(!shadow(adjusted_worldspace_pos, world.sunPosition)) * clamp(dot(normal, world.sunPosition), 0.0, 1.0) * sunAbsorb;
+	litPixel.rgb += sunlightContribution(adjusted_worldspace_pos, normal);
 
 	// Light bounce
-	litPixel.rgb += accumulator.rgb * pi;
+	litPixel.rgb += accumulator.rgb;
 
 	litPixel *= pi;
 
 	colorOut = litPixel * albedo;
-	//colorOut = litPixel;
-
-	/*if(texCoord.x > 0.5)
-		colorOut = vec4(baseNoise.x);
-	else
-		colorOut = vec4(noise.x);*/
-	//colorOut = clamp((vec4(noise.x) - vec4(0.5)) * 500.0, 0.0, 1.0);
-
-	//colorOut = vec4(fract(adjusted_worldspace_pos.xyz / 10.0), 1.0);
-	//colorOut = accumulator;
-	//colorOut = vec4(1.0 - ao);
-	//colorOut = vec4(decodedNormal, 1.0);
-	//colorOut = vec4(accumulator.xyz, 1.0);
-	//colorOut = vec4(eyeDirection, 1.0);
 }
