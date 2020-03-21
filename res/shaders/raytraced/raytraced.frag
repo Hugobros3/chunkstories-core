@@ -92,7 +92,7 @@ struct Hit {
 	vec3 normal;
 };
 
-//#define RT_USE_MASK_OPS yes
+#define RT_USE_MASK_OPS yes
 
 Hit raytrace(vec3 origin, vec3 direction, float tMax) {
 	ivec3 gridPosition = ivec3(floor(origin + 0.));
@@ -190,7 +190,7 @@ void radiosityBounce(in vec3 rayPos, in vec3 rayDir, out float ao, out vec4 colo
 		vec3 hit_pos = rayPos + rayDir * hit.t;
 
 		//what if we sampled the shadowmap there HUMMMM
-		vec3 bouncedLight = sunlightContribution(hit_pos, hit.normal);
+		vec3 bouncedLight = sunlightContribution(hit_pos, hit.normal) * hit.data.rgb;
 		vec3 emittedLight = hit.data.rgb * clamp((hit.data.a - 0.5) * 2.0, 0.0, 1.0);
 		
 		colour.rgb = (bouncedLight + emittedLight);
