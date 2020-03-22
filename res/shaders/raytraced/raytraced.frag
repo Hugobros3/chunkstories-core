@@ -95,7 +95,7 @@ struct Hit {
 	vec3 normal;
 };
 
-#define RT_USE_MASK_OPS yes
+//#define RT_USE_MASK_OPS yes
 
 Hit raytrace(vec3 origin, vec3 direction, float tMax) {
 	ivec3 gridPosition = ivec3(floor(origin + 0.));
@@ -104,10 +104,107 @@ Hit raytrace(vec3 origin, vec3 direction, float tMax) {
 		return Hit(-1.0f, gridPosition, vec4(0.0), vec3(0.0));
 
 	vec3 tSpeed = abs(vec3(1.0) / direction);
-	/*ivec3 vstep = ivec3(
-		direction.x >= 0.0 ? 1 : -1,
-	 	direction.y >= 0.0 ? 1 : -1,
-	 	direction.z >= 0.0 ? 1 : -1);*/
+	ivec3 vstep = ivec3(greaterThan(direction, vec3(0.0))) * 2 - ivec3(1);
+
+	const int maxLevel = 5;
+	int level = maxLevel;
+
+	vec3 nextEdge = vec3(gridPosition & ivec3(-1 << level)) + (vec3(vstep) * 0.5 + vec3(0.5)) * (1 << level);
+	
+	vec3 timeToEdge = abs((nextEdge - origin) * tSpeed);
+	float f = 0.0;
+	vec3 normal = vec3(0.0);
+
+	// Stupid thing to stop drivers from crashing when the normal exit condition is fudged
+	int buggy_driver = 0;
+
+	while(true) {
+		while(true) {
+			bool non_empty = texelFetch(voxelData, 
+				(gridPosition & ivec3(voxel_data_size - 1)) >> (level), (level)).w > 0.0;
+			
+			if(non_empty && level == 0)
+				break;
+
+			if(!non_empty && (level + 1 > maxLevel))
+				break;
+			
+			bool above_non_empty = texelFetch(voxelData, 
+				(gridPosition & ivec3(voxel_data_size - 1)) >> (level + 1), (level + 1)).w > 0.0;
+		
+			if(!non_empty && above_non_empty)
+				break;
+
+			level -= non_empty ? 1 : 0;
+
+            bool qx = ((gridPosition.x >> level) & 1) == 1;
+            bool qy = ((gridPosition.y >> level) & 1) == 1;
+            bool qz = ((gridPosition.z >> level) & 1) == 1;
+
+            float dx = (((vstep.x > 0) ^^ qx) ? tSpeed.x * float(1 << level) : 0.0f);
+            float dy = (((vstep.y > 0) ^^ qy) ? tSpeed.y * float(1 << level) : 0.0f);
+            float dz = (((vstep.z > 0) ^^ qz) ? tSpeed.z * float(1 << level) : 0.0f);
+
+            timeToEdge.x += non_empty ? -dx : dx;
+            timeToEdge.y += non_empty ? -dy : dy;
+            timeToEdge.z += non_empty ? -dz : dz;
+
+            level += non_empty ? 0 : 1;
+		}
+
+		float minTime = min(timeToEdge.x, min(timeToEdge.y, timeToEdge.z));
+
+		if(level == 0 && minTime > f) {
+			const int mip = level;
+			vec4 data = texelFetch(voxelData, (gridPosition & ivec3(voxel_data_size - 1)) >> mip, mip);
+			if(data.a != 0.0)
+				return Hit(f, gridPosition, data, normal);
+		}
+
+		if(minTime > tMax)
+			break;
+
+		buggy_driver++;
+		if(buggy_driver > 512) {
+			discard;
+		}
+
+		if(minTime == timeToEdge.x) {
+			gridPosition.x = (gridPosition.x & (-1 << level)) + ((vstep.x > 0) ? (1 << level) : -1);
+
+			if(((gridPosition.x - voxelDataInfo.baseChunkPos.x * 32) & 0xFFFF) >= voxel_data_size)
+				break;
+			timeToEdge.x += tSpeed.x * float(1 << level);
+			normal = vec3(-float(vstep.x), 0.0, 0.0);
+		} else if(minTime == timeToEdge.y) {
+			gridPosition.y = (gridPosition.y & (-1 << level)) + ((vstep.y > 0) ? (1 << level) : -1);
+
+			if(((gridPosition.y - voxelDataInfo.baseChunkPos.y * 32) & 0xFFFF) >= voxel_data_size)
+				break;
+			timeToEdge.y += tSpeed.y * float(1 << level);
+			normal = vec3(0.0, -float(vstep.y), 0.0);
+		} else {
+			gridPosition.z = (gridPosition.z & (-1 << level)) + ((vstep.z > 0) ? (1 << level) : -1);
+
+			if(((gridPosition.z - voxelDataInfo.baseChunkPos.z * 32) & 0xFFFF) >= voxel_data_size)
+				break;
+			timeToEdge.z += tSpeed.z * float(1 << level);
+			normal = vec3(0.0, 0.0, -float(vstep.z));
+		}
+
+		f = max(f, minTime);
+	}
+
+	return Hit(-1.0f, gridPosition, vec4(0.0), vec3(0.0));
+}
+
+Hit raytrace_non_mipmapped(vec3 origin, vec3 direction, float tMax) {
+	ivec3 gridPosition = ivec3(floor(origin + 0.));
+
+	if(any(greaterThanEqual((gridPosition - voxelDataInfo.baseChunkPos * ivec3(32)) & ivec3(0xFFFF), ivec3(voxel_data_size))))
+		return Hit(-1.0f, gridPosition, vec4(0.0), vec3(0.0));
+
+	vec3 tSpeed = abs(vec3(1.0) / direction);
 	ivec3 vstep = ivec3(greaterThan(direction, vec3(0.0))) * 2 - ivec3(1);
 
 	vec3 nextEdge = floor(origin) + vec3(vstep) * 0.5 + vec3(0.5);
@@ -116,9 +213,11 @@ Hit raytrace(vec3 origin, vec3 direction, float tMax) {
 	float f = 0.0;
 	vec3 normal = vec3(0.0);
 
+	// Stupid thing to stop drivers from crashing when the normal exit condition is fudged
+	int buggy_driver = 0;
+
 	while(true) {
-		const int mip = 0;
-		vec4 data = texelFetch(voxelData, (gridPosition & ivec3(voxel_data_size - 1)) >> mip, mip);//texture(voxelData, gridPosition * inverseVoxelDataSize);
+		vec4 data = texelFetch(voxelData, (gridPosition & ivec3(voxel_data_size - 1)), 0);
 		if(data.a != 0.0)
 			return Hit(f, gridPosition, data, normal);
 
@@ -126,6 +225,11 @@ Hit raytrace(vec3 origin, vec3 direction, float tMax) {
 
 		if(minTime > tMax)
 			break;
+
+		buggy_driver++;
+		if(buggy_driver > 512) {
+			discard;
+		}
 
 		#ifdef RT_USE_MASK_OPS
 			bvec3 mask = lessThanEqual(timeToEdge.xyz, min(timeToEdge.yzx, timeToEdge.zxy));
@@ -244,9 +348,9 @@ void main() {
 
 	float blocklight = texture(normalBuffer, texCoord).w;
 
-	/*if(albedo.a < 1.0) {
+	if(albedo.a < 1.0) {
 		discard;
-	}*/
+	}
 
 	vec4 cameraSpacePosition = convertScreenSpaceToCameraSpace(texCoord, depthBuffer);
 	vec4 worldSpacePosition = camera.viewMatrixInverted * cameraSpacePosition;
@@ -286,6 +390,6 @@ void main() {
 
 	colorOut = litPixel * albedo;
 
-	Hit hit = raytrace(camera.position, normalize(eyeDirection), 64.0);
-	colorOut = hit.data;
+	//Hit hit = raytrace(camera.position, normalize(eyeDirection), 64.0);
+	//colorOut = hit.data;
 }
