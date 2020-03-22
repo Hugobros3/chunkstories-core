@@ -59,8 +59,11 @@ uniform sampler3D voxelData;
 #include struct xyz.chunkstories.api.graphics.structs.Camera
 uniform Camera camera;
 
-#define voxel_data_size 128
-#define voxel_data_sizef 128.0
+//#define voxel_data_size 128
+//#define voxel_data_sizef 128.0
+
+const int voxel_data_size = VOLUME_TEXTURE_SIZE;
+const float voxel_data_sizef = float(VOLUME_TEXTURE_SIZE);
 
 #include struct xyz.chunkstories.graphics.vulkan.systems.drawing.rt.VolumetricTextureMetadata
 uniform VolumetricTextureMetadata voxelDataInfo;
@@ -114,7 +117,8 @@ Hit raytrace(vec3 origin, vec3 direction, float tMax) {
 	vec3 normal = vec3(0.0);
 
 	while(true) {
-		vec4 data = texture(voxelData, gridPosition * inverseVoxelDataSize);
+		const int mip = 0;
+		vec4 data = texelFetch(voxelData, (gridPosition & ivec3(voxel_data_size - 1)) >> mip, mip);//texture(voxelData, gridPosition * inverseVoxelDataSize);
 		if(data.a != 0.0)
 			return Hit(f, gridPosition, data, normal);
 
@@ -240,9 +244,9 @@ void main() {
 
 	float blocklight = texture(normalBuffer, texCoord).w;
 
-	if(albedo.a < 1.0) {
+	/*if(albedo.a < 1.0) {
 		discard;
-	}
+	}*/
 
 	vec4 cameraSpacePosition = convertScreenSpaceToCameraSpace(texCoord, depthBuffer);
 	vec4 worldSpacePosition = camera.viewMatrixInverted * cameraSpacePosition;
@@ -281,4 +285,7 @@ void main() {
 	litPixel *= pi;
 
 	colorOut = litPixel * albedo;
+
+	Hit hit = raytrace(camera.position, normalize(eyeDirection), 64.0);
+	colorOut = hit.data;
 }
