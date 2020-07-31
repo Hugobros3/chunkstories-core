@@ -308,6 +308,7 @@ void main() {
 		Ray ray = Ray(prim_org, prim_dir, 0.0, 256.0);
 		int depth = 0;
 		vec3 weight = vec3(1.0);
+		bool last_specular = false;
 		while(true) {
 			if(depth > 2) {
 				float rr_death_probability = 0.75;
@@ -328,8 +329,18 @@ void main() {
 				vec3 hitPoint = ray.origin + ray.direction * hit.t + hit.normal * 0.001;
 				vec3 hitNormal = hit.normal;
 
-				vec3 L_e = 3.0 * hit.data.rgb * clamp((hit.data.a - 0.5) * 2.0, 0.0, 1.0);
-				color = color + L_e * weight;
+				bool direct_sampling = mk_noise.x > 0.5;
+				if(direct_sampling) {
+					//float ndl = dot(hit.normal, world.sunPosition);
+					Ray sun_ray = Ray(hitPoint, normalize(10.0 * world.sunPosition + mk_noise.xyz), 0.0, 256.0);
+					Hit sun_hit = raytrace(sun_ray);
+					color = color + hit.data.rgb * INVPI * 2.0 * sunRadiance * dot(hit.normal, sun_ray.direction) * (sun_hit.t < 0.0 ? 1.0 : 0.0);
+				}
+
+				if(last_specular || depth == 0) {
+					vec3 L_e = 3.0 * hit.data.rgb * clamp((hit.data.a - 0.5) * 2.0, 0.0, 1.0);
+					color = color + L_e * weight;
+				}
 
 				SampledDirection bsdfSample = sample_direction_hemisphere_cosine_weighted_with_normal(mk_noise.xy, hit.normal);
 				vec3 bsdfSample_value = hit.data.rgb * INVPI;
@@ -338,11 +349,14 @@ void main() {
 				ray = bounceRay;
 
 				weight = weight * bsdfSample_value * dot(hitNormal, ray.direction) / bsdfSample.pdf;
+				last_specular = !direct_sampling;
 			} else {
 				// "sky" color
-				vec3 L_e = vec3(0.5, 0.5, 0.5) * 0.5;
-				color = color + L_e * weight;
-
+				if(last_specular || depth == 0) {
+					vec3 L_e = 0.125 * getSkyColor(world.time, normalize(ray.direction));
+					L_e = 0.5 * getAtmosphericScatteringAmbient();
+					color = color + L_e * weight;
+				}
 				//float sunnyness = clamp(dot(normalize(ray.direction), world.sunPosition), 0.0, 1.0);
 				//sunnyness = 1500000000 * pow(sunnyness * 0.9, 150.0);
 				//color = color + sunRadiance * sunnyness;

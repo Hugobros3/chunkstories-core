@@ -42,3 +42,13 @@ SampledDirection sample_direction_hemisphere_cosine_weighted_with_normal(vec2 ra
     //return sample;
     return SampledDirection(mapped_dir, sample_.pdf);
 }
+
+const float UNIFORM_SAMPLED_SPHERE_PDF = 1.0 / (4.0 * PI);
+SampledDirection sample_direction_sphere_uniform(vec2 randomVals) {
+    // from https://www.bogotobogo.com/Algorithms/uniform_distribution_sphere.php
+    float theta = 2.0*PI*randomVals.x;
+    float phi = acos(2.0*randomVals.y-1.0);
+
+    vec3 direction = vec3(cos(theta)*sin(phi), sin(theta)*sin(phi), cos(phi));
+    return SampledDirection(direction, UNIFORM_SAMPLED_SPHERE_PDF);
+}

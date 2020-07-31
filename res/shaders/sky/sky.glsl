@@ -98,7 +98,7 @@ vec3 getAtmosphericScattering(vec3 v, vec3 sunVec, vec3 upVec, float sunspotStre
 	sunSpot *= sunspotStrength * (1.0 - foggyness);
 	//vec3 sunSpot = vec3(0);
 	
-	vec3 result = (finalScatter + sunSpot) * PI * (2.0 * scatterBrightness);
+	vec3 result = (finalScatter + sunSpot * 0.0) * PI * (2.0 * scatterBrightness);
 
 	result += vec3(0.0, 0.4, 1.0) * 0.0025;
 	
