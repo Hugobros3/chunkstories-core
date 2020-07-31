@@ -1,5 +1,15 @@
 #version 450
 
+#define sunRadiance sunAbsorb
+#define skyRadiance getAtmosphericScatteringAmbient() / pi
+#define INVPI (1.0 / PI)
+#define FLT_MAX 3.402823466e+38
+
+const int voxel_data_size = VOLUME_TEXTURE_SIZE;
+const float voxel_data_sizef = float(VOLUME_TEXTURE_SIZE);
+const float inverseVoxelDataSize = 1.0 / voxel_data_sizef;
+const float goldenRatio = (1.0 + sqrt(5.0)) / 2.0;
+
 //Passed variables
 in vec2 vertexPos;
 in vec3 eyeDirection;
@@ -7,63 +17,12 @@ in vec3 eyeDirection;
 //Framebuffer outputs
 out vec4 colorOut;
 
-//uniform sampler2D colorBuffer;
-//uniform sampler2D normalBuffer;
-//uniform sampler2D depthBuffer;
-
-#ifdef USE_SHADOWMAPS
-#include struct xyz.chunkstories.graphics.common.structs.ShadowMappingInfo
-uniform ShadowMappingInfo shadowInfo;
-uniform sampler2DShadow shadowBuffers[4];
-
-void sampleShadowMap(vec4 worldSpacePosition, mat4 cameraMatrix, sampler2DShadow shadowMap, int cascade, float NdL, in out float shadowFactor, in out float outOfBounds)  {
-	vec4 coordinatesInShadowmap = cameraMatrix * worldSpacePosition;
-	coordinatesInShadowmap.xy *= 0.5;
-	coordinatesInShadowmap.xy += vec2(0.5);
-	
-	if(coordinatesInShadowmap.x > 1.0 || coordinatesInShadowmap.y > 1.0 || coordinatesInShadowmap.x < 0.0 || coordinatesInShadowmap.y < 0.0 || coordinatesInShadowmap.z < 0.0 || coordinatesInShadowmap.z > 1.0) {
-		//outOfBounds = 1.0;
-		//shadowFactor = 1.0;
-		return;
-	} else {
-		float bias = pow(2.0, 4 - cascade) * 0.0004 * (1.0 - NdL);
-		shadowFactor = clamp((texture(shadowMap, vec3(coordinatesInShadowmap.xyz + vec3(0.0, 0.0, bias)), 0.0)), 0.0, 1.0);
-		outOfBounds = 0.0;
-	}
-}
-
-void sampleShadowMaps(vec4 worldSpacePosition, float NdL, in out float shadowFactor, in out float outOfBounds) {
-	#define sampleLvl(i) sampleShadowMap(worldSpacePosition, shadowInfo.cameras[i].viewMatrix, shadowBuffers[i], i, NdL, shadowFactor, outOfBounds);
-
-	// Unrolled for GLSL 330 compatibility
-	if(shadowInfo.cascadesCount >= 1) {
-		sampleLvl(0)
-	}
-	if(shadowInfo.cascadesCount >= 2) {
-		sampleLvl(1)
-	}
-	if(shadowInfo.cascadesCount >= 3) {
-		sampleLvl(2)
-	}
-	if(shadowInfo.cascadesCount >= 4) {
-		sampleLvl(3)
-	}
-}
-#endif
-
 uniform sampler2D blueNoise;
-
 uniform sampler3D voxelData;
 
 //Common camera matrices & uniforms
 #include struct xyz.chunkstories.api.graphics.structs.Camera
 uniform Camera camera;
-
-//#define voxel_data_size 128
-//#define voxel_data_sizef 128.0
-
-const int voxel_data_size = VOLUME_TEXTURE_SIZE;
-const float voxel_data_sizef = float(VOLUME_TEXTURE_SIZE);
 
 #include struct xyz.chunkstories.graphics.vulkan.systems.drawing.rt.VolumetricTextureMetadata
 uniform VolumetricTextureMetadata voxelDataInfo;
@@ -75,38 +34,28 @@ uniform ViewportSize viewportSize;
 uniform WorldConditions world;
 
 #include ../sky/sky.glsl
-#define sunRadiance sunAbsorb
-#define skyRadiance getAtmosphericScatteringAmbient() / pi
-/*
-#define PI 3.14159265359
-#define pi PI
-#define sunRadiance vec3(1.0)
-#define skyRadiance vec3(0.0, 0.2, 0.5)*/
-
 #include ../bbox.glsl
 #include ../raytracing.glsl
+#include ../sampling.glsl
 #include ../normalcompression.glsl
-
-const float goldenRatio = (1.0 + sqrt(5.0)) / 2.0;
-const float inverseVoxelDataSize = 1.0 / voxel_data_sizef;
 
 //#define RT_USE_MASK_OPS yes
 
-Hit raytrace(vec3 origin, vec3 direction, float tMax) {
-	ivec3 gridPosition = ivec3(floor(origin + 0.));
+Hit raytrace(Ray ray) {
+	ivec3 gridPosition = ivec3(floor(ray.origin + 0.));
 
 	if(any(greaterThanEqual((gridPosition - voxelDataInfo.baseChunkPos * ivec3(32)) & ivec3(0xFFFF), ivec3(voxel_data_size))))
 		return Hit(-1.0f, gridPosition, vec4(0.0), vec3(0.0));
 
-	vec3 tSpeed = abs(vec3(1.0) / direction);
-	ivec3 vstep = ivec3(greaterThan(direction, vec3(0.0))) * 2 - ivec3(1);
+	vec3 tSpeed = abs(vec3(1.0) / ray.direction);
+	ivec3 vstep = ivec3(greaterThan(ray.direction, vec3(0.0))) * 2 - ivec3(1);
 
 	const int maxLevel = 5;
 	int level = maxLevel;
 
 	vec3 nextEdge = vec3(gridPosition & ivec3(-1 << level)) + (vec3(vstep) * 0.5 + vec3(0.5)) * (1 << level);
 	
-	vec3 timeToEdge = abs((nextEdge - origin) * tSpeed);
+	vec3 timeToEdge = abs((nextEdge - ray.origin) * tSpeed);
 	float f = 0.0;
 	vec3 normal = vec3(0.0);
 
@@ -152,16 +101,16 @@ Hit raytrace(vec3 origin, vec3 direction, float tMax) {
 
 		float minTime = min(timeToEdge.x, min(timeToEdge.y, timeToEdge.z));
 
-		if(level == 0 && minTime > f) {
+		if(minTime > ray.tmax)
+			break;
+
+		if(level == 0 && minTime > f && f >= ray.tmin) {
 			const int mip = level;
 			vec4 data = texelFetch(voxelData, (gridPosition & ivec3(voxel_data_size - 1)) >> mip, mip);
 			if(data.a != 0.0) {
 				return Hit(f, gridPosition, data, normal);
 			}
 		}
-
-		if(minTime > tMax)
-			break;
 
 		buggy_driver++;
 		if(buggy_driver > 512) {
@@ -200,18 +149,18 @@ Hit raytrace(vec3 origin, vec3 direction, float tMax) {
 	return Hit(-1.0f, gridPosition, vec4(0.0), vec3(0.0));
 }
 
-Hit raytrace_non_mipmapped(vec3 origin, vec3 direction, float tMax) {
-	ivec3 gridPosition = ivec3(floor(origin + 0.));
+Hit raytrace_non_mipmapped(Ray ray) {
+	ivec3 gridPosition = ivec3(floor(ray.origin + 0.));
 
 	if(any(greaterThanEqual((gridPosition - voxelDataInfo.baseChunkPos * ivec3(32)) & ivec3(0xFFFF), ivec3(voxel_data_size))))
 		return Hit(-1.0f, gridPosition, vec4(0.0), vec3(0.0));
 
-	vec3 tSpeed = abs(vec3(1.0) / direction);
-	ivec3 vstep = ivec3(greaterThan(direction, vec3(0.0))) * 2 - ivec3(1);
+	vec3 tSpeed = abs(vec3(1.0) / ray.direction);
+	ivec3 vstep = ivec3(greaterThan(ray.direction, vec3(0.0))) * 2 - ivec3(1);
 
-	vec3 nextEdge = floor(origin) + vec3(vstep) * 0.5 + vec3(0.5);
+	vec3 nextEdge = floor(ray.origin) + vec3(vstep) * 0.5 + vec3(0.5);
 	
-	vec3 timeToEdge = abs((nextEdge - origin) * tSpeed);
+	vec3 timeToEdge = abs((nextEdge - ray.origin) * tSpeed);
 	float f = 0.0;
 	vec3 normal = vec3(0.0);
 
@@ -219,14 +168,14 @@ Hit raytrace_non_mipmapped(vec3 origin, vec3 direction, float tMax) {
 	int buggy_driver = 0;
 
 	while(true) {
-		vec4 data = texelFetch(voxelData, (gridPosition & ivec3(voxel_data_size - 1)), 0);
-		if(data.a != 0.0)
-			return Hit(f, gridPosition, data, normal);
-
 		float minTime = min(timeToEdge.x, min(timeToEdge.y, timeToEdge.z));
 
-		if(minTime > tMax)
+		if(minTime > ray.tmax)
 			break;
+
+		vec4 data = texelFetch(voxelData, (gridPosition & ivec3(voxel_data_size - 1)), 0);
+		if(data.a != 0.0 && minTime >= ray.tmin)
+			return Hit(f, gridPosition, data, normal);
 
 		buggy_driver++;
 		if(buggy_driver > 512) {
@@ -268,7 +217,7 @@ Hit raytrace_non_mipmapped(vec3 origin, vec3 direction, float tMax) {
 	return Hit(-1.0f, gridPosition, vec4(0.0), vec3(0.0));
 }
 
-vec3 sunlightContribution(vec3 position, vec3 surfaceNormal) {
+/*vec3 sunlightContribution(vec3 position, vec3 surfaceNormal) {
 	float ndl = clamp(dot(normalize(world.sunPosition), surfaceNormal), 0.0, 1.0);
 	if(ndl == 0.0)
 		return vec3(0.0);
@@ -310,80 +259,102 @@ void radiosityBounce(in vec3 rayPos, in vec3 rayDir, out float ao, out vec4 colo
 		colour = vec4(0.0, 0.0, 0.0, 0.0);
 		return;
 	}
-}
-
-vec4 convertScreenSpaceToCameraSpace(vec2 screenSpaceCoordinates, sampler2D depthBuffer) {
-    vec4 cameraSpacePosition = camera.projectionMatrixInverted * vec4(vec3(screenSpaceCoordinates * 2.0 - vec2(1.0), texture(depthBuffer, screenSpaceCoordinates, 0.0).x), 1.0);
-    cameraSpacePosition /= cameraSpacePosition.w;
-    return cameraSpacePosition;
-}
-
-vec3 mapRectToCosineHemisphere(const vec3 n, const vec2 uv) {
-	// create tnb:
-	//http://jcgt.org/published/0006/01/01/paper.pdf
-	float signZ = (n.z >= 0.0f) ? 1.0f : -1.0f;     //do not use sign(nor.z), it can produce 0.0
-	float a = -1.0f / (signZ + n.z);
-	float b = n.x * n.y * a;
-	vec3 b1 = vec3(1.0f + signZ * n.x * n.x * a, signZ*b, -signZ * n.x);
-	vec3 b2 = vec3(b, signZ + n.y * n.y * a, -n.y);
-
-	// remap uv to cosine distributed points on the hemisphere around n
-	float phi = 2.0f * 3.141592 * uv.x;
-	float cosTheta = sqrt(uv.y);
-	float sinTheta = sqrt(1.0f - uv.y);
-	return normalize(cosTheta * (cos(phi)*b1 + sin(phi)*b2) + sinTheta * n);
-}
+}*/
 
 void main() {
-	/*colorOut = vec4(1.0, 0.0, 0.0, 1.0);
-	
 	vec2 texCoord = vec2(vertexPos.x * 0.5 + 0.5, 0.5 + vertexPos.y * 0.5);
-	vec4 albedo = pow(texture(colorBuffer, texCoord), vec4(2.1));
-
-	float blocklight = texture(normalBuffer, texCoord).w;
-
-	if(albedo.a < 1.0) {
-		discard;
-	}
-
-	vec4 worldSpacePosition = camera.viewMatrixInverted * convertScreenSpaceToCameraSpace(texCoord, depthBuffer);
-
-	vec4 accumulator = vec4(1.0);
-	float ao;
-	
 	vec2 pixelCoordinates = texCoord * vec2(viewportSize.size);
-	vec4 noise = fract(texture(blueNoise, (pixelCoordinates) / vec2(1024.0)) + goldenRatio * voxelDataInfo.noise);
-
-	vec3 normal = normalize(camera.normalMatrixInverted * normalize(decodeNormal(texture(normalBuffer, texCoord).rg)));
-	vec3 direction = mapRectToCosineHemisphere(normal, noise.xz);
-
-	vec3 adjusted_worldspace_pos = worldSpacePosition.xyz + normal * 0.01;
-	radiosityBounce(adjusted_worldspace_pos, direction, ao, accumulator);
 	
-	vec4 litPixel = vec4(0.0, 0.0, 0.0, 1.0);
+	vec4 noise = abs(fract(texture(blueNoise, fract((pixelCoordinates) / vec2(1024.0))) + goldenRatio * int(100 * voxelDataInfo.noise)));
 
-	// Ambient light
-	litPixel.rgb += ao * skyRadiance;
+	vec3 prim_org = camera.position;
+	vec3 prim_dir = normalize(eyeDirection);
 
-	litPixel.rgb += vec3(clamp((blocklight - 14.0 / 15.0) * 150.0, 0.0, 1.0));
+	/// PRIMARY RAYS RENDERER
+	/*Ray prim_ray = Ray(prim_org, prim_dir, 0.0, 256.0);
+	Hit prim_hit = raytrace(prim_ray);
+	colorOut = vec4(prim_hit.data) * dot(prim_hit.normal, -eyeDirection);*/
 
-	// Direct light
-	litPixel.rgb += sunlightContribution(adjusted_worldspace_pos, normal);
+	/// AO RENDERER
+	/*Ray prim_ray = Ray(prim_org, prim_dir, 0.0, 256.0);
+	Hit prim_hit = raytrace(prim_ray);
+	if(prim_hit.t < 0.0) {
+		colorOut = vec4(0.0);
+	} else {
+		vec3 primary_hit_pos = prim_org + prim_dir * prim_hit.t + prim_hit.normal * 0.001;
+		colorOut = prim_hit.data;
 
-	// Light bounce
-	litPixel.rgb += accumulator.rgb;
+		SampledDirection bounce = sample_direction_hemisphere_cosine_weighted_with_normal(noise.xy, prim_hit.normal);
+		Ray bounce_ray = Ray(primary_hit_pos, bounce.direction, 0.0, 256.0);
+		Hit ao_hit = raytrace(bounce_ray);
 
-	litPixel *= pi;
+		float ao = (ao_hit.t < 0.0 ? 0.2 : 0.0) / bounce.pdf;
 
-	colorOut = litPixel * albedo;*/
+		colorOut.xyz = vec3(0.5);
+		colorOut.xyz *= ao;
+		colorOut.a = 1.0;
+	}*/
 
-	Hit hit = raytrace(camera.position, normalize(eyeDirection), 256.0);
-	colorOut = hit.data;
-	colorOut.xyz *= dot(hit.normal, -eyeDirection);
-	//colorOut.xyz = hit.normal * 0.5 + vec3(0.5);
-	//colorOut.xyz *= 1.0 - clamp(log(sqrt(hit.t)), 0.0, 0.9);
-	//colorOut.xyz = normalize(eyeDirection);
-	colorOut.a = 1.0;
-	
-	//colorOut = vec4(noise.xyz, 1.0);
+	/// PT RENDERER
+	int rng_seed = 0;
+	#define mk_noise (abs(fract(texture(blueNoise, fract((pixelCoordinates + vec2(rng_seed * 73, rng_seed * 69)) / vec2(1024.0))) + goldenRatio * int(100 * voxelDataInfo.noise + rng_seed++))))
+	//#define mk_noise noise
+
+	vec3 colorAccumulation = vec3(0);
+
+	const int samples = 1;
+	for(int s = 0; s < samples; s++) {
+		vec3 color = vec3(0);
+		Ray ray = Ray(prim_org, prim_dir, 0.0, 256.0);
+		int depth = 0;
+		vec3 weight = vec3(1.0);
+		while(true) {
+			if(depth > 2) {
+				float rr_death_probability = 0.75;
+				if(mk_noise.x >= rr_death_probability) {
+					break;
+				} else {
+					weight = weight * (1.0 / rr_death_probability);
+				}
+			}
+
+			if(depth > 5) {
+				break;
+			}
+			
+			Hit hit = raytrace(ray);
+
+			if(hit.t >= 0.0) {
+				vec3 hitPoint = ray.origin + ray.direction * hit.t + hit.normal * 0.001;
+				vec3 hitNormal = hit.normal;
+
+				vec3 L_e = 3.0 * hit.data.rgb * clamp((hit.data.a - 0.5) * 2.0, 0.0, 1.0);
+				color = color + L_e * weight;
+
+				SampledDirection bsdfSample = sample_direction_hemisphere_cosine_weighted_with_normal(mk_noise.xy, hit.normal);
+				vec3 bsdfSample_value = hit.data.rgb * INVPI;
+
+				Ray bounceRay = { hitPoint, bsdfSample.direction, 0.0, 256.0};
+				ray = bounceRay;
+
+				weight = weight * bsdfSample_value * dot(hitNormal, ray.direction) / bsdfSample.pdf;
+			} else {
+				// "sky" color
+				vec3 L_e = vec3(0.5, 0.5, 0.5) * 0.5;
+				color = color + L_e * weight;
+
+				//float sunnyness = clamp(dot(normalize(ray.direction), world.sunPosition), 0.0, 1.0);
+				//sunnyness = 1500000000 * pow(sunnyness * 0.9, 150.0);
+				//color = color + sunRadiance * sunnyness;
+				break;
+			}
+
+			depth++;
+		}
+		colorAccumulation += color;
+	}
+	colorAccumulation /= samples;
+	//colorAccumulation = color;
+
+	colorOut = vec4(sqrt(colorAccumulation), 1.0);
 }
