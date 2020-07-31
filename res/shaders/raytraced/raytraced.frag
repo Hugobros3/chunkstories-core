@@ -7,9 +7,9 @@ in vec3 eyeDirection;
 //Framebuffer outputs
 out vec4 colorOut;
 
-uniform sampler2D colorBuffer;
-uniform sampler2D normalBuffer;
-uniform sampler2D depthBuffer;
+//uniform sampler2D colorBuffer;
+//uniform sampler2D normalBuffer;
+//uniform sampler2D depthBuffer;
 
 #ifdef USE_SHADOWMAPS
 #include struct xyz.chunkstories.graphics.common.structs.ShadowMappingInfo
@@ -83,17 +83,12 @@ uniform WorldConditions world;
 #define sunRadiance vec3(1.0)
 #define skyRadiance vec3(0.0, 0.2, 0.5)*/
 
+#include ../bbox.glsl
+#include ../raytracing.glsl
 #include ../normalcompression.glsl
 
 const float goldenRatio = (1.0 + sqrt(5.0)) / 2.0;
 const float inverseVoxelDataSize = 1.0 / voxel_data_sizef;
-
-struct Hit {
-	float t;
-	ivec3 voxel;
-	vec4 data;
-	vec3 normal;
-};
 
 //#define RT_USE_MASK_OPS yes
 
@@ -119,6 +114,8 @@ Hit raytrace(vec3 origin, vec3 direction, float tMax) {
 	int buggy_driver = 0;
 
 	while(true) {
+
+		// Vertical movement (across mip lvls)
 		while(true) {
 			bool non_empty = texelFetch(voxelData, 
 				(gridPosition & ivec3(voxel_data_size - 1)) >> (level), (level)).w > 0.0;
@@ -150,6 +147,7 @@ Hit raytrace(vec3 origin, vec3 direction, float tMax) {
             timeToEdge.z += non_empty ? -dz : dz;
 
             level += non_empty ? 0 : 1;
+			//normal = vec3(0.0);
 		}
 
 		float minTime = min(timeToEdge.x, min(timeToEdge.y, timeToEdge.z));
@@ -157,8 +155,9 @@ Hit raytrace(vec3 origin, vec3 direction, float tMax) {
 		if(level == 0 && minTime > f) {
 			const int mip = level;
 			vec4 data = texelFetch(voxelData, (gridPosition & ivec3(voxel_data_size - 1)) >> mip, mip);
-			if(data.a != 0.0)
+			if(data.a != 0.0) {
 				return Hit(f, gridPosition, data, normal);
+			}
 		}
 
 		if(minTime > tMax)
@@ -175,6 +174,7 @@ Hit raytrace(vec3 origin, vec3 direction, float tMax) {
 			if(((gridPosition.x - voxelDataInfo.baseChunkPos.x * 32) & 0xFFFF) >= voxel_data_size)
 				break;
 			timeToEdge.x += tSpeed.x * float(1 << level);
+			if(minTime > f)
 			normal = vec3(-float(vstep.x), 0.0, 0.0);
 		} else if(minTime == timeToEdge.y) {
 			gridPosition.y = (gridPosition.y & (-1 << level)) + ((vstep.y > 0) ? (1 << level) : -1);
@@ -182,6 +182,7 @@ Hit raytrace(vec3 origin, vec3 direction, float tMax) {
 			if(((gridPosition.y - voxelDataInfo.baseChunkPos.y * 32) & 0xFFFF) >= voxel_data_size)
 				break;
 			timeToEdge.y += tSpeed.y * float(1 << level);
+			if(minTime > f)
 			normal = vec3(0.0, -float(vstep.y), 0.0);
 		} else {
 			gridPosition.z = (gridPosition.z & (-1 << level)) + ((vstep.z > 0) ? (1 << level) : -1);
@@ -189,6 +190,7 @@ Hit raytrace(vec3 origin, vec3 direction, float tMax) {
 			if(((gridPosition.z - voxelDataInfo.baseChunkPos.z * 32) & 0xFFFF) >= voxel_data_size)
 				break;
 			timeToEdge.z += tSpeed.z * float(1 << level);
+			if(minTime > f)
 			normal = vec3(0.0, 0.0, -float(vstep.z));
 		}
 
@@ -316,13 +318,6 @@ vec4 convertScreenSpaceToCameraSpace(vec2 screenSpaceCoordinates, sampler2D dept
     return cameraSpacePosition;
 }
 
-//note: uniform pdf rand [0;1[
-float hash12n(vec2 p) {
-	p  = fract(p * vec2(5.3987, 5.4421));
-    p += dot(p.yx, p.xy + vec2(21.5351, 14.3137));
-	return fract(p.x * p.y * 95.4307);
-}
-
 vec3 mapRectToCosineHemisphere(const vec3 n, const vec2 uv) {
 	// create tnb:
 	//http://jcgt.org/published/0006/01/01/paper.pdf
@@ -340,11 +335,10 @@ vec3 mapRectToCosineHemisphere(const vec3 n, const vec2 uv) {
 }
 
 void main() {
+	/*colorOut = vec4(1.0, 0.0, 0.0, 1.0);
+	
 	vec2 texCoord = vec2(vertexPos.x * 0.5 + 0.5, 0.5 + vertexPos.y * 0.5);
 	vec4 albedo = pow(texture(colorBuffer, texCoord), vec4(2.1));
-
-	vec3 decodedNormal = normalize(decodeNormal(texture(normalBuffer, texCoord).rg));
-	vec3 normal = normalize(camera.normalMatrixInverted * decodedNormal);
 
 	float blocklight = texture(normalBuffer, texCoord).w;
 
@@ -352,23 +346,16 @@ void main() {
 		discard;
 	}
 
-	vec4 cameraSpacePosition = convertScreenSpaceToCameraSpace(texCoord, depthBuffer);
-	vec4 worldSpacePosition = camera.viewMatrixInverted * cameraSpacePosition;
+	vec4 worldSpacePosition = camera.viewMatrixInverted * convertScreenSpaceToCameraSpace(texCoord, depthBuffer);
 
 	vec4 accumulator = vec4(1.0);
 	float ao;
 	
 	vec2 pixelCoordinates = texCoord * vec2(viewportSize.size);
-	vec2 noiseBucket = floor(pixelCoordinates / vec2(64.0));
-	
-	int tileId = int(fract(hash12n(noiseBucket) + goldenRatio * voxelDataInfo.noise) * 256.0) % 256;
+	vec4 noise = fract(texture(blueNoise, (pixelCoordinates) / vec2(1024.0)) + goldenRatio * voxelDataInfo.noise);
 
-	float tx = tileId % 8;
-	float ty = tileId / 8;
-	vec2 offsetTimed = vec2(64 * tx, 64 * ty);
-	vec4 noise = fract(texture(blueNoise, (pixelCoordinates + offsetTimed) / vec2(1024.0)));
-
-	vec3 direction = mapRectToCosineHemisphere(normal, noise.xy);
+	vec3 normal = normalize(camera.normalMatrixInverted * normalize(decodeNormal(texture(normalBuffer, texCoord).rg)));
+	vec3 direction = mapRectToCosineHemisphere(normal, noise.xz);
 
 	vec3 adjusted_worldspace_pos = worldSpacePosition.xyz + normal * 0.01;
 	radiosityBounce(adjusted_worldspace_pos, direction, ao, accumulator);
@@ -388,8 +375,15 @@ void main() {
 
 	litPixel *= pi;
 
-	colorOut = litPixel * albedo;
+	colorOut = litPixel * albedo;*/
 
-	//Hit hit = raytrace(camera.position, normalize(eyeDirection), 64.0);
-	//colorOut = hit.data;
+	Hit hit = raytrace(camera.position, normalize(eyeDirection), 256.0);
+	colorOut = hit.data;
+	colorOut.xyz *= dot(hit.normal, -eyeDirection);
+	//colorOut.xyz = hit.normal * 0.5 + vec3(0.5);
+	//colorOut.xyz *= 1.0 - clamp(log(sqrt(hit.t)), 0.0, 0.9);
+	//colorOut.xyz = normalize(eyeDirection);
+	colorOut.a = 1.0;
+	
+	//colorOut = vec4(noise.xyz, 1.0);
 }
