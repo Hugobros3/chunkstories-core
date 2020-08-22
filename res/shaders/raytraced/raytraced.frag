@@ -41,6 +41,23 @@ uniform WorldConditions world;
 
 //#define RT_USE_MASK_OPS yes
 
+vec3 make_normal(int face) {
+    if(face == 0) {
+    	return vec3(1.0, 0.0, 0.0);
+    } else if(face == 1) {
+    	return vec3(-1.0, 0.0, 0.0);
+    } else if(face == 2) {
+    	return vec3(0.0, 1.0, 0.0);
+    } else if(face == 3) {
+    	return vec3(0.0, -1.0, 0.0);
+    } else if(face == 4) {
+    	return vec3(0.0, 0.0, 1.0);
+    } else if(face == 5) {
+    	return vec3(0.0, 0.0, -1.0);
+    } 
+    return vec3(0.0);
+}
+
 Hit raytrace(Ray ray) {
 	ivec3 gridPosition = ivec3(floor(ray.origin + 0.));
 
@@ -48,17 +65,26 @@ Hit raytrace(Ray ray) {
 		return Hit(-1.0f, gridPosition, vec4(0.0), vec3(0.0));
 
 	vec3 tSpeed = abs(vec3(1.0) / ray.direction);
-	ivec3 vstep = ivec3(greaterThan(ray.direction, vec3(0.0))) * 2 - ivec3(1);
 
 	const int maxLevel = 5;
 	int level = maxLevel;
+    vec3 timeToEdge = vec3(0.0);
 
-	vec3 nextEdge = vec3(gridPosition & ivec3(-1 << level)) + (vec3(vstep) * 0.5 + vec3(0.5)) * (1 << level);
-	vstep = mix(ivec3(-1), ivec3(1 << level), greaterThan(ray.direction, vec3(0.0)));
+    {
+		ivec3 og_vstep = ivec3(greaterThan(ray.direction, vec3(0.0))) * 2 - ivec3(1);
+		vec3 nextEdge = vec3(gridPosition & ivec3(-1 << level)) + (vec3(og_vstep) * 0.5 + vec3(0.5)) * (1 << level);
+		timeToEdge = abs((nextEdge - ray.origin) * tSpeed);
+    }
 	
-	vec3 timeToEdge = abs((nextEdge - ray.origin) * tSpeed);
+	int raydirsign = 0;
+	raydirsign |= mix(0, 1, ray.direction.x > 0);
+	raydirsign |= mix(0, 2, ray.direction.y > 0);
+	raydirsign |= mix(0, 4, ray.direction.z > 0);
+    //ivec3 vstep = mix(ivec3(-1), ivec3(1 << level), greaterThan(ray.direction.x > 0);, vec3(0.0)));
+	 
 	float f = 0.0;
-	vec3 normal = vec3(0.0);
+    int out_face = 0;
+	//vec3 normal = vec3(0.0);
 
 	// Stupid thing to stop drivers from crashing when the normal exit condition is fudged
 	int buggy_driver = 0;
@@ -66,53 +92,44 @@ Hit raytrace(Ray ray) {
 	while(true) {
 		// Vertical movement (across mip lvls)
 		while(true) {
-			/*bool non_empty = texelFetch(voxelData, 
-				(gridPosition & ivec3(voxel_data_size - 1)) >> (level), (level)).w > 0.0;
-			bool above_non_empty = texelFetch(voxelData, 
-				(gridPosition & ivec3(voxel_data_size - 1)) >> (level + 1), clamp(level + 1, 0, maxLevel)).w > 0.0;
-			
-			if((non_empty && level == 0) || (!non_empty && (level + 1 > maxLevel)) || (!non_empty && above_non_empty))
-				break;*/
-
 			bool non_empty = texelFetch(voxelData, 
 				(gridPosition & ivec3(voxel_data_size - 1)) >> (level), (level)).w > 0.0;
 			
-			if(non_empty && level == 0)
-				break;
+			if((non_empty && level == 0) || (!non_empty && (level + 1 > maxLevel)))
+                break;
+            
+            {
+                bool above_non_empty = texelFetch(voxelData, 
+				(gridPosition & ivec3(voxel_data_size - 1)) >> (level + 1), clamp(level + 1, 0, maxLevel)).w > 0.0;
+                if(!non_empty && above_non_empty)
+                    break;
+            }
 
-			if(!non_empty && (level + 1 > maxLevel))
-				break;
-			
-			bool above_non_empty = texelFetch(voxelData, 
-				(gridPosition & ivec3(voxel_data_size - 1)) >> (level + 1), (level + 1)).w > 0.0;
-		
-			if(!non_empty && above_non_empty)
-				break;
+			level -= non_empty ? 1 : 0;
 
-			level -= mix(0, 1, non_empty);
-
-            /*bool qx = ((gridPosition.x >> level) & 1) == 1;
+            {
+            bool qx = ((gridPosition.x >> level) & 1) == 1;
+            float dx = ((((raydirsign & 1) == 1) ^^ qx) ? tSpeed.x * float(1 << level) : 0.0f);
+            timeToEdge.x += non_empty ? -dx : dx;
+            }
+            
+            {
             bool qy = ((gridPosition.y >> level) & 1) == 1;
-            bool qz = ((gridPosition.z >> level) & 1) == 1;
-
-            float dx = (((vstep.x > 0) ^^ qx) ? tSpeed.x * float(1 << level) : 0.0f);
-            float dy = (((vstep.y > 0) ^^ qy) ? tSpeed.y * float(1 << level) : 0.0f);
-            float dz = (((vstep.z > 0) ^^ qz) ? tSpeed.z * float(1 << level) : 0.0f);
-
-			timeToEdge.x += non_empty ? -dx : dx;
+            float dy = ((((raydirsign & 2) == 2) ^^ qy) ? tSpeed.y * float(1 << level) : 0.0f);
             timeToEdge.y += non_empty ? -dy : dy;
-            timeToEdge.z += non_empty ? -dz : dz;*/
-			
-			ivec3 q = (gridPosition >> ivec3(level)) & ivec3(1);
-			vec3 d = mix(vec3(0.0f), tSpeed * vec3(1 << level), ivec3(greaterThan(vstep, ivec3(0))) ^ q);
-			d *= float(mix(1, -1, non_empty));
-			timeToEdge += d;
+            }
+            
+            {
+            bool qz = ((gridPosition.z >> level) & 1) == 1;
+            float dz = ((((raydirsign & 4) == 4) ^^ qz) ? tSpeed.z * float(1 << level) : 0.0f);
+            timeToEdge.z += non_empty ? -dz : dz;
+            }
 
-            level += mix(1, 0, non_empty);
+            level += non_empty ? 0 : 1;
 			//vstep =  ivec3(greaterThan(ray.direction, vec3(0.0))) * 2 - ivec3(1);
 			//normal = vec3(0.0);
 		}
-		vstep = mix(ivec3(-1), ivec3(1 << level), greaterThan(ray.direction, vec3(0.0)));
+		//ivec3 vvstep = mix(ivec3(-1), ivec3(1 << level), greaterThan(ray.direction, vec3(0.0)));
 
 		float minTime = min(timeToEdge.x, min(timeToEdge.y, timeToEdge.z));
 
@@ -123,56 +140,66 @@ Hit raytrace(Ray ray) {
 			const int mip = level;
 			vec4 data = texelFetch(voxelData, (gridPosition & ivec3(voxel_data_size - 1)) >> mip, mip);
 			if(data.a != 0.0) {
-				return Hit(f, gridPosition, data, normal);
+				return Hit(f, gridPosition, data, make_normal(out_face));
 			}
 		}
 
-		buggy_driver++;
+		/*buggy_driver++;
 		if(buggy_driver > 512) {
 			discard;
-		}
+		}*/
 
 		#ifdef RT_USE_MASK_OPS
+            ivec3 vvstep;
+            vvstep.x = mix(-1, 1 << level, (raydirsign & 1) == 1);
+            vvstep.y = mix(-1, 1 << level, (raydirsign & 2) == 2);
+            vvstep.z = mix(-1, 1 << level, (raydirsign & 4) == 4);
+        
 			bvec3 mask = lessThanEqual(timeToEdge.xyz, min(timeToEdge.yzx, timeToEdge.zxy));
-			gridPosition = ivec3(not(mask)) * gridPosition + ivec3(mask) * ((gridPosition & ivec3(-1 << level)) + vstep);
+			gridPosition = ivec3(not(mask)) * gridPosition + ivec3(mask) * ((gridPosition & ivec3(-1 << level)) + vvstep);
 
 			if(any(greaterThanEqual((gridPosition - voxelDataInfo.baseChunkPos * ivec3(32)) & ivec3(0xFFFF), ivec3(voxel_data_size))))
 				break;
 
 			timeToEdge += vec3(mask) * tSpeed * float(1 << level);
 			if(minTime > f)
-				normal = -vec3(mask) * vstep;
+				normal = -vec3(mask) * vvstep;
 		#else
 			if(minTime == timeToEdge.x) {
 				//gridPosition.x = (gridPosition.x & (-1 << level)) + ((vstep.x > 0) ? (1 << level) : -1);
-				gridPosition.x = (gridPosition.x & (-1 << level)) + vstep.x;
+            	int vstepx = mix(-1, 1 << level, (raydirsign & 1) == 1);
+				gridPosition.x = (gridPosition.x & (-1 << level)) + vstepx;
 
 				if(((gridPosition.x - voxelDataInfo.baseChunkPos.x * 32) & 0xFFFF) >= voxel_data_size)
 					break;
 				timeToEdge.x += tSpeed.x * float(1 << level);
 				if(minTime > f)
-					normal = vec3(-float(vstep.x), 0.0, 0.0);
+                	out_face = mix(0, 1, (raydirsign & 1) == 1);
+					//normal = vec3(-float(vstepx), 0.0, 0.0);
 			} else if(minTime == timeToEdge.y) {
 				//gridPosition.y = (gridPosition.y & (-1 << level)) + ((vstep.y > 0) ? (1 << level) : -1);
-				gridPosition.y = (gridPosition.y & (-1 << level)) + vstep.y;
+            	int vstepy = mix(-1, 1 << level, (raydirsign & 2) == 2);
+				gridPosition.y = (gridPosition.y & (-1 << level)) + vstepy;
 
 				if(((gridPosition.y - voxelDataInfo.baseChunkPos.y * 32) & 0xFFFF) >= voxel_data_size)
 					break;
 				timeToEdge.y += tSpeed.y * float(1 << level);
 				if(minTime > f)
-					normal = vec3(0.0, -float(vstep.y), 0.0);
+                	out_face = mix(2, 3, (raydirsign & 2) == 2);
+					//normal = vec3(0.0, -float(vstepy), 0.0);
 			} else {
 				//gridPosition.z = (gridPosition.z & (-1 << level)) + ((vstep.z > 0) ? (1 << level) : -1);
-				gridPosition.z = (gridPosition.z & (-1 << level)) + vstep.z;
+            	int vstepz = mix(-1, 1 << level, (raydirsign & 4) == 4);
+				gridPosition.z = (gridPosition.z & (-1 << level)) + vstepz;
 
 				if(((gridPosition.z - voxelDataInfo.baseChunkPos.z * 32) & 0xFFFF) >= voxel_data_size)
 					break;
 				timeToEdge.z += tSpeed.z * float(1 << level);
 				if(minTime > f)
-					normal = vec3(0.0, 0.0, -float(vstep.z));
+                    out_face = mix(4, 5, (raydirsign & 4) == 4);
+					//normal = vec3(0.0, 0.0, -float(vstepz));
 			}
-		#endif
-
+        #endif
 		f = max(f, minTime);
 	}
 
