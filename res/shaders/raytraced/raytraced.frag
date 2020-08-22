@@ -54,6 +54,7 @@ Hit raytrace(Ray ray) {
 	int level = maxLevel;
 
 	vec3 nextEdge = vec3(gridPosition & ivec3(-1 << level)) + (vec3(vstep) * 0.5 + vec3(0.5)) * (1 << level);
+	vstep = mix(ivec3(-1), ivec3(1 << level), greaterThan(ray.direction, vec3(0.0)));
 	
 	vec3 timeToEdge = abs((nextEdge - ray.origin) * tSpeed);
 	float f = 0.0;
@@ -63,9 +64,16 @@ Hit raytrace(Ray ray) {
 	int buggy_driver = 0;
 
 	while(true) {
-
 		// Vertical movement (across mip lvls)
 		while(true) {
+			/*bool non_empty = texelFetch(voxelData, 
+				(gridPosition & ivec3(voxel_data_size - 1)) >> (level), (level)).w > 0.0;
+			bool above_non_empty = texelFetch(voxelData, 
+				(gridPosition & ivec3(voxel_data_size - 1)) >> (level + 1), clamp(level + 1, 0, maxLevel)).w > 0.0;
+			
+			if((non_empty && level == 0) || (!non_empty && (level + 1 > maxLevel)) || (!non_empty && above_non_empty))
+				break;*/
+
 			bool non_empty = texelFetch(voxelData, 
 				(gridPosition & ivec3(voxel_data_size - 1)) >> (level), (level)).w > 0.0;
 			
@@ -81,9 +89,9 @@ Hit raytrace(Ray ray) {
 			if(!non_empty && above_non_empty)
 				break;
 
-			level -= non_empty ? 1 : 0;
+			level -= mix(0, 1, non_empty);
 
-            bool qx = ((gridPosition.x >> level) & 1) == 1;
+            /*bool qx = ((gridPosition.x >> level) & 1) == 1;
             bool qy = ((gridPosition.y >> level) & 1) == 1;
             bool qz = ((gridPosition.z >> level) & 1) == 1;
 
@@ -91,13 +99,20 @@ Hit raytrace(Ray ray) {
             float dy = (((vstep.y > 0) ^^ qy) ? tSpeed.y * float(1 << level) : 0.0f);
             float dz = (((vstep.z > 0) ^^ qz) ? tSpeed.z * float(1 << level) : 0.0f);
 
-            timeToEdge.x += non_empty ? -dx : dx;
+			timeToEdge.x += non_empty ? -dx : dx;
             timeToEdge.y += non_empty ? -dy : dy;
-            timeToEdge.z += non_empty ? -dz : dz;
+            timeToEdge.z += non_empty ? -dz : dz;*/
+			
+			ivec3 q = (gridPosition >> ivec3(level)) & ivec3(1);
+			vec3 d = mix(vec3(0.0f), tSpeed * vec3(1 << level), ivec3(greaterThan(vstep, ivec3(0))) ^ q);
+			d *= float(mix(1, -1, non_empty));
+			timeToEdge += d;
 
-            level += non_empty ? 0 : 1;
+            level += mix(1, 0, non_empty);
+			//vstep =  ivec3(greaterThan(ray.direction, vec3(0.0))) * 2 - ivec3(1);
 			//normal = vec3(0.0);
 		}
+		vstep = mix(ivec3(-1), ivec3(1 << level), greaterThan(ray.direction, vec3(0.0)));
 
 		float minTime = min(timeToEdge.x, min(timeToEdge.y, timeToEdge.z));
 
@@ -117,31 +132,46 @@ Hit raytrace(Ray ray) {
 			discard;
 		}
 
-		if(minTime == timeToEdge.x) {
-			gridPosition.x = (gridPosition.x & (-1 << level)) + ((vstep.x > 0) ? (1 << level) : -1);
+		#ifdef RT_USE_MASK_OPS
+			bvec3 mask = lessThanEqual(timeToEdge.xyz, min(timeToEdge.yzx, timeToEdge.zxy));
+			gridPosition = ivec3(not(mask)) * gridPosition + ivec3(mask) * ((gridPosition & ivec3(-1 << level)) + vstep);
 
-			if(((gridPosition.x - voxelDataInfo.baseChunkPos.x * 32) & 0xFFFF) >= voxel_data_size)
+			if(any(greaterThanEqual((gridPosition - voxelDataInfo.baseChunkPos * ivec3(32)) & ivec3(0xFFFF), ivec3(voxel_data_size))))
 				break;
-			timeToEdge.x += tSpeed.x * float(1 << level);
-			if(minTime > f)
-			normal = vec3(-float(vstep.x), 0.0, 0.0);
-		} else if(minTime == timeToEdge.y) {
-			gridPosition.y = (gridPosition.y & (-1 << level)) + ((vstep.y > 0) ? (1 << level) : -1);
 
-			if(((gridPosition.y - voxelDataInfo.baseChunkPos.y * 32) & 0xFFFF) >= voxel_data_size)
-				break;
-			timeToEdge.y += tSpeed.y * float(1 << level);
+			timeToEdge += vec3(mask) * tSpeed * float(1 << level);
 			if(minTime > f)
-			normal = vec3(0.0, -float(vstep.y), 0.0);
-		} else {
-			gridPosition.z = (gridPosition.z & (-1 << level)) + ((vstep.z > 0) ? (1 << level) : -1);
+				normal = -vec3(mask) * vstep;
+		#else
+			if(minTime == timeToEdge.x) {
+				//gridPosition.x = (gridPosition.x & (-1 << level)) + ((vstep.x > 0) ? (1 << level) : -1);
+				gridPosition.x = (gridPosition.x & (-1 << level)) + vstep.x;
 
-			if(((gridPosition.z - voxelDataInfo.baseChunkPos.z * 32) & 0xFFFF) >= voxel_data_size)
-				break;
-			timeToEdge.z += tSpeed.z * float(1 << level);
-			if(minTime > f)
-			normal = vec3(0.0, 0.0, -float(vstep.z));
-		}
+				if(((gridPosition.x - voxelDataInfo.baseChunkPos.x * 32) & 0xFFFF) >= voxel_data_size)
+					break;
+				timeToEdge.x += tSpeed.x * float(1 << level);
+				if(minTime > f)
+					normal = vec3(-float(vstep.x), 0.0, 0.0);
+			} else if(minTime == timeToEdge.y) {
+				//gridPosition.y = (gridPosition.y & (-1 << level)) + ((vstep.y > 0) ? (1 << level) : -1);
+				gridPosition.y = (gridPosition.y & (-1 << level)) + vstep.y;
+
+				if(((gridPosition.y - voxelDataInfo.baseChunkPos.y * 32) & 0xFFFF) >= voxel_data_size)
+					break;
+				timeToEdge.y += tSpeed.y * float(1 << level);
+				if(minTime > f)
+					normal = vec3(0.0, -float(vstep.y), 0.0);
+			} else {
+				//gridPosition.z = (gridPosition.z & (-1 << level)) + ((vstep.z > 0) ? (1 << level) : -1);
+				gridPosition.z = (gridPosition.z & (-1 << level)) + vstep.z;
+
+				if(((gridPosition.z - voxelDataInfo.baseChunkPos.z * 32) & 0xFFFF) >= voxel_data_size)
+					break;
+				timeToEdge.z += tSpeed.z * float(1 << level);
+				if(minTime > f)
+					normal = vec3(0.0, 0.0, -float(vstep.z));
+			}
+		#endif
 
 		f = max(f, minTime);
 	}
@@ -217,50 +247,6 @@ Hit raytrace_non_mipmapped(Ray ray) {
 	return Hit(-1.0f, gridPosition, vec4(0.0), vec3(0.0));
 }
 
-/*vec3 sunlightContribution(vec3 position, vec3 surfaceNormal) {
-	float ndl = clamp(dot(normalize(world.sunPosition), surfaceNormal), 0.0, 1.0);
-	if(ndl == 0.0)
-		return vec3(0.0);
-
-	#ifdef USE_SHADOWMAPS
-		float shadowFactor = 1.0;
-		float outOfBounds = 1.0;
-
-		sampleShadowMaps(vec4(position, 1.0), ndl, shadowFactor, outOfBounds);
-
-		shadowFactor = mix(shadowFactor, 1.0, outOfBounds);
-		return sunRadiance * ndl * shadowFactor;
-	#else
-		Hit hit = raytrace(position, normalize(world.sunPosition), 64.0);
-		if (hit.t >= 0.0) {
-			return vec3(0.0);
-		}
-
-		return sunRadiance * ndl;
-	#endif
-}
-
-void radiosityBounce(in vec3 rayPos, in vec3 rayDir, out float ao, out vec4 colour) {
-	Hit hit = raytrace(rayPos, normalize(rayDir), 64.0);
-	//ao = hit.t >= 0.0 ? 1.0 : 0.0;
-	if(hit.t >= 0.0) {
-		ao = 0.0;
-
-		vec3 hit_pos = rayPos + rayDir * hit.t;
-
-		//what if we sampled the shadowmap there HUMMMM
-		vec3 bouncedLight = sunlightContribution(hit_pos, hit.normal) * hit.data.rgb;
-		vec3 emittedLight = hit.data.rgb * clamp((hit.data.a - 0.5) * 2.0, 0.0, 1.0);
-		
-		colour.rgb = (bouncedLight + emittedLight);
-		colour.a = 1.0;
-	} else {
-		ao = 1.0;
-		colour = vec4(0.0, 0.0, 0.0, 0.0);
-		return;
-	}
-}*/
-
 void main() {
 	vec2 texCoord = vec2(vertexPos.x * 0.5 + 0.5, 0.5 + vertexPos.y * 0.5);
 	vec2 pixelCoordinates = texCoord * vec2(viewportSize.size);
@@ -271,9 +257,9 @@ void main() {
 	vec3 prim_dir = normalize(eyeDirection);
 
 	/// PRIMARY RAYS RENDERER
-	/*Ray prim_ray = Ray(prim_org, prim_dir, 0.0, 256.0);
+	Ray prim_ray = Ray(prim_org, prim_dir, 0.0, 256.0);
 	Hit prim_hit = raytrace(prim_ray);
-	colorOut = vec4(prim_hit.data) * dot(prim_hit.normal, -eyeDirection);*/
+	colorOut = vec4(prim_hit.data) * dot(prim_hit.normal, -eyeDirection);
 
 	/// AO RENDERER
 	/*Ray prim_ray = Ray(prim_org, prim_dir, 0.0, 256.0);
@@ -296,7 +282,7 @@ void main() {
 	}*/
 
 	/// PT RENDERER
-	int rng_seed = 0;
+	/*int rng_seed = 0;
 	#define mk_noise (abs(fract(texture(blueNoise, fract((pixelCoordinates + vec2(rng_seed * 73, rng_seed * 69)) / vec2(1024.0))) + goldenRatio * int(100 * voxelDataInfo.noise + rng_seed++))))
 	//#define mk_noise noise
 
@@ -319,7 +305,7 @@ void main() {
 				}
 			}
 
-			if(depth > 5) {
+			if(depth > 15) {
 				break;
 			}
 			
@@ -334,11 +320,11 @@ void main() {
 					//float ndl = dot(hit.normal, world.sunPosition);
 					Ray sun_ray = Ray(hitPoint, normalize(10.0 * world.sunPosition + mk_noise.xyz), 0.0, 256.0);
 					Hit sun_hit = raytrace(sun_ray);
-					color = color + hit.data.rgb * INVPI * 2.0 * sunRadiance * dot(hit.normal, sun_ray.direction) * (sun_hit.t < 0.0 ? 1.0 : 0.0);
+					color = color + hit.data.rgb * INVPI * 5.0 * sunRadiance * dot(hit.normal, sun_ray.direction) * (sun_hit.t < 0.0 ? 1.0 : 0.0);
 				}
 
 				if(last_specular || depth == 0) {
-					vec3 L_e = 3.0 * hit.data.rgb * clamp((hit.data.a - 0.5) * 2.0, 0.0, 1.0);
+					vec3 L_e = vec3(1.0)  * clamp((hit.data.a - 0.5) * 2.0, 0.0, 1.0);
 					color = color + L_e * weight;
 				}
 
@@ -354,7 +340,7 @@ void main() {
 				// "sky" color
 				if(last_specular || depth == 0) {
 					vec3 L_e = 0.125 * getSkyColor(world.time, normalize(ray.direction));
-					L_e = 0.5 * getAtmosphericScatteringAmbient();
+					L_e = 0.25 * getAtmosphericScatteringAmbient();
 					color = color + L_e * weight;
 				}
 				//float sunnyness = clamp(dot(normalize(ray.direction), world.sunPosition), 0.0, 1.0);
@@ -370,5 +356,5 @@ void main() {
 	colorAccumulation /= samples;
 	//colorAccumulation = color;
 
-	colorOut = vec4(sqrt(colorAccumulation), 1.0);
+	colorOut = vec4(sqrt(colorAccumulation), 1.0);*/
 }
