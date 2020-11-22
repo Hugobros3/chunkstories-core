@@ -62,22 +62,22 @@ void main() {
     vec3 normal = vec3(0.0, 1.0, 0.0);
 
     vec4 point = vec4(hPos.x, float(height), hPos.y, 1.0);
-	vec4 viewSpace = camera.viewMatrix * point;
-	vec4 projected = camera.projectionMatrix * viewSpace;
+    vec4 viewSpace = camera.viewMatrix * point;
+    vec4 projected = camera.projectionMatrix * viewSpace;
 
-	position = point.xyz;
+    position = point.xyz;
     //column = cellx;
     //row = cellz;
     computedNormal = camera.normalMatrix * normal;
     //barycentric = bary[gl_VertexIndex % 3];
     
-	gl_Position = projected;
+    gl_Position = projected;
 
-	/*position = vec3(0.0);
+    /*position = vec3(0.0);
     column = 0;
     row = 0;
     normalOut = vec3(0.0);
     barycentric = vec3(0.0);
     
-	gl_Position = vec4(0.0);*/
+    gl_Position = vec4(0.0);*/
 }

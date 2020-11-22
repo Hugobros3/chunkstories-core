@@ -5,8 +5,8 @@ struct Ray {
 };
 
 struct Hit {
-	float t;
-	ivec3 voxel;
-	vec4 data;
-	vec3 normal;
+    float t;
+    ivec3 voxel;
+    vec4 data;
+    vec3 normal;
 };

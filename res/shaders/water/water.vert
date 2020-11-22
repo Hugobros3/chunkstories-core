@@ -19,19 +19,18 @@ uniform Camera camera;
 //uniform ChunkRenderInfo chunkInfo;
 instanced ChunkRenderInfo chunkInfo; // look mom, no uniforms !
 
-void main()
-{
-	vec3 vertexPos = vertexIn.xyz;
-	vertexPos += vec3(chunkInfo.chunkX, chunkInfo.chunkY, chunkInfo.chunkZ) * 32.0;
+void main() {
+    vec3 vertexPos = vertexIn.xyz;
+    vertexPos += vec3(chunkInfo.chunkX, chunkInfo.chunkY, chunkInfo.chunkZ) * 32.0;
 
-	vec4 viewSpace = camera.viewMatrix * vec4(vertexPos, 1.0);
-	vec4 projected = camera.projectionMatrix * viewSpace;
+    vec4 viewSpace = camera.viewMatrix * vec4(vertexPos, 1.0);
+    vec4 projected = camera.projectionMatrix * viewSpace;
 
-	vertex = vertexPos;
-	color = vec4(colorIn, 1.0);
-	normal = normalIn;
-	texCoord = texCoordIn;
-	textureId = int(textureIdIn);
+    vertex = vertexPos;
+    color = vec4(colorIn, 1.0);
+    normal = normalIn;
+    texCoord = texCoordIn;
+    textureId = int(textureIdIn);
 
-	gl_Position = projected;
+    gl_Position = projected;
 }

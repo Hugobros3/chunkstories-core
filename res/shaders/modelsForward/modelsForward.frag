@@ -23,13 +23,12 @@ uniform WorldConditions world;
 #material sampler2D albedoTexture;
 #material sampler2D normalTexture;
 
-void main()
-{
-	vec4 albedo = texture(albedoTexture, texCoord).rgba;
+void main() {
+    vec4 albedo = texture(albedoTexture, texCoord).rgba;
 
-	if(albedo.a == 0.0) {
-		discard;
-	}
+    if(albedo.a == 0.0) {
+        discard;
+    }
 
-	shadedBuffer = albedo;
+    shadedBuffer = albedo;
 }

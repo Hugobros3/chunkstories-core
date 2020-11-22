@@ -46,7 +46,7 @@ float ridgedNoise(vec2 pos, int octaves, float freq, float persistence, vec4 off
 }
 
 float heightAt(vec2 pos) {
-	float height = 0.0;
+    float height = 0.0;
 
     float maxHeight = fractalNoise(pos, 1, 1.0, 0.5, vec4(-47.0, 154.0, 126.0, 148.0));
     height += (32 + 48 * maxHeight + 48 * maxHeight * maxHeight) * ridgedNoise(pos, 2, 1.0, 0.5, vec4(0.0, 154.0, 121.0, -48.0));
@@ -62,5 +62,5 @@ float heightAt(vec2 pos) {
     if(height < 63.0)
         height = 63.0;
 
-	return height;
+    return height;
 }

@@ -24,19 +24,18 @@ uniform WorldConditions world;
 #material sampler2D albedoTexture;
 #material sampler2D normalTexture;
 
-void main()
-{
-	vec4 albedo = texture(albedoTexture, texCoord).rgba;
+void main() {
+    vec4 albedo = texture(albedoTexture, texCoord).rgba;
 
-	if(albedo.a == 0.0) {
-		discard;
-	}
+    if(albedo.a == 0.0) {
+        discard;
+    }
 
-	if(albedo.a < 1.0) {
-		albedo.rgb *= vec3(0.2, 1.0, 0.5);
-		albedo.a = 1.0;
-	}
+    if(albedo.a < 1.0) {
+        albedo.rgb *= vec3(0.2, 1.0, 0.5);
+        albedo.a = 1.0;
+    }
 
-	colorBuffer = albedo;
-	normalBuffer = vec4(encodeNormal(normal), 1.0, 0.0);
+    colorBuffer = albedo;
+    normalBuffer = vec4(encodeNormal(normal), 1.0, 0.0);
 }

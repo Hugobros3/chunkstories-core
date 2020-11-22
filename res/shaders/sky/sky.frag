@@ -23,13 +23,13 @@ uniform Camera camera;
 
 void main()
 {
-	//Straight output of library's method
-	vec3 skyColor = getSkyColor(world.time, eyeDirection);
-	vec3 fogColor = getFogColor(world.time, 2000 * normalize(vec3(eyeDirection.x  + 1.0, 0.0, eyeDirection.z))).rgb;
-	
-	float belowHorizon = 0.0;//clamp(-300 * eyeDirection.y, 0.0, 1.0);
-	float weatherMist = overcastFactor * clamp(1.0 - abs(normalize(eyeDirection).y) * 1.0, 0.0, 1.0);
-	colorOut = vec4(mix(skyColor, fogColor, clamp(belowHorizon + weatherMist, 0.0, 1.0)), 1.0);
-	
-	//colorOut = vec4(skyColor, 1.0);
+    //Straight output of library's method
+    vec3 skyColor = getSkyColor(world.time, eyeDirection);
+    vec3 fogColor = getFogColor(world.time, 2000 * normalize(vec3(eyeDirection.x  + 1.0, 0.0, eyeDirection.z))).rgb;
+    
+    float belowHorizon = 0.0;//clamp(-300 * eyeDirection.y, 0.0, 1.0);
+    float weatherMist = overcastFactor * clamp(1.0 - abs(normalize(eyeDirection).y) * 1.0, 0.0, 1.0);
+    colorOut = vec4(mix(skyColor, fogColor, clamp(belowHorizon + weatherMist, 0.0, 1.0)), 1.0);
+    
+    //colorOut = vec4(skyColor, 1.0);
 }

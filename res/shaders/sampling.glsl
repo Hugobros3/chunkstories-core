@@ -20,14 +20,14 @@ SampledDirection sample_direction_hemisphere_cosine_weighted(vec2 randomVals) {
 /// Creates tangent vectors from normal vector
 /// from pbrt
 void generate_tangents(vec3 v1, out vec3 v2, out vec3 v3) {
-	if(abs(v1.x) > abs(v1.y)) {
-		float invLen = 1.0 / v1.xz.length();
-		v2 = vec3(-v1.z * invLen, 0.0, v1.x * invLen);
-	} else {
-		float invLen = 1.0 / v1.yz.length();
-		v2 = vec3(0.0, v1.z * invLen, -v1.y * invLen);
-	}
-	v3 = cross(v1, v2);
+    if(abs(v1.x) > abs(v1.y)) {
+        float invLen = 1.0 / v1.xz.length();
+        v2 = vec3(-v1.z * invLen, 0.0, v1.x * invLen);
+    } else {
+        float invLen = 1.0 / v1.yz.length();
+        v2 = vec3(0.0, v1.z * invLen, -v1.y * invLen);
+    }
+    v3 = cross(v1, v2);
 }
 
 /// Generates a cosine-weighted sample on a hemisphere wrt to the given normal

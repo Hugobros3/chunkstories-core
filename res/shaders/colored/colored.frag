@@ -5,7 +5,6 @@ in vec4 color;
 
 out vec4 shadedBuffer;
 
-void main()
-{
-	shadedBuffer = color;
+void main() {
+    shadedBuffer = color;
 }
