@@ -37,13 +37,18 @@ uniform ViewportSize viewportSize;
 #include struct xyz.chunkstories.api.graphics.structs.WorldConditions
 uniform WorldConditions world;
 
+#define COUNT_STEPS
+//#define RT_USE_MASK_OPS yes
+
+// define that to x for coherence subgroup ops to not do anything
+#define COHERENCE_ANY(x) subgroupAny(x)
+//#define COHERENCE_ANY(x) x
+
 #include ../sky/sky.glsl
 #include ../bbox.glsl
 #include ../raytracing.glsl
 #include ../sampling.glsl
 #include ../normalcompression.glsl
-
-//#define RT_USE_MASK_OPS yes
 
 const vec3[6] cube_normals = vec3[6](
     vec3(1.0, 0.0, 0.0),
@@ -75,15 +80,23 @@ vec3 make_normal(int face) {
 const int maxLevel = 5;
 
 Hit raytrace(in Ray ray) {	
-    //ivec3 gridPosition = ivec3(floor(ray.origin + 0.));
+    #ifdef COUNT_STEPS
+    int steps = 0;
+    #endif
+
     int level = maxLevel;
     int gridx = int(floor(ray.origin.x + 0.0));
     int gridy = int(floor(ray.origin.y + 0.0));
     int gridz = int(floor(ray.origin.z + 0.0));
     #define gridPosition ivec3(gridx, gridy, gridz)
 
-    if(any(greaterThanEqual((gridPosition - voxelDataInfo.baseChunkPos * ivec3(32)) & ivec3(0xFFFF), ivec3(voxel_data_size))))
-        return Hit(-1.0f, gridPosition, vec4(0.0), vec3(0.0));
+    if(any(greaterThanEqual((gridPosition - voxelDataInfo.baseChunkPos * ivec3(32)) & ivec3(0xFFFF), ivec3(voxel_data_size)))) {
+        return Hit(-1.0f, gridPosition, vec4(0.0), vec3(0.0)
+        #ifdef COUNT_STEPS
+        , steps
+        #endif
+        );
+    }
 
     vec3 tSpeed = abs(vec3(1.0) / ray.direction);
     vec3 timeToEdge = vec3(0.0);
@@ -102,11 +115,11 @@ Hit raytrace(in Ray ray) {
     bool hit = false;
     bool horizontal_move = true;
     [[loop]]
-    while(subgroupAny(horizontal_move)) {
+    while(COHERENCE_ANY(horizontal_move)) {
         // Vertical movement (across mip lvls)
         bool vertical_move = !hit;
         [[loop]]
-        while(subgroupAny(vertical_move)) {
+        while(COHERENCE_ANY(vertical_move)) {
             bool non_empty;
             bool above_non_empty;
             
@@ -155,6 +168,10 @@ Hit raytrace(in Ray ray) {
 
                 level += int(!non_empty);
             }
+
+            #ifdef COUNT_STEPS
+            steps++;
+            #endif
         }
 
         float minTime = min(timeToEdge.x, min(timeToEdge.y, timeToEdge.z));
@@ -202,6 +219,10 @@ Hit raytrace(in Ray ray) {
             }
             f = max(f, minTime);
         }
+
+        #ifdef COUNT_STEPS
+        steps++;
+        #endif
     }
 
     data = texelFetch(voxelData, (gridPosition & ivec3(voxel_data_size - 1)) >> level, level);
@@ -210,17 +231,29 @@ Hit raytrace(in Ray ray) {
         f = -1;
     }
 
-    return Hit(f, gridPosition, data, make_normal(out_face));
-    //return Hit(-1.0f, gridPosition, vec4(0.0), vec3(0.0));
+    return Hit(f, gridPosition, data, make_normal(out_face)
+    #ifdef COUNT_STEPS
+    , steps
+    #endif
+    );
 }
 
 #undef gridPosition
 
 Hit raytrace_non_mipmapped(Ray ray) {
+    #ifdef COUNT_STEPS
+    int steps = 0;
+    #endif
+
     ivec3 gridPosition = ivec3(floor(ray.origin + 0.));
 
-    if(any(greaterThanEqual((gridPosition - voxelDataInfo.baseChunkPos * ivec3(32)) & ivec3(0xFFFF), ivec3(voxel_data_size))))
-        return Hit(-1.0f, gridPosition, vec4(0.0), vec3(0.0));
+    if(any(greaterThanEqual((gridPosition - voxelDataInfo.baseChunkPos * ivec3(32)) & ivec3(0xFFFF), ivec3(voxel_data_size)))) {
+        return Hit(-1.0f, gridPosition, vec4(0.0), vec3(0.0)
+        #ifdef COUNT_STEPS
+        , steps
+        #endif
+        );
+    }
 
     vec3 tSpeed = abs(vec3(1.0) / ray.direction);
     ivec3 vstep = ivec3(greaterThan(ray.direction, vec3(0.0))) * 2 - ivec3(1);
@@ -241,13 +274,22 @@ Hit raytrace_non_mipmapped(Ray ray) {
             break;
 
         vec4 data = texelFetch(voxelData, (gridPosition & ivec3(voxel_data_size - 1)), 0);
-        if(data.a != 0.0 && minTime >= ray.tmin)
-            return Hit(f, gridPosition, data, normal);
+        if(data.a != 0.0 && minTime >= ray.tmin) {
+            return Hit(f, gridPosition, data, normal
+            #ifdef COUNT_STEPS
+            , steps
+            #endif
+            );
+        }
 
         buggy_driver++;
         if(buggy_driver > 512) {
             discard;
         }
+        
+        #ifdef COUNT_STEPS
+        steps++;
+        #endif
 
         #ifdef RT_USE_MASK_OPS
             bvec3 mask = lessThanEqual(timeToEdge.xyz, min(timeToEdge.yzx, timeToEdge.zxy));
@@ -281,7 +323,11 @@ Hit raytrace_non_mipmapped(Ray ray) {
         f = minTime;
     }
 
-    return Hit(-1.0f, gridPosition, vec4(0.0), vec3(0.0));
+    return Hit(-1.0f, gridPosition, vec4(0.0), vec3(0.0)
+    #ifdef COUNT_STEPS
+    , steps
+    #endif
+    );
 }
 
 void main() {
@@ -293,10 +339,16 @@ void main() {
     vec3 prim_org = camera.position;
     vec3 prim_dir = normalize(eyeDirection);
 
-    /// PRIMARY RAYS RENDERER
+    // COMPLEXITY RENDERER
     Ray prim_ray = Ray(prim_org, prim_dir, 0.0, 256.0);
     Hit prim_hit = raytrace(prim_ray);
-    colorOut = vec4(prim_hit.data) * dot(prim_hit.normal, -eyeDirection);
+    colorOut = vec4((vec3(prim_hit.steps * 0.005)) * mix(vec3(0.0, 0.5, 1.0), prim_hit.data.rgb, prim_hit.data.a), 1.0);
+    colorOut = vec4(sqrt(vec3(prim_hit.steps) * 0.005), 1.0);
+
+    /// PRIMARY RAYS RENDERER
+    /*Ray prim_ray = Ray(prim_org, prim_dir, 0.0, 256.0);
+    Hit prim_hit = raytrace(prim_ray);
+    colorOut = vec4(prim_hit.data) * dot(prim_hit.normal, -eyeDirection);*/
 
     /// AO RENDERER
     /*Ray prim_ray = Ray(prim_org, prim_dir, 0.0, 256.0);

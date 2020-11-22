@@ -9,4 +9,7 @@ struct Hit {
     ivec3 voxel;
     vec4 data;
     vec3 normal;
+    #ifdef COUNT_STEPS
+    int steps;
+    #endif
 };
