@@ -26,7 +26,7 @@ import xyz.chunkstories.api.item.inventory.Inventory
 import xyz.chunkstories.api.item.inventory.InventoryOwner
 import xyz.chunkstories.api.player.Player
 import xyz.chunkstories.api.sound.SoundSource
-import xyz.chunkstories.api.util.ColorsTools
+import xyz.chunkstories.api.util.getUniqueColorCode
 import xyz.chunkstories.api.world.World
 import xyz.chunkstories.core.entity.traits.*
 import java.util.*
@@ -153,7 +153,7 @@ class EntityPlayer(t: EntityDefinition, world: World) : EntityHumanoid(t, world)
 		TraitCrafting(this)
 		TraitCanPickupItems(this)
 
-		val variant = ColorsTools.getUniqueColorCode(name) % 6
+		val variant = getUniqueColorCode(name) % 6
 		val aaTchoum = HashMap<String, String>()
 		aaTchoum["albedoTexture"] = "./models/human/variant$variant.png"
 		val customSkin = MeshMaterial("playerSkin", aaTchoum, "opaque")

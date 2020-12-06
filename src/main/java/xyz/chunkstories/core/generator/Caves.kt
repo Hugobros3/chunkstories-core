@@ -6,13 +6,15 @@
 
 package xyz.chunkstories.core.generator
 
-import xyz.chunkstories.api.math.Math2
+import xyz.chunkstories.api.math.MathUtils
 import xyz.chunkstories.api.world.World
 import xyz.chunkstories.core.generator.HorizonGenerator.SliceData
 import xyz.chunkstories.core.generator.HorizonGenerator.StructureToPaste
 import org.joml.Vector2i
 import org.joml.Vector3d
 import org.joml.Vector3i
+import xyz.chunkstories.api.math.MathUtils.mixd
+import xyz.chunkstories.api.math.MathUtils.mixf
 import xyz.chunkstories.api.voxel.Voxel
 import xyz.chunkstories.api.voxel.structures.Structure
 import xyz.chunkstories.api.world.chunk.Chunk
@@ -88,16 +90,16 @@ internal class Caves(private val world: World, private val generator: HorizonGen
 
             val oldsize = size
             size += rnd.nextDouble() * 0.25 - 0.5
-            size = Math2.clampd(size, minimumSize, maximumSize)
+            size = MathUtils.clampd(size, minimumSize, maximumSize)
 
             val newdirection = Vector3d(rnd.nextFloat() * 2.0 - 1.0, rnd.nextFloat() * 2.0 - 1.0, rnd.nextFloat() * 2.0 - 1.0)
             newdirection.normalize()
 
             val newdirectioninfluence = rnd.nextDouble()
 
-            direction.x = Math2.mix(direction.x, direction.x + newdirection.x, newdirectioninfluence).toDouble()
-            direction.y = Math2.mix(direction.y, direction.y + newdirection.y, newdirectioninfluence).toDouble()
-            direction.z = Math2.mix(direction.z, direction.z + newdirection.z, newdirectioninfluence).toDouble()
+            direction.x = mixd(direction.x, direction.x + newdirection.x, newdirectioninfluence)
+            direction.y = mixd(direction.y, direction.y + newdirection.y, newdirectioninfluence)
+            direction.z = mixd(direction.z, direction.z + newdirection.z, newdirectioninfluence)
             direction.normalize()
 
             val posDelta = Vector2i(pos.x, pos.z)
@@ -124,11 +126,11 @@ internal class CaveSnakeSegment private constructor(internal val from: Vector3i,
         val d = from.distance(to)
         var i = 0
         while (i <= d) {
-            whereTho.x = Math2.mix(from.x.toDouble(), to.x.toDouble(), i / d).toInt()
-            whereTho.y = Math2.mix(from.y.toDouble(), to.y.toDouble(), i / d).toInt()
-            whereTho.z = Math2.mix(from.z.toDouble(), to.z.toDouble(), i / d).toInt()
+            whereTho.x = mixd(from.x.toDouble(), to.x.toDouble(), i / d).toInt()
+            whereTho.y = mixd(from.y.toDouble(), to.y.toDouble(), i / d).toInt()
+            whereTho.z = mixd(from.z.toDouble(), to.z.toDouble(), i / d).toInt()
             // System.out.println("pasting cave @"+from+" to "+to +"prog="+i / d);
-            sphereOfDoom(chunk, whereTho, Math2.mix(startingSize, endSize, i / d).toDouble())
+            sphereOfDoom(chunk, whereTho, mixd(startingSize, endSize, i / d))
             i++
         }
         sphereOfDoom(chunk, to, endSize)

@@ -13,7 +13,6 @@ import xyz.chunkstories.api.entity.traits.serializable.TraitHealth
 import xyz.chunkstories.api.entity.traits.serializable.TraitRotation
 import xyz.chunkstories.api.entity.traits.serializable.TraitSelectedItem
 import xyz.chunkstories.api.entity.traits.serializable.TraitVelocity
-import xyz.chunkstories.api.item.interfaces.ItemCustomHoldingAnimation
 import xyz.chunkstories.api.world.WorldClient
 import xyz.chunkstories.core.entity.traits.TraitHumanoidStance
 import xyz.chunkstories.core.entity.traits.TraitHumanoidStance.HumanoidStance
@@ -33,7 +32,7 @@ class HumanoidSkeletonAnimator(internal val entity: Entity) : CompoundAnimationH
     private val entityRotation: TraitRotation = entity.traits[TraitRotation::class.java]!!
     private val entityVelocity: TraitVelocity = entity.traits[TraitVelocity::class.java]!!
 
-    override fun getAnimationPlayingForBone(boneName: String, animationTime: Double): Animation {
+    override fun getAnimationPlayingForBone(boneName: String, animationTime: Float): Animation {
         if (entityHealth.isDead)
             return entity.world.gameContext.content.animationsLibrary.getAnimation("./animations/human/ded.bvh")
 
@@ -45,7 +44,7 @@ class HumanoidSkeletonAnimator(internal val entity: Entity) : CompoundAnimationH
                     val selectedItemPile = entity.traits[TraitSelectedItem::class]?.selectedItem
 
                 if (selectedItemPile != null) {
-                    // TODO refactor BVH subsystem to enable SkeletonAnimator to also take care of  additional transforms
+                    // TODO refactor BVH subsystem to enable SkeletonAnimator to also take care of additional transforms
                     val item = selectedItemPile.item
 
                     if (item is ItemMiningTool) {
@@ -56,10 +55,11 @@ class HumanoidSkeletonAnimator(internal val entity: Entity) : CompoundAnimationH
                         }
                     }
 
-                    if (item is ItemCustomHoldingAnimation)
-                        return@run world.content.animationsLibrary.getAnimation(item.customAnimationName)
-                    else
-                        return@run world.content.animationsLibrary.getAnimation("./animations/human/holding-item.bvh")
+                    //TODO rework
+                    //if (item is ItemCustomHoldingAnimation)
+                    //    return@run world.content.animationsLibrary.getAnimation(item.customAnimationName)
+                    //else
+                    return@run world.content.animationsLibrary.getAnimation("./animations/human/holding-item.bvh")
                 }
                 null
             }
@@ -89,7 +89,7 @@ class HumanoidSkeletonAnimator(internal val entity: Entity) : CompoundAnimationH
 
     }
 
-    override fun getBoneTransformationMatrix(boneName: String, animationTime: Double): Matrix4f {
+    override fun getBoneTransformationMatrix(boneName: String, animationTime: Float): Matrix4f {
         var modifiedAnimationTime = animationTime
         val characterRotationMatrix = Matrix4f()
         // Only the torso is modified, the effect is replicated accross the other bones
@@ -101,7 +101,7 @@ class HumanoidSkeletonAnimator(internal val entity: Entity) : CompoundAnimationH
 
         val horizSpd = sqrt(vel.x() * vel.x() + vel.z() * vel.z())
 
-        modifiedAnimationTime *= 0.75
+        modifiedAnimationTime *= 0.75f
 
         if (boneName.endsWith("boneHead")) {
             val modify = Matrix4f(getAnimationPlayingForBone(boneName, modifiedAnimationTime).getBone(boneName)!!.getTransformationMatrix(modifiedAnimationTime))
@@ -110,10 +110,10 @@ class HumanoidSkeletonAnimator(internal val entity: Entity) : CompoundAnimationH
         }
 
         if (horizSpd > 0.030)
-            modifiedAnimationTime *= 1.5
+            modifiedAnimationTime *= 1.5f
 
         if (horizSpd > 0.060)
-            modifiedAnimationTime *= 1.5
+            modifiedAnimationTime *= 1.5f
         else if (listOf("boneArmLU", "boneArmRU", "boneArmLD", "boneArmRD", "boneItemInHand", "boneTorso").contains(boneName)) {
 
             val trait = entity.traits[TraitMining::class.java]
@@ -122,7 +122,7 @@ class HumanoidSkeletonAnimator(internal val entity: Entity) : CompoundAnimationH
                 if (miningProgress != null) {
                     val lol = entity.world.gameContext.content.animationsLibrary.getAnimation("./animations/human/mining.bvh")
 
-                    return characterRotationMatrix.mul(lol.getBone(boneName)!!.getTransformationMatrix(((System.currentTimeMillis() - miningProgress.started) * 1.5f).toDouble()))
+                    return characterRotationMatrix.mul(lol.getBone(boneName)!!.getTransformationMatrix(((System.currentTimeMillis() - miningProgress.started) * 1.5f)))
                 }
             }
         }
@@ -144,28 +144,11 @@ class HumanoidSkeletonAnimator(internal val entity: Entity) : CompoundAnimationH
             }
         }
 
-        if (boneName == "boneItemInHand" && selectedItem!!.item is ItemCustomHoldingAnimation) {
-            modifiedAnimationTime = (selectedItem.item as ItemCustomHoldingAnimation).transformAnimationTime(modifiedAnimationTime)
-        }
+        //TODO rework
+        //if (boneName == "boneItemInHand" && selectedItem!!.item is ItemCustomHoldingAnimation) {
+        //    modifiedAnimationTime = (selectedItem.item as ItemCustomHoldingAnimation).transformAnimationTime(modifiedAnimationTime)
+        //}
 
         return characterRotationMatrix.mul(getAnimationPlayingForBone(boneName, modifiedAnimationTime).getBone(boneName)!!.getTransformationMatrix(modifiedAnimationTime))
     }
-
-    // TODO
-    /* public boolean shouldHideBone(RenderingInterface renderingContext, String
-	 * boneName) { if (entity.equals(((WorldClient)
-	 * entity.getWorld()).getClient().getPlayer().getControlledEntity())) { if
-	 * (renderingContext.getCurrentPass().name.startsWith("shadow")) return false;
-	 * 
-	 * ItemPile selectedItem = entity.traits.tryWith(TraitSelectedItem.class, eci ->
-	 * eci.getSelectedItem());
-	 * 
-	 * if (Arrays.asList("boneArmRU", "boneArmRD").contains(boneName) &&
-	 * selectedItem != null) if (selectedItem.getItem() instanceof ItemVoxel ||
-	 * selectedItem.getItem() instanceof ItemMiningTool) return true;
-	 * 
-	 * if (Arrays.asList("boneArmLU", "boneArmRU", "boneArmLD",
-	 * "boneArmRD").contains(boneName) && selectedItem != null) return false;
-	 * 
-	 * return true; } return false; } */
 }

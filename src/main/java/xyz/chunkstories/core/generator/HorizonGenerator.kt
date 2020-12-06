@@ -23,8 +23,7 @@ import xyz.chunkstories.api.world.generator.WorldGenerator
 import xyz.chunkstories.api.world.generator.WorldGeneratorDefinition
 import java.util.*
 import kotlin.math.abs
-import xyz.chunkstories.api.math.Math2.clamp
-
+import xyz.chunkstories.api.math.MathUtils.clamp
 
 open class HorizonGenerator(definition: WorldGeneratorDefinition, world: World) : WorldGenerator(definition, world) {
     private val ssng = SeededSimplexNoiseGenerator(world.worldInfo.seed)
@@ -300,7 +299,7 @@ open class HorizonGenerator(definition: WorldGeneratorDefinition, world: World) 
         height += (32f + 48 * maxHeight + 48f * maxHeight * maxHeight) * ridgedNoise(x, z, 2, 1.0f, 0.5f, rng2)
 
         var roughness = fractalNoise(x, z, 1, 1.0f, 0.5f, rng3)
-        roughness = clamp(roughness * 2.5 - 0.33, 0.25, 1.0)
+        roughness = clamp(roughness * 2.5f - 0.33f, 0.25f, 1.0f)
 
         height += 32f * roughness * fractalNoise(x, z, 4, 8.0f, 0.5f, rng4)
 

@@ -20,6 +20,7 @@ import xyz.chunkstories.api.graphics.representation.ModelPosition
 import xyz.chunkstories.api.graphics.representation.drawCube
 import xyz.chunkstories.api.graphics.systems.dispatching.RepresentationsGobbler
 import xyz.chunkstories.api.util.kotlin.toVec3f
+import xyz.chunkstories.api.world.animationTime
 import xyz.chunkstories.core.entity.traits.TraitMining
 
 open class EntityHumanoidRenderer(entity: EntityHumanoid, private val customSkin: MeshMaterial? = null) : TraitRenderable<EntityHumanoid>(entity) {
@@ -55,11 +56,7 @@ open class EntityHumanoidRenderer(entity: EntityHumanoid, private val customSkin
 		if(itemInHand != null) {
 			val itemMatrix = Matrix4f(matrix)
 
-			val realWorldTimeTruncated = (System.nanoTime() % 1000_000_000_000)
-			val realWorldTimeMs = realWorldTimeTruncated / 1000_000
-			val animationTime = (realWorldTimeMs / 1000.0) * 1000.0
-
-			itemMatrix.mul(animator.getBoneHierarchyTransformationMatrix("boneItemInHand", animationTime))
+			itemMatrix.mul(animator.getBoneHierarchyTransformationMatrix("boneItemInHand", entity.world.animationTime))
 
 			itemInHand.item.buildRepresentation(itemMatrix, representationsGobbler)
 		}
