@@ -7,30 +7,30 @@
 package xyz.chunkstories.core.voxel
 
 import org.joml.Matrix4f
+import xyz.chunkstories.api.block.BlockRepresentation
+import xyz.chunkstories.api.block.BlockSide
+import xyz.chunkstories.api.block.BlockType
+import xyz.chunkstories.api.content.Content
+import xyz.chunkstories.api.content.json.Json
 import xyz.chunkstories.api.content.json.asString
 import xyz.chunkstories.api.graphics.MeshMaterial
 import xyz.chunkstories.api.graphics.representation.Model
 import xyz.chunkstories.api.physics.Box
-import xyz.chunkstories.api.voxel.ChunkMeshRenderingInterface
-import xyz.chunkstories.api.voxel.Voxel
-import xyz.chunkstories.api.voxel.VoxelDefinition
-import xyz.chunkstories.api.voxel.VoxelSide
 import xyz.chunkstories.api.world.cell.Cell
-class VoxelVine(definition: VoxelDefinition) : Voxel(definition), VoxelClimbable {
 
-	private val model: Model
-	private val mappedOverrides = mapOf(0 to MeshMaterial("door_material", mapOf("albedoTexture" to "voxels/textures/${this.voxelTextures[VoxelSide.FRONT.ordinal].name}.png")))
+class VoxelVine(name: String, definition: Json.Dict, content: Content) : BlockType(name, definition, content), VoxelClimbable {
 
-	init {
-		model = definition.store.parent.models[definition["model"].asString ?: "voxels/blockmodels/vine/vine.dae"]
+	private val model: Model = content.models[definition["model"].asString ?: "voxels/blockmodels/vine/vine.dae"]
+	private val mappedOverrides = mapOf(0 to MeshMaterial("door_material", mapOf("albedoTexture" to "voxels/textures/${this.textures[BlockSide.FRONT.ordinal].name}.png")))
 
-		customRenderingRoutine = { cell ->
+	override fun loadRepresentation(): BlockRepresentation {
+		return BlockRepresentation.Custom { cell ->
 			render(cell, this)
 		}
 	}
 
-	fun render(cell: Cell, mesher: ChunkMeshRenderingInterface) {
-		val meta = cell.metaData
+	fun render(cell: Cell, mesher: BlockRepresentation.Custom.RenderInterface) {
+		val meta = cell.data.extraData
 		/*val rotation = when (meta % 4) {
 			0 -> 2
 			1 -> 1
@@ -50,16 +50,11 @@ class VoxelVine(definition: VoxelDefinition) : Voxel(definition), VoxelClimbable
 		}
 	}
 
-	override fun getCollisionBoxes(info: Cell): Array<Box>? {
-
-		val meta = info.metaData
-		if (meta == 1)
-			return arrayOf(Box.fromExtents(1.0, 1.0, 0.1).translate(0.0, 0.0, 0.9))
-		if (meta == 2)
-			return arrayOf(Box.fromExtents(0.1, 1.0, 1.0).translate(0.0, 0.0, 0.0))
-		if (meta == 4)
-			return arrayOf(Box.fromExtents(1.0, 1.0, 0.1).translate(0.0, 0.0, 0.0))
-		return if (meta == 8) arrayOf(Box.fromExtents(0.1, 1.0, 1.0).translate(0.9, 0.0, 0.0)) else super.getCollisionBoxes(info)
-
+	override fun getCollisionBoxes(cell: Cell) = when (cell.data.extraData) {
+		1 -> arrayOf(Box.fromExtents(1.0, 1.0, 0.1).translate(0.0, 0.0, 0.9))
+		2 -> arrayOf(Box.fromExtents(0.1, 1.0, 1.0).translate(0.0, 0.0, 0.0))
+		4 -> arrayOf(Box.fromExtents(1.0, 1.0, 0.1).translate(0.0, 0.0, 0.0))
+		8 -> arrayOf(Box.fromExtents(0.1, 1.0, 1.0).translate(0.9, 0.0, 0.0))
+		else -> super.getCollisionBoxes(cell)
 	}
 }

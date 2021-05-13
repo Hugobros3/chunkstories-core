@@ -7,44 +7,52 @@
 package xyz.chunkstories.core.voxel
 
 import org.joml.Matrix4f
+import xyz.chunkstories.api.block.BlockRepresentation
+import xyz.chunkstories.api.block.BlockSide
+import xyz.chunkstories.api.block.BlockType
+import xyz.chunkstories.api.content.Content
+import xyz.chunkstories.api.content.json.Json
 import xyz.chunkstories.api.content.json.asString
 import xyz.chunkstories.api.graphics.MeshMaterial
 import xyz.chunkstories.api.graphics.representation.Model
 import xyz.chunkstories.api.physics.Box
-import xyz.chunkstories.api.voxel.ChunkMeshRenderingInterface
-import xyz.chunkstories.api.voxel.Voxel
-import xyz.chunkstories.api.voxel.VoxelDefinition
-import xyz.chunkstories.api.voxel.VoxelSide
+import xyz.chunkstories.api.world.WorldCell
 import xyz.chunkstories.api.world.cell.Cell
 
-class VoxelPane(definition: VoxelDefinition) : Voxel(definition) {
+class VoxelPane(name: String, definition: Json.Dict, content: Content) : BlockType(name, definition, content) {
 
 	private val baseModel: Model
 	private val backPartMode: Model
 	private val frontPartModel: Model
-	private val mappedOverrides = mapOf(0 to MeshMaterial("door_material", mapOf("albedoTexture" to "voxels/textures/${this.voxelTextures[VoxelSide.FRONT.ordinal].name}.png")),
-			1 to MeshMaterial("door_material", mapOf("albedoTexture" to "voxels/textures/${this.voxelTextures[VoxelSide.FRONT.ordinal].name}.png")))
+	private val mappedOverrides = mapOf(0 to MeshMaterial("door_material", mapOf("albedoTexture" to "voxels/textures/${this.textures[BlockSide.FRONT.ordinal].name}.png")),
+			1 to MeshMaterial("door_material", mapOf("albedoTexture" to "voxels/textures/${this.textures[BlockSide.FRONT.ordinal].name}.png")))
 
 	init {
-		baseModel = definition.store.parent.models[definition["model"].asString ?: "voxels/blockmodels/glass_pane/glass_pane.dae"]
-		backPartMode = definition.store.parent.models[definition["model"].asString ?: "voxels/blockmodels/glass_pane/glass_pane_back_half.dae"]
-		frontPartModel = definition.store.parent.models[definition["model"].asString ?: "voxels/blockmodels/glass_pane/glass_pane_front_half.dae"]
-
-		customRenderingRoutine = { cell ->
-			render(cell, this)
-		}
+		baseModel = content.models[definition["model"].asString ?: "voxels/blockmodels/glass_pane/glass_pane.dae"]
+		backPartMode = content.models[definition["model"].asString ?: "voxels/blockmodels/glass_pane/glass_pane_back_half.dae"]
+		frontPartModel = content.models[definition["model"].asString ?: "voxels/blockmodels/glass_pane/glass_pane_front_half.dae"]
 	}
 
-	fun render(cell: Cell, mesher: ChunkMeshRenderingInterface) {
-		var vox: Voxel?
-		vox = cell.getNeightborVoxel(0)
-		val connectLeft = vox!!.solid && vox.opaque || vox == this
-		vox = cell.getNeightborVoxel(1)
-		val connectFront = vox!!.solid && vox.opaque || vox == this
-		vox = cell.getNeightborVoxel(2)
-		val connectRight = vox!!.solid && vox.opaque || vox == this
-		vox = cell.getNeightborVoxel(3)
-		val connectBack = vox!!.solid && vox.opaque || vox == this
+	override fun loadRepresentation() = BlockRepresentation.Custom { cell ->
+		render(cell, this)
+	}
+
+	fun render(cell: Cell, mesher: BlockRepresentation.Custom.RenderInterface) {
+		val leftNeighbour = if (cell is WorldCell) cell.getNeighbour(BlockSide.LEFT) else null
+		val leftNeighbourBlockType = leftNeighbour?.data?.blockType
+		val connectLeft = leftNeighbourBlockType != null && (leftNeighbourBlockType.solid && leftNeighbourBlockType.opaque || leftNeighbourBlockType.sameKind(this))
+
+		val frontNeighbour = if (cell is WorldCell) cell.getNeighbour(BlockSide.FRONT) else null
+		val frontNeighbourBlockType = frontNeighbour?.data?.blockType
+		val connectFront = frontNeighbourBlockType != null && (frontNeighbourBlockType.solid && frontNeighbourBlockType.opaque || frontNeighbourBlockType.sameKind(this))
+
+		val rightNeighbour = if (cell is WorldCell) cell.getNeighbour(BlockSide.RIGHT) else null
+		val rightNeighbourBlockType = rightNeighbour?.data?.blockType
+		val connectRight = rightNeighbourBlockType != null && (rightNeighbourBlockType.solid && rightNeighbourBlockType.opaque || rightNeighbourBlockType.sameKind(this))
+
+		val backNeighbour = if (cell is WorldCell) cell.getNeighbour(BlockSide.BACK) else null
+		val backNeighbourBlockType = backNeighbour?.data?.blockType
+		val connectBack = backNeighbourBlockType != null && (backNeighbourBlockType.solid && backNeighbourBlockType.opaque || backNeighbourBlockType.sameKind(this))
 
 		fun arity(b: Boolean): Int = if (b) 1 else 0
 
@@ -105,17 +113,22 @@ class VoxelPane(definition: VoxelDefinition) : Voxel(definition) {
 		}
 	}
 
-	override fun getCollisionBoxes(info: Cell): Array<Box>? {
+	override fun getCollisionBoxes(cell: Cell): Array<Box> {
+		val leftNeighbour = if (cell is WorldCell) cell.getNeighbour(BlockSide.LEFT) else null
+		val leftNeighbourBlockType = leftNeighbour?.data?.blockType
+		val connectLeft = leftNeighbourBlockType != null && (leftNeighbourBlockType.solid && leftNeighbourBlockType.opaque || leftNeighbourBlockType.sameKind(this))
 
-		var vox: Voxel?
-		vox = info.getNeightborVoxel(0)
-		val connectLeft = vox!!.solid && vox.opaque || vox == this
-		vox = info.getNeightborVoxel(1)
-		val connectFront = vox!!.solid && vox.opaque || vox == this
-		vox = info.getNeightborVoxel(2)
-		val connectRight = vox!!.solid && vox.opaque || vox == this
-		vox = info.getNeightborVoxel(3)
-		val connectBack = vox!!.solid && vox.opaque || vox == this
+		val frontNeighbour = if (cell is WorldCell) cell.getNeighbour(BlockSide.FRONT) else null
+		val frontNeighbourBlockType = frontNeighbour?.data?.blockType
+		val connectFront = frontNeighbourBlockType != null && (frontNeighbourBlockType.solid && frontNeighbourBlockType.opaque || frontNeighbourBlockType.sameKind(this))
+
+		val rightNeighbour = if (cell is WorldCell) cell.getNeighbour(BlockSide.RIGHT) else null
+		val rightNeighbourBlockType = rightNeighbour?.data?.blockType
+		val connectRight = rightNeighbourBlockType != null && (rightNeighbourBlockType.solid && rightNeighbourBlockType.opaque || rightNeighbourBlockType.sameKind(this))
+
+		val backNeighbour = if (cell is WorldCell) cell.getNeighbour(BlockSide.BACK) else null
+		val backNeighbourBlockType = backNeighbour?.data?.blockType
+		val connectBack = backNeighbourBlockType != null && (backNeighbourBlockType.solid && backNeighbourBlockType.opaque || backNeighbourBlockType.sameKind(this))
 
 		val width = 0.1
 		val delta1 = 0.45

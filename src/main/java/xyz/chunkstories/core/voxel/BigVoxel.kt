@@ -6,17 +6,15 @@
 
 package xyz.chunkstories.core.voxel
 
+import xyz.chunkstories.api.block.BlockType
+import xyz.chunkstories.api.content.Content
+import xyz.chunkstories.api.content.json.Json
 import xyz.chunkstories.api.content.json.asInt
-import xyz.chunkstories.api.entity.Entity
-import xyz.chunkstories.api.events.voxel.WorldModificationCause
-import xyz.chunkstories.api.exceptions.world.voxel.IllegalBlockModificationException
-import xyz.chunkstories.api.voxel.Voxel
-import xyz.chunkstories.api.voxel.VoxelDefinition
-import xyz.chunkstories.api.world.cell.FutureCell
-import xyz.chunkstories.api.world.chunk.ChunkCell
+import xyz.chunkstories.api.world.cell.PodCellData
+import xyz.chunkstories.api.world.chunk.MutableChunkCell
 
 // don't trust the lies of BIG VOXEL !!!!
-class BigVoxel(definition: VoxelDefinition) : Voxel(definition) {
+class BigVoxel(name: String, definition: Json.Dict, content: Content) : BlockType(name, definition, content) {
 
 	val xWidth: Int
 	val yWidth: Int
@@ -56,8 +54,8 @@ class BigVoxel(definition: VoxelDefinition) : Voxel(definition) {
 		}
 	}
 
-	@Throws(IllegalBlockModificationException::class)
-	fun onPlace(context: FutureCell, cause: WorldModificationCause?) {
+	// TODO move to item
+	/*fun onPlace(context: FutureCell, cause: WorldModificationCause?) {
 		// Be cool with the system doing it's thing
 		if (cause == null)
 			return
@@ -95,20 +93,15 @@ class BigVoxel(definition: VoxelDefinition) : Voxel(definition) {
 				}
 			}
 		}
-	}
+	}*/
 
-	@Throws(IllegalBlockModificationException::class)
-	override fun onRemove(context: ChunkCell, cause: WorldModificationCause?) {
-		// Don't mess with machine removal
-		if (cause == null)
-			return
-
-		val x = context.x
-		val y = context.y
-		val z = context.z
+	override fun onRemove(cell: MutableChunkCell): Boolean {
+		val x = cell.x
+		val y = cell.y
+		val z = cell.z
 
 		// Backpedal to find the root block
-		val meta = context.metaData
+		val meta = cell.data.extraData
 
 		val ap = meta shr xShift and xMask
 		val bp = meta shr yShift and yMask
@@ -120,28 +113,18 @@ class BigVoxel(definition: VoxelDefinition) : Voxel(definition) {
 		val startY = y - bp
 		val startZ = z - cp
 
+		val empty = PodCellData(cell.world.gameInstance.content.blockTypes.air)
+
 		for (a in startX until startX + xWidth) {
 			for (b in startY until startY + yWidth) {
 				for (c in startZ until startZ + zWidth) {
 					// poke zero where the big voxel used to be
-					context.world.pokeSimple(a, b, c, store.air, -1, -1, 0)
+					cell.world.setCellData(a, b, c, empty)
 				}
 			}
 		}
-	}
 
-	@Throws(IllegalBlockModificationException::class)
-	override
-			/**
-			* Big voxels manage themselves using their 8 bits of metadata. They don't let
-			* themselves being touched !
-			*/
-	fun onModification(context: ChunkCell, voxelData: FutureCell, cause: WorldModificationCause?) {
-		if (cause != null && cause is Entity)
-			throw IllegalBlockModificationException(context, "Big Voxels aren't modifiable by anyone !") // BIG
-		// VOXEL
-		// is
-		// untouchable!!!
+		return true
 	}
 
 	companion object {

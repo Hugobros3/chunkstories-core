@@ -15,4 +15,4 @@ import xyz.chunkstories.core.entity.blocksWithin
 */
 interface VoxelClimbable
 
-fun Entity.isOnLadder() : Boolean = this.blocksWithin().any { it.voxel is VoxelClimbable }
+fun Entity.isOnLadder() : Boolean = this.blocksWithin().any { it.data.blockType is VoxelClimbable }

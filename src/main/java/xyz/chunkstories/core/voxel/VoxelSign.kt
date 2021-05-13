@@ -7,41 +7,37 @@
 package xyz.chunkstories.core.voxel
 
 import xyz.chunkstories.api.entity.Entity
-import xyz.chunkstories.api.events.voxel.WorldModificationCause
-import xyz.chunkstories.api.exceptions.world.voxel.IllegalBlockModificationException
 import xyz.chunkstories.api.input.Input
-import xyz.chunkstories.api.voxel.Voxel
-import xyz.chunkstories.api.voxel.VoxelDefinition
-import xyz.chunkstories.api.world.cell.FutureCell
 import xyz.chunkstories.api.world.chunk.ChunkCell
-import xyz.chunkstories.api.world.chunk.FreshChunkCell
-import xyz.chunkstories.core.voxel.components.VoxelComponentSignText
+import xyz.chunkstories.core.voxel.components.SignData
 import org.joml.Vector2f
 import org.joml.Vector3d
+import xyz.chunkstories.api.block.BlockSide
+import xyz.chunkstories.api.block.BlockType
 import xyz.chunkstories.api.content.Content
 import xyz.chunkstories.api.content.json.Json
 import xyz.chunkstories.api.content.json.asDict
+import xyz.chunkstories.api.item.ItemBlock
 import xyz.chunkstories.api.item.ItemDefinition
-import xyz.chunkstories.api.item.ItemVoxel
 import xyz.chunkstories.api.physics.RayResult
-import xyz.chunkstories.api.voxel.VoxelSide
 import xyz.chunkstories.api.world.cell.Cell
+import xyz.chunkstories.api.world.cell.MutableCellData
+import xyz.chunkstories.api.world.chunk.MutableChunkCell
 
 /** Signs are voxels you can write stuff on  */
 // TODO implement a gui when placing a sign to actually set the text
 // currently only the map converter can make signs have non-default text
 // TODO expose the gui to the api to enable this
-class VoxelSign(definition: VoxelDefinition) : Voxel(definition) {
+class VoxelSign(name: String, definition: Json.Dict, content: Content) : BlockType(name, definition, content) {
 
-	override fun handleInteraction(entity: Entity, voxelContext: ChunkCell, input: Input): Boolean {
+	override fun onInteraction(entity: Entity, cell: MutableChunkCell, input: Input): Boolean {
 		return false
 	}
 
 	/* @Override public VoxelDynamicRenderer getVoxelRenderer(CellData info) {
 	* return signRenderer; } */
 
-	@Throws(IllegalBlockModificationException::class)
-	fun onPlace(cell: FutureCell, cause: WorldModificationCause?) {
+	/*fun onPlace(cell: FutureCell, cause: WorldModificationCause?) {
 		// We don't create the components here, as the cell isn't actually changed yet!
 		val x = cell.x
 		val y = cell.y
@@ -72,18 +68,17 @@ class VoxelSign(definition: VoxelDefinition) : Voxel(definition) {
 			val meta = (16 * asAngle / 360).toInt()
 			cell.metaData = meta
 		}
-	}
+	}*/
 
-	override fun whenPlaced(cell: FreshChunkCell) {
-		val signTextComponent = VoxelComponentSignText(cell.components)
+	override fun whenPlaced(cell: MutableChunkCell) {
+		val signTextComponent = SignData(cell)
 		signTextComponent.signText = "Random String ${Math.random()}"
-		cell.registerComponent("signData", signTextComponent)
+		cell.registerAdditionalData("signData", signTextComponent)
 	}
 
-	/** Gets the sign component from a chunkcell, assuming it is indeed a sign
-	* cell  */
-	fun getSignData(context: ChunkCell): VoxelComponentSignText {
-		return context.components.getVoxelComponent("signData") as VoxelComponentSignText
+	/** Gets the sign component from a chunk cell, assuming it is indeed a sign cell */
+	fun getSignData(cell: ChunkCell): SignData {
+		return cell.additionalData["signData"] as SignData
 	}
 
 	override fun enumerateVariants(itemStore: Content.ItemsDefinitions): List<ItemDefinition> {
@@ -102,8 +97,8 @@ class VoxelSign(definition: VoxelDefinition) : Voxel(definition) {
 	}
 }
 
-class ItemSign(definition: ItemDefinition) : ItemVoxel(definition) {
-	override fun prepareNewBlockData(cell: FutureCell, adjacentCell: Cell, adjacentCellSide: VoxelSide, placingEntity: Entity, hit: RayResult.Hit.VoxelHit): Boolean {
-		return super.prepareNewBlockData(cell, adjacentCell, adjacentCellSide, placingEntity, hit)
+class ItemSign(definition: ItemDefinition) : ItemBlock(definition) {
+	override fun prepareNewBlockData(adjacentCell: Cell, adjacentCellSide: BlockSide, placingEntity: Entity, hit: RayResult.Hit.VoxelHit): MutableCellData? {
+		return super.prepareNewBlockData(adjacentCell, adjacentCellSide, placingEntity, hit)
 	}
 }

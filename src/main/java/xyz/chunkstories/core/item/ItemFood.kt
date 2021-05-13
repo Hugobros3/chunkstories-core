@@ -18,7 +18,7 @@ import xyz.chunkstories.core.entity.traits.TraitFoodLevel
 
 class ItemFood(definition: ItemDefinition) : Item(definition) {
 
-	private val calories: Float = definition["calories"].asFloat ?: 10.0f//java.lang.Float.parseFloat(type.resolveProperty("calories", "10.0"))
+	private val calories: Float = definition.properties["calories"].asFloat ?: 10.0f//java.lang.Float.parseFloat(type.resolveProperty("calories", "10.0"))
 
 	override fun onControllerInput(entity: Entity, itemPile: ItemPile, input: Input, controller: Controller): Boolean {
 		if (entity.world is WorldMaster) {

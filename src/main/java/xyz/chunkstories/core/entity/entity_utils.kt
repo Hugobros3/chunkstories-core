@@ -10,16 +10,13 @@ import xyz.chunkstories.api.entity.Entity
 import xyz.chunkstories.api.entity.traits.TraitCollidable
 import xyz.chunkstories.api.world.cell.Cell
 
-fun Entity.blocksWithin(): Collection<Cell> {
-	val entityBox = this.getTranslatedBoundingBox() ?: return emptyList()
+fun Entity.blocksWithin(): Sequence<Cell> {
+	val entityBox = this.getTranslatedBoundingBox()
 
-	return world.getVoxelsWithin(entityBox).mapNotNull {
-		if (it == null)
-			return@mapNotNull null
+	return world.getCellsInBox(entityBox).mapNotNull {
+		cell ->
 
-		val cell = world.peek(it.x, it.y, it.z)
-
-		for (voxelBox in cell.voxel.getTranslatedCollisionBoxes(cell) ?: return@mapNotNull null) {
+		for (voxelBox in cell.data.blockType.getTranslatedCollisionBoxes(cell)) {
 			if (voxelBox.collidesWith(entityBox))
 				return@mapNotNull cell
 		}

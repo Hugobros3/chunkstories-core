@@ -7,22 +7,22 @@
 package xyz.chunkstories.core.voxel
 
 import org.joml.Matrix4f
+import xyz.chunkstories.api.block.BlockRepresentation
+import xyz.chunkstories.api.block.BlockSide
+import xyz.chunkstories.api.block.BlockType
+import xyz.chunkstories.api.block.MiningTool
+import xyz.chunkstories.api.content.Content
+import xyz.chunkstories.api.content.json.Json
 import xyz.chunkstories.api.graphics.MeshMaterial
 import xyz.chunkstories.api.graphics.representation.Model
-import xyz.chunkstories.api.voxel.MiningTool
-import xyz.chunkstories.api.voxel.Voxel
-import xyz.chunkstories.api.voxel.VoxelDefinition
-import xyz.chunkstories.api.voxel.VoxelSide
-import xyz.chunkstories.api.world.cell.EditableCell
+import xyz.chunkstories.api.world.chunk.MutableChunkCell
 
-class VoxelSmallPlant(definition: VoxelDefinition) : Voxel(definition) {
-	val model: Model = definition.store.parent.models["voxels/blockmodels/grass_prop/grass_prop.dae"]
+class VoxelSmallPlant(name: String, definition: Json.Dict, content: Content) : BlockType(name, definition, content) {
+	val model: Model = content.models["voxels/blockmodels/grass_prop/grass_prop.dae"]
 
-	init {
-
-		val mappedOverrides = mapOf(0 to MeshMaterial("material", mapOf("albedoTexture" to "voxels/textures/${this.voxelTextures[VoxelSide.FRONT.ordinal].name}.png")))
-
-		customRenderingRoutine = { cell ->
+	override fun loadRepresentation(): BlockRepresentation {
+		val mappedOverrides = mapOf(0 to MeshMaterial("material", mapOf("albedoTexture" to "voxels/textures/${textures[BlockSide.FRONT.ordinal].name}.png")))
+		return BlockRepresentation.Custom { cell ->
 			val matrix = Matrix4f()
 
 			matrix.translate(0.5f, 0f, 0.5f)
@@ -35,12 +35,12 @@ class VoxelSmallPlant(definition: VoxelDefinition) : Voxel(definition) {
 		}
 	}
 
-	override fun tick(cell: EditableCell) {
+	override fun tick(cell: MutableChunkCell) {
 		if(cell.y == 0)
 			return
-		val below = cell.world.peek(cell.x, cell.y - 1, cell.z)
-		if(!below.voxel.solid || !below.voxel.opaque) {
-			cell.voxel.breakBlock(cell, SmallPlantsAutoDestroy, null)
+		val below = cell.world.getCell(cell.x, cell.y - 1, cell.z) ?: return
+		if(!below.data.blockType.solid || !below.data.blockType.opaque) {
+			cell.data.blockType.breakBlock(cell, null, SmallPlantsAutoDestroy)
 		}
 	}
 

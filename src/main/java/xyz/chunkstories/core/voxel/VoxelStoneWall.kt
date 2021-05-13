@@ -6,12 +6,15 @@
 
 package xyz.chunkstories.core.voxel
 
+import xyz.chunkstories.api.block.BlockSide
+import xyz.chunkstories.api.block.BlockType
+import xyz.chunkstories.api.content.Content
+import xyz.chunkstories.api.content.json.Json
 import xyz.chunkstories.api.physics.Box
-import xyz.chunkstories.api.voxel.Voxel
-import xyz.chunkstories.api.voxel.VoxelDefinition
+import xyz.chunkstories.api.world.WorldCell
 import xyz.chunkstories.api.world.cell.Cell
 
-class VoxelStoneWall(definition: VoxelDefinition) : Voxel(definition) {
+class VoxelStoneWall(name: String, definition: Json.Dict, content: Content) : BlockType(name, definition, content) {
 
 	/*@Override
 	public VoxelModel getVoxelRenderer(CellData info) {
@@ -60,18 +63,22 @@ class VoxelStoneWall(definition: VoxelDefinition) : Voxel(definition) {
 		return store.models().getVoxelModel("stone_wall" + "." + type);
 	}*/
 
-	override fun getCollisionBoxes(info: Cell): Array<Box>? {
-		// System.out.println("kek");
+	override fun getCollisionBoxes(cell: Cell): Array<Box> {
+		val leftNeighbour = if (cell is WorldCell) cell.getNeighbour(BlockSide.LEFT) else null
+		val leftNeighbourBlockType = leftNeighbour?.data?.blockType
+		val connectLeft = leftNeighbourBlockType != null && (leftNeighbourBlockType.solid && leftNeighbourBlockType.opaque || leftNeighbourBlockType.sameKind(this))
 
-		var vox: Voxel?
-		vox = info.getNeightborVoxel(0)
-		val connectLeft = vox!!.solid && vox.opaque || vox == this
-		vox = info.getNeightborVoxel(1)
-		val connectFront = vox!!.solid && vox.opaque || vox == this
-		vox = info.getNeightborVoxel(2)
-		val connectRight = vox!!.solid && vox.opaque || vox == this
-		vox = info.getNeightborVoxel(3)
-		val connectBack = vox!!.solid && vox.opaque || vox == this
+		val frontNeighbour = if (cell is WorldCell) cell.getNeighbour(BlockSide.FRONT) else null
+		val frontNeighbourBlockType = frontNeighbour?.data?.blockType
+		val connectFront = frontNeighbourBlockType != null && (frontNeighbourBlockType.solid && frontNeighbourBlockType.opaque || frontNeighbourBlockType.sameKind(this))
+
+		val rightNeighbour = if (cell is WorldCell) cell.getNeighbour(BlockSide.RIGHT) else null
+		val rightNeighbourBlockType = rightNeighbour?.data?.blockType
+		val connectRight = rightNeighbourBlockType != null && (rightNeighbourBlockType.solid && rightNeighbourBlockType.opaque || rightNeighbourBlockType.sameKind(this))
+
+		val backNeighbour = if (cell is WorldCell) cell.getNeighbour(BlockSide.BACK) else null
+		val backNeighbourBlockType = backNeighbour?.data?.blockType
+		val connectBack = backNeighbourBlockType != null && (backNeighbourBlockType.solid && backNeighbourBlockType.opaque || backNeighbourBlockType.sameKind(this))
 
 		val width = 0.5
 		val delta1 = 0.25

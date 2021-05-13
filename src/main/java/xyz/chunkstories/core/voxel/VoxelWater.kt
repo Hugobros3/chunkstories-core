@@ -6,13 +6,14 @@
 
 package xyz.chunkstories.core.voxel
 
-import xyz.chunkstories.api.voxel.Voxel
-import xyz.chunkstories.api.voxel.VoxelDefinition
-import xyz.chunkstories.api.world.cell.EditableCell
+import xyz.chunkstories.api.block.BlockType
+import xyz.chunkstories.api.content.Content
+import xyz.chunkstories.api.content.json.Json
+import xyz.chunkstories.api.world.chunk.MutableChunkCell
 
-class VoxelWater(definition: VoxelDefinition) : Voxel(definition), VoxelLiquid {
+class VoxelWater(name: String, definition: Json.Dict, content: Content) : BlockType(name, definition, content) {
 
-	override fun tick(cell: EditableCell) {
+	override fun tick(cell: MutableChunkCell) {
 
 	}
 }

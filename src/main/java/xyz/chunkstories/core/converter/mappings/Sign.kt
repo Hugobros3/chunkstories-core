@@ -13,22 +13,20 @@ import io.xol.enklume.nbt.NBTInt
 import io.xol.enklume.nbt.NBTList
 import io.xol.enklume.nbt.NBTString
 import io.xol.enklume.util.SignParseUtil
-import xyz.chunkstories.api.converter.mappings.NonTrivialMapper
-import xyz.chunkstories.api.voxel.Voxel
-import xyz.chunkstories.api.voxel.components.VoxelComponent
+import xyz.chunkstories.api.block.BlockType
+import xyz.chunkstories.api.converter.NonTrivialMapper
 import xyz.chunkstories.api.world.World
-import xyz.chunkstories.api.world.cell.FutureCell
 import xyz.chunkstories.core.voxel.VoxelSign
-import xyz.chunkstories.core.voxel.components.VoxelComponentSignText
+import xyz.chunkstories.core.voxel.components.SignData
 
-class Sign(voxel: Voxel) : NonTrivialMapper(voxel) {
+class Sign(blockType: BlockType) : NonTrivialMapper(blockType) {
 
     override fun output(csWorld: World, csX: Int, csY: Int, csZ: Int, minecraftBlockId: Int, minecraftMetaData: Int,
                         region: MinecraftRegion, minecraftCuurrentChunkXinsideRegion: Int, minecraftCuurrentChunkZinsideRegion: Int,
                         x: Int, y: Int, z: Int) {
         var minecraftMetaData = minecraftMetaData
 
-        if (voxel is VoxelSign) {
+        if (blockType is VoxelSign) {
 
             if (!voxel.name.endsWith("_post")) {
                 when (minecraftMetaData) {
@@ -55,8 +53,8 @@ class Sign(voxel: Voxel) : NonTrivialMapper(voxel) {
         val entitiesList = root.getTag("Level.TileEntities") as NBTList
 
         // Check it exists and is of the right kind
-        if (target is VoxelComponentSignText) {
-            val signTextComponent = target as VoxelComponentSignText?
+        if (target is SignData) {
+            val signTextComponent = target as SignData?
             signTextComponent!!.signText = "<corresponding sign not found :(>"
 
             for (element in entitiesList.elements) {

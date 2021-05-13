@@ -1,46 +1,42 @@
 package xyz.chunkstories.core.voxel
 
+import xyz.chunkstories.api.block.BlockSide
+import xyz.chunkstories.api.block.BlockTexture
+import xyz.chunkstories.api.block.BlockType
+import xyz.chunkstories.api.block.components.BlockInventory
 import xyz.chunkstories.api.content.Content
 import xyz.chunkstories.api.content.json.Json
-import xyz.chunkstories.api.content.json.asDict
 import xyz.chunkstories.api.content.json.asInt
 import xyz.chunkstories.api.entity.Entity
-import xyz.chunkstories.api.entity.traits.serializable.TraitControllable
 import xyz.chunkstories.api.gui.Layer
 import xyz.chunkstories.api.gui.inventory.InventoryManagementUIPanel
 import xyz.chunkstories.api.gui.inventory.InventorySlot
 import xyz.chunkstories.api.input.Input
 import xyz.chunkstories.api.item.Item
+import xyz.chunkstories.api.item.ItemBlock
 import xyz.chunkstories.api.item.ItemDefinition
-import xyz.chunkstories.api.item.ItemVoxel
 import xyz.chunkstories.api.item.inventory.Inventory
 import xyz.chunkstories.api.loot.makeLootTableFromJson
 import xyz.chunkstories.api.physics.RayResult
 import xyz.chunkstories.api.player.Player
-import xyz.chunkstories.api.voxel.Voxel
-import xyz.chunkstories.api.voxel.VoxelDefinition
-import xyz.chunkstories.api.voxel.VoxelSide
-import xyz.chunkstories.api.voxel.components.VoxelInventoryComponent
-import xyz.chunkstories.api.voxel.textures.VoxelTexture
+import xyz.chunkstories.api.server.Host
 import xyz.chunkstories.api.world.WorldMaster
 import xyz.chunkstories.api.world.cell.Cell
-import xyz.chunkstories.api.world.cell.CellComponents
-import xyz.chunkstories.api.world.cell.EditableCell
-import xyz.chunkstories.api.world.cell.FutureCell
+import xyz.chunkstories.api.world.cell.MutableCellData
 import xyz.chunkstories.api.world.chunk.ChunkCell
-import xyz.chunkstories.api.world.chunk.FreshChunkCell
+import xyz.chunkstories.api.world.chunk.MutableChunkCell
 import kotlin.math.abs
 
-class BlockFurnace(definition: VoxelDefinition) : Voxel(definition) {
-    override fun getVoxelTexture(cell: Cell, side: VoxelSide): VoxelTexture {
-        val actualSide = VoxelSide.values()[cell.metaData]//getSideMcStairsChestFurnace(cell.metaData)
+class BlockFurnace(name: String, definition: Json.Dict, content: Content) : BlockType(name, definition, content) {
+    override fun getTexture(cell: Cell, side: BlockSide): BlockTexture {
+        val actualSide = BlockSide.values()[cell.data.extraData]//getSideMcStairsChestFurnace(cell.metaData)
 
-        if (side == VoxelSide.TOP)
-            return voxelTextures[VoxelSide.TOP.ordinal]
-        if (side == VoxelSide.BOTTOM)
-            return voxelTextures[VoxelSide.BOTTOM.ordinal]
+        if (side == BlockSide.TOP)
+            return textures[BlockSide.TOP.ordinal]
+        if (side == BlockSide.BOTTOM)
+            return textures[BlockSide.BOTTOM.ordinal]
 
-        return if (side == actualSide) voxelTextures[VoxelSide.FRONT.ordinal] else voxelTextures[VoxelSide.LEFT.ordinal]
+        return if (side == actualSide) textures[BlockSide.FRONT.ordinal] else textures[BlockSide.LEFT.ordinal]
     }
 
     override fun enumerateVariants(itemStore: Content.ItemsDefinitions): List<ItemDefinition> {
@@ -52,23 +48,22 @@ class BlockFurnace(definition: VoxelDefinition) : Voxel(definition) {
         return listOf(definition)
     }
 
-    override fun whenPlaced(cell: FreshChunkCell) {
-        cell.registerComponent("fuel", FurnaceFuelInventory(cell.components))
-        cell.registerComponent("input", FurnaceInputInventory(cell.components))
-        cell.registerComponent("output", FurnaceOutputInventory(cell.components))
+    override fun whenPlaced(cell: MutableChunkCell) {
+        cell.registerAdditionalData("fuel", FurnaceFuelInventory(cell))
+        cell.registerAdditionalData("input", FurnaceInputInventory(cell))
+        cell.registerAdditionalData("output", FurnaceOutputInventory(cell))
     }
 
-    override fun handleInteraction(entity: Entity, cell: ChunkCell, input: Input): Boolean {
+    override fun onInteraction(entity: Entity, cell: MutableChunkCell, input: Input): Boolean {
         if (input.name == "mouse.right" && cell.world is WorldMaster) {
 
-            val controller = entity.traits[TraitControllable::class]?.controller
+            val controller = entity.controller // entity.traits[TraitControllable::class]
             if (controller is Player) {
-                val player = controller as Player?
-                val playerEntity = player!!.controlledEntity
-
-                if (playerEntity != null) {
-                    if (playerEntity.location.distance(cell.location) <= 5) {
-                        player.openInventory(((cell as ChunkCell).components.getVoxelComponent("fuel") as FurnaceFuelInventory).inventory)
+                val gameInstance = cell.world.gameInstance
+                if (entity.location.distance(cell.location) <= 5 && gameInstance is Host) {
+                    with(gameInstance) {
+                        TODO("openInventory")
+                        // player.openInventory(((cell as ChunkCell).additionalData["fuel"] as FurnaceFuelInventory).inventory)
                     }
                 }
             }
@@ -76,18 +71,18 @@ class BlockFurnace(definition: VoxelDefinition) : Voxel(definition) {
         return false
     }
 
-    override fun tick(cell: EditableCell) {
+    override fun tick(cell: MutableChunkCell) {
         //TODO better mechanics
-        val fuelPile = ((cell as ChunkCell).components.getVoxelComponent("fuel") as FurnaceFuelInventory).inventory.getItemPileAt(0, 0) ?: return
-        val inputPile = ((cell as ChunkCell).components.getVoxelComponent("input") as FurnaceInputInventory).inventory.getItemPileAt(0, 0) ?: return
-        val outputPile = ((cell as ChunkCell).components.getVoxelComponent("output") as FurnaceOutputInventory).inventory.getItemPileAt(0, 0)
+        val fuelPile = ((cell as ChunkCell).additionalData["fuel"] as FurnaceFuelInventory).inventory.getItemPileAt(0, 0) ?: return
+        val inputPile = ((cell as ChunkCell).additionalData["input"] as FurnaceInputInventory).inventory.getItemPileAt(0, 0) ?: return
+        val outputPile = ((cell as ChunkCell).additionalData["output"] as FurnaceOutputInventory).inventory.getItemPileAt(0, 0)
 
         if(fuelPile.amount > 0 && inputPile.amount > 0) {
-            val potentialOutput = makeLootTableFromJson(inputPile.item.definition["smeltingDrops"]!!, cell.world.content).spawn().getOrNull(0) ?: return
+            val potentialOutput = makeLootTableFromJson(inputPile.item.definition.properties["smeltingDrops"]!!, cell.world.gameInstance.content).spawn().getOrNull(0) ?: return
 
             val currentAmount = outputPile?.amount ?: 0
             if(outputPile == null || (outputPile.item.definition == potentialOutput.first.definition && outputPile.amount + potentialOutput.second <= potentialOutput.first.definition.maxStackSize)) {
-                ((cell as ChunkCell).components.getVoxelComponent("output") as FurnaceOutputInventory).inventory.setItemAt(0, 0, potentialOutput.first, currentAmount + potentialOutput.second, force = true)
+                ((cell as ChunkCell).additionalData["output"] as FurnaceOutputInventory).inventory.setItemAt(0, 0, potentialOutput.first, currentAmount + potentialOutput.second, force = true)
                 inputPile.amount -= 1
                 fuelPile.amount -= 1
                 println("smelted ${inputPile.item} into $potentialOutput using ${fuelPile.item}")
@@ -95,41 +90,43 @@ class BlockFurnace(definition: VoxelDefinition) : Voxel(definition) {
         }
         super.tick(cell)
     }
+
+    // TODO drop items upon destruction
 }
 
-class FurnaceFuelInventory(cell: CellComponents) : VoxelInventoryComponent(cell, 1, 1) {
+class FurnaceFuelInventory(cell: ChunkCell) : BlockInventory(cell, 1, 1) {
     override fun isItemAccepted(item: Item): Boolean {
-        val value = item.definition["fuelPower"].asInt
+        val value = item.definition.properties["fuelPower"].asInt
         return value != null
     }
 
-    override fun createMainInventoryPanel(inventory: Inventory, layer: Layer) = createFurnaceInventoryPanel(this.holder.cell, layer)
+    override fun createMainInventoryPanel(inventory: Inventory, layer: Layer) = createFurnaceInventoryPanel(cell, layer)
 }
 
-class FurnaceInputInventory(cell: CellComponents) : VoxelInventoryComponent(cell, 1, 1) {
+class FurnaceInputInventory(cell: ChunkCell) : BlockInventory(cell, 1, 1) {
     override fun isItemAccepted(item: Item): Boolean {
-        val value = item.definition["smeltingDrops"]
+        val value = item.definition.properties["smeltingDrops"]
         return value != null
     }
 
-    override fun createMainInventoryPanel(inventory: Inventory, layer: Layer) = createFurnaceInventoryPanel(this.holder.cell, layer)
+    override fun createMainInventoryPanel(inventory: Inventory, layer: Layer) = createFurnaceInventoryPanel(cell, layer)
 }
 
-class FurnaceOutputInventory(cell: CellComponents) : VoxelInventoryComponent(cell, 1, 1) {
+class FurnaceOutputInventory(cell: ChunkCell) : BlockInventory(cell, 1, 1) {
     override fun isItemAccepted(item: Item): Boolean {
         return false
     }
 
-    override fun createMainInventoryPanel(inventory: Inventory, layer: Layer) = createFurnaceInventoryPanel(this.holder.cell, layer)
+    override fun createMainInventoryPanel(inventory: Inventory, layer: Layer) = createFurnaceInventoryPanel(cell, layer)
 }
 
 fun createFurnaceInventoryPanel(cell: Cell, parentLayer: Layer): FurnaceInventoryUIPanel {
     val width = 20 *3 + 16
     val height = 20 * 3 + 16
 
-    val fuelInventory = ((cell as ChunkCell).components.getVoxelComponent("fuel") as FurnaceFuelInventory).inventory
-    val inputInventory = ((cell as ChunkCell).components.getVoxelComponent("input") as FurnaceInputInventory).inventory
-    val outputInventory = ((cell as ChunkCell).components.getVoxelComponent("output") as FurnaceOutputInventory).inventory
+    val fuelInventory = ((cell as ChunkCell).additionalData.get("fuel") as FurnaceFuelInventory).inventory
+    val inputInventory = ((cell as ChunkCell).additionalData.get("input") as FurnaceInputInventory).inventory
+    val outputInventory = ((cell as ChunkCell).additionalData.get("output") as FurnaceOutputInventory).inventory
 
     val panel = FurnaceInventoryUIPanel(parentLayer, width, height)
 
@@ -152,28 +149,28 @@ class FurnaceInventoryUIPanel(layer: Layer, width: Int, height: Int) : Inventory
 
 }
 
-class ItemFurnace(definition: ItemDefinition) : ItemVoxel(definition) {
-    override fun prepareNewBlockData(cell: FutureCell, adjacentCell: Cell, adjacentCellSide: VoxelSide, placingEntity: Entity, hit: RayResult.Hit.VoxelHit): Boolean {
-        super.prepareNewBlockData(cell, adjacentCell, adjacentCellSide, placingEntity, hit)
+class ItemFurnace(definition: ItemDefinition) : ItemBlock(definition) {
+    override fun prepareNewBlockData(adjacentCell: Cell, adjacentCellSide: BlockSide, placingEntity: Entity, hit: RayResult.Hit.VoxelHit): MutableCellData {
+        val data = super.prepareNewBlockData(adjacentCell, adjacentCellSide, placingEntity, hit)!!
 
         val loc = placingEntity.location
-        val dx = (cell.x + 0.5) - loc.x()
-        val dz = (cell.z + 0.5) - loc.z()
+        val dx = hit.hitPosition.x() - loc.x()
+        val dz = hit.hitPosition.z() - loc.z()
 
         val facing = if (abs(dx) > abs(dz)) {
             if (dx > 0)
-                VoxelSide.LEFT
+                BlockSide.LEFT
             else
-                VoxelSide.RIGHT
+                BlockSide.RIGHT
         } else {
             if (dz > 0)
-                VoxelSide.BACK
+                BlockSide.BACK
             else
-                VoxelSide.FRONT
+                BlockSide.FRONT
         }
 
-        cell.metaData = facing.ordinal
+        data.extraData = facing.ordinal
 
-        return true
+        return data
     }
 }

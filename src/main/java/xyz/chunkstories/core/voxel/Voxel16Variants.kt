@@ -6,33 +6,33 @@
 
 package xyz.chunkstories.core.voxel
 
+import xyz.chunkstories.api.block.BlockSide
+import xyz.chunkstories.api.block.BlockTexture
+import xyz.chunkstories.api.block.BlockType
 import xyz.chunkstories.api.content.Content
 import xyz.chunkstories.api.content.json.*
 import xyz.chunkstories.api.entity.Entity
+import xyz.chunkstories.api.item.ItemBlock
 import xyz.chunkstories.api.item.ItemDefinition
-import xyz.chunkstories.api.item.ItemVoxel
 import xyz.chunkstories.api.physics.RayResult
-import xyz.chunkstories.api.voxel.Voxel
-import xyz.chunkstories.api.voxel.VoxelDefinition
-import xyz.chunkstories.api.voxel.VoxelSide
-import xyz.chunkstories.api.voxel.textures.VoxelTexture
 import xyz.chunkstories.api.world.cell.Cell
-import xyz.chunkstories.api.world.cell.FutureCell
+import xyz.chunkstories.api.world.cell.CellData
+import xyz.chunkstories.api.world.cell.MutableCellData
 
-class Voxel16Variants(definition: VoxelDefinition) : Voxel(definition) {
-	private val textures: Array<VoxelTexture>
+class Voxel16Variants(name: String, definition: Json.Dict, content: Content) : BlockType(name, definition, content) {
+	private val textures_: Array<BlockTexture>
 	val variantsString = definition["variants"].asArray!!.elements.mapNotNull { it.asString }
 
 	init {
-		textures = (0..15).map { i ->
+		textures_ = (0..15).map { i ->
 			val variant = variantsString[i]//split[i].replace(" ".toRegex(), "").trim()
-			store.textures.get(definition["texture"].asString ?: definition.name + "/" + variant)
+			content.blockTypes.getTextureOrDefault(definition["texture"].asString ?: name + "/" + variant)
 			//store.textures.get(definition.resolveProperty("texture", definition.name) + "/" + variant)
 		}.toTypedArray()
 	}
 
-	override fun getVoxelTexture(cell: Cell, side: VoxelSide): VoxelTexture {
-		return textures[cell.metaData]
+	override fun getTexture(cell: Cell, side: BlockSide): BlockTexture {
+		return textures_[cell.data.extraData % 16]
 	}
 
 	override fun enumerateVariants(itemStore: Content.ItemsDefinitions): List<ItemDefinition> {
@@ -53,22 +53,22 @@ class Voxel16Variants(definition: VoxelDefinition) : Voxel(definition) {
 		}
 	}
 
-	override fun getVariant(cell: Cell): ItemDefinition {
-		return variants[cell.metaData % variants.size]
+	override fun getVariant(data: CellData): ItemDefinition {
+		return variants[data.extraData % variants.size]
 	}
 }
 
-class ItemVoxelVariant(definition: ItemDefinition) : ItemVoxel(definition) {
-	val metadata = definition["metaData"].asInt ?: 0
-	val variant = definition["variant"].asString
+class ItemVoxelVariant(definition: ItemDefinition) : ItemBlock(definition) {
+	val metadata = definition.properties["metaData"].asInt ?: 0
+	val variant = definition.properties["variant"].asString
 
 	override fun getTextureName(): String {
-		return "voxels/textures/" + voxel.name + "/" + variant + ".png"
+		return "voxels/textures/" + blockType.name + "/" + variant + ".png"
 	}
 
-	override fun prepareNewBlockData(cell: FutureCell, adjacentCell: Cell, adjacentCellSide: VoxelSide, placingEntity: Entity, hit: RayResult.Hit.VoxelHit): Boolean {
-		super.prepareNewBlockData(cell, adjacentCell, adjacentCellSide, placingEntity, hit)
-		cell.metaData = metadata
-		return true
+	override fun prepareNewBlockData(adjacentCell: Cell, adjacentCellSide: BlockSide, placingEntity: Entity, hit: RayResult.Hit.VoxelHit): MutableCellData {
+		val data = super.prepareNewBlockData(adjacentCell, adjacentCellSide, placingEntity, hit)!!
+		data.extraData = metadata
+		return data
 	}
 }

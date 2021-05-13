@@ -8,44 +8,40 @@ package xyz.chunkstories.core.voxel
 
 import org.joml.Vector3d
 import xyz.chunkstories.api.Location
+import xyz.chunkstories.api.block.BlockSide
+import xyz.chunkstories.api.block.BlockTexture
+import xyz.chunkstories.api.block.BlockType
+import xyz.chunkstories.api.block.components.BlockInventory
 import xyz.chunkstories.api.content.Content
 import xyz.chunkstories.api.content.json.Json
 import xyz.chunkstories.api.content.json.asDict
 import xyz.chunkstories.api.entity.Entity
 import xyz.chunkstories.api.entity.EntityDroppedItem
-import xyz.chunkstories.api.entity.traits.serializable.TraitControllable
-import xyz.chunkstories.api.events.voxel.WorldModificationCause
 import xyz.chunkstories.api.input.Input
+import xyz.chunkstories.api.item.ItemBlock
 import xyz.chunkstories.api.item.ItemDefinition
-import xyz.chunkstories.api.item.ItemVoxel
 import xyz.chunkstories.api.item.inventory.Inventory
 import xyz.chunkstories.api.physics.RayResult
 import xyz.chunkstories.api.player.Player
-import xyz.chunkstories.api.voxel.Voxel
-import xyz.chunkstories.api.voxel.VoxelDefinition
-import xyz.chunkstories.api.voxel.VoxelSide
-import xyz.chunkstories.api.voxel.components.VoxelInventoryComponent
-import xyz.chunkstories.api.voxel.textures.VoxelTexture
+import xyz.chunkstories.api.server.Host
 import xyz.chunkstories.api.world.WorldMaster
 import xyz.chunkstories.api.world.cell.Cell
-import xyz.chunkstories.api.world.cell.FutureCell
+import xyz.chunkstories.api.world.cell.MutableCellData
 import xyz.chunkstories.api.world.chunk.ChunkCell
-import xyz.chunkstories.api.world.chunk.FreshChunkCell
+import xyz.chunkstories.api.world.chunk.MutableChunkCell
 import kotlin.math.abs
 
-class VoxelChest(type: VoxelDefinition) : Voxel(type) {
-	override fun handleInteraction(entity: Entity, voxelContext: ChunkCell, input: Input): Boolean {
-		if (input.name == "mouse.right" && voxelContext.world is WorldMaster) {
+class VoxelChest(name: String, definition: Json.Dict, content: Content) : BlockType(name, definition, content) {
+	override fun onInteraction(entity: Entity, cell: MutableChunkCell, input: Input): Boolean {
+		if (input.name == "mouse.right" && cell.world is WorldMaster) {
 
-			val controller = entity.traits[TraitControllable::class]?.controller
+			val controller = entity.controller
 			if (controller is Player) {
-				val player = controller as Player?
-				val playerEntity = player!!.controlledEntity
-
-				if (playerEntity != null) {
-					if (playerEntity.location.distance(voxelContext.location) <= 5) {
-						player.openInventory(getInventory(voxelContext))
-					}
+				val gameInstance = cell.world.gameInstance
+				if (entity.location.distance(cell.location) <= 5 && gameInstance is Host) {
+					TODO("open inv")
+					// also do furnace
+					// player.openInventory(getInventory(cell))
 				}
 			}
 		}
@@ -53,32 +49,32 @@ class VoxelChest(type: VoxelDefinition) : Voxel(type) {
 	}
 
 	private fun getInventory(context: ChunkCell): Inventory {
-		val component = context.components.getVoxelComponent("chestInventory") as VoxelInventoryComponent?
-		return component!!.inventory
+		val component = context.additionalData.get("chestInventory") as BlockInventory
+		return component.inventory
 	}
 
-	override fun whenPlaced(cell: FreshChunkCell) {
+	override fun whenPlaced(cell: MutableChunkCell) {
 		// Create a new component and insert it into the chunk
-		val component = VoxelInventoryComponent(cell.components, 10, 6)
-		cell.registerComponent("chestInventory", component)
+		val component = BlockInventory(cell, 10, 6)
+		cell.registerAdditionalData("chestInventory", component)
 	}
 
-	override fun getVoxelTexture(cell: Cell, side: VoxelSide): VoxelTexture {
-		val actualSide = VoxelSide.values()[cell.metaData]
+	override fun getTexture(cell: Cell, side: BlockSide): BlockTexture {
+		val actualSide = BlockSide.values()[cell.data.extraData]
 
-		if (side == VoxelSide.TOP)
-			return voxelTextures[VoxelSide.TOP.ordinal]
-		if (side == VoxelSide.BOTTOM)
-			return voxelTextures[VoxelSide.BOTTOM.ordinal]
-
-		return if (side == actualSide) voxelTextures[VoxelSide.FRONT.ordinal] else voxelTextures[VoxelSide.LEFT.ordinal]
+		return when (side) {
+			BlockSide.TOP -> textures[BlockSide.TOP.ordinal]
+			BlockSide.BOTTOM -> textures[BlockSide.BOTTOM.ordinal]
+			actualSide -> textures[BlockSide.FRONT.ordinal]
+			else -> textures[BlockSide.LEFT.ordinal]
+		}
 	}
 
-	override fun onRemove(cell: ChunkCell, cause: WorldModificationCause?) {
+	override fun onRemove(cell: MutableChunkCell): Boolean {
 		val location = cell.location
 		location.add(0.5, 0.5, 0.5)
 
-		val inventoryComponent = cell.components.getVoxelComponent("chestInventory") as? VoxelInventoryComponent ?: return
+		val inventoryComponent = cell.additionalData["chestInventory"] as? BlockInventory ?: return true
 		for (itemPile in inventoryComponent.inventory.contents) {
 			val velocity = Vector3d(Math.random() * 0.125 - 0.0625, 0.1, Math.random() * 0.125 - 0.0625)
 			val lootLocation = Location(cell.location)
@@ -87,6 +83,7 @@ class VoxelChest(type: VoxelDefinition) : Voxel(type) {
 		}
 
 		//inventoryComponent gets nuked by the engine when the cell is wiped after this
+		return true
 	}
 
 	override fun enumerateVariants(itemStore: Content.ItemsDefinitions): List<ItemDefinition> {
@@ -104,28 +101,28 @@ class VoxelChest(type: VoxelDefinition) : Voxel(type) {
 	}
 }
 
-class ItemChest(definition: ItemDefinition) : ItemVoxel(definition) {
-	override fun prepareNewBlockData(cell: FutureCell, adjacentCell: Cell, adjacentCellSide: VoxelSide, placingEntity: Entity, hit: RayResult.Hit.VoxelHit): Boolean {
-		super.prepareNewBlockData(cell, adjacentCell, adjacentCellSide, placingEntity, hit)
+class ItemChest(definition: ItemDefinition) : ItemBlock(definition) {
+	override fun prepareNewBlockData(adjacentCell: Cell, adjacentCellSide: BlockSide, placingEntity: Entity, hit: RayResult.Hit.VoxelHit): MutableCellData {
+		val data = super.prepareNewBlockData(adjacentCell, adjacentCellSide, placingEntity, hit)!!
 
 		val loc = placingEntity.location
-		val dx = (cell.x + 0.5) - loc.x()
-		val dz = (cell.z + 0.5) - loc.z()
+		val dx = hit.hitPosition.x() - loc.x()
+		val dz = hit.hitPosition.z() - loc.z()
 
 		val facing = if (abs(dx) > abs(dz)) {
 			if (dx > 0)
-				VoxelSide.LEFT
+				BlockSide.LEFT
 			else
-				VoxelSide.RIGHT
+				BlockSide.RIGHT
 		} else {
 			if (dz > 0)
-				VoxelSide.BACK
+				BlockSide.BACK
 			else
-				VoxelSide.FRONT
+				BlockSide.FRONT
 		}
 
-		cell.metaData = facing.ordinal
+		data.extraData = facing.ordinal
 
-		return true
+		return data
 	}
 }

@@ -6,17 +6,15 @@
 
 package xyz.chunkstories.core.converter.mappings
 
-import xyz.chunkstories.api.converter.mappings.NonTrivialMapper
-import xyz.chunkstories.api.voxel.Voxel
-import xyz.chunkstories.api.voxel.VoxelSide
 import xyz.chunkstories.api.world.World
-import xyz.chunkstories.api.world.chunk.Chunk
 import xyz.chunkstories.core.voxel.VoxelDoor
 import io.xol.enklume.MinecraftRegion
+import xyz.chunkstories.api.block.BlockType
+import xyz.chunkstories.api.converter.NonTrivialMapper
 
 import xyz.chunkstories.api.util.compatibility.getSideMcDoor
 
-class Door(voxel: Voxel) : NonTrivialMapper(voxel) {
+class Door(blockType: BlockType) : NonTrivialMapper(blockType) {
 
     override fun output(csWorld: World, csX: Int, csY: Int, csZ: Int, minecraftBlockId: Int, minecraftMetaData: Int,
                         region: MinecraftRegion, minecraftCuurrentChunkXinsideRegion: Int, minecraftCuurrentChunkZinsideRegion: Int,
@@ -28,14 +26,15 @@ class Door(voxel: Voxel) : NonTrivialMapper(voxel) {
         // We only place the lower half of the door and the other half is created by the
         // placing logic of chunk stories
         if (upper != 1) {
-            val upperMeta = region.getChunk(minecraftCuurrentChunkXinsideRegion, minecraftCuurrentChunkZinsideRegion)
-                    .getBlockMeta(x, y + 1, z)
+            val upperMeta = region.getChunk(minecraftCuurrentChunkXinsideRegion, minecraftCuurrentChunkZinsideRegion).getBlockMeta(x, y + 1, z)
 
             val hingeSide = upperMeta and 0x01
             val direction = minecraftMetaData and 0x3
 
-            csWorld.pokeSimple(csX, csY, csZ, voxel, -1, -1,
-                    VoxelDoor.computeMeta(open == 1, hingeSide == 1, getSideMcDoor(direction)))
+            val cellData = csWorld.getCellMut(csX, csY, csZ)!!.data
+
+            cellData.blockType = blockType
+            cellData.extraData = VoxelDoor.computeMeta(open == 1, hingeSide == 1, getSideMcDoor(direction))
         }
 
     }

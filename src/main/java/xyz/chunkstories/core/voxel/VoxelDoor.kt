@@ -7,13 +7,14 @@
 package xyz.chunkstories.core.voxel
 
 import org.joml.Matrix4f
+import xyz.chunkstories.api.block.BlockRepresentation
+import xyz.chunkstories.api.block.BlockSide
+import xyz.chunkstories.api.block.BlockType
 import xyz.chunkstories.api.content.Content
 import xyz.chunkstories.api.content.json.Json
 import xyz.chunkstories.api.content.json.asDict
 import xyz.chunkstories.api.content.json.asString
 import xyz.chunkstories.api.entity.Entity
-import xyz.chunkstories.api.events.voxel.WorldModificationCause
-import xyz.chunkstories.api.exceptions.world.voxel.IllegalBlockModificationException
 import xyz.chunkstories.api.graphics.MeshMaterial
 import xyz.chunkstories.api.graphics.representation.Model
 import xyz.chunkstories.api.graphics.representation.ModelInstance
@@ -21,38 +22,38 @@ import xyz.chunkstories.api.graphics.representation.ModelPosition
 import xyz.chunkstories.api.graphics.reverseWindingOrder
 import xyz.chunkstories.api.graphics.systems.dispatching.RepresentationsGobbler
 import xyz.chunkstories.api.input.Input
+import xyz.chunkstories.api.item.ItemBlock
 import xyz.chunkstories.api.item.ItemDefinition
-import xyz.chunkstories.api.item.ItemVoxel
 import xyz.chunkstories.api.physics.Box
 import xyz.chunkstories.api.physics.RayResult
 import xyz.chunkstories.api.sound.SoundSource.Mode
-import xyz.chunkstories.api.voxel.*
 import xyz.chunkstories.api.world.WorldMaster
 import xyz.chunkstories.api.world.cell.Cell
-import xyz.chunkstories.api.world.cell.FutureCell
-import xyz.chunkstories.api.world.chunk.ChunkCell
-import xyz.chunkstories.api.world.chunk.FreshChunkCell
+import xyz.chunkstories.api.world.cell.MutableCellData
+import xyz.chunkstories.api.world.cell.PodCellData
+import xyz.chunkstories.api.world.chunk.MutableChunkCell
+import xyz.chunkstories.api.world.getCellMut
 
 /**
  * 2-blocks tall door Requires two consecutive voxel ids, x being lower, x+1
  * top, the top part should be suffixed of _top
  */
-class VoxelDoor(definition: VoxelDefinition) : Voxel(definition) {
+class VoxelDoor(name: String, definition: Json.Dict, content: Content) : BlockType(name, definition, content) {
     private val top: Boolean = name.endsWith("_top")
 
     val model: Model
     val modelFlipped: Model
-    val mappedOverrides = mapOf(0 to MeshMaterial("door_material", mapOf("albedoTexture" to "voxels/textures/${this.voxelTextures[VoxelSide.FRONT.ordinal].name}.png")))
+    val mappedOverrides = mapOf(0 to MeshMaterial("door_material", mapOf("albedoTexture" to "voxels/textures/${this.textures[BlockSide.FRONT.ordinal].name}.png")))
 
-    private val upperPart: Voxel
+    private val upperPart: BlockType
         get() = if (top)
             this
         else
-            store.getVoxel(name + "_top")!!
+            content.blockTypes[name + "_top"]!!
 
-    val lowerPart: Voxel
+    val lowerPart: BlockType
         get() = if (top)
-            store.getVoxel(name.substring(0, name.length - 4))!!
+            content.blockTypes[name.substring(0, name.length - 4)]!!
         else
             this
 
@@ -61,28 +62,25 @@ class VoxelDoor(definition: VoxelDefinition) : Voxel(definition) {
     }
 
     init {
-        model = definition.store.parent.models[definition["model"].asString ?: "voxels/blockmodels/wood_door/wood_door.dae"]
-
+        model = content.models[definition["model"].asString ?: "voxels/blockmodels/wood_door/wood_door.dae"]
         modelFlipped = flipModel(model)
+    }
 
-        if (top) {
+    override fun loadRepresentation(): BlockRepresentation {
+        return if (top) {
             // don't render the top :)
-            customRenderingRoutine = { _ ->
-
-            }
+            BlockRepresentation.Custom { }
         } else {
-            customRenderingRoutine = { cell ->
+            BlockRepresentation.Custom { cell ->
                 renderDoor(cell, this)
             }
         }
-        //for (int i = 0; i < 8; i++)
-        //	models[i] = store().models().getVoxelModel("door.m" + i);
     }
 
-    fun renderDoor(cell: Cell, mesher: ChunkMeshRenderingInterface) {
-        var facingPassed = (cell.metaData shr 2) and 0x3
-        val isOpen = (cell.metaData shr 0) and 0x1 == 1
-        val hingeSide = (cell.metaData shr 1) and 0x1 == 1
+    fun renderDoor(cell: Cell, mesher: BlockRepresentation.Custom.RenderInterface) {
+        var facingPassed = (cell.data.extraData shr 2) and 0x3
+        val isOpen = (cell.data.extraData shr 0) and 0x1 == 1
+        val hingeSide = (cell.data.extraData shr 1) and 0x1 == 1
 
         val matrix = Matrix4f()
 
@@ -101,7 +99,7 @@ class VoxelDoor(definition: VoxelDefinition) : Voxel(definition) {
         matrix.rotate(Math.PI.toFloat() * 0.5f * if (isOpen) -1 else 0, 0f, 1f, 0f)
         matrix.translate(-ith, 0f, -ith)
 
-        //println("rendering ${cell.metaData} rslt="+facingPassed)
+        //println("rendering ${cell.data.extraData} rslt="+facingPassed)
 
         mesher.addModel(if (hingeSide) model else modelFlipped, matrix, mappedOverrides)
     }
@@ -109,46 +107,46 @@ class VoxelDoor(definition: VoxelDefinition) : Voxel(definition) {
     // Meta
     // 0x0 -> open/close
     // 0x1 -> left/right hinge || left = 0 right = 1 (left is default)
-    // 0x2-0x4 -> side ( VoxelSide << 2 )
+    // 0x2-0x4 -> side ( BlockSide << 2 )
 
-    override fun handleInteraction(entity: Entity, voxelContext: ChunkCell, input: Input): Boolean {
+    override fun onInteraction(entity: Entity, cell: MutableChunkCell, input: Input): Boolean {
         if (input.name != "mouse.right")
             return false
         if (entity.world !is WorldMaster)
             return true
 
-        val isOpen = (voxelContext.metaData shr 0) and 0x1 == 1
-        val hingeSide = (voxelContext.metaData shr 1) and 0x1 == 1
-        val facingPassed = (voxelContext.metaData shr 2) and 0x3
+        val isOpen = (cell.data.extraData shr 0) and 0x1 == 1
+        val hingeSide = (cell.data.extraData shr 1) and 0x1 == 1
+        val facingPassed = (cell.data.extraData shr 2) and 0x3
 
         val newState = !isOpen
 
         val newData = computeMeta(newState, hingeSide, facingPassed)
 
-        val otherPartLocation = voxelContext.location
+        val otherPartLocation = cell.location
         if (top)
             otherPartLocation.add(0.0, -1.0, 0.0)
         else
             otherPartLocation.add(0.0, 1.0, 0.0)
 
-        val otherLocationPeek = voxelContext.world.peek(otherPartLocation)
-        if (otherLocationPeek.voxel is VoxelDoor) {
+        val otherLocationPeek = cell.world.getCellMut(otherPartLocation) ?: return true
+        if (otherLocationPeek.data.blockType is VoxelDoor) {
             //println("new door status : $newState")
-            voxelContext.world.soundManager.playSoundEffect("sounds/voxels/door.ogg", Mode.NORMAL, voxelContext.location, 1.0f, 1.0f)
+            cell.world.soundManager.playSoundEffect("sounds/voxels/door.ogg", Mode.NORMAL, cell.location, 1.0f, 1.0f)
 
-            voxelContext.metaData = newData
-            otherLocationPeek.metaData = newData
+            cell.data.extraData = newData
+            otherLocationPeek.data.extraData = newData
         } else {
-            store.parent.logger.error("Incomplete door @ $otherPartLocation")
+            cell.world.logger.error("Incomplete door @ $otherPartLocation")
         }
 
         return true
     }
 
-    override fun getCollisionBoxes(info: Cell): Array<Box>? {
-        val facingPassed = (info.metaData shr 2) and 0x3
-        val isOpen = (info.metaData shr 0) and 0x1 == 1
-        val hingeSide = (info.metaData shr 1) and 0x1 == 1
+    override fun getCollisionBoxes(info: Cell): Array<Box> {
+        val facingPassed = (info.data.extraData shr 2) and 0x3
+        val isOpen = (info.data.extraData shr 0) and 0x1 == 1
+        val hingeSide = (info.data.extraData shr 1) and 0x1 == 1
 
         val boxes = arrayOf(Box.fromExtents(0.125, 1.0, 1.0).translate(0.125 / 2, 0.0, 0.5))
 
@@ -177,26 +175,18 @@ class VoxelDoor(definition: VoxelDefinition) : Voxel(definition) {
         return boxes
     }
 
-    override fun whenPlaced(cell: FreshChunkCell) {
+    override fun whenPlaced(cell: MutableChunkCell) {
         super.whenPlaced(cell)
 
         if (!top)
-            cell.world.pokeSimple(cell.x, cell.y + 1, cell.z, upperPart, -1, -1, cell.metaData)
+            cell.world.setCellData(cell.x, cell.y + 1, cell.z, PodCellData(upperPart, 0, 0, cell.data.extraData))
     }
 
-    override fun onRemove(cell: ChunkCell, cause: WorldModificationCause?) {
-        // Don't interfere with system pokes, else we get stuck in a loop
-        if (cause !is Entity)
-            return
-
+    override fun onRemove(cell: MutableChunkCell): Boolean {
         val world = cell.world
         val x = cell.x
         val y = cell.y
         val z = cell.z
-
-        // Ignore all that crap on a slave world
-        if (world !is WorldMaster)
-            return
 
         var otherPartOfTheDoorY = y
 
@@ -205,15 +195,15 @@ class VoxelDoor(definition: VoxelDefinition) : Voxel(definition) {
         else
             otherPartOfTheDoorY++
 
-        val restOfTheDoorVoxel = world.peekSimple(x, otherPartOfTheDoorY, z)
+        val restOfTheDoorVoxel = world.getCell(x, otherPartOfTheDoorY, z) ?: return true
         // Remove the other part as well, if it still exists
-        if (restOfTheDoorVoxel is VoxelDoor)
-            world.pokeSimple(x, otherPartOfTheDoorY, z, store.air, -1, -1, 0)
-
+        if (restOfTheDoorVoxel.data.blockType is VoxelDoor)
+            world.setCellData(x, otherPartOfTheDoorY, z, PodCellData(content.blockTypes.air))
+        return true
     }
 
     companion object {
-        fun computeMeta(isOpen: Boolean, hingeSide: Boolean, doorFacingSide: VoxelSide): Int {
+        fun computeMeta(isOpen: Boolean, hingeSide: Boolean, doorFacingSide: BlockSide): Int {
             return computeMeta(isOpen, hingeSide, doorFacingSide.ordinal)
         }
 
@@ -243,8 +233,8 @@ class VoxelDoor(definition: VoxelDefinition) : Voxel(definition) {
     }
 }
 
-class ItemDoor(definition: ItemDefinition) : ItemVoxel(definition) {
-    val door = super.voxel as VoxelDoor
+class ItemDoor(definition: ItemDefinition) : ItemBlock(definition) {
+    val door = blockType as VoxelDoor
 
     override fun buildRepresentation(worldPosition: Matrix4f, representationsGobbler: RepresentationsGobbler) {
         val representation = ModelInstance(door.model, ModelPosition(worldPosition).apply {
@@ -254,8 +244,8 @@ class ItemDoor(definition: ItemDefinition) : ItemVoxel(definition) {
         representationsGobbler.acceptRepresentation(representation, -1)
     }
 
-    override fun prepareNewBlockData(cell: FutureCell, adjacentCell: Cell, adjacentCellSide: VoxelSide, placingEntity: Entity, hit: RayResult.Hit.VoxelHit): Boolean {
-        super.prepareNewBlockData(cell, adjacentCell, adjacentCellSide, placingEntity, hit)
+    override fun prepareNewBlockData(adjacentCell: Cell, adjacentCellSide: BlockSide, placingEntity: Entity, hit: RayResult.Hit.VoxelHit): MutableCellData {
+        /*super.prepareNewBlockData(adjacentCell, adjacentCellSide, placingEntity, hit)
 
         val world = cell.world
         val x = cell.x
@@ -269,40 +259,41 @@ class ItemDoor(definition: ItemDefinition) : ItemVoxel(definition) {
 
         val isOpen = false
         val hingeSide: Boolean
-        val doorSideFacing: VoxelSide
+        val doorSideFacing: BlockSide
 
         val loc = placingEntity.location
         val dx = loc.x() - (x + 0.5)
         val dz = loc.z() - (z + 0.5)
         if (Math.abs(dx) > Math.abs(dz)) {
             if (dx > 0)
-                doorSideFacing = VoxelSide.RIGHT
+                doorSideFacing = BlockSide.RIGHT
             else
-                doorSideFacing = VoxelSide.LEFT
+                doorSideFacing = BlockSide.LEFT
         } else {
             if (dz > 0)
-                doorSideFacing = VoxelSide.FRONT
+                doorSideFacing = BlockSide.FRONT
             else
-                doorSideFacing = VoxelSide.BACK
+                doorSideFacing = BlockSide.BACK
         }
 
         // If there is an adjacent one, set the hinge to right
         var adjacent: Voxel? = null
         when (doorSideFacing) {
-            VoxelSide.LEFT -> adjacent = world.peekSimple(x, y, z - 1)
-            VoxelSide.RIGHT -> adjacent = world.peekSimple(x, y, z + 1)
-            VoxelSide.FRONT -> adjacent = world.peekSimple(x - 1, y, z)
-            VoxelSide.BACK -> adjacent = world.peekSimple(x + 1, y, z)
+            BlockSide.LEFT -> adjacent = world.peekSimple(x, y, z - 1)
+            BlockSide.RIGHT -> adjacent = world.peekSimple(x, y, z + 1)
+            BlockSide.FRONT -> adjacent = world.peekSimple(x - 1, y, z)
+            BlockSide.BACK -> adjacent = world.peekSimple(x + 1, y, z)
             else -> {
             }
         }
 
         hingeSide = adjacent is VoxelDoor
 
-        cell.metaData = VoxelDoor.computeMeta(isOpen, hingeSide, doorSideFacing)
+        cell.data.extraData = VoxelDoor.computeMeta(isOpen, hingeSide, doorSideFacing)
 
-        //println("placing door: dx=$dx dz=$dz rslt=$doorSideFacing meta=${cell.metaData}")
+        // println("placing door: dx=$dx dz=$dz rslt=$doorSideFacing meta=${cell.data.extraData}")
 
-        return true
+        return true*/
+        TODO("Finish rewrite")
     }
 }

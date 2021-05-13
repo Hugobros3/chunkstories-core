@@ -7,45 +7,40 @@
 package xyz.chunkstories.core.voxel
 
 import org.joml.Matrix4f
+import xyz.chunkstories.api.block.BlockRepresentation
+import xyz.chunkstories.api.block.BlockSide
+import xyz.chunkstories.api.block.BlockType
 import xyz.chunkstories.api.content.Content
 import xyz.chunkstories.api.content.json.Json
 import xyz.chunkstories.api.content.json.asString
 import xyz.chunkstories.api.entity.Entity
-import xyz.chunkstories.api.entity.traits.serializable.TraitRotation
-import xyz.chunkstories.api.events.voxel.WorldModificationCause
 import xyz.chunkstories.api.graphics.MeshMaterial
 import xyz.chunkstories.api.graphics.representation.Model
 import xyz.chunkstories.api.graphics.reverseWindingOrder
+import xyz.chunkstories.api.item.ItemBlock
 import xyz.chunkstories.api.item.ItemDefinition
-import xyz.chunkstories.api.item.ItemVoxel
 import xyz.chunkstories.api.physics.Box
 import xyz.chunkstories.api.physics.RayResult
-import xyz.chunkstories.api.voxel.ChunkMeshRenderingInterface
-import xyz.chunkstories.api.voxel.Voxel
-import xyz.chunkstories.api.voxel.VoxelDefinition
-import xyz.chunkstories.api.voxel.VoxelSide
 import xyz.chunkstories.api.world.cell.Cell
-import xyz.chunkstories.api.world.cell.FutureCell
+import xyz.chunkstories.api.world.cell.MutableCellData
 import kotlin.math.abs
 
-class VoxelStairs(definition: VoxelDefinition) : Voxel(definition) {
-
-	private val model: Model
+class VoxelStairs(name: String, definition: Json.Dict, content: Content) : BlockType(name, definition, content) {
+	private val model: Model = content.models[definition["model"].asString ?: "voxels/blockmodels/stairs/stairs.dae"]
 	private val modelFlipped: Model
 	private val mappedOverrides: Map<Int, MeshMaterial>
 
 	init {
-		model = definition.store.parent.models[definition["model"].asString ?: "voxels/blockmodels/stairs/stairs.dae"]
 		modelFlipped = flipModel(model)
 
 		val overrides = model.meshes.mapIndexedNotNull { i, mesh ->
 			val texName = when (mesh.material.name) {
-				"FrontMaterial" -> voxelTextures[VoxelSide.FRONT.ordinal].name
-				"BackMaterial" -> voxelTextures[VoxelSide.BACK.ordinal].name
-				"LeftMaterial" -> voxelTextures[VoxelSide.LEFT.ordinal].name
-				"RightMaterial" -> voxelTextures[VoxelSide.RIGHT.ordinal].name
-				"TopMaterial" -> voxelTextures[VoxelSide.TOP.ordinal].name
-				"BottomMaterial" -> voxelTextures[VoxelSide.BOTTOM.ordinal].name
+				"FrontMaterial" -> textures[BlockSide.FRONT.ordinal].name
+				"BackMaterial" -> textures[BlockSide.BACK.ordinal].name
+				"LeftMaterial" -> textures[BlockSide.LEFT.ordinal].name
+				"RightMaterial" -> textures[BlockSide.RIGHT.ordinal].name
+				"TopMaterial" -> textures[BlockSide.TOP.ordinal].name
+				"BottomMaterial" -> textures[BlockSide.BOTTOM.ordinal].name
 				else -> return@mapIndexedNotNull null
 			}
 
@@ -53,8 +48,10 @@ class VoxelStairs(definition: VoxelDefinition) : Voxel(definition) {
 		}
 
 		mappedOverrides = overrides.toMap()
+	}
 
-		customRenderingRoutine = { cell ->
+	override fun loadRepresentation(): BlockRepresentation {
+		return BlockRepresentation.Custom { cell ->
 			render(cell, this)
 		}
 	}
@@ -63,8 +60,8 @@ class VoxelStairs(definition: VoxelDefinition) : Voxel(definition) {
 		return Model(model.meshes.map { it.reverseWindingOrder() })
 	}
 
-	fun render(cell: Cell, mesher: ChunkMeshRenderingInterface) {
-		val meta = cell.metaData
+	fun render(cell: Cell, mesher: BlockRepresentation.Custom.RenderInterface) {
+		val meta = cell.data.extraData
 		val rotation = meta % 4 - 1/*when (meta % 4) {
 			0 -> 3
 			1 -> 1
@@ -88,8 +85,8 @@ class VoxelStairs(definition: VoxelDefinition) : Voxel(definition) {
 			mesher.addModel(model, matrix, mappedOverrides)
 	}
 
-	override fun getCollisionBoxes(info: Cell): Array<Box>? {
-		val meta = info.metaData
+	override fun getCollisionBoxes(cell: Cell): Array<Box> {
+		val meta = cell.data.extraData
 		val boxes = arrayOf(
 				Box.fromExtents(1.0, 0.5, 1.0),
 				when (meta % 4) {
@@ -122,35 +119,35 @@ class VoxelStairs(definition: VoxelDefinition) : Voxel(definition) {
 	}
 }
 
-class ItemStairs(definition: ItemDefinition) : ItemVoxel(definition) {
-	override fun prepareNewBlockData(cell: FutureCell, adjacentCell: Cell, adjacentCellSide: VoxelSide, placingEntity: Entity, hit: RayResult.Hit.VoxelHit): Boolean {
-		super.prepareNewBlockData(cell, adjacentCell, adjacentCellSide, placingEntity, hit)
+class ItemStairs(definition: ItemDefinition) : ItemBlock(definition) {
+	override fun prepareNewBlockData(adjacentCell: Cell, adjacentCellSide: BlockSide, placingEntity: Entity, hit: RayResult.Hit.VoxelHit): MutableCellData {
+		val data = super.prepareNewBlockData(adjacentCell, adjacentCellSide, placingEntity, hit)!!
 
 		val loc = placingEntity.location
-		val dx = (cell.x + 0.5) - loc.x()
-		val dz = (cell.z + 0.5) - loc.z()
+		val dx = hit.hitPosition.x() - loc.x()
+		val dz = hit.hitPosition.z() - loc.z()
 
 		val facing = if (abs(dx) > abs(dz)) {
 			if (dx > 0)
-				VoxelSide.LEFT
+				BlockSide.LEFT
 			else
-				VoxelSide.RIGHT
+				BlockSide.RIGHT
 		} else {
 			if (dz > 0)
-				VoxelSide.BACK
+				BlockSide.BACK
 			else
-				VoxelSide.FRONT
+				BlockSide.FRONT
 		}
 
-		val flipped = if(adjacentCellSide == VoxelSide.BOTTOM)
+		val flipped = if(adjacentCellSide == BlockSide.BOTTOM)
 			true
-		else if(adjacentCellSide == VoxelSide.TOP)
+		else if(adjacentCellSide == BlockSide.TOP)
 			false
 		else
 			(hit.hitPosition.y() % 1) > 0.5
 
-		cell.metaData = facing.ordinal or ((if(flipped) 1 else 0) shl 2)
+		data.extraData = facing.ordinal or ((if(flipped) 1 else 0) shl 2)
 
-		return true
+		return data
 	}
 }
