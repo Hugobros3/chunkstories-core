@@ -12,14 +12,15 @@ import xyz.chunkstories.api.gui.*
 import xyz.chunkstories.api.gui.elements.Scroller
 import xyz.chunkstories.api.input.Input
 import xyz.chunkstories.api.input.Mouse
-import xyz.chunkstories.api.item.ItemVoxel
+import xyz.chunkstories.api.item.ItemBlock
 import xyz.chunkstories.api.item.inventory.Inventory
 import xyz.chunkstories.api.item.inventory.ItemPile
 import xyz.chunkstories.api.net.packets.PacketInventoryMoveItemPile
-import xyz.chunkstories.api.world.WorldClientNetworkedRemote
+import xyz.chunkstories.api.player.entityIfIngame
+import xyz.chunkstories.api.world.WorldSub
 
 class CreativeBlockSelector(gui: Gui, parentLayer: Layer?) : Layer(gui, parentLayer) {
-	val allBlockItems: List<ItemVoxel>
+	val allBlockItems: List<ItemBlock>
 
 	val scroller = Scroller<ItemsLine>(this, 0, 0, emptyList())
 
@@ -30,10 +31,10 @@ class CreativeBlockSelector(gui: Gui, parentLayer: Layer?) : Layer(gui, parentLa
 		gui.client.inputsManager.mouse.isGrabbed = false
 
 		elements.add(scroller)
-		allBlockItems = gui.client.content.voxels.all.flatMap { it.variants }.map { it.newItem<ItemVoxel>() }.filter { !it.voxel.isAir() }
+		allBlockItems = gui.client.content.blockTypes.all.toList().flatMap { it.variants }.map { it.newItem<ItemBlock>() }.filter { !it.blockType.isAir }
 	}
 
-	var hoverItem: ItemVoxel? = null
+	var hoverItem: ItemBlock? = null
 
 	override fun render(drawer: GuiDrawer) {
 		scroller.elements.clear()
@@ -62,7 +63,7 @@ class CreativeBlockSelector(gui: Gui, parentLayer: Layer?) : Layer(gui, parentLa
 		val titleTextLength = titleFont.getWidth(titleText)
 		drawer.drawStringWithShadow(titleFont,width / 2 - titleTextLength / 2, height - 32, titleText)
 
-		val currentLine = mutableListOf<ItemVoxel>()
+		val currentLine = mutableListOf<ItemBlock>()
 		val emptyMe = allBlockItems.toMutableList()
 		while(emptyMe.isNotEmpty()) {
 			currentLine.add(emptyMe.removeAt(0))
@@ -125,7 +126,7 @@ class CreativeBlockSelector(gui: Gui, parentLayer: Layer?) : Layer(gui, parentLa
 		}
 	}
 
-	inner class SelectBlockButton(val item: ItemVoxel, layer: Layer) : GuiElement(layer, itemSize, itemSize), ClickableGuiElement {
+	inner class SelectBlockButton(val item: ItemBlock, layer: Layer) : GuiElement(layer, itemSize, itemSize), ClickableGuiElement {
 		override fun render(drawer: GuiDrawer) {
 			var buttonTexture = "textures/gui/scalableButton.png"
 			if (isMouseOver)
@@ -143,13 +144,13 @@ class CreativeBlockSelector(gui: Gui, parentLayer: Layer?) : Layer(gui, parentLa
 			this.layer.gui.client.soundManager.playSoundEffect("sounds/gui/gui_click2.ogg")
 
 			gui.client.ingame?.apply {
-				val controlledEntity = this.player.controlledEntity
+				val controlledEntity = this.player.entityIfIngame
 				controlledEntity?.apply {
 					val selectedItemSlot = traits[TraitSelectedItem::class]?.selectedSlot ?: return@apply
 					val targetInventory = traits[TraitInventory::class]?.inventory ?: return@apply
 
 					val world = world
-					if(world is WorldClientNetworkedRemote) {
+					if(world is WorldSub) {
 						val fakeInventory = Inventory(1,1,null,null)
 						val pile = ItemPile(fakeInventory, 0,0, item, 1)
 						val packetMove = PacketInventoryMoveItemPile(world, pile, fakeInventory, targetInventory, 0, 0, selectedItemSlot, 0, 1)

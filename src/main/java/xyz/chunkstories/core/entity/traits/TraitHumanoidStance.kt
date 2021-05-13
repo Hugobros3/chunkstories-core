@@ -15,10 +15,8 @@ import xyz.chunkstories.api.entity.traits.serializable.TraitControllable
 import xyz.chunkstories.api.entity.traits.serializable.TraitMessage
 import xyz.chunkstories.api.entity.traits.serializable.TraitNetworked
 import xyz.chunkstories.api.entity.traits.serializable.TraitSerializable
-import xyz.chunkstories.api.net.Interlocutor
+import xyz.chunkstories.api.player.Player
 import xyz.chunkstories.api.world.WorldMaster
-import xyz.chunkstories.api.world.serialization.StreamSource
-import xyz.chunkstories.api.world.serialization.StreamTarget
 
 import java.io.DataInputStream
 import java.io.DataOutputStream
@@ -45,8 +43,8 @@ class TraitHumanoidStance(entity: Entity) : Trait(entity), TraitSerializable, Tr
 
 	override fun readMessage(dis: DataInputStream) = HumanoidStanceUpdate(HumanoidStance.values()[dis.read()])
 
-	override fun processMessage(message: HumanoidStanceUpdate, from: Interlocutor) {
-		if (entity.world is WorldMaster && from != entity.traits[TraitControllable::class]?.controller)
+	override fun processMessage(message: HumanoidStanceUpdate, from: Player?) {
+		if (entity.world is WorldMaster && from != entity.controller)
 			return
 
 		stance = message.stance

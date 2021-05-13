@@ -6,15 +6,15 @@
 
 package xyz.chunkstories.core.converter.mappings
 
-import xyz.chunkstories.api.converter.mappings.Mapper
-import xyz.chunkstories.api.voxel.Voxel
-import xyz.chunkstories.api.world.cell.FutureCell
+import xyz.chunkstories.api.block.BlockType
+import xyz.chunkstories.api.converter.Mapper
+import xyz.chunkstories.api.world.cell.MutableCellData
 
-class Slab(voxel: Voxel) : Mapper(voxel) {
+class Slab(blockType: BlockType) : Mapper(blockType) {
 
-    override fun output(minecraftId: Int, minecraftMeta: Byte, cell: FutureCell) {
-        cell.voxel = voxel
+    override fun output(minecraftId: Int, minecraftMeta: Byte, data: MutableCellData) {
+        data.blockType = blockType
         if (minecraftMeta >= 8)
-            cell.metaData = 1
+            data.extraData = 1
     }
 }

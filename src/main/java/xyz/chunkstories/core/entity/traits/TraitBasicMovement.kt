@@ -8,14 +8,15 @@ package xyz.chunkstories.core.entity.traits
 
 import org.joml.Vector2d
 import org.joml.Vector3d
+import xyz.chunkstories.api.client.IngameClient
 import xyz.chunkstories.api.entity.Entity
+import xyz.chunkstories.api.entity.isPlayerCharacter
 import xyz.chunkstories.api.entity.traits.Trait
 import xyz.chunkstories.api.entity.traits.TraitCollidable
 import xyz.chunkstories.api.entity.traits.serializable.TraitControllable
 import xyz.chunkstories.api.entity.traits.serializable.TraitHealth
 import xyz.chunkstories.api.entity.traits.serializable.TraitRotation
 import xyz.chunkstories.api.entity.traits.serializable.TraitVelocity
-import xyz.chunkstories.api.world.WorldClient
 import xyz.chunkstories.api.world.WorldMaster
 import xyz.chunkstories.core.voxel.isInLiquid
 
@@ -25,6 +26,9 @@ open class TraitBasicMovement(entity: Entity) : Trait(entity) {
 	var acceleration = Vector3d()
 	var targetVelocity = Vector3d(0.0)
 
+	val isClient = entity.world.gameInstance is IngameClient
+	val client = entity.world.gameInstance as IngameClient
+
 	override final fun tick() {
 		val world = entity.world
 
@@ -32,14 +36,11 @@ open class TraitBasicMovement(entity: Entity) : Trait(entity) {
 		val has_global_authority = world is WorldMaster
 
 		// Does this entity has a controller ?
-		val controller = entity.traits[TraitControllable::class]?.controller
-
-		// Are we a client, that controller ?
-		val owns_entity = world is WorldClient && controller === world.client.player
+		val controller = entity.controller
 
 		// Servers get to tick all the entities that aren't controlled; the entities
 		// that are are updated by their respective clients
-		val should_tick_movement = owns_entity || has_global_authority && controller == null
+		val should_tick_movement = entity.isPlayerCharacter || has_global_authority && controller == null
 
 		if(should_tick_movement)
 			tickMovement()

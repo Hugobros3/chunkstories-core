@@ -7,12 +7,12 @@
 package xyz.chunkstories.core.generator
 
 import xyz.chunkstories.api.math.random.SeededSimplexNoiseGenerator
-import xyz.chunkstories.api.voxel.Voxel
 import xyz.chunkstories.api.world.World
 import xyz.chunkstories.api.world.chunk.Chunk
 import xyz.chunkstories.api.world.generator.WorldGenerator
 import xyz.chunkstories.api.world.generator.WorldGeneratorDefinition
 import org.joml.Vector3f
+import xyz.chunkstories.api.block.BlockType
 
 import java.util.Random
 
@@ -20,15 +20,15 @@ class NoiseWorldGenerator(type: WorldGeneratorDefinition, world: World) : WorldG
     private val ssng: SeededSimplexNoiseGenerator
 
     private val ws: Int
-    private val STONE_VOXEL: Voxel?
-    private val WATER_VOXEL: Voxel?
+    private val STONE_VOXEL: BlockType
+    private val WATER_VOXEL: BlockType
 
     init {
-        ssng = SeededSimplexNoiseGenerator(world.worldInfo.seed)
-        ws = world.sizeInChunks * 32
+        ssng = SeededSimplexNoiseGenerator(world.properties.seed)
+        ws = world.properties.size.sizeInChunks * 32
 
-        this.STONE_VOXEL = world.gameContext.content.voxels.getVoxel("stone")
-        this.WATER_VOXEL = world.gameContext.content.voxels.getVoxel("water")
+        this.STONE_VOXEL = world.gameInstance.content.blockTypes["stone"]!!
+        this.WATER_VOXEL = world.gameInstance.content.blockTypes["water"]!!
     }
 
     override fun generateWorldSlice(chunks: Array<Chunk>) {

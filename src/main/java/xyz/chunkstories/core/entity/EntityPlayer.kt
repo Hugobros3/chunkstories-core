@@ -16,7 +16,6 @@ import xyz.chunkstories.api.entity.traits.TraitDontSave
 import xyz.chunkstories.api.entity.traits.TraitInteractible
 import xyz.chunkstories.api.entity.traits.TraitSight
 import xyz.chunkstories.api.entity.traits.serializable.*
-import xyz.chunkstories.api.events.voxel.WorldModificationCause
 import xyz.chunkstories.api.graphics.MeshMaterial
 import xyz.chunkstories.api.gui.Layer
 import xyz.chunkstories.api.gui.inventory.InventorySlot
@@ -35,7 +34,7 @@ import java.util.*
 * Core/Vanilla player, has all the functionality you'd want from it:
 * creative/survival mode, flying and walking controller...
 */
-class EntityPlayer(t: EntityDefinition, world: World) : EntityHumanoid(t, world), WorldModificationCause, InventoryOwner {
+class EntityPlayer(t: EntityDefinition, world: World) : EntityHumanoid(t, world), InventoryOwner {
 	private val controllerComponent: TraitControllable
 
 	protected var traitInventory: TraitInventory
@@ -53,7 +52,7 @@ class EntityPlayer(t: EntityDefinition, world: World) : EntityHumanoid(t, world)
 	internal var lastCameraLocation: Location? = null
 	internal var variant: Int = 0
 
-	override val name: String
+	val name: String
 		get() = traitName.name
 
 	init {
@@ -128,9 +127,10 @@ class EntityPlayer(t: EntityDefinition, world: World) : EntityHumanoid(t, world)
 			override fun handleInteraction(entity: Entity, input: Input): Boolean {
 				if (traitHealth.isDead && input.name == "mouse.right") {
 
-					val controller = controllerComponent.controller//entity.traits.tryWith(TraitControllable.class, TraitControllable::getController);
+					val controller = this@EntityPlayer.controller//entity.traits.tryWith(TraitControllable.class, TraitControllable::getController);
 					if (controller is Player) {
-						controller.openInventory(traitInventory.inventory)
+						TODO("open inventory stuff again")
+						// controller.openInventory(traitInventory.inventory)
 						return true
 					}
 				}

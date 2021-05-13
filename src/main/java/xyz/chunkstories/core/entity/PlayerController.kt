@@ -9,50 +9,52 @@ package xyz.chunkstories.core.entity
 import org.joml.Math
 import org.joml.Vector3d
 import xyz.chunkstories.api.client.IngameClient
-import xyz.chunkstories.api.client.LocalPlayer
 import xyz.chunkstories.api.entity.traits.TraitInteractible
 import xyz.chunkstories.api.entity.traits.serializable.*
 import xyz.chunkstories.api.graphics.structs.Camera
 import xyz.chunkstories.api.graphics.structs.makeCamera
 import xyz.chunkstories.api.input.Input
-import xyz.chunkstories.api.item.ItemVoxel
+import xyz.chunkstories.api.item.ItemBlock
 import xyz.chunkstories.api.item.interfaces.ItemZoom
 import xyz.chunkstories.api.physics.RayResult
+import xyz.chunkstories.api.player.Player
 import xyz.chunkstories.api.util.kotlin.toVec3f
-import xyz.chunkstories.api.world.WorldClient
 import xyz.chunkstories.api.world.WorldMaster
 import xyz.chunkstories.api.world.chunk.ChunkCell
+import xyz.chunkstories.api.world.chunk.MutableChunkCell
 import xyz.chunkstories.core.CoreOptions
 import xyz.chunkstories.core.gui.CreativeBlockSelector
 
 internal class PlayerController(private val entityPlayer: EntityPlayer) : TraitControllable(entityPlayer) {
+	val isClient = entity.world.gameInstance is IngameClient
+	val client = entity.world.gameInstance as IngameClient
 
 	var lastPX = -1.0
 	var lastPY = -1.0
 
 	override fun onEachFrame(): Boolean {
-		val controller = controller
-		if (controller is LocalPlayer && controller.hasFocus()) {
-			rotateCameraAccordingToMouse(controller)
+		val controller = entity.controller
+		if (client.gui.hasFocus()) {
+			rotateCameraAccordingToMouse()
 			return true
 		}
 		return false
 	}
 
-	fun rotateCameraAccordingToMouse(controller: LocalPlayer) {
+	fun rotateCameraAccordingToMouse() {
 		if (entityPlayer.traitHealth.isDead)
 			return
-		if (!controller.inputsManager.mouse.isGrabbed)
+		if (!client.inputsManager.mouse.isGrabbed)
 			return
 
-		val cPX = controller.inputsManager.mouse.cursorX
-		val cPY = controller.inputsManager.mouse.cursorY
+		val cPX = client.inputsManager.mouse.cursorX
+		val cPY = client.inputsManager.mouse.cursorY
 
 		var dx = 0.0
 		var dy = 0.0
 		if (lastPX != -1.0) {
-			dx = cPX - controller.window.width / 2.0
-			dy = cPY - controller.window.height / 2.0
+			dx = cPX - client.gameWindow.width / 2.0
+			dy = cPY - client.gameWindow.height / 2.0
 		}
 		lastPX = cPX
 		lastPY = cPY
@@ -68,16 +70,17 @@ internal class PlayerController(private val entityPlayer: EntityPlayer) : TraitC
 			modifier = 1.0 / item.zoomFactor
 		}
 
-		rotH -= dx * modifier / 3f * controller.client.configuration.getDoubleValue(CoreOptions.mouseSensitivity)
-		rotV += dy * modifier / 3f * controller.client.configuration.getDoubleValue(CoreOptions.mouseSensitivity)
+		rotH -= dx * modifier / 3f * client.configuration.getDoubleValue(CoreOptions.mouseSensitivity)
+		rotV += dy * modifier / 3f * client.configuration.getDoubleValue(CoreOptions.mouseSensitivity)
 		entityPlayer.traitRotation.setRotation(rotH, rotV)
 
-		controller.inputsManager.mouse.setMouseCursorLocation(controller.window.width / 2.0, controller.window.height / 2.0)
+		client.inputsManager.mouse.setMouseCursorLocation(client.gameWindow.width / 2.0, client.gameWindow.height / 2.0)
 	}
 
-	override val camera: Camera
+	// TODO: use this again
+	val camera: Camera
 		get() {
-			val client = entity.world.gameContext as? IngameClient ?: throw Exception("calling getCamera() on a non-client context is undefined behavior")
+			val client = entity.world.gameInstance as? IngameClient ?: throw Exception("calling getCamera() on a non-client context is undefined behavior")
 
 			val location = entity.location
 			val cameraPosition = Vector3d(location)
@@ -103,12 +106,12 @@ internal class PlayerController(private val entityPlayer: EntityPlayer) : TraitC
 				return true
 		}
 
-		val controller = controller
+		val controller = entity.controller
 
 		// We are moving inventory bringup here !
-		if (input.name == "inventory" && entityPlayer.world is WorldClient) {
-
-			if (entityPlayer.traitCreativeMode.enabled) {
+		if (input.name == "inventory" && isClient) {
+			TODO("More inventory")
+			/*if (entityPlayer.traitCreativeMode.enabled) {
 				entityPlayer.world.client.gui.let {
 					it.topLayer = CreativeBlockSelector(it, it.topLayer)
 				}
@@ -117,7 +120,7 @@ internal class PlayerController(private val entityPlayer: EntityPlayer) : TraitC
 				entityPlayer.world.client.gui.openInventories(entityPlayer.traits[TraitInventory::class]?.inventory!!)
 			}
 
-			return true
+			return true*/
 		}
 
 		// Then we check if the world minds being interacted with
@@ -132,12 +135,9 @@ internal class PlayerController(private val entityPlayer: EntityPlayer) : TraitC
 				}
 			}
 			is RayResult.Hit.VoxelHit -> {
-				val cell = lookingAt.cell
-				// Should always be true !
-				if (cell is ChunkCell) {
-					if (cell.voxel.handleInteraction(entity, cell, input)) {
-						return true
-					}
+				val cell = lookingAt.cell as MutableChunkCell
+				if (cell.data.blockType.onInteraction(entity, cell, input)) {
+					return true
 				}
 			}
 		}
@@ -163,14 +163,14 @@ internal class PlayerController(private val entityPlayer: EntityPlayer) : TraitC
 			if (entityPlayer.traitCreativeMode.enabled) {
 				if (input.name == "mouse.left") {
 					val cell = lookingAt.cell
-					cell.voxel.breakBlock(cell, TraitCreativeMode.CREATIVE_MODE_MINING_TOOL, entity)
+					cell.data.blockType.breakBlock(cell as MutableChunkCell, controller as? Player, TraitCreativeMode.CREATIVE_MODE_MINING_TOOL)
 				} else if (input.name == "mouse.middle") {
 					val peekedCell = lookingAt.cell
-					val voxel = peekedCell.voxel
+					val voxel = peekedCell.data.blockType
 
-					if (!voxel.isAir()) {
+					if (!voxel.isAir) {
 						// Spawn new itemPile in his inventory
-						val item = voxel.getVariant(peekedCell).newItem<ItemVoxel>()
+						val item = voxel.getVariant(peekedCell.data).newItem<ItemBlock>()
 						entityPlayer.traits[TraitInventory::class]?.inventory!!.setItemAt(entityPlayer.traitSelectedItem.selectedSlot, 0, item, 1, force = true)
 						return true
 					}

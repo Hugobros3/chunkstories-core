@@ -20,13 +20,13 @@ import xyz.chunkstories.api.item.inventory.Inventory
 class TraitCrafting(entity: Entity) : Trait(entity) {
     override val traitName = "crafting"
 
-    val baseCraftingStation = object : CraftingStation(2, entity.world.content.recipes) {}
+    val baseCraftingStation = object : CraftingStation(2, entity.world.gameInstance.content.recipes) {}
     fun getCraftingStation(): CraftingStation? {
         val blockPointingAt = entity.traits[TraitSight::class]?.getSelectableBlockLookingAt(5.0)
         if (blockPointingAt != null) {
-            val craftingAreaSize = blockPointingAt.voxel.definition["craftingAreaSize"]?.asInt
+            val craftingAreaSize = blockPointingAt.data.blockType.definition["craftingAreaSize"]?.asInt
             if (craftingAreaSize != null) {
-                return object : CraftingStation(craftingAreaSize, entity.world.content.recipes) {}
+                return object : CraftingStation(craftingAreaSize, entity.world.gameInstance.content.recipes) {}
             }
         }
 

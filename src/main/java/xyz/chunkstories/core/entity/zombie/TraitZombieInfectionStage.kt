@@ -14,10 +14,8 @@ import xyz.chunkstories.api.entity.traits.Trait
 import xyz.chunkstories.api.entity.traits.serializable.TraitMessage
 import xyz.chunkstories.api.entity.traits.serializable.TraitNetworked
 import xyz.chunkstories.api.entity.traits.serializable.TraitSerializable
-import xyz.chunkstories.api.net.Interlocutor
+import xyz.chunkstories.api.player.Player
 import xyz.chunkstories.api.world.WorldMaster
-import xyz.chunkstories.api.world.serialization.StreamSource
-import xyz.chunkstories.api.world.serialization.StreamTarget
 
 import java.io.DataInputStream
 import java.io.DataOutputStream
@@ -39,7 +37,7 @@ internal class TraitZombieInfectionStage(entity: Entity, initialStage: ZombieInf
 
 	override fun readMessage(dis: DataInputStream) = InfectionStageUpdate(ZombieInfectionStage.values()[dis.read()])
 
-	override fun processMessage(message: InfectionStageUpdate, from: Interlocutor) {
+	override fun processMessage(message: InfectionStageUpdate, from: Player?) {
 		if(entity.world is WorldMaster)
 			return
 		stage = message.stage

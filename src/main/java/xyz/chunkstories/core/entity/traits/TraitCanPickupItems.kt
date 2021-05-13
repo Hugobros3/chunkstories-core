@@ -44,7 +44,7 @@ class TraitCanPickupItems(entity: Entity) : Trait(entity) {
 					itemContainer.amount = overflow
 
 					if (itemContainer.amount <= 0)
-						entity.world.removeEntity(e)
+						entity.world.removeEntity(e.id)
 					//} else {
 					//	entity.world.removeEntity(e)
 					//}

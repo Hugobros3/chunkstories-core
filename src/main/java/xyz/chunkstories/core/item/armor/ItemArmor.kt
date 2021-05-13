@@ -16,8 +16,8 @@ abstract class ItemArmor(definition: ItemDefinition) : Item(definition) {
 	val overlayTextureName: String
 
 	init {
-		mutiplier = definition["damageMultiplier"].asFloat ?: 0.5f
-		overlayTextureName =definition["overlay"].asString ?: "notexture"
+		mutiplier = definition.properties["damageMultiplier"].asFloat ?: 0.5f
+		overlayTextureName =definition.properties["overlay"].asString ?: "notexture"
 	}
 
 	/**

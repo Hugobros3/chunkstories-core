@@ -28,9 +28,11 @@ class CoreContentPlugin(pluginInformation: PluginInformation, pluginExecutionCon
 			pluginExecutionContext.logger.info("Registering additional configuration options for the client")
 			pluginExecutionContext.configuration.addOptions(CoreOptions.options)
 		}
+
+		onEnable()
 	}
 
-	override fun onEnable() {
+	fun onEnable() {
 		itemsLogic = ItemsLogicListener(this)
 		gameInstance.pluginManager.registerEventListener(itemsLogic, this)
 

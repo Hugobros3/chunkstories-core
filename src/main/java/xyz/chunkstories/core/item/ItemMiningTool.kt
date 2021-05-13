@@ -7,6 +7,7 @@
 package xyz.chunkstories.core.item
 
 import org.joml.Matrix4f
+import xyz.chunkstories.api.block.MiningTool
 import xyz.chunkstories.api.content.json.asFloat
 import xyz.chunkstories.api.content.json.asInt
 import xyz.chunkstories.api.content.json.asString
@@ -15,20 +16,19 @@ import xyz.chunkstories.api.graphics.systems.dispatching.RepresentationsGobbler
 import xyz.chunkstories.api.item.Item
 import xyz.chunkstories.api.item.ItemDefinition
 import xyz.chunkstories.api.graphics.representation.ModelInstance
-import xyz.chunkstories.api.voxel.MiningTool
 
 class ItemMiningTool(definition: ItemDefinition) : Item(definition), MiningTool {
-	override val toolTypeName: String = definition["toolType"].asString ?: "pickaxe"
-	override val miningEfficiency: Float = definition["miningEfficiency"].asFloat ?: 0.5f //java.lang.Float.parseFloat(type.resolveProperty(, "0.5"))
+	override val toolTypeName: String = definition.properties["toolType"].asString ?: "pickaxe"
+	override val miningEfficiency: Float = definition.properties["miningEfficiency"].asFloat ?: 0.5f //java.lang.Float.parseFloat(type.resolveProperty(, "0.5"))
 
-	val animationCycleDuration: Long = (definition["animationCycleDuration"].asInt ?: 500).toLong()
+	val animationCycleDuration: Long = (definition.properties["animationCycleDuration"].asInt ?: 500).toLong()
 
 	override fun buildRepresentation(worldPosition: Matrix4f, representationsGobbler: RepresentationsGobbler) {
 		//TODO move that logic where it belongs: the player rendering class
 		//val owner = pile.inventory.owner
 		//val miningAction = (owner as? Entity)?.traits?.get(MinerTrait::class)?.progress
 
-		val modelName = definition["model"].asString
+		val modelName = definition.properties["model"].asString
 		if(modelName != null) {
 			val model = definition.store.parent.models[modelName]
 

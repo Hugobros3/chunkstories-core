@@ -7,9 +7,9 @@
 package xyz.chunkstories.core.entity.pig
 
 import org.joml.Matrix4f
-import xyz.chunkstories.api.client.Client
 import xyz.chunkstories.api.entity.EntityDefinition
 import xyz.chunkstories.api.entity.ai.TraitAi
+import xyz.chunkstories.api.entity.isPlayerCharacter
 import xyz.chunkstories.api.entity.traits.TraitCollidable
 import xyz.chunkstories.api.entity.traits.TraitRenderable
 import xyz.chunkstories.api.entity.traits.serializable.TraitHealth
@@ -22,11 +22,9 @@ import xyz.chunkstories.api.physics.Box
 import xyz.chunkstories.api.sound.SoundSource
 import xyz.chunkstories.api.util.kotlin.toVec3f
 import xyz.chunkstories.api.world.World
-import xyz.chunkstories.api.world.WorldMaster
 import xyz.chunkstories.core.entity.EntityLiving
 import xyz.chunkstories.core.entity.ai.GenericAI
 import xyz.chunkstories.core.entity.traits.TraitBasicMovement
-import xyz.chunkstories.core.entity.traits.TraitHumanoidStance
 
 class EntityPig(definition: EntityDefinition, world: World) : EntityLiving(definition, world) {
 	private val ai: PigAi = PigAi(this)
@@ -60,7 +58,7 @@ class EntityPig(definition: EntityDefinition, world: World) : EntityLiving(defin
 
 class PigRenderer(pig: EntityPig) : TraitRenderable<EntityPig>(pig) {
 	override fun buildRepresentation(representationsGobbler: RepresentationsGobbler) {
-		val model = entity.world.content.models["entities/pig/pig.dae"]
+		val model = entity.world.gameInstance.content.models["entities/pig/pig.dae"]
 
 		val matrix = Matrix4f()
 		matrix.translate(entity.location.toVec3f())
@@ -73,13 +71,11 @@ class PigRenderer(pig: EntityPig) : TraitRenderable<EntityPig>(pig) {
 		if(entity.traits[TraitHealth::class]?.isDead == true)
 			matrix.scale(1f, -1f, 1f)
 
-		val isPlayerEntity = (entity.world.gameContext as? Client)?.ingame?.player?.controlledEntity == this.entity
-
 		var visibility = 0
 		for (i in 0 until representationsGobbler.renderTaskInstances.size) {
 			val isPassShadow = representationsGobbler.renderTaskInstances[i].name.startsWith("shadow")
 
-			val ithBit = isPassShadow or !isPlayerEntity
+			val ithBit = isPassShadow or !entity.isPlayerCharacter
 			visibility = visibility or (ithBit.toInt() shl i)
 		}
 

@@ -18,6 +18,7 @@ import org.joml.Vector2f
 import org.joml.Vector3d
 import xyz.chunkstories.api.entity.Entity
 import xyz.chunkstories.api.entity.ai.AiTask
+import xyz.chunkstories.api.world.getCell
 
 import java.util.Random
 import kotlin.math.sqrt
@@ -57,7 +58,7 @@ abstract class GenericAI<E: Entity>(entity: E) : AI<E>(entity) {
 		}
 
 		// Jump when in water
-		if (entity.world.peek(entity.location.add(0.0, 1.15, 0.0)).voxel.liquid) {
+		if (entity.world.getCell(entity.location.add(0.0, 1.15, 0.0))?.data?.blockType?.liquid == true) {
 			if (velocityTrait.velocity.y() < 0.0)
 				velocityTrait.addVelocity(0.0, 0.10, 0.0)
 		}

@@ -6,7 +6,6 @@
 
 package xyz.chunkstories.core.logic
 
-import xyz.chunkstories.api.events.Listener
 import xyz.chunkstories.core.CoreContentPlugin
 
-class EntityLogicListener(private val core: CoreContentPlugin) : Listener
+class EntityLogicListener(private val core: CoreContentPlugin)

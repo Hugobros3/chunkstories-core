@@ -13,7 +13,7 @@ import xyz.chunkstories.api.entity.Entity
 import xyz.chunkstories.api.entity.Subscriber
 import xyz.chunkstories.api.entity.traits.Trait
 import xyz.chunkstories.api.entity.traits.serializable.*
-import xyz.chunkstories.api.net.Interlocutor
+import xyz.chunkstories.api.player.Player
 import xyz.chunkstories.api.world.WorldMaster
 import java.io.DataInputStream
 import java.io.DataOutputStream
@@ -35,7 +35,7 @@ class TraitFoodLevel(entity: Entity, val defaultValue: Float) : Trait(entity), T
 
 	override fun readMessage(dis: DataInputStream) = FoodLevelUpdate(dis.readFloat())
 
-	override fun processMessage(message: FoodLevelUpdate, from: Interlocutor) {
+	override fun processMessage(message: FoodLevelUpdate, player: Player?) {
 		if(entity.world is WorldMaster)
 			return
 
@@ -43,7 +43,7 @@ class TraitFoodLevel(entity: Entity, val defaultValue: Float) : Trait(entity), T
 	}
 
 	override fun whenSubscriberRegisters(subscriber: Subscriber) {
-		if(subscriber == entity.traits[TraitControllable::class]?.controller)
+		if(subscriber == entity.controller)
 			sendMessage(subscriber, FoodLevelUpdate(foodLevel))
 	}
 

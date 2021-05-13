@@ -6,22 +6,19 @@
 
 package xyz.chunkstories.core.util
 
-import xyz.chunkstories.api.server.RemotePlayer
 import xyz.chunkstories.api.sound.SoundSource.Mode
 import xyz.chunkstories.api.world.World
-import xyz.chunkstories.api.world.WorldClient
 import xyz.chunkstories.api.world.WorldMaster
-import xyz.chunkstories.core.net.packets.PacketExplosionEffect
 import org.joml.Vector3d
 
 /** Creates an explosion with particles and sounds  */
 object WorldEffects {
 	fun createFireball(world: World, center: Vector3d, radius: Double, debrisSpeed: Double, f: Float) {
 		// Play effect directly in SP
-		if (world is WorldClient && world is WorldMaster)
+		if (world is WorldMaster)
 			createFireballFx(world, center, radius, debrisSpeed, f)
 
-		if (world is WorldMaster) {
+		/*if (world is WorldMaster) {
 			val packet = PacketExplosionEffect(world, center, radius, debrisSpeed, f)
 			for (player in world.players) {
 				val playerEntity = player.controlledEntity
@@ -32,7 +29,7 @@ object WorldEffects {
 					player.pushPacket(packet)
 				}
 			}
-		}
+		}*/
 
 		// Play the sound more directly
 		world.soundManager.playSoundEffect("./sounds/environment/kboom.ogg", Mode.NORMAL, center,

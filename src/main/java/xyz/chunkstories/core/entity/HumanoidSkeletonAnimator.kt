@@ -13,7 +13,6 @@ import xyz.chunkstories.api.entity.traits.serializable.TraitHealth
 import xyz.chunkstories.api.entity.traits.serializable.TraitRotation
 import xyz.chunkstories.api.entity.traits.serializable.TraitSelectedItem
 import xyz.chunkstories.api.entity.traits.serializable.TraitVelocity
-import xyz.chunkstories.api.world.WorldClient
 import xyz.chunkstories.core.entity.traits.TraitHumanoidStance
 import xyz.chunkstories.core.entity.traits.TraitHumanoidStance.HumanoidStance
 import xyz.chunkstories.core.entity.traits.TraitMining
@@ -21,6 +20,7 @@ import xyz.chunkstories.core.item.ItemMiningTool
 import org.joml.Matrix4f
 import org.joml.Vector3d
 import org.joml.Vector3f
+import xyz.chunkstories.api.entity.isPlayerCharacter
 
 import kotlin.math.sqrt
 
@@ -33,36 +33,38 @@ class HumanoidSkeletonAnimator(internal val entity: Entity) : CompoundAnimationH
     private val entityVelocity: TraitVelocity = entity.traits[TraitVelocity::class.java]!!
 
     override fun getAnimationPlayingForBone(boneName: String, animationTime: Float): Animation {
+        val content = entity.world.gameInstance.content
+
         if (entityHealth.isDead)
-            return entity.world.gameContext.content.animationsLibrary.getAnimation("./animations/human/ded.bvh")
+            return content.animationsLibrary.getAnimation("./animations/human/ded.bvh")
 
         val world = entity.world
 
         if (bonesInfluencedByItem.contains(boneName)) {
             val r =
-                run {
-                    val selectedItemPile = entity.traits[TraitSelectedItem::class]?.selectedItem
+                    run {
+                        val selectedItemPile = entity.traits[TraitSelectedItem::class]?.selectedItem
 
-                if (selectedItemPile != null) {
-                    // TODO refactor BVH subsystem to enable SkeletonAnimator to also take care of additional transforms
-                    val item = selectedItemPile.item
+                        if (selectedItemPile != null) {
+                            // TODO refactor BVH subsystem to enable SkeletonAnimator to also take care of additional transforms
+                            val item = selectedItemPile.item
 
-                    if (item is ItemMiningTool) {
-                        val trait = entity.traits[TraitMining::class.java]
-                        if (trait != null) {
-                            if (trait.progress != null)
-                                return@run world.content.animationsLibrary.getAnimation("./animations/human/mining.bvh")
+                            if (item is ItemMiningTool) {
+                                val trait = entity.traits[TraitMining::class.java]
+                                if (trait != null) {
+                                    if (trait.progress != null)
+                                        return@run content.animationsLibrary.getAnimation("./animations/human/mining.bvh")
+                                }
+                            }
+
+                            //TODO rework
+                            //if (item is ItemCustomHoldingAnimation)
+                            //    return@run world.content.animationsLibrary.getAnimation(item.customAnimationName)
+                            //else
+                            return@run content.animationsLibrary.getAnimation("./animations/human/holding-item.bvh")
                         }
+                        null
                     }
-
-                    //TODO rework
-                    //if (item is ItemCustomHoldingAnimation)
-                    //    return@run world.content.animationsLibrary.getAnimation(item.customAnimationName)
-                    //else
-                    return@run world.content.animationsLibrary.getAnimation("./animations/human/holding-item.bvh")
-                }
-                null
-            }
 
             if (r != null)
                 return r
@@ -73,18 +75,19 @@ class HumanoidSkeletonAnimator(internal val entity: Entity) : CompoundAnimationH
         // Extract just the horizontal speed from that
         val horizSpd = sqrt(vel.x() * vel.x() + vel.z() * vel.z())
 
-        if (stance.stance === HumanoidStance.STANDING) {
-            if (horizSpd > 0.065) {
-                // System.out.println("running");
-                return world.gameContext.content.animationsLibrary.getAnimation("./animations/human/running.bvh")
+        return when {
+            stance.stance === HumanoidStance.STANDING -> when {
+                horizSpd > 0.065 -> content.animationsLibrary.getAnimation("./animations/human/running.bvh")
+                horizSpd > 0.0 -> content.animationsLibrary.getAnimation("./animations/human/walking.bvh")
+                else -> content.animationsLibrary.getAnimation("./animations/human/standstill.bvh")
             }
-            return if (horizSpd > 0.0) world.gameContext.content.animationsLibrary.getAnimation("./animations/human/walking.bvh") else world.gameContext.content.animationsLibrary.getAnimation("./animations/human/standstill.bvh")
-
-        } else return if (stance.stance === HumanoidStance.CROUCHING) {
-            if (horizSpd > 0.0) world.gameContext.content.animationsLibrary.getAnimation("./animations/human/crouched-walking.bvh") else world.gameContext.content.animationsLibrary.getAnimation("./animations/human/crouched.bvh")
-
-        } else {
-            world.gameContext.content.animationsLibrary.getAnimation("./animations/human/ded.bvh")
+            stance.stance === HumanoidStance.CROUCHING -> when {
+                horizSpd > 0.0 -> content.animationsLibrary.getAnimation("./animations/human/crouched-walking.bvh")
+                else -> content.animationsLibrary.getAnimation("./animations/human/crouched.bvh")
+            }
+            else -> {
+                content.animationsLibrary.getAnimation("./animations/human/ded.bvh")
+            }
         }
 
     }
@@ -120,14 +123,14 @@ class HumanoidSkeletonAnimator(internal val entity: Entity) : CompoundAnimationH
             if (trait != null && listOf("boneArmLU", "boneArmLD", "boneItemInHand").contains(boneName)) {
                 val miningProgress = trait.progress
                 if (miningProgress != null) {
-                    val lol = entity.world.gameContext.content.animationsLibrary.getAnimation("./animations/human/mining.bvh")
+                    val lol = entity.world.gameInstance.content.animationsLibrary.getAnimation("./animations/human/mining.bvh")
 
                     return characterRotationMatrix.mul(lol.getBone(boneName)!!.getTransformationMatrix(((System.currentTimeMillis() - miningProgress.started) * 1.5f)))
                 }
             }
         }
 
-        val selectedItem =entity.traits[TraitSelectedItem::class]?.selectedItem
+        val selectedItem = entity.traits[TraitSelectedItem::class]?.selectedItem
 
         if (listOf("boneArmLU", "boneArmRU").contains(boneName)) {
             val k = if (stance.stance === HumanoidStance.CROUCHING) 0.65f else 0.75f
@@ -138,9 +141,8 @@ class HumanoidSkeletonAnimator(internal val entity: Entity) : CompoundAnimationH
                         Vector3f(1f, 0f, 0f))
                 characterRotationMatrix.translate(Vector3f(0f, -k, 0f))
 
-                if (stance.stance === HumanoidStance.CROUCHING && entity == (entity.world as WorldClient).client.player.controlledEntity)
+                if (stance.stance === HumanoidStance.CROUCHING && entity.isPlayerCharacter)
                     characterRotationMatrix.translate(Vector3f(-0.25f, -0.2f, 0f))
-
             }
         }
 

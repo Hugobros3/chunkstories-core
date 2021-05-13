@@ -8,13 +8,13 @@ package xyz.chunkstories.core.entity
 
 import org.joml.Vector4f
 import xyz.chunkstories.api.entity.Entity
+import xyz.chunkstories.api.entity.isPlayerCharacter
 import xyz.chunkstories.api.entity.traits.TraitHasOverlay
 import xyz.chunkstories.api.entity.traits.serializable.TraitHealth
 import xyz.chunkstories.api.entity.traits.serializable.TraitInventory
 import xyz.chunkstories.api.entity.traits.serializable.TraitSelectedItem
 import xyz.chunkstories.api.gui.GuiDrawer
 import xyz.chunkstories.api.item.interfaces.ItemOverlay
-import xyz.chunkstories.api.world.WorldClient
 import xyz.chunkstories.core.entity.traits.TraitFoodLevel
 
 class TraitHealthFoodOverlay(entity: Entity) : TraitHasOverlay(entity) {
@@ -27,7 +27,7 @@ class TraitHealthFoodOverlay(entity: Entity) : TraitHasOverlay(entity) {
 		val foodLevel = entity.traits[TraitFoodLevel::class]?.foodLevel ?: 0f
 		val maxFood = 100.0f
 
-		if ((entity.world as? WorldClient)?.client?.player?.controlledEntity == entity) {
+		if (entity.isPlayerCharacter) {
 			var hearths = ((health / maxHealth) * 20).toInt()
 			var hpos = (drawer.gui.viewportWidth / 2) - 10 * 10 - 13 - 0
 

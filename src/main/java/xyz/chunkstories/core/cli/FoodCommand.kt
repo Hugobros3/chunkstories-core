@@ -7,6 +7,7 @@
 package xyz.chunkstories.core.cli
 
 import xyz.chunkstories.api.player.Player
+import xyz.chunkstories.api.player.entityIfIngame
 import xyz.chunkstories.api.plugin.commands.Command
 import xyz.chunkstories.api.plugin.commands.CommandEmitter
 import xyz.chunkstories.api.plugin.commands.CommandHandler
@@ -34,7 +35,7 @@ class FoodCommand : CommandHandler {
 
 		val food = java.lang.Float.parseFloat(arguments[0])
 
-		val entity = emitter.controlledEntity ?: throw Exception("You aren't currently controlling an entity !")
+		val entity = emitter.entityIfIngame ?: throw Exception("You aren't currently controlling an entity !")
 		val foodTrait = entity.traits[TraitFoodLevel::class]
 
 		if (foodTrait != null) {

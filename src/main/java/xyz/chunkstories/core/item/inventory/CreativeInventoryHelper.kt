@@ -8,24 +8,22 @@ package xyz.chunkstories.core.item.inventory
 
 import xyz.chunkstories.api.content.Content
 import xyz.chunkstories.api.entity.Entity
-import xyz.chunkstories.api.item.ItemVoxel
+import xyz.chunkstories.api.item.ItemBlock
 import xyz.chunkstories.api.item.inventory.Inventory
 import xyz.chunkstories.api.item.inventory.InventoryCallbacks
 import xyz.chunkstories.api.item.inventory.ItemPile
 import java.util.ArrayList
 
-fun Content.Voxels.createCreativeInventory() : Inventory {
-	val allItems = ArrayList<ItemVoxel>()
+fun Content.BlockTypes.createCreativeInventory() : Inventory {
+	val allItems = ArrayList<ItemBlock>()
 
-	val voxels = this
-
-	for(voxel in voxels.all) {
+	for (blockType in all) {
 
 		// Ignore air
-		if (voxel.definition.name == "air")
+		if (blockType.isAir)
 			continue
 
-		allItems.addAll(voxel.enumerateItemsForBuilding())
+		allItems.addAll(blockType.enumerateItemsForBuilding())
 	}
 
 	val width = Math.ceil(allItems.size / 10.0).toInt()

@@ -6,9 +6,9 @@
 
 package xyz.chunkstories.core.entity.traits
 
-import xyz.chunkstories.api.client.LocalPlayer
 import xyz.chunkstories.api.entity.Controller
 import xyz.chunkstories.api.entity.Entity
+import xyz.chunkstories.api.entity.isPlayerCharacter
 import xyz.chunkstories.api.entity.traits.TraitCollidable
 import xyz.chunkstories.api.entity.traits.serializable.TraitControllable
 import xyz.chunkstories.api.entity.traits.serializable.TraitHealth
@@ -22,7 +22,7 @@ abstract class TraitControlledMovement(entity: Entity) : TraitBasicMovement(enti
 	abstract val backwardsSpeed: Double
 	abstract val forwardSpeed: Double
 
-	open fun tickMovementWithController(controller: LocalPlayer) {
+	open fun tickMovementWithController() {
 		val collisions = entity.traits[TraitCollidable::class.java] ?: return
 
 		val entityHealth = entity.traits[TraitHealth::class.java] ?: return
@@ -32,25 +32,25 @@ abstract class TraitControlledMovement(entity: Entity) : TraitBasicMovement(enti
 		if (entityHealth.isDead)
 			return
 
-		val focus = controller.hasFocus()
+		val focus = client.inputsManager.mouse.isGrabbed
 
 		val climbing = entity.isOnLadder()
 		val inLiquid = entity.isInLiquid()
 
 		if (focus) {
 			if (entityVelocity.velocity.y() <= 0.02) {
-				if (controller.inputsManager.getInputByName("jump")!!.isPressed) {
+				if (client.inputsManager.getInputByName("jump")!!.isPressed) {
 					//println("jumped ${collisions.isOnGround} and ${!inLiquid} ${collisions.isStuckInEntity}")
 					if (collisions.isOnGround && !inLiquid)
 						jump(0.15)
-					else if (inLiquid && controller.inputsManager.getInputByName("jump")!!.isPressed)
+					else if (inLiquid && client.inputsManager.getInputByName("jump")!!.isPressed)
 						jump(0.05)
 				}
 			}
 		}
 
-		if (focus && controller.inputsManager.getInputByName("forward")!!.isPressed) {
-			if (controller.inputsManager.getInputByName("run")!!.isPressed)
+		if (focus && client.inputsManager.getInputByName("forward")!!.isPressed) {
+			if (client.inputsManager.getInputByName("run")!!.isPressed)
 				running = true
 		} else
 			running = false
@@ -58,17 +58,17 @@ abstract class TraitControlledMovement(entity: Entity) : TraitBasicMovement(enti
 		var horizontalSpeed = 0.0
 
 		if (focus) {
-			if (controller.inputsManager.getInputByName("forward")!!.isPressed
-					|| controller.inputsManager.getInputByName("left")!!.isPressed
-					|| controller.inputsManager.getInputByName("right")!!.isPressed)
+			if (client.inputsManager.getInputByName("forward")!!.isPressed
+					|| client.inputsManager.getInputByName("left")!!.isPressed
+					|| client.inputsManager.getInputByName("right")!!.isPressed)
 
 				horizontalSpeed = forwardSpeed
-			else if (controller.inputsManager.getInputByName("back")!!.isPressed)
+			else if (client.inputsManager.getInputByName("back")!!.isPressed)
 				horizontalSpeed = -backwardsSpeed
 		}
 
 		// Strafing
-		val strafeAngle = figureOutStrafeAngle(controller)
+		val strafeAngle = figureOutStrafeAngle()
 
 		if (climbing) {
 			entityVelocity.setVelocityY((Math.sin(entityRotation.pitch / 180f * Math.PI) * horizontalSpeed).toFloat().toDouble())
@@ -80,22 +80,22 @@ abstract class TraitControlledMovement(entity: Entity) : TraitBasicMovement(enti
 		super.tickMovement()
 	}
 
-	fun figureOutStrafeAngle(controller: Controller): Double {
+	fun figureOutStrafeAngle(): Double {
 		var strafeAngle = 0.0
-		if (controller.inputsManager.getInputByName("forward")!!.isPressed) {
-			if (controller.inputsManager.getInputByName("left")!!.isPressed)
+		if (client.inputsManager.getInputByName("forward")!!.isPressed) {
+			if (client.inputsManager.getInputByName("left")!!.isPressed)
 				strafeAngle += 45.0
-			if (controller.inputsManager.getInputByName("right")!!.isPressed)
+			if (client.inputsManager.getInputByName("right")!!.isPressed)
 				strafeAngle -= 45.0
-		} else if (controller.inputsManager.getInputByName("back")!!.isPressed) {
-			if (controller.inputsManager.getInputByName("left")!!.isPressed)
+		} else if (client.inputsManager.getInputByName("back")!!.isPressed) {
+			if (client.inputsManager.getInputByName("left")!!.isPressed)
 				strafeAngle += (180 - 45).toDouble()
-			if (controller.inputsManager.getInputByName("right")!!.isPressed)
+			if (client.inputsManager.getInputByName("right")!!.isPressed)
 				strafeAngle -= (180 - 45).toDouble()
 		} else {
-			if (controller.inputsManager.getInputByName("left")!!.isPressed)
+			if (client.inputsManager.getInputByName("left")!!.isPressed)
 				strafeAngle += 90.0
-			if (controller.inputsManager.getInputByName("right")!!.isPressed)
+			if (client.inputsManager.getInputByName("right")!!.isPressed)
 				strafeAngle -= 90.0
 		}
 
@@ -103,11 +103,11 @@ abstract class TraitControlledMovement(entity: Entity) : TraitBasicMovement(enti
 	}
 
 	override fun tickMovement() {
-		val controller = entity.traits[TraitControllable::class]?.controller
+		val controller = entity.controller
 
 		// Consider player inputs...
-		if (controller != null && controller is LocalPlayer) {
-			tickMovementWithController(controller)
+		if (entity.isPlayerCharacter) {
+			tickMovementWithController()
 		} else { // no player ? just let it sit
 			super.tickMovement()
 		}
