@@ -6,11 +6,9 @@
 
 package xyz.chunkstories.core.entity.traits
 
-import xyz.chunkstories.api.entity.Controller
 import xyz.chunkstories.api.entity.Entity
 import xyz.chunkstories.api.entity.isPlayerCharacter
 import xyz.chunkstories.api.entity.traits.TraitCollidable
-import xyz.chunkstories.api.entity.traits.serializable.TraitControllable
 import xyz.chunkstories.api.entity.traits.serializable.TraitHealth
 import xyz.chunkstories.api.entity.traits.serializable.TraitRotation
 import xyz.chunkstories.api.entity.traits.serializable.TraitVelocity

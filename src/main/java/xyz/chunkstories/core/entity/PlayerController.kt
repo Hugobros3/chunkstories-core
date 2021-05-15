@@ -145,7 +145,7 @@ internal class PlayerController(private val entityPlayer: EntityPlayer) : TraitC
 		val itemInHand = entityPlayer.traitSelectedItem.selectedItem
 		if (itemInHand != null) {
 			// See if the item handles the interaction
-			if (itemInHand.item.onControllerInput(entityPlayer, itemInHand, input, controller!!))
+			if (itemInHand.item.onPlayerInput(entityPlayer, itemInHand, input, controller!!))
 				return true
 		}
 
