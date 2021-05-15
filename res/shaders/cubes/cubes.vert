@@ -64,14 +64,14 @@ void main() {
     //vec4 projected = camera.projectionMatrix * viewSpace;
 
     //mat4 matrix = camera.projectionMatrix * camera.viewMatrix;
-    vec4 projected = camera.combinedViewProjectionMatrix * vec4(vertexPos, 1.0);
+    vec4 projected = camera.projectionMatrix * camera.viewMatrix * vec4(vertexPos, 1.0);
 
     vec4 pos = vec4(projected);
     float pSize;
 
     //cool
     vec2 halfViewport = viewportSize.size;
-    quadricProj(vertexPos, 1.0, camera.combinedViewProjectionMatrix, halfViewport, pos, pSize);
+    quadricProj(vertexPos, 1.0, camera.projectionMatrix * camera.viewMatrix, halfViewport, pos, pSize);
 
     vertex = vertexPos;
     /*color = vec4(colorIn, 1.0);

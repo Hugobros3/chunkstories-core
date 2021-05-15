@@ -15,29 +15,29 @@ import xyz.chunkstories.core.logic.EntityLogicListener
 import xyz.chunkstories.core.logic.ItemsLogicListener
 
 /** 'Glue' for hooking core functions into the base engine  */
-class CoreContentPlugin(pluginInformation: PluginInformation, pluginExecutionContext: GameInstance) : Plugin(pluginInformation, pluginExecutionContext) {
+class CoreContentPlugin(pluginInformation: PluginInformation, gameInstance: GameInstance) : Plugin(pluginInformation, gameInstance) {
 	private lateinit var itemsLogic: ItemsLogicListener
 	private lateinit var entityLogic: EntityLogicListener
 
 	init {
-		pluginExecutionContext.logger.info("Initializing core content plugin")
+		gameInstance.logger.info("Initializing core content plugin")
 
-		gameInstance.pluginManager.registerCommand("food", FoodCommand())
+		this.gameInstance.pluginManager.registerCommand("food", FoodCommand())
 
-		if (pluginExecutionContext is Client) {
-			pluginExecutionContext.logger.info("Registering additional configuration options for the client")
-			pluginExecutionContext.configuration.addOptions(CoreOptions.options)
+		if (gameInstance is Client) {
+			gameInstance.logger.info("Registering additional configuration options for the client")
+			gameInstance.configuration.addOptions(CoreOptions.options)
 		}
 
 		onEnable()
 	}
 
 	fun onEnable() {
-		itemsLogic = ItemsLogicListener(this)
+		/*itemsLogic = ItemsLogicListener(this)
 		gameInstance.pluginManager.registerEventListener(itemsLogic, this)
 
 		entityLogic = EntityLogicListener(this)
-		gameInstance.pluginManager.registerEventListener(entityLogic, this)
+		gameInstance.pluginManager.registerEventListener(entityLogic, this)*/
 	}
 
 	override fun onDisable() { }

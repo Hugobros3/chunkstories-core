@@ -49,7 +49,7 @@ void main() {
 
     //vec4 viewSpace = camera.viewMatrix * vec4(vertexPos, 1.0);
     //vec4 projected = camera.projectionMatrix * viewSpace;
-    vec4 projected = camera.combinedViewProjectionMatrix * vec4(vertexPos, 1.0);
+    vec4 projected = camera.projectionMatrix * camera.viewMatrix * vec4(vertexPos, 1.0);
 
 
     vertex = vertexPos;
