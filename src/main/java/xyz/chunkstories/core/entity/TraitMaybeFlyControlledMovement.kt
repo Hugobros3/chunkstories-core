@@ -36,7 +36,7 @@ internal class TraitMaybeFlyControlledMovement(val entityPlayer: EntityPlayer) :
 		}
 
 	override fun tickMovementWithController() {
-		val toggleFlyControlsPressed = client.inputsManager.getInputByName("toggleFlyControls")!!.isPressed
+		val toggleFlyControlsPressed = client.engine.inputsManager.getInputByName("toggleFlyControls")!!.isPressed
 		if(toggleFlyControlsPressed && !this.toggleFlyControlsPressed)
 			oldStyleFlyControls = !oldStyleFlyControls
 		this.toggleFlyControlsPressed = toggleFlyControlsPressed
@@ -60,8 +60,8 @@ internal class TraitMaybeFlyControlledMovement(val entityPlayer: EntityPlayer) :
 	}
 
 	fun move() {
-		if (client.inputsManager.mouse.isGrabbed && entityPlayer.traits[TraitCollidable::class.java]!!.isOnGround) {
-			if (client.inputsManager.getInputByName("crouch")!!.isPressed)
+		if (client.engine.inputsManager.mouse.isGrabbed && entityPlayer.traits[TraitCollidable::class.java]!!.isOnGround) {
+			if (client.engine.inputsManager.getInputByName("crouch")!!.isPressed)
 				entityPlayer.traitStance.stance = TraitHumanoidStance.HumanoidStance.CROUCHING
 			else
 				entityPlayer.traitStance.stance = TraitHumanoidStance.HumanoidStance.STANDING
@@ -77,7 +77,7 @@ internal class TraitMaybeFlyControlledMovement(val entityPlayer: EntityPlayer) :
 		val entityVelocity = entity.traits[TraitVelocity::class.java] ?: return
 		val entityRotation = entity.traits[TraitRotation::class.java] ?: return
 
-		if(!holdingJump && client.inputsManager.getInputByName("jump")!!.isPressed) {
+		if(!holdingJump && client.engine.inputsManager.getInputByName("jump")!!.isPressed) {
 			val now = System.currentTimeMillis()
 
 			if(now - lastJumpTap < 300) {
@@ -92,7 +92,7 @@ internal class TraitMaybeFlyControlledMovement(val entityPlayer: EntityPlayer) :
 
 			lastJumpTap = now
 		}
-		holdingJump = client.inputsManager.getInputByName("jump")!!.isPressed
+		holdingJump = client.engine.inputsManager.getInputByName("jump")!!.isPressed
 
 		//TODO reorganise this nonsense
 		if(!isCurrentlyFlying) {
@@ -102,16 +102,16 @@ internal class TraitMaybeFlyControlledMovement(val entityPlayer: EntityPlayer) :
 
 		var horizontalSpeed = 0.0
 
-		if (client.inputsManager.mouse.isGrabbed) {
-			if (client.inputsManager.getInputByName("forward")!!.isPressed
-					|| client.inputsManager.getInputByName("left")!!.isPressed
-					|| client.inputsManager.getInputByName("right")!!.isPressed)
+		if (client.engine.inputsManager.mouse.isGrabbed) {
+			if (client.engine.inputsManager.getInputByName("forward")!!.isPressed
+					|| client.engine.inputsManager.getInputByName("left")!!.isPressed
+					|| client.engine.inputsManager.getInputByName("right")!!.isPressed)
 
-				horizontalSpeed = if (client.inputsManager.getInputByName("run")!!.isPressed)
+				horizontalSpeed = if (client.engine.inputsManager.getInputByName("run")!!.isPressed)
 					flySpeed * 2.0f
 				else
 					flySpeed * 1.0f
-			else if (client.inputsManager.getInputByName("back")!!.isPressed)
+			else if (client.engine.inputsManager.getInputByName("back")!!.isPressed)
 				horizontalSpeed = -flySpeed
 		}
 
@@ -122,8 +122,8 @@ internal class TraitMaybeFlyControlledMovement(val entityPlayer: EntityPlayer) :
 		targetVelocity.x = Math.sin((entityRotation.yaw + strafeAngle) / 180f * Math.PI) * horizontalSpeed
 		targetVelocity.z = Math.cos((entityRotation.yaw + strafeAngle) / 180f * Math.PI) * horizontalSpeed
 		targetVelocity.y = when {
-			client.inputsManager.getInputByName("jump")!!.isPressed -> flySpeed
-			client.inputsManager.getInputByName("crouch")!!.isPressed -> -flySpeed
+			client.engine.inputsManager.getInputByName("jump")!!.isPressed -> flySpeed
+			client.engine.inputsManager.getInputByName("crouch")!!.isPressed -> -flySpeed
 			else -> 0.0
 		}
 
@@ -151,7 +151,7 @@ internal class TraitMaybeFlyControlledMovement(val entityPlayer: EntityPlayer) :
 	var isNoclip = true
 
 	fun flyOldStyle() {
-		if (!client.inputsManager.mouse.isGrabbed)
+		if (!client.engine.inputsManager.mouse.isGrabbed)
 			return
 
 		// Flying resets the entity velocity, if it has one
@@ -164,12 +164,12 @@ internal class TraitMaybeFlyControlledMovement(val entityPlayer: EntityPlayer) :
 		val ignoreCollisions = (entityCollisions == null) or this.isNoclip
 
 		var cameraSpeed = flySpeed
-		if (client.inputsManager.getInputByName("flyReallyFast")!!.isPressed)
+		if (client.engine.inputsManager.getInputByName("flyReallyFast")!!.isPressed)
 			cameraSpeed *= 8 * 5f
-		else if (client.inputsManager.getInputByName("flyFast")!!.isPressed)
+		else if (client.engine.inputsManager.getInputByName("flyFast")!!.isPressed)
 			cameraSpeed *= 8f
 
-		if (client.inputsManager.getInputByName("back")!!.isPressed) {
+		if (client.engine.inputsManager.getInputByName("back")!!.isPressed) {
 			val horizRotRad = ((entityRotation.yaw + 180f) / 180f * Math.PI).toFloat()
 			val vertRotRad = (-entityRotation.pitch / 180f * Math.PI).toFloat()
 			if (ignoreCollisions)
@@ -179,7 +179,7 @@ internal class TraitMaybeFlyControlledMovement(val entityPlayer: EntityPlayer) :
 				entityCollisions!!.moveWithCollisionRestrain(Math.sin(horizRotRad.toDouble()) * cameraSpeed * Math.cos(vertRotRad.toDouble()), Math.sin(vertRotRad.toDouble()) * cameraSpeed,
 						Math.cos(horizRotRad.toDouble()) * cameraSpeed * Math.cos(vertRotRad.toDouble()))
 		}
-		if (client.inputsManager.getInputByName("forward")!!.isPressed) {
+		if (client.engine.inputsManager.getInputByName("forward")!!.isPressed) {
 			val horizRotRad = (entityRotation.yaw / 180f * Math.PI).toFloat()
 			val vertRotRad = (entityRotation.pitch / 180f * Math.PI).toFloat()
 			if (ignoreCollisions)
@@ -189,14 +189,14 @@ internal class TraitMaybeFlyControlledMovement(val entityPlayer: EntityPlayer) :
 				entityCollisions!!.moveWithCollisionRestrain(Math.sin(horizRotRad.toDouble()) * cameraSpeed * Math.cos(vertRotRad.toDouble()), Math.sin(vertRotRad.toDouble()) * cameraSpeed,
 						Math.cos(horizRotRad.toDouble()) * cameraSpeed * Math.cos(vertRotRad.toDouble()))
 		}
-		if (client.inputsManager.getInputByName("right")!!.isPressed) {
+		if (client.engine.inputsManager.getInputByName("right")!!.isPressed) {
 			val horizRot = ((entityRotation.yaw + 90) / 180f * Math.PI).toFloat()
 			if (ignoreCollisions)
 				entity.traitLocation.move(-Math.sin(horizRot.toDouble()) * cameraSpeed, 0.0, -Math.cos(horizRot.toDouble()) * cameraSpeed)
 			else
 				entityCollisions!!.moveWithCollisionRestrain(-Math.sin(horizRot.toDouble()) * cameraSpeed, 0.0, -Math.cos(horizRot.toDouble()) * cameraSpeed)
 		}
-		if (client.inputsManager.getInputByName("left")!!.isPressed) {
+		if (client.engine.inputsManager.getInputByName("left")!!.isPressed) {
 			val horizRot = ((entityRotation.yaw - 90) / 180f * Math.PI).toFloat()
 			if (ignoreCollisions)
 				entity.traitLocation.move(-Math.sin(horizRot.toDouble()) * cameraSpeed, 0.0, -Math.cos(horizRot.toDouble()) * cameraSpeed)

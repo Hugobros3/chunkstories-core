@@ -32,25 +32,25 @@ abstract class TraitControlledMovement(entity: Entity) : TraitBasicMovement(enti
 		if (entityHealth.isDead)
 			return
 
-		val focus = client.inputsManager.mouse.isGrabbed
+		val focus = client.engine.inputsManager.mouse.isGrabbed
 
 		val climbing = entity.isOnLadder()
 		val inLiquid = entity.isInLiquid()
 
 		if (focus) {
 			if (entityVelocity.velocity.y() <= 0.02) {
-				if (client.inputsManager.getInputByName("jump")!!.isPressed) {
+				if (client.engine.inputsManager.getInputByName("jump")!!.isPressed) {
 					//println("jumped ${collisions.isOnGround} and ${!inLiquid} ${collisions.isStuckInEntity}")
 					if (collisions.isOnGround && !inLiquid)
 						jump(0.15)
-					else if (inLiquid && client.inputsManager.getInputByName("jump")!!.isPressed)
+					else if (inLiquid && client.engine.inputsManager.getInputByName("jump")!!.isPressed)
 						jump(0.05)
 				}
 			}
 		}
 
-		if (focus && client.inputsManager.getInputByName("forward")!!.isPressed) {
-			if (client.inputsManager.getInputByName("run")!!.isPressed)
+		if (focus && client.engine.inputsManager.getInputByName("forward")!!.isPressed) {
+			if (client.engine.inputsManager.getInputByName("run")!!.isPressed)
 				running = true
 		} else
 			running = false
@@ -58,12 +58,12 @@ abstract class TraitControlledMovement(entity: Entity) : TraitBasicMovement(enti
 		var horizontalSpeed = 0.0
 
 		if (focus) {
-			if (client.inputsManager.getInputByName("forward")!!.isPressed
-					|| client.inputsManager.getInputByName("left")!!.isPressed
-					|| client.inputsManager.getInputByName("right")!!.isPressed)
+			if (client.engine.inputsManager.getInputByName("forward")!!.isPressed
+					|| client.engine.inputsManager.getInputByName("left")!!.isPressed
+					|| client.engine.inputsManager.getInputByName("right")!!.isPressed)
 
 				horizontalSpeed = forwardSpeed
-			else if (client.inputsManager.getInputByName("back")!!.isPressed)
+			else if (client.engine.inputsManager.getInputByName("back")!!.isPressed)
 				horizontalSpeed = -backwardsSpeed
 		}
 
@@ -82,20 +82,20 @@ abstract class TraitControlledMovement(entity: Entity) : TraitBasicMovement(enti
 
 	fun figureOutStrafeAngle(): Double {
 		var strafeAngle = 0.0
-		if (client.inputsManager.getInputByName("forward")!!.isPressed) {
-			if (client.inputsManager.getInputByName("left")!!.isPressed)
+		if (client.engine.inputsManager.getInputByName("forward")!!.isPressed) {
+			if (client.engine.inputsManager.getInputByName("left")!!.isPressed)
 				strafeAngle += 45.0
-			if (client.inputsManager.getInputByName("right")!!.isPressed)
+			if (client.engine.inputsManager.getInputByName("right")!!.isPressed)
 				strafeAngle -= 45.0
-		} else if (client.inputsManager.getInputByName("back")!!.isPressed) {
-			if (client.inputsManager.getInputByName("left")!!.isPressed)
+		} else if (client.engine.inputsManager.getInputByName("back")!!.isPressed) {
+			if (client.engine.inputsManager.getInputByName("left")!!.isPressed)
 				strafeAngle += (180 - 45).toDouble()
-			if (client.inputsManager.getInputByName("right")!!.isPressed)
+			if (client.engine.inputsManager.getInputByName("right")!!.isPressed)
 				strafeAngle -= (180 - 45).toDouble()
 		} else {
-			if (client.inputsManager.getInputByName("left")!!.isPressed)
+			if (client.engine.inputsManager.getInputByName("left")!!.isPressed)
 				strafeAngle += 90.0
-			if (client.inputsManager.getInputByName("right")!!.isPressed)
+			if (client.engine.inputsManager.getInputByName("right")!!.isPressed)
 				strafeAngle -= 90.0
 		}
 

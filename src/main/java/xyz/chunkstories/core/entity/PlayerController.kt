@@ -34,7 +34,7 @@ internal class PlayerController(private val entityPlayer: EntityPlayer) : TraitC
 
 	override fun onEachFrame(): Boolean {
 		val controller = entity.controller
-		if (client.gui.hasFocus()) {
+		if (client.engine.inputsManager.mouse.isGrabbed) {
 			rotateCameraAccordingToMouse()
 			return true
 		}
@@ -44,17 +44,17 @@ internal class PlayerController(private val entityPlayer: EntityPlayer) : TraitC
 	fun rotateCameraAccordingToMouse() {
 		if (entityPlayer.traitHealth.isDead)
 			return
-		if (!client.inputsManager.mouse.isGrabbed)
+		if (!client.engine.inputsManager.mouse.isGrabbed)
 			return
 
-		val cPX = client.inputsManager.mouse.cursorX
-		val cPY = client.inputsManager.mouse.cursorY
+		val cPX = client.engine.inputsManager.mouse.cursorX
+		val cPY = client.engine.inputsManager.mouse.cursorY
 
 		var dx = 0.0
 		var dy = 0.0
 		if (lastPX != -1.0) {
-			dx = cPX - client.gameWindow.width / 2.0
-			dy = cPY - client.gameWindow.height / 2.0
+			dx = cPX - client.engine.gameWindow.width / 2.0
+			dy = cPY - client.engine.gameWindow.height / 2.0
 		}
 		lastPX = cPX
 		lastPY = cPY
@@ -70,11 +70,11 @@ internal class PlayerController(private val entityPlayer: EntityPlayer) : TraitC
 			modifier = 1.0 / item.zoomFactor
 		}
 
-		rotH -= dx * modifier / 3f * client.configuration.getDoubleValue(CoreOptions.mouseSensitivity)
-		rotV += dy * modifier / 3f * client.configuration.getDoubleValue(CoreOptions.mouseSensitivity)
+		rotH -= dx * modifier / 3f * client.engine.configuration.getDoubleValue(CoreOptions.mouseSensitivity)
+		rotV += dy * modifier / 3f * client.engine.configuration.getDoubleValue(CoreOptions.mouseSensitivity)
 		entityPlayer.traitRotation.setRotation(rotH, rotV)
 
-		client.inputsManager.mouse.setMouseCursorLocation(client.gameWindow.width / 2.0, client.gameWindow.height / 2.0)
+		client.engine.inputsManager.mouse.setMouseCursorLocation(client.engine.gameWindow.width / 2.0, client.engine.gameWindow.height / 2.0)
 	}
 
 	// TODO: use this again
@@ -95,7 +95,7 @@ internal class PlayerController(private val entityPlayer: EntityPlayer) : TraitC
 			speedEffect = Math.max(0.0f, speedEffect)
 			speedEffect *= 50.0f
 
-			return client.makeCamera(cameraPosition, direction, up, fovModifier * (90f + speedEffect))
+			return client.engine.makeCamera(cameraPosition, direction, up, fovModifier * (90f + speedEffect))
 		}
 
 	override fun onControllerInput(input: Input): Boolean {
