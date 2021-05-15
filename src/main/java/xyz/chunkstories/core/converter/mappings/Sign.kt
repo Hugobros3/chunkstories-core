@@ -16,8 +16,8 @@ import io.xol.enklume.util.SignParseUtil
 import xyz.chunkstories.api.block.BlockType
 import xyz.chunkstories.api.converter.NonTrivialMapper
 import xyz.chunkstories.api.world.World
-import xyz.chunkstories.api.world.cell.PodCellData
-import xyz.chunkstories.api.world.chunk.ChunkCell
+import xyz.chunkstories.api.world.cell.CellData
+import xyz.chunkstories.api.world.chunk.MutableChunkCell
 import xyz.chunkstories.core.voxel.VoxelSign
 import xyz.chunkstories.core.voxel.components.SignData
 
@@ -29,7 +29,6 @@ class Sign(blockType: BlockType) : NonTrivialMapper(blockType) {
         var minecraftMetaData = minecraftMetaData
 
         if (blockType is VoxelSign) {
-
             if (!blockType.name.endsWith("_post")) {
                 when (minecraftMetaData) {
                     2 -> minecraftMetaData = 8
@@ -39,9 +38,9 @@ class Sign(blockType: BlockType) : NonTrivialMapper(blockType) {
                 }
             }
 
-            csWorld.setCellData(csX, csY, csZ, PodCellData(blockType))
-
-            (csWorld.getCellMut(csX, csY, csZ) as ChunkCell).additionalData["signData"]?.let {
+            val cell = csWorld.getCellMut(csX, csY, csZ) as MutableChunkCell
+            cell.data = CellData(blockType)
+            cell.additionalData["signData"]?.let {
                 translateSignText(it as SignData, region.getChunk(minecraftCuurrentChunkXinsideRegion, minecraftCuurrentChunkZinsideRegion), x, y, z)
             }
         } else {

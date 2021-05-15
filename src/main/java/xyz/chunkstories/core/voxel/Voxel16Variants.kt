@@ -17,7 +17,6 @@ import xyz.chunkstories.api.item.ItemDefinition
 import xyz.chunkstories.api.physics.RayResult
 import xyz.chunkstories.api.world.cell.Cell
 import xyz.chunkstories.api.world.cell.CellData
-import xyz.chunkstories.api.world.cell.MutableCellData
 
 class Voxel16Variants(name: String, definition: Json.Dict, content: Content) : BlockType(name, definition, content) {
 	private val textures_: Array<BlockTexture>
@@ -66,9 +65,9 @@ class ItemVoxelVariant(definition: ItemDefinition) : ItemBlock(definition) {
 		return "voxels/textures/" + blockType.name + "/" + variant + ".png"
 	}
 
-	override fun prepareNewBlockData(adjacentCell: Cell, adjacentCellSide: BlockSide, placingEntity: Entity, hit: RayResult.Hit.VoxelHit): MutableCellData {
-		val data = super.prepareNewBlockData(adjacentCell, adjacentCellSide, placingEntity, hit)!!
-		data.extraData = metadata
+	override fun prepareNewBlockData(adjacentCell: Cell, adjacentCellSide: BlockSide, placingEntity: Entity, hit: RayResult.Hit.VoxelHit): CellData {
+		var data = super.prepareNewBlockData(adjacentCell, adjacentCellSide, placingEntity, hit)!!
+		data = data.copy(extraData = metadata)
 		return data
 	}
 }

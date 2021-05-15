@@ -10,13 +10,14 @@ import io.xol.enklume.MinecraftRegion
 import xyz.chunkstories.api.block.BlockType
 import xyz.chunkstories.api.converter.NonTrivialMapper
 import xyz.chunkstories.api.world.World
+import xyz.chunkstories.api.world.cell.CellData
 
 class Chest(blockType: BlockType) : NonTrivialMapper(blockType) {
 
     override fun output(csWorld: World, csX: Int, csY: Int, csZ: Int, minecraftBlockId: Int, minecraftMetaData: Int,
                         region: MinecraftRegion, minecraftCurrentChunkXinsideRegion: Int, minecraftCurrentChunkZinsideRegion: Int,
                         x: Int, y: Int, z: Int) {
-        csWorld.getCellMut(csX, csY, csZ)!!.data.blockType = blockType
+        csWorld.getCellMut(csX, csY, csZ)!!.data = CellData(blockType)
     }
 
 }

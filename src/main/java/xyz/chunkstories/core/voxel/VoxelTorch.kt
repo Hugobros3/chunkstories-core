@@ -30,7 +30,7 @@ import xyz.chunkstories.api.physics.RayResult
 import xyz.chunkstories.api.util.kotlin.toVec3d
 import xyz.chunkstories.api.util.kotlin.toVec3f
 import xyz.chunkstories.api.world.cell.Cell
-import xyz.chunkstories.api.world.cell.MutableCellData
+import xyz.chunkstories.api.world.cell.CellData
 import xyz.chunkstories.api.world.chunk.MutableChunkCell
 
 class VoxelTorch(name: String, definition: Json.Dict, content: Content) : BlockType(name, definition, content) {
@@ -149,12 +149,12 @@ class ItemTorch(definition: ItemDefinition) : ItemBlock(definition) {
 		}
 	}
 
-	override fun prepareNewBlockData(adjacentCell: Cell, adjacentCellSide: BlockSide, placingEntity: Entity, hit: RayResult.Hit.VoxelHit): MutableCellData? {
+	override fun prepareNewBlockData(adjacentCell: Cell, adjacentCellSide: BlockSide, placingEntity: Entity, hit: RayResult.Hit.VoxelHit): CellData? {
 		if (!adjacentCell.data.blockType.solid || !adjacentCell.data.blockType.opaque || adjacentCellSide == BlockSide.BOTTOM)
 			return null
 
-		val data = super.prepareNewBlockData(adjacentCell, adjacentCellSide, placingEntity, hit)!!
-		data.extraData = adjacentCellSide.ordinal
+		var data = super.prepareNewBlockData(adjacentCell, adjacentCellSide, placingEntity, hit)!!
+		data = data.copy(extraData = adjacentCellSide.ordinal)
 		return data
 	}
 }

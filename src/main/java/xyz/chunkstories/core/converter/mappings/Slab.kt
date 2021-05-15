@@ -8,13 +8,12 @@ package xyz.chunkstories.core.converter.mappings
 
 import xyz.chunkstories.api.block.BlockType
 import xyz.chunkstories.api.converter.Mapper
-import xyz.chunkstories.api.world.cell.MutableCellData
+import xyz.chunkstories.api.world.cell.CellData
 
 class Slab(blockType: BlockType) : Mapper(blockType) {
 
-    override fun output(minecraftId: Int, minecraftMeta: Byte, data: MutableCellData) {
-        data.blockType = blockType
-        if (minecraftMeta >= 8)
-            data.extraData = 1
-    }
+    override fun output(minecraftId: Int, minecraftMeta: Byte) = CellData(
+        blockType = blockType,
+        extraData = if (minecraftMeta >= 8) 1 else 0
+        )
 }

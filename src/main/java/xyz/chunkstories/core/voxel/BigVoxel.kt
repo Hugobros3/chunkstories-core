@@ -10,7 +10,7 @@ import xyz.chunkstories.api.block.BlockType
 import xyz.chunkstories.api.content.Content
 import xyz.chunkstories.api.content.json.Json
 import xyz.chunkstories.api.content.json.asInt
-import xyz.chunkstories.api.world.cell.PodCellData
+import xyz.chunkstories.api.world.cell.CellData
 import xyz.chunkstories.api.world.chunk.MutableChunkCell
 
 // don't trust the lies of BIG VOXEL !!!!
@@ -113,7 +113,7 @@ class BigVoxel(name: String, definition: Json.Dict, content: Content) : BlockTyp
 		val startY = y - bp
 		val startZ = z - cp
 
-		val empty = PodCellData(cell.world.gameInstance.content.blockTypes.air)
+		val empty = CellData(cell.world.gameInstance.content.blockTypes.air)
 
 		for (a in startX until startX + xWidth) {
 			for (b in startY until startY + yWidth) {

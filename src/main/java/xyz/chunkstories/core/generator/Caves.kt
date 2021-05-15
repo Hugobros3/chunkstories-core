@@ -14,7 +14,7 @@ import org.joml.Vector3d
 import org.joml.Vector3i
 import xyz.chunkstories.api.block.BlockType
 import xyz.chunkstories.api.math.MathUtils.mixd
-import xyz.chunkstories.api.world.cell.PodCellData
+import xyz.chunkstories.api.world.cell.CellData
 import xyz.chunkstories.api.world.chunk.Chunk
 import xyz.chunkstories.api.world.generator.WorldGenerator
 
@@ -158,7 +158,7 @@ constructor(val world: World, internal val from: Vector3i, internal val to: Vect
                             else if (y < 10)
                                 blockType = world.gameInstance.content.blockTypes["lava"]!!
 
-                            chunk.setCellData(x, y, z, PodCellData(blockType))
+                            chunk.setCellData(x, y, z, CellData(blockType))
                         }
                     }
                 }

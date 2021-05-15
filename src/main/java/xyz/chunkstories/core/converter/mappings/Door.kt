@@ -13,6 +13,7 @@ import xyz.chunkstories.api.block.BlockType
 import xyz.chunkstories.api.converter.NonTrivialMapper
 
 import xyz.chunkstories.api.util.compatibility.getSideMcDoor
+import xyz.chunkstories.api.world.cell.CellData
 
 class Door(blockType: BlockType) : NonTrivialMapper(blockType) {
 
@@ -31,10 +32,11 @@ class Door(blockType: BlockType) : NonTrivialMapper(blockType) {
             val hingeSide = upperMeta and 0x01
             val direction = minecraftMetaData and 0x3
 
-            val cellData = csWorld.getCellMut(csX, csY, csZ)!!.data
-
-            cellData.blockType = blockType
-            cellData.extraData = VoxelDoor.computeMeta(open == 1, hingeSide == 1, getSideMcDoor(direction))
+            val cell = csWorld.getCellMut(csX, csY, csZ)!!
+            cell.data = CellData(
+                    blockType = blockType,
+                    extraData = VoxelDoor.computeMeta(open == 1, hingeSide == 1, getSideMcDoor(direction))
+            )
         }
 
     }

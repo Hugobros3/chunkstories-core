@@ -25,7 +25,7 @@ import xyz.chunkstories.api.world.generator.WorldGeneratorDefinition
 import java.util.*
 import kotlin.math.abs
 import xyz.chunkstories.api.math.MathUtils.clamp
-import xyz.chunkstories.api.world.cell.PodCellData
+import xyz.chunkstories.api.world.cell.CellData
 
 open class HorizonGenerator(definition: WorldGeneratorDefinition, world: World) : WorldGenerator(definition, world) {
     private val ssng = SeededSimplexNoiseGenerator(world.properties.seed)
@@ -121,7 +121,7 @@ open class HorizonGenerator(definition: WorldGeneratorDefinition, world: World) 
                     val groundHeight = sliceData.heights[x * 32 + z]
                     var y = cy * 32
                     while (y < cy * 32 + 32 && y <= groundHeight) {
-                        chunk.setCellData(x, y, z, PodCellData(stoneVoxel))
+                        chunk.setCellData(x, y, z, CellData(stoneVoxel))
                         y++
                     }
                 }
@@ -164,7 +164,7 @@ open class HorizonGenerator(definition: WorldGeneratorDefinition, world: World) 
                             val dy = -1 + rng.nextInt(4)
                             val dz = -1 + rng.nextInt(4)
                             if(chunks.getOrNull((y + dy) / 32)?.getCellData(x + dx, y + dy, z + dz)?.blockType == stoneVoxel)
-                                chunks.getOrNull((y + dy) / 32)?.setCellData(x + dx, y + dy, z + dz, PodCellData(oreType.voxel))
+                                chunks.getOrNull((y + dy) / 32)?.setCellData(x + dx, y + dy, z + dz, CellData(oreType.voxel))
                         }
                     }
                 }
@@ -188,24 +188,24 @@ open class HorizonGenerator(definition: WorldGeneratorDefinition, world: World) 
                 if (groundHeightActual < waterHeight && worldY < waterHeight) {
                     var waterY = waterHeight
                     while (waterY > 0 && chunks[waterY / 32].getCellData(x, waterY, z).blockType == airVoxel) {
-                        chunks[waterY / 32].setCellData(x, waterY, z, PodCellData(waterVoxel))
+                        chunks[waterY / 32].setCellData(x, waterY, z, CellData(waterVoxel))
                         waterY--
                     }
 
                     // Replace the stone with whatever is the ground block
                     var undergroundDirt = groundHeightActual
                     while (undergroundDirt >= 0 && undergroundDirt >= groundHeightActual - 3 && chunks[undergroundDirt / 32].getCellData(x, undergroundDirt, z).blockType == stoneVoxel) {
-                        chunks[undergroundDirt / 32].setCellData(x, undergroundDirt, z, PodCellData(biome.underwaterGround))
+                        chunks[undergroundDirt / 32].setCellData(x, undergroundDirt, z, CellData(biome.underwaterGround))
                         undergroundDirt--
                     }
                 } else {
                     // Top soil
-                    chunks[groundHeightActual / 32].setCellData(x, groundHeightActual, z, PodCellData(biome.surfaceBlock))
+                    chunks[groundHeightActual / 32].setCellData(x, groundHeightActual, z, CellData(biome.surfaceBlock))
 
                     // Replace the stone with whatever is the ground block
                     var undergroundDirt = groundHeightActual - 1
                     while (undergroundDirt >= 0 && undergroundDirt >= groundHeightActual - 3 && chunks[undergroundDirt / 32].getCellData(x, undergroundDirt, z).blockType == stoneVoxel) {
-                        chunks[undergroundDirt / 32].setCellData(x, undergroundDirt, z, PodCellData(biome.groundBlock))
+                        chunks[undergroundDirt / 32].setCellData(x, undergroundDirt, z, CellData(biome.groundBlock))
                         undergroundDirt--
                     }
 
@@ -216,7 +216,7 @@ open class HorizonGenerator(definition: WorldGeneratorDefinition, world: World) 
 
                     val bushChance = rng.nextDouble()
                     if (bushChance < biome.surfaceDecorationsDensity) {
-                        chunks[surface / 32].setCellData(x, surface, z, PodCellData(biome.surfaceDecorations.random(rng)))
+                        chunks[surface / 32].setCellData(x, surface, z, CellData(biome.surfaceDecorations.random(rng)))
                     }
                 }
             }

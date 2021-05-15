@@ -13,7 +13,7 @@ import xyz.chunkstories.api.world.generator.WorldGenerator
 import xyz.chunkstories.api.world.generator.WorldGeneratorDefinition
 import org.joml.Vector3f
 import xyz.chunkstories.api.block.BlockType
-import xyz.chunkstories.api.world.cell.PodCellData
+import xyz.chunkstories.api.world.cell.CellData
 
 import java.util.Random
 
@@ -115,9 +115,9 @@ class NoiseWorldGenerator(type: WorldGeneratorDefinition, world: World) : WorldG
 
                     // Blocks writing
                     if (value > 0.0f)
-                        chunk.setCellData(x, y, z, PodCellData(STONE_VOXEL))
+                        chunk.setCellData(x, y, z, CellData(STONE_VOXEL))
                     else if (cy * 32 + y < 256)
-                        chunk.setCellData(x, y, z, PodCellData(WATER_VOXEL))
+                        chunk.setCellData(x, y, z, CellData(WATER_VOXEL))
                 }
             }
     }

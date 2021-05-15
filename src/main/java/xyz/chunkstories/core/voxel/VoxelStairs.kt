@@ -22,7 +22,7 @@ import xyz.chunkstories.api.item.ItemDefinition
 import xyz.chunkstories.api.physics.Box
 import xyz.chunkstories.api.physics.RayResult
 import xyz.chunkstories.api.world.cell.Cell
-import xyz.chunkstories.api.world.cell.MutableCellData
+import xyz.chunkstories.api.world.cell.CellData
 import kotlin.math.abs
 
 class VoxelStairs(name: String, definition: Json.Dict, content: Content) : BlockType(name, definition, content) {
@@ -120,8 +120,8 @@ class VoxelStairs(name: String, definition: Json.Dict, content: Content) : Block
 }
 
 class ItemStairs(definition: ItemDefinition) : ItemBlock(definition) {
-	override fun prepareNewBlockData(adjacentCell: Cell, adjacentCellSide: BlockSide, placingEntity: Entity, hit: RayResult.Hit.VoxelHit): MutableCellData {
-		val data = super.prepareNewBlockData(adjacentCell, adjacentCellSide, placingEntity, hit)!!
+	override fun prepareNewBlockData(adjacentCell: Cell, adjacentCellSide: BlockSide, placingEntity: Entity, hit: RayResult.Hit.VoxelHit): CellData {
+		var data = super.prepareNewBlockData(adjacentCell, adjacentCellSide, placingEntity, hit)!!
 
 		val loc = placingEntity.location
 		val dx = hit.hitPosition.x() - loc.x()
@@ -146,7 +146,7 @@ class ItemStairs(definition: ItemDefinition) : ItemBlock(definition) {
 		else
 			(hit.hitPosition.y() % 1) > 0.5
 
-		data.extraData = facing.ordinal or ((if(flipped) 1 else 0) shl 2)
+		data = data.copy(extraData = facing.ordinal or ((if(flipped) 1 else 0) shl 2))
 
 		return data
 	}

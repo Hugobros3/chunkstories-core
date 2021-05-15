@@ -29,8 +29,7 @@ import xyz.chunkstories.api.physics.RayResult
 import xyz.chunkstories.api.sound.SoundSource.Mode
 import xyz.chunkstories.api.world.WorldMaster
 import xyz.chunkstories.api.world.cell.Cell
-import xyz.chunkstories.api.world.cell.MutableCellData
-import xyz.chunkstories.api.world.cell.PodCellData
+import xyz.chunkstories.api.world.cell.CellData
 import xyz.chunkstories.api.world.chunk.MutableChunkCell
 import xyz.chunkstories.api.world.getCellMut
 
@@ -134,8 +133,8 @@ class VoxelDoor(name: String, definition: Json.Dict, content: Content) : BlockTy
             //println("new door status : $newState")
             cell.world.soundManager.playSoundEffect("sounds/voxels/door.ogg", Mode.NORMAL, cell.location, 1.0f, 1.0f)
 
-            cell.data.extraData = newData
-            otherLocationPeek.data.extraData = newData
+            cell.data = cell.data.copy(extraData = newData)
+            otherLocationPeek.data = otherLocationPeek.data.copy(extraData = newData)
         } else {
             cell.world.logger.error("Incomplete door @ $otherPartLocation")
         }
@@ -179,7 +178,7 @@ class VoxelDoor(name: String, definition: Json.Dict, content: Content) : BlockTy
         super.whenPlaced(cell)
 
         if (!top)
-            cell.world.setCellData(cell.x, cell.y + 1, cell.z, PodCellData(upperPart, 0, 0, cell.data.extraData))
+            cell.world.setCellData(cell.x, cell.y + 1, cell.z, CellData(upperPart, extraData = cell.data.extraData))
     }
 
     override fun onRemove(cell: MutableChunkCell): Boolean {
@@ -198,7 +197,7 @@ class VoxelDoor(name: String, definition: Json.Dict, content: Content) : BlockTy
         val restOfTheDoorVoxel = world.getCell(x, otherPartOfTheDoorY, z) ?: return true
         // Remove the other part as well, if it still exists
         if (restOfTheDoorVoxel.data.blockType is VoxelDoor)
-            world.setCellData(x, otherPartOfTheDoorY, z, PodCellData(content.blockTypes.air))
+            world.setCellData(x, otherPartOfTheDoorY, z, CellData(content.blockTypes.air))
         return true
     }
 
@@ -244,7 +243,7 @@ class ItemDoor(definition: ItemDefinition) : ItemBlock(definition) {
         representationsGobbler.acceptRepresentation(representation, -1)
     }
 
-    override fun prepareNewBlockData(adjacentCell: Cell, adjacentCellSide: BlockSide, placingEntity: Entity, hit: RayResult.Hit.VoxelHit): MutableCellData {
+    override fun prepareNewBlockData(adjacentCell: Cell, adjacentCellSide: BlockSide, placingEntity: Entity, hit: RayResult.Hit.VoxelHit): CellData {
         /*super.prepareNewBlockData(adjacentCell, adjacentCellSide, placingEntity, hit)
 
         val world = cell.world

@@ -10,8 +10,6 @@ import xyz.chunkstories.api.entity.Entity
 import xyz.chunkstories.api.input.Input
 import xyz.chunkstories.api.world.chunk.ChunkCell
 import xyz.chunkstories.core.voxel.components.SignData
-import org.joml.Vector2f
-import org.joml.Vector3d
 import xyz.chunkstories.api.block.BlockSide
 import xyz.chunkstories.api.block.BlockType
 import xyz.chunkstories.api.content.Content
@@ -21,7 +19,7 @@ import xyz.chunkstories.api.item.ItemBlock
 import xyz.chunkstories.api.item.ItemDefinition
 import xyz.chunkstories.api.physics.RayResult
 import xyz.chunkstories.api.world.cell.Cell
-import xyz.chunkstories.api.world.cell.MutableCellData
+import xyz.chunkstories.api.world.cell.CellData
 import xyz.chunkstories.api.world.chunk.MutableChunkCell
 
 /** Signs are voxels you can write stuff on  */
@@ -98,7 +96,7 @@ class VoxelSign(name: String, definition: Json.Dict, content: Content) : BlockTy
 }
 
 class ItemSign(definition: ItemDefinition) : ItemBlock(definition) {
-	override fun prepareNewBlockData(adjacentCell: Cell, adjacentCellSide: BlockSide, placingEntity: Entity, hit: RayResult.Hit.VoxelHit): MutableCellData? {
+	override fun prepareNewBlockData(adjacentCell: Cell, adjacentCellSide: BlockSide, placingEntity: Entity, hit: RayResult.Hit.VoxelHit): CellData? {
 		return super.prepareNewBlockData(adjacentCell, adjacentCellSide, placingEntity, hit)
 	}
 }

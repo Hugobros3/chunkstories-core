@@ -9,7 +9,7 @@ package xyz.chunkstories.core.generator
 import xyz.chunkstories.api.block.BlockType
 import xyz.chunkstories.api.content.json.asInt
 import xyz.chunkstories.api.world.World
-import xyz.chunkstories.api.world.cell.PodCellData
+import xyz.chunkstories.api.world.cell.CellData
 import xyz.chunkstories.api.world.chunk.Chunk
 import xyz.chunkstories.api.world.generator.WorldGenerator
 import xyz.chunkstories.api.world.generator.WorldGeneratorDefinition
@@ -66,7 +66,7 @@ class FlatGenerator(definition: WorldGeneratorDefinition, world: World) : WorldG
                 while (y < cy * 32 + 32 && y <= terrainHeight) {
                     if (y == 30)
                         type = WALL_TOP_VOXEL
-                    chunk.setCellData(x, y, z, PodCellData(type))
+                    chunk.setCellData(x, y, z, CellData(type))
                     y++
                 }
             }

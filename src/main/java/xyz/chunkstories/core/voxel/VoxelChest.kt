@@ -26,7 +26,7 @@ import xyz.chunkstories.api.player.Player
 import xyz.chunkstories.api.server.Host
 import xyz.chunkstories.api.world.WorldMaster
 import xyz.chunkstories.api.world.cell.Cell
-import xyz.chunkstories.api.world.cell.MutableCellData
+import xyz.chunkstories.api.world.cell.CellData
 import xyz.chunkstories.api.world.chunk.ChunkCell
 import xyz.chunkstories.api.world.chunk.MutableChunkCell
 import kotlin.math.abs
@@ -102,8 +102,8 @@ class VoxelChest(name: String, definition: Json.Dict, content: Content) : BlockT
 }
 
 class ItemChest(definition: ItemDefinition) : ItemBlock(definition) {
-	override fun prepareNewBlockData(adjacentCell: Cell, adjacentCellSide: BlockSide, placingEntity: Entity, hit: RayResult.Hit.VoxelHit): MutableCellData {
-		val data = super.prepareNewBlockData(adjacentCell, adjacentCellSide, placingEntity, hit)!!
+	override fun prepareNewBlockData(adjacentCell: Cell, adjacentCellSide: BlockSide, placingEntity: Entity, hit: RayResult.Hit.VoxelHit): CellData {
+		var data = super.prepareNewBlockData(adjacentCell, adjacentCellSide, placingEntity, hit)!!
 
 		val loc = placingEntity.location
 		val dx = hit.hitPosition.x() - loc.x()
@@ -121,7 +121,7 @@ class ItemChest(definition: ItemDefinition) : ItemBlock(definition) {
 				BlockSide.FRONT
 		}
 
-		data.extraData = facing.ordinal
+		data = data.copy(extraData = facing.ordinal)
 
 		return data
 	}
