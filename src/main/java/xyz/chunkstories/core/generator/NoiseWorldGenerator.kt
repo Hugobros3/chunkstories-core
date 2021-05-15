@@ -13,6 +13,7 @@ import xyz.chunkstories.api.world.generator.WorldGenerator
 import xyz.chunkstories.api.world.generator.WorldGeneratorDefinition
 import org.joml.Vector3f
 import xyz.chunkstories.api.block.BlockType
+import xyz.chunkstories.api.world.cell.PodCellData
 
 import java.util.Random
 
@@ -31,13 +32,13 @@ class NoiseWorldGenerator(type: WorldGeneratorDefinition, world: World) : WorldG
         this.WATER_VOXEL = world.gameInstance.content.blockTypes["water"]!!
     }
 
-    override fun generateWorldSlice(chunks: Array<Chunk>) {
+    override fun generateWorldSlice(chunks: Array<PreChunk>) {
         for (chunkY in chunks.indices) {
             generateChunk(chunks[chunkY])
         }
     }
 
-    private fun generateChunk(chunk: Chunk) {
+    private fun generateChunk(chunk: PreChunk) {
         val cx = chunk.chunkX
         val cy = chunk.chunkY
         val cz = chunk.chunkZ
@@ -114,11 +115,15 @@ class NoiseWorldGenerator(type: WorldGeneratorDefinition, world: World) : WorldG
 
                     // Blocks writing
                     if (value > 0.0f)
-                        chunk.pokeSimpleSilently(x, y, z, STONE_VOXEL, -1, -1, 0)
+                        chunk.setCellData(x, y, z, PodCellData(STONE_VOXEL))
                     else if (cy * 32 + y < 256)
-                        chunk.pokeSimpleSilently(x, y, z, WATER_VOXEL, -1, -1, 0)// Water
+                        chunk.setCellData(x, y, z, PodCellData(WATER_VOXEL))
                 }
             }
+    }
+
+    override fun generateWorldSlicePhaseII(chunks: Array<Chunk>) {
+
     }
 
     internal fun lerp(x: Int, val0: Float, val1: Float, i0: Int, i1: Int, granularity: Int): Float {

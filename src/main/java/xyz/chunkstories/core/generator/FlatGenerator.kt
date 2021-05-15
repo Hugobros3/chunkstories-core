@@ -6,9 +6,10 @@
 
 package xyz.chunkstories.core.generator
 
+import xyz.chunkstories.api.block.BlockType
 import xyz.chunkstories.api.content.json.asInt
-import xyz.chunkstories.api.voxel.Voxel
 import xyz.chunkstories.api.world.World
+import xyz.chunkstories.api.world.cell.PodCellData
 import xyz.chunkstories.api.world.chunk.Chunk
 import xyz.chunkstories.api.world.generator.WorldGenerator
 import xyz.chunkstories.api.world.generator.WorldGeneratorDefinition
@@ -22,27 +23,27 @@ class FlatGenerator(definition: WorldGeneratorDefinition, world: World) : WorldG
 
     private val cellSize: Int
 
-    private val GROUND_VOXEL: Voxel
-    private val WALL_VOXEL: Voxel
-    private val WALL_TOP_VOXEL: Voxel
+    private val GROUND_VOXEL: BlockType
+    private val WALL_VOXEL: BlockType
+    private val WALL_TOP_VOXEL: BlockType
 
     init {
-        worldsize = world.sizeInChunks * 32
+        worldsize = world.properties.size.sizeInChunks * 32
 
-        this.GROUND_VOXEL = world.gameContext.content.voxels.getVoxel("grass")!!
-        this.WALL_VOXEL = world.gameContext.content.voxels.getVoxel("cobble")!!
-        this.WALL_TOP_VOXEL = world.gameContext.content.voxels.getVoxel("iron_bars")!!
+        this.GROUND_VOXEL = world.gameInstance.content.blockTypes.get("grass")!!
+        this.WALL_VOXEL = world.gameInstance.content.blockTypes.get("cobble")!!
+        this.WALL_TOP_VOXEL = world.gameInstance.content.blockTypes.get("iron_bars")!!
 
-        this.cellSize = definition["cellSize"].asInt ?: 0
+        this.cellSize = definition.properties["cellSize"].asInt ?: 0
     }
 
-    override fun generateWorldSlice(chunks: Array<Chunk>) {
+    override fun generateWorldSlice(chunks: Array<PreChunk>) {
         for (chunkY in chunks.indices) {
             generateChunk(chunks[chunkY])
         }
     }
 
-    private fun generateChunk(chunk: Chunk) {
+    private fun generateChunk(chunk: PreChunk) {
         val cx = chunk.chunkX
         val cy = chunk.chunkY
         val cz = chunk.chunkZ
@@ -65,10 +66,14 @@ class FlatGenerator(definition: WorldGeneratorDefinition, world: World) : WorldG
                 while (y < cy * 32 + 32 && y <= terrainHeight) {
                     if (y == 30)
                         type = WALL_TOP_VOXEL
-                    chunk.pokeSimpleSilently(x, y, z, type, -1, -1, 0)
+                    chunk.setCellData(x, y, z, PodCellData(type))
                     y++
                 }
             }
+    }
+
+    override fun generateWorldSlicePhaseII(chunks: Array<Chunk>) {
+
     }
 
     private fun onWall(x: Int, z: Int) = ((x) % 256 == 0 || (z) % 256 == 0)

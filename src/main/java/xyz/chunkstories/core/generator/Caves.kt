@@ -9,15 +9,14 @@ package xyz.chunkstories.core.generator
 import xyz.chunkstories.api.math.MathUtils
 import xyz.chunkstories.api.world.World
 import xyz.chunkstories.core.generator.HorizonGenerator.SliceData
-import xyz.chunkstories.core.generator.HorizonGenerator.StructureToPaste
 import org.joml.Vector2i
 import org.joml.Vector3d
 import org.joml.Vector3i
+import xyz.chunkstories.api.block.BlockType
 import xyz.chunkstories.api.math.MathUtils.mixd
-import xyz.chunkstories.api.math.MathUtils.mixf
-import xyz.chunkstories.api.voxel.Voxel
-import xyz.chunkstories.api.voxel.structures.Structure
+import xyz.chunkstories.api.world.cell.PodCellData
 import xyz.chunkstories.api.world.chunk.Chunk
+import xyz.chunkstories.api.world.generator.WorldGenerator
 
 import java.util.Random
 
@@ -26,7 +25,7 @@ internal class Caves(private val world: World, private val generator: HorizonGen
         val rx = cx shr 3
         val rz = cz shr 3
 
-        val sir = world.worldInfo.size.sizeInChunks shr 3
+        val sir = world.properties.size.sizeInChunks shr 3
 
         val rnd = Random()
 
@@ -107,7 +106,7 @@ internal class Caves(private val world: World, private val generator: HorizonGen
 
             if (posDelta.length() < 64) {
                 // Touching terrain we want to generate
-                sliceData.structures.add(StructureToPaste(CaveSnakeSegment.createSegment(pos, oldPosition, size, oldsize), pos, 0))
+                sliceData.caveBits.add(HorizonGenerator.CaveSegmentToPaste(CaveSnakeSegment.createSegment(world, pos, oldPosition, size, oldsize), pos))
             }
 
             if (nextFork > 0)
@@ -120,8 +119,10 @@ internal class Caves(private val world: World, private val generator: HorizonGen
     }
 }
 
-internal class CaveSnakeSegment private constructor(internal val from: Vector3i, internal val to: Vector3i, private val startingSize: Double, private val endSize: Double, width: Int, height: Int, length: Int) : Structure(width, height, length) {
-    override fun paste(chunk: Chunk, position: Vector3i, flags: Int) {
+internal class CaveSnakeSegment private
+constructor(val world: World, internal val from: Vector3i, internal val to: Vector3i, private val startingSize: Double, private val endSize: Double, width: Int, height: Int, length: Int) {
+
+    fun paste(chunk: WorldGenerator.PreChunk, position: Vector3i) {
         val whereTho = Vector3i()
         val d = from.distance(to)
         var i = 0
@@ -138,9 +139,9 @@ internal class CaveSnakeSegment private constructor(internal val from: Vector3i,
         // cubeOfDoom(chunk, to, 3);
     }
 
-    private fun sphereOfDoom(chunk: Chunk, position: Vector3i, radius: Double) {
+    private fun sphereOfDoom(chunk: WorldGenerator.PreChunk, position: Vector3i, radius: Double) {
         val size = Math.ceil(radius).toInt()
-        val air = chunk.world.content.voxels.air
+        val air = world.gameInstance.content.blockTypes.air
         for (x in position.x - size..position.x + size)
             for (y in position.y - size..position.y + size)
                 for (z in position.z - size..position.z + size) {
@@ -150,13 +151,14 @@ internal class CaveSnakeSegment private constructor(internal val from: Vector3i,
                         val rz = position.z - z
 
                         if (rx * rx + ry * ry + rz * rz <= size * size) {
-                            var voxel: Voxel? = air
-                            if (y == 0)
-                                voxel = chunk.world.content.voxels.getVoxel("stone")
-                            else if (y < 10)
-                                voxel = chunk.world.content.voxels.getVoxel("lava")
+                            var blockType: BlockType = air
 
-                            chunk.pokeSimpleSilently(x, y, z, voxel, 0, 0, 0)
+                            if (y == 0)
+                                blockType = world.gameInstance.content.blockTypes["stone"]!!
+                            else if (y < 10)
+                                blockType = world.gameInstance.content.blockTypes["lava"]!!
+
+                            chunk.setCellData(x, y, z, PodCellData(blockType))
                         }
                     }
                 }
@@ -167,8 +169,13 @@ internal class CaveSnakeSegment private constructor(internal val from: Vector3i,
                 && z >= chunk.chunkZ * 32 && z < chunk.chunkZ * 32 + 32)
     }
 
+    private fun inChunk(x: Int, y: Int, z: Int, chunk: WorldGenerator.PreChunk): Boolean {
+        return (x >= chunk.chunkX * 32 && x < chunk.chunkX * 32 + 32 && y >= chunk.chunkY * 32 && y < chunk.chunkY * 32 + 32
+                && z >= chunk.chunkZ * 32 && z < chunk.chunkZ * 32 + 32)
+    }
+
     companion object {
-        fun createSegment(fromP: Vector3i, toP: Vector3i, fromS: Double, toS: Double): CaveSnakeSegment {
+        fun createSegment(world: World, fromP: Vector3i, toP: Vector3i, fromS: Double, toS: Double): CaveSnakeSegment {
             val from = Vector3i(fromP)
             val to = Vector3i(toP)
 
@@ -177,7 +184,7 @@ internal class CaveSnakeSegment private constructor(internal val from: Vector3i,
             size.y = 6 + Math.abs(from.y - to.y)
             size.z = 6 + Math.abs(from.z - to.z)
 
-            return CaveSnakeSegment(from, to, fromS, toS, size.x, size.y, size.z)
+            return CaveSnakeSegment(world, from, to, fromS, toS, size.x, size.y, size.z)
         }
     }
 }

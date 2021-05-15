@@ -16,7 +16,7 @@ menu.quit Quitter
 login.username Nom d'utilisateur
 login.password Mot de passe
 login.login Connection
-login.register Inscrivez-vous sur http://chunkstories.xyz
+login.register Système de comptes en travaux
 
 login.auto1 Connection automatique dans 
 login.auto2  secondes... (ESC pour annuler)

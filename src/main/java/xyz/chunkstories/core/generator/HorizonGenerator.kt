@@ -8,6 +8,9 @@ package xyz.chunkstories.core.generator
 
 import org.joml.Vector3i
 import org.joml.Vector4f
+import xyz.chunkstories.api.block.BlockType
+import xyz.chunkstories.api.block.structures.Prefab
+import xyz.chunkstories.api.block.structures.PrefabPasteFlags
 import xyz.chunkstories.api.content.json.asArray
 import xyz.chunkstories.api.content.json.asDict
 import xyz.chunkstories.api.content.json.asDouble
@@ -15,8 +18,6 @@ import xyz.chunkstories.api.content.json.asInt
 import xyz.chunkstories.api.converter.MinecraftBlocksTranslator
 import xyz.chunkstories.api.math.random.SeededSimplexNoiseGenerator
 import xyz.chunkstories.api.math.random.WeightedSet
-import xyz.chunkstories.api.voxel.Voxel
-import xyz.chunkstories.api.voxel.structures.Structure
 import xyz.chunkstories.api.world.World
 import xyz.chunkstories.api.world.chunk.Chunk
 import xyz.chunkstories.api.world.generator.WorldGenerator
@@ -24,47 +25,49 @@ import xyz.chunkstories.api.world.generator.WorldGeneratorDefinition
 import java.util.*
 import kotlin.math.abs
 import xyz.chunkstories.api.math.MathUtils.clamp
+import xyz.chunkstories.api.world.cell.PodCellData
 
 open class HorizonGenerator(definition: WorldGeneratorDefinition, world: World) : WorldGenerator(definition, world) {
-    private val ssng = SeededSimplexNoiseGenerator(world.worldInfo.seed)
-    private val worldSizeInBlocks = world.sizeInChunks * 32
+    private val ssng = SeededSimplexNoiseGenerator(world.properties.seed)
+    private val worldSizeInBlocks = world.properties.size.sizeInChunks * 32
 
-    private val waterHeight = definition["waterHeight"].asInt ?: 48
-    private val mountainScale = definition["mountainScale"].asDouble ?: 128.0
-    private val mountainOffset = definition["mountainOffset"].asDouble ?: 0.3
-    private val baseHeightScale = definition["baseHeightScale"].asInt ?: 64
-    private val plateauHeightScale = definition["plateauHeightScale"].asInt ?: 24
+    private val waterHeight = definition.properties["waterHeight"].asInt ?: 48
+    private val mountainScale = definition.properties["mountainScale"].asDouble ?: 128.0
+    private val mountainOffset = definition.properties["mountainOffset"].asDouble ?: 0.3
+    private val baseHeightScale = definition.properties["baseHeightScale"].asInt ?: 64
+    private val plateauHeightScale = definition.properties["plateauHeightScale"].asInt ?: 24
 
-    private val airVoxel: Voxel = world.gameContext.content.voxels.air
-    private val stoneVoxel: Voxel = world.gameContext.content.voxels.getVoxel("stone")!!
-    private val waterVoxel: Voxel = world.gameContext.content.voxels.getVoxel("water")!!
+    private val airVoxel: BlockType = world.gameInstance.content.blockTypes.air
+    private val stoneVoxel: BlockType = world.gameInstance.content.blockTypes.get("stone")!!
+    private val waterVoxel: BlockType = world.gameInstance.content.blockTypes.get("water")!!
 
-    private val translator = MinecraftBlocksTranslator(world.gameContext, world.content.getAsset("converter_mapping.txt"))
-    private val biomes = loadBiomesFromJson(world.content, definition["biomes"].asDict
+    private val translator = MinecraftBlocksTranslator(world.gameInstance, world.gameInstance.content.getAsset("converter_mapping.txt")!!)
+    private val biomes = loadBiomesFromJson(world.gameInstance.content, definition.properties["biomes"].asDict
             ?: throw Exception("World generator ${definition.name} lacks a 'biomes' section."), translator)
     private val caveBuilder = Caves(world, this)
 
-    private val spawnableMinerals = definition["minerals"].asArray?.let { loadOresSpawningSection(it, world.content) } ?: emptyList()
+    private val spawnableMinerals = definition.properties["minerals"].asArray?.let { loadOresSpawningSection(it, world.gameInstance.content) } ?: emptyList()
 
     interface Biome {
-        val surfaceBlock: Voxel
-        val groundBlock: Voxel
-        val underwaterGround: Voxel
+        val surfaceBlock: BlockType
+        val groundBlock: BlockType
+        val underwaterGround: BlockType
 
         val surfaceDecorationsDensity: Double
-        val surfaceDecorations: WeightedSet<Voxel>
+        val surfaceDecorations: WeightedSet<BlockType>
 
         val treesDensity: Double
-        val treesVariants: WeightedSet<Structure>
+        val treesVariants: WeightedSet<Prefab>
 
-        val additionalStructures: WeightedSet<Structure>
+        val additionalStructures: WeightedSet<Prefab>
     }
 
     internal inner class SliceData(private val cx: Int, private val cz: Int) {
         val heights: IntArray = IntArray(1024)
         val biomes: Array<Biome>
 
-        val structures = mutableListOf<StructureToPaste>()
+        val caveBits = mutableListOf<CaveSegmentToPaste>()
+        val prefabs = mutableListOf<PrefabToPaste>()
 
         init {
             for (x in 0..31) {
@@ -99,9 +102,10 @@ open class HorizonGenerator(definition: WorldGeneratorDefinition, world: World) 
         return biome
     }
 
-    internal class StructureToPaste(var structure: Structure, var position: Vector3i, var flags: Int)
+    internal class PrefabToPaste(var prefab: Prefab, var position: Vector3i, var flags: PrefabPasteFlags)
+    internal class CaveSegmentToPaste(var segment: CaveSnakeSegment, var position: Vector3i)
 
-    override fun generateWorldSlice(chunks: Array<Chunk>) {
+    override fun generateWorldSlice(chunks: Array<PreChunk>) {
         val cx = chunks[0].chunkX
         val cz = chunks[0].chunkZ
 
@@ -117,18 +121,23 @@ open class HorizonGenerator(definition: WorldGeneratorDefinition, world: World) 
                     val groundHeight = sliceData.heights[x * 32 + z]
                     var y = cy * 32
                     while (y < cy * 32 + 32 && y <= groundHeight) {
-                        chunk.pokeSimpleSilently(x, y, z, stoneVoxel, -1, -1, 0)
+                        chunk.setCellData(x, y, z, PodCellData(stoneVoxel))
                         y++
                     }
                 }
             }
-            sliceData.structures.forEach {
-                it.structure.paste(chunk, it.position, it.flags)
+            sliceData.caveBits.forEach {
+                it.segment.paste(chunk, it.position)
             }
         }
 
-        sliceData.structures.clear()
+        sliceData.caveBits.clear()
+    }
 
+    override fun generateWorldSlicePhaseII(chunks: Array<Chunk>) {
+        val cx = chunks[0].chunkX
+        val cz = chunks[0].chunkZ
+        val sliceData = SliceData(cx, cz)
         val rng = Random("$cx$cz".hashCode().toLong())
 
         // Ores
@@ -154,8 +163,8 @@ open class HorizonGenerator(definition: WorldGeneratorDefinition, world: World) 
                             val dx = -1 + rng.nextInt(4)
                             val dy = -1 + rng.nextInt(4)
                             val dz = -1 + rng.nextInt(4)
-                            if(chunks.getOrNull((y + dy) / 32)?.peekSimple(x + dx, y + dy, z + dz) == stoneVoxel)
-                                chunks.getOrNull((y + dy) / 32)?.pokeSimple(x + dx, y + dy, z + dz, oreType.voxel, 0, 0, 0)
+                            if(chunks.getOrNull((y + dy) / 32)?.getCellData(x + dx, y + dy, z + dz)?.blockType == stoneVoxel)
+                                chunks.getOrNull((y + dy) / 32)?.setCellData(x + dx, y + dy, z + dz, PodCellData(oreType.voxel))
                         }
                     }
                 }
@@ -170,7 +179,7 @@ open class HorizonGenerator(definition: WorldGeneratorDefinition, world: World) 
                 var y = maxheight
                 val worldY = sliceData.heights[x * 32 + z]
 
-                while (y > 0 && chunks[y / 32].peekSimple(x, y, z) === airVoxel) {
+                while (y > 0 && chunks[y / 32].getCellData(x, y, z).blockType == airVoxel) {
                     y--
                 }
                 val groundHeightActual = y
@@ -178,25 +187,25 @@ open class HorizonGenerator(definition: WorldGeneratorDefinition, world: World) 
                 // It's flooded!
                 if (groundHeightActual < waterHeight && worldY < waterHeight) {
                     var waterY = waterHeight
-                    while (waterY > 0 && chunks[waterY / 32].peekSimple(x, waterY, z) === airVoxel) {
-                        chunks[waterY / 32].pokeSimpleSilently(x, waterY, z, waterVoxel, -1, -1, 0)
+                    while (waterY > 0 && chunks[waterY / 32].getCellData(x, waterY, z).blockType == airVoxel) {
+                        chunks[waterY / 32].setCellData(x, waterY, z, PodCellData(waterVoxel))
                         waterY--
                     }
 
                     // Replace the stone with whatever is the ground block
                     var undergroundDirt = groundHeightActual
-                    while (undergroundDirt >= 0 && undergroundDirt >= groundHeightActual - 3 && chunks[undergroundDirt / 32].peekSimple(x, undergroundDirt, z) === stoneVoxel) {
-                        chunks[undergroundDirt / 32].pokeSimpleSilently(x, undergroundDirt, z, biome.underwaterGround, -1, -1, 0)
+                    while (undergroundDirt >= 0 && undergroundDirt >= groundHeightActual - 3 && chunks[undergroundDirt / 32].getCellData(x, undergroundDirt, z).blockType == stoneVoxel) {
+                        chunks[undergroundDirt / 32].setCellData(x, undergroundDirt, z, PodCellData(biome.underwaterGround))
                         undergroundDirt--
                     }
                 } else {
                     // Top soil
-                    chunks[groundHeightActual / 32].pokeSimpleSilently(x, groundHeightActual, z, biome.surfaceBlock, -1, -1, 0)
+                    chunks[groundHeightActual / 32].setCellData(x, groundHeightActual, z, PodCellData(biome.surfaceBlock))
 
                     // Replace the stone with whatever is the ground block
                     var undergroundDirt = groundHeightActual - 1
-                    while (undergroundDirt >= 0 && undergroundDirt >= groundHeightActual - 3 && chunks[undergroundDirt / 32].peekSimple(x, undergroundDirt, z) === stoneVoxel) {
-                        chunks[undergroundDirt / 32].pokeSimpleSilently(x, undergroundDirt, z, biome.groundBlock, -1, -1, 0)
+                    while (undergroundDirt >= 0 && undergroundDirt >= groundHeightActual - 3 && chunks[undergroundDirt / 32].getCellData(x, undergroundDirt, z).blockType == stoneVoxel) {
+                        chunks[undergroundDirt / 32].setCellData(x, undergroundDirt, z, PodCellData(biome.groundBlock))
                         undergroundDirt--
                     }
 
@@ -207,7 +216,7 @@ open class HorizonGenerator(definition: WorldGeneratorDefinition, world: World) 
 
                     val bushChance = rng.nextDouble()
                     if (bushChance < biome.surfaceDecorationsDensity) {
-                        chunks[surface / 32].pokeSimpleSilently(x, surface, z, biome.surfaceDecorations.random(rng), -1, -1, 0)
+                        chunks[surface / 32].setCellData(x, surface, z, PodCellData(biome.surfaceDecorations.random(rng)))
                     }
                 }
             }
@@ -216,7 +225,11 @@ open class HorizonGenerator(definition: WorldGeneratorDefinition, world: World) 
         addTrees(cx, cz, sliceData)
 
         for (chunkY in chunks.indices) {
-            sliceData.structures.forEach { stp -> stp.structure.paste(chunks[chunkY], stp.position, stp.flags) }
+            sliceData.prefabs.forEach { stp ->
+                // TODO ???
+                world.pastePrefab(stp.position.x, stp.position.y, stp.position.z, stp.prefab)
+                // stp.prefab.paste(chunks[chunkY], stp.position, stp.flags)
+            }
         }
     }
 
@@ -242,7 +255,7 @@ open class HorizonGenerator(definition: WorldGeneratorDefinition, world: World) 
                         val y = getHeightAtInternal(x, z) - 1
                         if (y > waterHeight) {
                             val treeStructure = biome.treesVariants.random(rnd)
-                            data.structures.add(StructureToPaste(treeStructure, Vector3i(x, y, z), Structure.FLAG_USE_OFFSET or Structure.FLAG_DONT_OVERWRITE_AIR))
+                            data.prefabs.add(PrefabToPaste(treeStructure, Vector3i(x, y, z), PrefabPasteFlags()))
                         }
                     }
                 }

@@ -19,7 +19,7 @@ connection.connect Connect
 login.username Username
 login.password Password
 login.login Connection
-login.register Register at http://chunkstories.xyz
+login.register Account system is being removed/reworked
 
 login.auto1 Autologin in 
 login.auto2  seconds... (ESC to cancel)

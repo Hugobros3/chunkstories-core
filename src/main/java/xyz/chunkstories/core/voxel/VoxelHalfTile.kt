@@ -22,7 +22,7 @@ class VoxelHalfTile(name: String, definition: Json.Dict, content: Content) : Blo
 
 	override fun loadRepresentation(): BlockRepresentation {
 		val mappedOverridesTop = deriveModelOverridesForFaceTextures(topModel)
-		val mappedOverridesBot = deriveModelOverridesForFaceTextures(topModel)
+		val mappedOverridesBot = deriveModelOverridesForFaceTextures(bottomModel)
 
 		return BlockRepresentation.Custom { cell ->
 			if (bottomOrTop(cell.data.extraData))

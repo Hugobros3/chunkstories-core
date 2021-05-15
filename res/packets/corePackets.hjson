@@ -37,12 +37,6 @@
             commonClass: xyz.chunkstories.api.net.packets.PacketTime
         }
 
-        voxel_update: {
-            allowedFrom: server
-            type: world
-            commonClass: xyz.chunkstories.api.net.packets.PacketVoxelUpdate
-        }
-
         sound: {
             allowedFrom: server
             type: world
@@ -59,14 +53,14 @@
         particle: {
             allowedFrom: server
             type: world
-            commonClass: xyz.chunkstories.api.net.packets.PacketParticle
+            commonClass: xyz.chunkstories.net.packets.PacketParticle
         }
 
         # Spawns a decal from the server
         decal: {
             allowedFrom: server
             type: world
-            commonClass: xyz.chunkstories.api.net.packets.PacketDecal
+            commonClass: xyz.chunkstories.net.packets.PacketDecal
         }
 
         # Applies a velocity delta to the player
