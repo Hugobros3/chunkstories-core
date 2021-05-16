@@ -41,7 +41,7 @@ class BlockFurnace(name: String, definition: Json.Dict, content: Content) : Bloc
 
     override fun enumerateVariants(itemStore: Content.ItemsDefinitions): List<ItemDefinition> {
         val definition = ItemDefinition(itemStore, name, Json.Dict(mapOf(
-                "voxel" to Json.Value.Text(name),
+                "block" to Json.Value.Text(name),
                 "class" to Json.Value.Text(ItemFurnace::class.java.canonicalName!!)
         )))
 

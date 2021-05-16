@@ -154,9 +154,8 @@ class EntityPlayer(t: EntityDefinition, world: World) : EntityHumanoid(t, world)
 		TraitCanPickupItems(this)
 
 		val variant = getUniqueColorCode(name) % 6
-		val aaTchoum = HashMap<String, String>()
-		aaTchoum["albedoTexture"] = "./models/human/variant$variant.png"
-		val customSkin = MeshMaterial("playerSkin", aaTchoum, "opaque")
+		val customSkin = MeshMaterial("playerSkin", mapOf("albedoTexture" to "./models/human/variant$variant.png"), "opaque")
 		EntityHumanoidRenderer(this, customSkin)
+		PlayerCamera(this)
 	}
 }

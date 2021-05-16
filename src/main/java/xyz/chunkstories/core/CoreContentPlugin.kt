@@ -24,9 +24,10 @@ class CoreContentPlugin(pluginInformation: PluginInformation, gameInstance: Game
 
 		this.gameInstance.pluginManager.registerCommand("food", FoodCommand())
 
-		if (gameInstance is Client) {
+		val engine = gameInstance.engine
+		if (engine is Client) {
 			gameInstance.logger.info("Registering additional configuration options for the client")
-			gameInstance.configuration.addOptions(CoreOptions.options)
+			engine.configuration.addOptions(CoreOptions.options)
 		}
 
 		onEnable()

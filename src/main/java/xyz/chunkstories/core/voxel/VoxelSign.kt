@@ -81,7 +81,7 @@ class VoxelSign(name: String, definition: Json.Dict, content: Content) : BlockTy
 
 	override fun enumerateVariants(itemStore: Content.ItemsDefinitions): List<ItemDefinition> {
 		val map = mutableMapOf<String, Json>(
-				"voxel" to Json.Value.Text(name),
+				"block" to Json.Value.Text(name),
 				"class" to Json.Value.Text(ItemSign::class.java.canonicalName!!)
 		)
 

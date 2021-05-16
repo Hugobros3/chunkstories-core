@@ -218,7 +218,7 @@ class VoxelDoor(name: String, definition: Json.Dict, content: Content) : BlockTy
             return emptyList()
 
         val map = mutableMapOf<String, Json>(
-                "voxel" to Json.Value.Text(name),
+                "block" to Json.Value.Text(name),
                 "class" to Json.Value.Text(ItemDoor::class.java.canonicalName!!),
                 "slotsHeight" to Json.Value.Number(2.0)
         )

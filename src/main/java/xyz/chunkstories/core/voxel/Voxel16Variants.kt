@@ -38,7 +38,7 @@ class Voxel16Variants(name: String, definition: Json.Dict, content: Content) : B
 		return variantsString.mapIndexed { i, variant ->
 
 			val map = mutableMapOf<String, Json>(
-					"voxel" to Json.Value.Text(name),
+					"block" to Json.Value.Text(name),
 					"class" to Json.Value.Text(ItemVoxelVariant::class.java.canonicalName!!),
 					"metaData" to Json.Value.Number(i.toDouble()),
 					"variant" to Json.Value.Text(variant)

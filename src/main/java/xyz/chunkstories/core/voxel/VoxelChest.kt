@@ -88,7 +88,7 @@ class VoxelChest(name: String, definition: Json.Dict, content: Content) : BlockT
 
 	override fun enumerateVariants(itemStore: Content.ItemsDefinitions): List<ItemDefinition> {
 		val map = mutableMapOf<String, Json>(
-				"voxel" to Json.Value.Text(name),
+				"block" to Json.Value.Text(name),
 				"class" to Json.Value.Text(ItemChest::class.java.canonicalName!!))
 
 		val additionalItems = definition["itemProperties"].asDict?.elements

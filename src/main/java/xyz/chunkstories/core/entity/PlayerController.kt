@@ -9,6 +9,7 @@ package xyz.chunkstories.core.entity
 import org.joml.Math
 import org.joml.Vector3d
 import xyz.chunkstories.api.client.IngameClient
+import xyz.chunkstories.api.entity.traits.TraitCamera
 import xyz.chunkstories.api.entity.traits.TraitInteractible
 import xyz.chunkstories.api.entity.traits.serializable.*
 import xyz.chunkstories.api.graphics.structs.Camera
@@ -20,10 +21,30 @@ import xyz.chunkstories.api.physics.RayResult
 import xyz.chunkstories.api.player.Player
 import xyz.chunkstories.api.util.kotlin.toVec3f
 import xyz.chunkstories.api.world.WorldMaster
-import xyz.chunkstories.api.world.chunk.ChunkCell
 import xyz.chunkstories.api.world.chunk.MutableChunkCell
 import xyz.chunkstories.core.CoreOptions
-import xyz.chunkstories.core.gui.CreativeBlockSelector
+
+internal class PlayerCamera(private val entityPlayer: EntityPlayer) : TraitCamera(entityPlayer) {
+	override val camera: Camera
+		get() {
+			val client = entity.world.gameInstance as? IngameClient ?: throw Exception("calling getCamera() on a non-client context is undefined behavior")
+
+			val location = entity.location
+			val cameraPosition = Vector3d(location)
+			cameraPosition.y += entityPlayer.traitStance.stance.eyeLevel
+
+			val direction = (entity.traits[TraitRotation::class]?.directionLookingAt ?: Vector3d(0.0, 0.0, 1.0)).toVec3f()
+			val up = (entity.traits[TraitRotation::class]?.upDirection ?: Vector3d(0.0, 0.0, 1.0)).toVec3f()
+
+			val fovModifier = entityPlayer.traitSelectedItem.selectedItem?.let { (it.item as? ItemZoom)?.zoomFactor } ?: 1f
+			var speedEffect = (entityPlayer.traitVelocity.velocity.x() * entityPlayer.traitVelocity.velocity.x() + entityPlayer.traitVelocity.velocity.z() * entityPlayer.traitVelocity.velocity.z()).toFloat()
+			speedEffect -= 0.07f * 0.07f
+			speedEffect = Math.max(0.0f, speedEffect)
+			speedEffect *= 50.0f
+
+			return client.engine.makeCamera(cameraPosition, direction, up, fovModifier * (90f + speedEffect))
+		}
+}
 
 internal class PlayerController(private val entityPlayer: EntityPlayer) : TraitControllable(entityPlayer) {
 	val isClient = entity.world.gameInstance is IngameClient
@@ -76,27 +97,6 @@ internal class PlayerController(private val entityPlayer: EntityPlayer) : TraitC
 
 		client.engine.inputsManager.mouse.setMouseCursorLocation(client.engine.gameWindow.width / 2.0, client.engine.gameWindow.height / 2.0)
 	}
-
-	// TODO: use this again
-	val camera: Camera
-		get() {
-			val client = entity.world.gameInstance as? IngameClient ?: throw Exception("calling getCamera() on a non-client context is undefined behavior")
-
-			val location = entity.location
-			val cameraPosition = Vector3d(location)
-			cameraPosition.y += entityPlayer.traitStance.stance.eyeLevel
-
-			val direction = (entity.traits[TraitRotation::class]?.directionLookingAt ?: Vector3d(0.0, 0.0, 1.0)).toVec3f()
-			val up = (entity.traits[TraitRotation::class]?.upDirection ?: Vector3d(0.0, 0.0, 1.0)).toVec3f()
-
-			val fovModifier = entityPlayer.traitSelectedItem.selectedItem?.let { (it.item as? ItemZoom)?.zoomFactor } ?: 1f
-			var speedEffect = (entityPlayer.traitVelocity.velocity.x() * entityPlayer.traitVelocity.velocity.x() + entityPlayer.traitVelocity.velocity.z() * entityPlayer.traitVelocity.velocity.z()).toFloat()
-			speedEffect -= 0.07f * 0.07f
-			speedEffect = Math.max(0.0f, speedEffect)
-			speedEffect *= 50.0f
-
-			return client.engine.makeCamera(cameraPosition, direction, up, fovModifier * (90f + speedEffect))
-		}
 
 	override fun onControllerInput(input: Input): Boolean {
 		// Traits can handle inputs

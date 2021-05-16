@@ -340,10 +340,10 @@ void main() {
     vec3 prim_dir = normalize(eyeDirection);
 
     // COMPLEXITY RENDERER
-    Ray prim_ray = Ray(prim_org, prim_dir, 0.0, 256.0);
+    /*Ray prim_ray = Ray(prim_org, prim_dir, 0.0, 256.0);
     Hit prim_hit = raytrace(prim_ray);
     colorOut = vec4((vec3(prim_hit.steps * 0.005)) * mix(vec3(0.0, 0.5, 1.0), prim_hit.data.rgb, prim_hit.data.a), 1.0);
-    colorOut = vec4(sqrt(vec3(prim_hit.steps) * 0.005), 1.0);
+    colorOut = vec4(sqrt(vec3(prim_hit.steps) * 0.005), 1.0);*/
 
     /// PRIMARY RAYS RENDERER
     /*Ray prim_ray = Ray(prim_org, prim_dir, 0.0, 256.0);
@@ -351,7 +351,7 @@ void main() {
     colorOut = vec4(prim_hit.data) * dot(prim_hit.normal, -eyeDirection);*/
 
     /// AO RENDERER
-    /*Ray prim_ray = Ray(prim_org, prim_dir, 0.0, 256.0);
+    Ray prim_ray = Ray(prim_org, prim_dir, 0.0, 256.0);
     Hit prim_hit = raytrace(prim_ray);
     if(prim_hit.t < 0.0) {
         colorOut = vec4(0.0);
@@ -368,7 +368,7 @@ void main() {
         colorOut.xyz = vec3(0.5);
         colorOut.xyz *= ao;
         colorOut.a = 1.0;
-    }*/
+    }
 
     /// PT RENDERER
     /*int rng_seed = 0;
