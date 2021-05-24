@@ -334,52 +334,53 @@ void main() {
     vec2 texCoord = vec2(vertexPos.x * 0.5 + 0.5, 0.5 + vertexPos.y * 0.5);
     vec2 pixelCoordinates = texCoord * vec2(viewportSize.size);
     
-    vec4 noise = abs(fract(texture(blueNoise, fract((pixelCoordinates) / vec2(1024.0))) + goldenRatio * int(100 * voxelDataInfo.noise)));
-
-    vec3 prim_org = camera.position;
-    vec3 prim_dir = normalize(eyeDirection);
-
-    // COMPLEXITY RENDERER
-    /*Ray prim_ray = Ray(prim_org, prim_dir, 0.0, 256.0);
-    Hit prim_hit = raytrace(prim_ray);
-    colorOut = vec4((vec3(prim_hit.steps * 0.005)) * mix(vec3(0.0, 0.5, 1.0), prim_hit.data.rgb, prim_hit.data.a), 1.0);
-    colorOut = vec4(sqrt(vec3(prim_hit.steps) * 0.005), 1.0);*/
-
-    /// PRIMARY RAYS RENDERER
-    /*Ray prim_ray = Ray(prim_org, prim_dir, 0.0, 256.0);
-    Hit prim_hit = raytrace(prim_ray);
-    colorOut = vec4(prim_hit.data) * dot(prim_hit.normal, -eyeDirection);*/
-
-    /// AO RENDERER
-    Ray prim_ray = Ray(prim_org, prim_dir, 0.0, 256.0);
-    Hit prim_hit = raytrace(prim_ray);
-    if(prim_hit.t < 0.0) {
-        colorOut = vec4(0.0);
-    } else {
-        vec3 primary_hit_pos = prim_org + prim_dir * prim_hit.t + prim_hit.normal * 0.001;
-        colorOut = prim_hit.data;
-
-        SampledDirection bounce = sample_direction_hemisphere_cosine_weighted_with_normal(noise.xy, prim_hit.normal);
-        Ray bounce_ray = Ray(primary_hit_pos, bounce.direction, 0.0, 256.0);
-        Hit ao_hit = raytrace(bounce_ray);
-
-        float ao = (ao_hit.t < 0.0 ? 0.2 : 0.0) / bounce.pdf;
-
-        colorOut.xyz = vec3(0.5);
-        colorOut.xyz *= ao;
-        colorOut.a = 1.0;
-    }
-
-    /// PT RENDERER
-    /*int rng_seed = 0;
-    #define mk_noise (abs(fract(texture(blueNoise, fract((pixelCoordinates + vec2(rng_seed * 73, rng_seed * 69)) / vec2(1024.0))) + goldenRatio * int(100 * voxelDataInfo.noise + rng_seed++))))
-    //#define mk_noise noise
+    int rng_seed = 0;
+    #define mk_noise (abs(fract(texture(blueNoise, fract((pixelCoordinates + vec2(rng_seed * 733, rng_seed * 69) * voxelDataInfo.noise) / vec2(1024.0))) + goldenRatio * int(32 * voxelDataInfo.noise + rng_seed++))))
 
     vec3 colorAccumulation = vec3(0);
-
     const int samples = 1;
     for(int s = 0; s < samples; s++) {
-        vec3 color = vec3(0);
+        //vec4 noise = abs(fract(texture(blueNoise, fract((pixelCoordinates) / vec2(1024.0))) + goldenRatio * int((s + 1) * voxelDataInfo.noise)));
+        vec4 noise = mk_noise;
+
+        vec3 prim_org = camera.position;
+        vec3 prim_dir = normalize(eyeDirection);
+
+        vec3 color = vec3(0.0);
+
+        // COMPLEXITY RENDERER
+        /*Ray prim_ray = Ray(prim_org, prim_dir, 0.0, 256.0);
+        Hit prim_hit = raytrace(prim_ray);
+        colorOut = vec4((vec3(prim_hit.steps * 0.005)) * mix(vec3(0.0, 0.5, 1.0), prim_hit.data.rgb, prim_hit.data.a), 1.0);
+        colorOut = vec4(sqrt(vec3(prim_hit.steps) * 0.005), 1.0);*/
+
+        /// PRIMARY RAYS RENDERER
+        /*Ray prim_ray = Ray(prim_org, prim_dir, 0.0, 256.0);
+        Hit prim_hit = raytrace(prim_ray);
+        colorOut = vec4(prim_hit.data) * dot(prim_hit.normal, -eyeDirection);*/
+
+        /// AO RENDERER
+        /*Ray prim_ray = Ray(prim_org, prim_dir, 0.0, 256.0);
+        Hit prim_hit = raytrace(prim_ray);
+        if(prim_hit.t < 0.0) {
+            color = vec3(0.0);
+        } else {
+            vec3 primary_hit_pos = prim_org + prim_dir * prim_hit.t + prim_hit.normal * 0.001;
+            colorOut = prim_hit.data;
+
+            SampledDirection bounce = sample_direction_hemisphere_cosine_weighted_with_normal(noise.xy, prim_hit.normal);
+            Ray bounce_ray = Ray(primary_hit_pos, bounce.direction, 0.0, 256.0);
+            Hit ao_hit = raytrace(bounce_ray);
+
+            float ao = (ao_hit.t < 0.0 ? 0.2 : 0.0) / bounce.pdf;
+
+            color = vec3(0.5);
+            color.xyz *= ao;
+        }*/
+
+        /// PT RENDERER
+
+        
         Ray ray = Ray(prim_org, prim_dir, 0.0, 256.0);
         int depth = 0;
         vec3 weight = vec3(1.0);
@@ -447,5 +448,5 @@ void main() {
     colorAccumulation /= samples;
     //colorAccumulation = color;
 
-    colorOut = vec4(sqrt(colorAccumulation), 1.0);*/
+    colorOut = vec4(sqrt(colorAccumulation), 1.0);
 }
