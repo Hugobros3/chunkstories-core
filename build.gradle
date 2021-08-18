@@ -29,7 +29,7 @@ repositories {
 
 description = 'The base content chunkstories is built on.'
 group = 'xyz.chunkstories'
-version = '203'
+version = '2.0.3'
 
 sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
