@@ -8,9 +8,6 @@ buildscript {
 	}
 
 	dependencies {
-		//classpath 'com.github.johni0702:gradle-ecj-plugin:795736c7bd085c6ff3a5fbd3f5d2913c94fe589e'
-		classpath 'de.johni0702.gradle:gradle-ecj-plugin:1.1-JAVA9'
-
 		classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
 	}
 }
@@ -28,9 +25,6 @@ repositories {
 	mavenLocal()
 	mavenCentral()
 	jcenter()
-	maven {
-		url "http://maven.xol.io/repository/public/"
-	}
 }
 
 description = 'The base content chunkstories is built on.'
@@ -54,21 +48,13 @@ spotless {
 
 ext {
 	apiRevisionBuiltAgainst = '203'
-	useEclipseCompiler = false
 }
 
 dependencies {
 	compile group: 'xyz.chunkstories', name: 'api', version: apiRevisionBuiltAgainst
-	compile group: 'io.xol.enklume', name: 'enklume', version: 100
 
 	implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 }
-
-if(ext.useEclipseCompiler) {
-	apply plugin: 'de.johni0702.ecj'
-	println "Using ECJ compiler"
-}
-
 
 task buildContentPack(type: Zip) {
 	//Require Gradle to build the content jar first
@@ -101,39 +87,4 @@ clean {
 artifacts {
 	archives jar
 	archives buildContentPack
-}
-
-configurations {
-	deployerJars
-}
-
-dependencies {
-	deployerJars "org.apache.maven.wagon:wagon-ssh:3.0.0"
-}
-
-//Create a properties.gradle with login credentials to use this.
-//Watch out: wagon-ssh is an old mess and WILL NOT TAKE EdDSA host keys
-//You MUST ask the server for one of those and replace whatever you had for it in known_hosts
-if(hasProperty('uploadUsername')) {
-	println 'Login credentials found'
-	uploadArchives {
-		repositories {
-				mavenDeployer {
-       				configuration = configurations.deployerJars	
-					
-					if(project.hasProperty('uploadPrivateKey')) {
-						println 'Found private key'
-						repository(url: "scp://xol.io/home/maven-user/maven-repo") {				
-							authentication(userName: uploadUsername, privateKey: uploadPrivateKey)
-		    				}
-					}
-					else {
-						println 'Found password'
-						repository(url: "scp://xol.io/home/maven-user/maven-repo") {				
-							authentication(userName: uploadUsername, password: uploadPassword)
-		    				}
-					}
-				}
-		}
-	}
 }
