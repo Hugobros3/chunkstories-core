@@ -47,7 +47,7 @@ spotless {
 }
 
 ext {
-	apiRevisionBuiltAgainst = '203'
+	apiRevisionBuiltAgainst = '2.0.3'
 }
 
 dependencies {
