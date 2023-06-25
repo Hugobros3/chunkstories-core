@@ -23,6 +23,7 @@ import xyz.chunkstories.api.util.kotlin.toVec3f
 import xyz.chunkstories.api.world.WorldMaster
 import xyz.chunkstories.api.world.chunk.MutableChunkCell
 import xyz.chunkstories.core.CoreOptions
+import xyz.chunkstories.core.gui.CreativeBlockSelector
 
 internal class PlayerCamera(private val entityPlayer: EntityPlayer) : TraitCamera(entityPlayer) {
 	override val camera: Camera
@@ -47,22 +48,21 @@ internal class PlayerCamera(private val entityPlayer: EntityPlayer) : TraitCamer
 }
 
 internal class PlayerController(private val entityPlayer: EntityPlayer) : TraitControllable(entityPlayer) {
-	val isClient = entity.world.gameInstance is IngameClient
-	val client = entity.world.gameInstance as IngameClient
+	val client = entity.world.gameInstance as? IngameClient
 
 	var lastPX = -1.0
 	var lastPY = -1.0
 
 	override fun onEachFrame(): Boolean {
-		val controller = entity.controller
+		val client = client ?: return false;
 		if (client.engine.inputsManager.mouse.isGrabbed) {
-			rotateCameraAccordingToMouse()
+			rotateCameraAccordingToMouse(client)
 			return true
 		}
 		return false
 	}
 
-	fun rotateCameraAccordingToMouse() {
+	fun rotateCameraAccordingToMouse(client: IngameClient) {
 		if (entityPlayer.traitHealth.isDead)
 			return
 		if (!client.engine.inputsManager.mouse.isGrabbed)
@@ -109,18 +109,17 @@ internal class PlayerController(private val entityPlayer: EntityPlayer) : TraitC
 		val controller = entity.controller
 
 		// We are moving inventory bringup here !
-		if (input.name == "inventory" && isClient) {
-			TODO("More inventory")
-			/*if (entityPlayer.traitCreativeMode.enabled) {
-				entityPlayer.world.client.gui.let {
+		if (input.name == "inventory" && client != null) {
+			if (entityPlayer.traitCreativeMode.enabled) {
+				client.engine.gui.let {
 					it.topLayer = CreativeBlockSelector(it, it.topLayer)
 				}
 				//entityPlayer.world.client.gui.openInventories(entityPlayer.traits[TraitInventory::class]?.inventory!!, entity.world.content.voxels().createCreativeInventory())
 			} else {
-				entityPlayer.world.client.gui.openInventories(entityPlayer.traits[TraitInventory::class]?.inventory!!)
+				client.engine.gui.openInventories(entityPlayer.traits[TraitInventory::class]?.inventory!!)
 			}
 
-			return true*/
+			return true
 		}
 
 		// Then we check if the world minds being interacted with
