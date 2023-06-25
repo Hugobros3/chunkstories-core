@@ -140,6 +140,7 @@ internal class PlayerController(private val entityPlayer: EntityPlayer) : TraitC
 					return true
 				}
 			}
+			else -> {}
 		}
 
 		val itemInHand = entityPlayer.traitSelectedItem.selectedItem

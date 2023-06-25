@@ -36,6 +36,7 @@ open class TraitMeleeCombat<E>(entity: E, val naturalWeapon: MeleeWeapon?) : Tra
 						attack(weapon, lookingAt.entity, lookingAt.part)
 						return true
 					}
+					else -> {}
 				}
 			}
 		}
